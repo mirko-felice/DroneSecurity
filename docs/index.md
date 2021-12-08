@@ -4,6 +4,6 @@
 - Studio del dominio
   * [Casi d'uso](useCases)
   * [Ubiquitous Language](ubiquitousLanguage)
-  * [Strategic Design]()
-  * [Tactical Design]()
+  * [Strategic Design](strategicDesign)
+  * [Tactical Design](tacticalDesign)
   
