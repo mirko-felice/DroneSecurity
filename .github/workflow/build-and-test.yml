@@ -1,0 +1,19 @@
+name: Test Workflow
+
+on:
+  push:
+    tags: '*'
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'LICENSE'
+      - '**.cml'
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2.4.0
+      - name: Build the project
+        run: ./gradlew build
