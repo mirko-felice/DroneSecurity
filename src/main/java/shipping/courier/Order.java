@@ -11,11 +11,15 @@ import java.util.Objects;
  */
 public final class Order {
 
+    private enum Lifecycle {
+        PLACED, DELIVERING, FAILED, RESCHEDULED, DELIVERED
+    }
     private static final String EMPTY_STRING = "";
     private static int fakeId = 0;
     private final transient String id;
     private final transient String product;
     private final transient Date orderDate;
+    private transient Lifecycle currentState;
 
     /**
      * Place an Order to be delivered today.
@@ -36,6 +40,79 @@ public final class Order {
         this.id = "" + fakeId++; // TODO think about id generation
         this.product = product;
         this.orderDate = orderDate;
+        this.currentState = Lifecycle.PLACED;
+    }
+
+    // STATE CHECKS
+    /**
+     *
+     * @return true if the Order is correctly placed
+     */
+    public boolean isPlaced() {
+        return this.currentState == Lifecycle.PLACED;
+    }
+
+    /**
+     *
+     * @return true if the Order is being delivered
+     */
+    public boolean isBeingDelivered() {
+        return this.currentState == Lifecycle.DELIVERING;
+    }
+
+    /**
+     *
+     * @return true if the Order has been successfully delivered
+     */
+    public boolean hasBeenDelivered() {
+        return this.currentState == Lifecycle.DELIVERED;
+    }
+
+    /**
+     *
+     * @return true if the Order has not been delivered
+     */
+    public boolean isFailed() {
+        return this.currentState == Lifecycle.FAILED;
+    }
+
+    /**
+     *
+     * @return true if the Order is rescheduled for a new Date
+     */
+    public boolean isRescheduled() {
+        return this.currentState == Lifecycle.RESCHEDULED;
+    }
+
+    // ACTIONS
+    // TODO enforce state checks else throw exceptions
+    /**
+     * Deliver the Order.
+     */
+    public void deliver() {
+        this.currentState = Lifecycle.DELIVERING;
+    }
+
+    /**
+     * Confirm the Order has been successfully delivered.
+     */
+    public void confirmDelivery() {
+        this.currentState = Lifecycle.DELIVERED;
+    }
+
+    /**
+     * Miss the Order delivery.
+     */
+    public void missDelivery() {
+        this.currentState = Lifecycle.FAILED;
+    }
+
+    /**
+     * Reschedule the Order to be delivered the given @Date.
+     * @param newEstimatedArrival new Date the Order will be delivered
+     */
+    public void rescheduleDelivery(final Date newEstimatedArrival) {
+        this.currentState = Lifecycle.RESCHEDULED;
     }
 
     /**
@@ -56,4 +133,5 @@ public final class Order {
     public int hashCode() {
         return Objects.hash(id, product, orderDate);
     }
+
 }
