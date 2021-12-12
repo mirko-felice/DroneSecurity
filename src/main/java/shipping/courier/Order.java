@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.Objects;
 
 /**
- *
+ * Represents the entity the Client can create which will deliver the desired product.
  */
 public final class Order {
 
