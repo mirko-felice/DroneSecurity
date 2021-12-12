@@ -107,6 +107,8 @@
       <property name="ignoreMethodNamesRegex" value="^test.*$"/>
       <property name="allowedAnnotations" value="Override,Deprecated,Test,BeforeEach"/>
     </module>
+    <module name="MissingDeprecated" />
+    <module name="MissingOverride"/>
 
     <!-- Checks for Naming Conventions.                  -->
     <!-- See https://checkstyle.org/config_naming.html -->
@@ -156,6 +158,7 @@
     <!-- See https://checkstyle.org/config_blocks.html -->
     <module name="AvoidNestedBlocks"/>
     <module name="EmptyBlock"/>
+    <module name="EmptyCatchBlock"/>
     <module name="LeftCurly"/>
     <module name="RightCurly"/>
 
@@ -181,6 +184,10 @@
     <module name="HideUtilityClassConstructor"/>
     <module name="InterfaceIsType"/>
     <module name="VisibilityModifier"/>
+    <module name="InnerTypeLast"/>
+    <module name="MutableException"/>
+    <module name="OneTopLevelClass"/>
+    <module name="ThrowsCount"/>
 
     <!-- Miscellaneous other checks.                   -->
     <!-- See https://checkstyle.org/config_misc.html -->

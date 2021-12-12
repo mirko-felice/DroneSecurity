@@ -38,6 +38,9 @@ public final class Order {
         this.orderDate = orderDate;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -46,6 +49,9 @@ public final class Order {
         return id.equals(order.id) && product.equals(order.product) && orderDate.equals(order.orderDate);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id, product, orderDate);
