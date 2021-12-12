@@ -3,18 +3,18 @@ package shipping.courier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
+import java.util.Calendar;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public final class OrderTest {
 
     private static final String EMPTY_PRODUCT = "";
     private static final String BASIC_PRODUCT = "basic";
+    private static final int HOURS_OF_DAY = 24;
     private transient Order order;
 
     @BeforeEach
@@ -36,28 +36,29 @@ public final class OrderTest {
 
     @Test
     public void testBasicLifeCycle() {
-        testInitialLifecycle();
-        testDelivery();
-        order.confirmDelivery();
-        assertTrue(order.hasBeenDelivered());
+        DeliveringOrder deliveringOrder = testDelivering();
+
+        assertNotNull(deliveringOrder.confirmDelivery());
     }
 
         @Test
     public void testRescheduleLifecycle() {
-        testInitialLifecycle();
-        order.missDelivery();
-        assertTrue(order.isFailed());
-        order.rescheduleDelivery(new Date());
-        assertTrue(order.isRescheduled());
+        DeliveringOrder deliveringOrder = testDelivering();
+
+        FailedOrder failedOrder = deliveringOrder.failDelivery();
+        assertNotNull(failedOrder);
+        Calendar today = Calendar.getInstance();
+        today.add(Calendar.HOUR_OF_DAY, HOURS_OF_DAY);
+        RescheduledOrder rescheduledOrder = failedOrder.rescheduleDelivery(today.getTime());
+        assertNotNull(rescheduledOrder);
+        DeliveringOrder redeliveringOrder = rescheduledOrder.deliver();
+        assertNotNull(redeliveringOrder);
+        assertNotNull(deliveringOrder.confirmDelivery());
     }
 
-    private void testInitialLifecycle() {
-        assertTrue(order.isPlaced());
-        assertFalse(order.isBeingDelivered());
-    }
-
-    private void testDelivery() {
-        order.deliver();
-        assertTrue(order.isBeingDelivered());
+    private DeliveringOrder testDelivering() {
+        DeliveringOrder deliveringOrder = Utilities.safeCast(order, PlacedOrder.class).orElseThrow().deliver();
+        assertNotNull(deliveringOrder);
+        return deliveringOrder;
     }
 }
