@@ -1,4 +1,6 @@
-package shipping.courier;
+package shipping.courier.entities;
+
+import shipping.courier.specifications.NoEmptyProduct;
 
 import java.util.Date;
 import java.util.Objects;

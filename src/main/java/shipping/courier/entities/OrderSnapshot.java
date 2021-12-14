@@ -1,4 +1,4 @@
-package shipping.courier;
+package shipping.courier.entities;
 
 import java.util.Date;
 

@@ -1,4 +1,7 @@
-package shipping.courier.entities;
+package shipping.courier.specifications;
+
+import shipping.courier.entities.Order;
+import shipping.courier.entities.OrderSnapshot;
 
 /**
  * Specification to check that {@link Order} must NOT have null or empty product!

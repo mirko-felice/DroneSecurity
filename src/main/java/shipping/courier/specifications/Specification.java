@@ -1,4 +1,4 @@
-package shipping.courier.entities;
+package shipping.courier.specifications;
 
 /**
  * Specification applicable to whatever entity.

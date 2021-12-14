@@ -1,4 +1,4 @@
-package shipping.courier;
+package shipping.courier.entities;
 
 /**
  * Represents an {@link Order} that is currently being delivered.
