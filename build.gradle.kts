@@ -23,14 +23,6 @@ tasks.test {
     useJUnitPlatform()
 }
 
-checkstyle {
-    isIgnoreFailures = true
-}
-
-pmd {
-    isIgnoreFailures = true
-}
-
 tasks.register("goAway") {
     doLast { println("Stay away from here!") }
 }
