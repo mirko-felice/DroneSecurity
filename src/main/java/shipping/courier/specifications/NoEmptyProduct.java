@@ -1,4 +1,4 @@
-package shipping.courier;
+package shipping.courier.entities;
 
 /**
  * Specification to check that {@link Order} must NOT have null or empty product!
