@@ -28,7 +28,7 @@ jobs:
     needs: Get-Files
     strategy:
       fail-fast: false
-      matrix: ${{ needs.Get-Files.outputs.paths) }}
+      matrix: ${{ needs.Get-Files.outputs.paths }}
     runs-on: ubuntu-latest
 
     steps:
