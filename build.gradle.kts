@@ -1,7 +1,19 @@
+plugins {
+    id("java")
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies  {
+
+}
+
 tasks.wrapper {
     gradleVersion = "7.3"
 }
 
 tasks.register("goAway") {
-    println("Stay away from here!")
+    doLast { println("Stay away from here!") }
 }

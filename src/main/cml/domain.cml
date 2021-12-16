@@ -1,0 +1,284 @@
+ContextMap DroneManagementMap {
+	type = SYSTEM_LANDSCAPE
+	state = TO_BE
+	contains DroneContext, IssueReportingContext, NegligenceReportingContext, ShippingContext
+
+	DroneContext [U] -> [D, ACL] NegligenceReportingContext
+
+	DroneContext [U] -> [D, ACL] ShippingContext
+}
+
+BoundedContext DroneContext implements Drone {
+	type = FEATURE
+	
+	Aggregate DroneSystem {
+		
+		enum SensorType {
+			PROXIMITY, ACCELEROMETER, CAMERA
+		}
+		
+		ValueObject SensorData
+		ValueObject Path
+		
+		Entity Sensor {
+			String name
+			- SensorType sensorType
+			- SensorData data
+		}
+		
+		Entity Drone {
+			String id
+			- List<Sensor> sensors
+
+			def @SensorData analyzeData();
+			def private void preventAccident();
+		}
+		
+		DomainEvent UpdatedData {
+			- SensorData sensorData
+		}
+		
+		DomainEvent WarningSituation {
+			- SensorData sensorData
+		}
+		
+		DomainEvent CriticalSituation {
+			- SensorData sensorData
+		}
+		
+		Service DroneService {
+			@Drone drone;
+			
+			void startDrone(@Path path_);
+		}
+	}
+	
+	Aggregate UserMonitoring {
+		Entity User
+		
+		Service UserMonitoringService {
+			
+			void onWarningSituation();
+			void onCriticalSituation();
+			void onDataReceived();
+		}
+	}
+}
+
+BoundedContext IssueReportingContext implements Reporting {
+	type = FEATURE
+	responsibilities "Drone Issues"
+	Aggregate CourierReport {
+		
+		Entity IssueReport {
+			String id
+			- IssueMaintainer referenceMaintainer
+		}
+		
+		DomainEvent NewIssue {
+			- IssueReport report
+		}
+		
+		Service CourierReportService {
+			
+			void reportsIssue(@IssueReport report);
+		}
+	}
+	
+	Aggregate MaintainerIssueReport {
+		
+		Entity FixForm {
+			String id
+		}
+		
+		Entity IssueMaintainer 
+		
+		Service MaintainerIssueReportService {
+			
+			void onNewIssue();
+			void fillSolutionForm(@FixForm form);
+		}
+	}
+}
+
+BoundedContext NegligenceReportingContext implements Reporting {
+	type = FEATURE
+	responsibilities "Couriers' negligence"
+	Aggregate DroneReport {
+		
+		Entity NegligenceReport {
+			String id
+			- NegligenceMaintainer referenceMaintainer
+		}
+		
+		DomainEvent NewNegligence {
+			- NegligenceReport report
+		}
+		
+		Service DroneReportService {
+			
+			void reportsNegligence(@NegligenceReport report);
+		}
+	}
+	
+	Aggregate MaintainerNegligenceReport {
+		
+		Entity NegligenceActionForm {
+			String id
+		}
+		
+		Entity NegligenceMaintainer 
+		
+		Service MaintainerNegligenceReportService {
+			
+			void onNewNegligence();
+			void takeAction(@NegligenceActionForm form);
+		}
+	}
+}
+
+BoundedContext ShippingContext implements Shipping {
+	
+	Aggregate CourierShipping {
+		
+		Entity Order {
+			String id
+			Date estimatedArrival
+			String product
+		}
+		
+		Entity DroneSelection
+		
+		Service CourierShippingService {
+			void performDelivery(@Order order, @DroneSelection droneSelection);
+			void callBack(@DroneSelection droneSelection);
+			Date rescheduleDelivery(@Order order);
+		}
+	}
+	
+	Aggregate Client {
+		
+		ValueObject GPSPosition 
+		
+		DomainEvent DeliveredNotification
+		DomainEvent RescheduleNotification
+		
+		Service ClientService {
+			@Order placeOrder(String product);
+			@GPSPosition track(@Order order);
+			void onDeliveredNotification();
+			void onRescheduleNotification();
+		}
+	}
+}
+
+Domain DroneSecurity {
+	
+	Subdomain Drone supports DataAnalysis, DataMonitoring, AccidentPrevention, WarningAlert {
+		type = CORE_DOMAIN
+		domainVisionStatement "Subdomain able to analyze sensor data and thus prevent accidents and/or warn about dangerous situations."
+	}
+
+	Subdomain Reporting supports NegligenceReporting, IssueReporting, FixManagement, NegligenceManagement {
+		type = CORE_DOMAIN
+		domainVisionStatement "Subdomain managing reports about drone issues and couriers' negligence."
+	}
+
+	Subdomain Shipping supports DeliveredNotification, Tracking, OrderPlacing, Shipping, DeliveryRescheduling {
+		type = SUPPORTING_DOMAIN
+		domainVisionStatement "Subdomain supporting everything related to the shipping process."
+	}
+
+}
+
+UseCase DataAnalysis {
+	actor "Drone"
+	interactions
+	"analyze" "sensor_data"
+	benefit	"it can detect dangerous situations."
+}
+
+UseCase DataMonitoring {
+	actor "Drone"
+	interactions
+	"sends" "sensor_data" for "Maintainer",
+	"sends" "sensor_data" for "Courier"
+	benefit "users can monitor the drone state."
+}
+
+UseCase NegligenceReporting {
+	actor "Drone"
+	interactions
+	"reports" "negligence" for "Maintainer"
+	benefit "Maintainer can takes action against the Courier negligence."
+}
+
+UseCase AccidentPrevention {
+	actor "Drone"
+	interactions
+	"prevents" "accident"
+	benefit "accident won't happen."
+}
+
+UseCase WarningAlert {
+	actor "Drone"
+	interactions
+	"alerts" "Courier"
+	benefit "the Courier can prevent accidents."
+}
+
+UseCase DeliveredNotification {
+	actor "Drone"
+	interactions
+	"notify" "Client"
+	benefit "Client will know that the product has been delivered."
+}
+
+UseCase Tracking {
+	actor "Client"
+	interactions
+	"track" "Drone"
+	benefit "Client can see Drone location."
+}
+
+UseCase OrderPlacing {
+	actor "Client"
+	interactions
+	"place" "order"
+	benefit "Client will receive the product."
+}
+
+UseCase IssueReporting {
+	actor "Courier"
+	interactions
+	"reports" "issue" for "Maintainer"
+	benefit "Maintainer can manage the issue."
+}
+
+UseCase Shipping {
+	actor "Courier"
+	interactions
+	"perform" "delivery"
+	benefit "Drone can deliver the product to Client."
+}
+
+UseCase DeliveryRescheduling {
+	actor "Courier"
+	interactions
+	"reschedule" "delivery" for "Client"
+	benefit "the product will be delivered another day."
+}
+
+UseCase FixManagement {
+	actor "Maintainer"
+	interactions
+	"fill" "solution_form" for "Drone"
+	benefit "the Drone can be fixed."
+}
+
+UseCase NegligenceManagement {
+	actor "Maintainer"
+	interactions
+	"takes" "action" for "Courier"
+	benefit "the Courier will be punished."
+}
