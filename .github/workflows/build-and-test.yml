@@ -1,15 +1,17 @@
-name: Test Workflow
+name: Build and Test
 
 on:
   push:
     tags: '*'
-    branches:
-      - '**'
+    branches-ignore:
+      - 'renovate/**'
     paths-ignore:
       - 'docs/**'
       - 'README.md'
       - 'LICENSE'
       - '**.cml'
+      - '.github/renovate.json'
+  pull_request:
 
 jobs:
   Test:
