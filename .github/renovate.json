@@ -4,6 +4,7 @@
     "config:base", ":rebaseStalePrs", ":semanticCommits"
   ],
   "assignees": ["mirko-felice"],
+  "labels": ["update-deps"],
   "automerge": true,
   "dependencyDashboard": true,
   "git-submodules": {
