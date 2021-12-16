@@ -10,47 +10,25 @@ on:
     paths:
       - 'src/main/resources/**.json'
   pull_request:
+  workflow_dispatch:
 
 jobs:
-  Setup-Matrix:
+  Get-Files:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.Set-Matrix.outputs.matrix }}
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2.4.0
+      - name: Path lister action
+        uses: Rishabh510/Path-lister-action@1.0
+        with:
+          path: "src/main/resources/**"
+          type: "*.json"
 
-      - id: Set-Matrix
-        run: |
-          matrix=$(( echo '{ "definition-file" : ['
-            cd src/main/resources/
-            find -name *.json | paste -sd ,
-            cd ../../..
-            echo " ]}"
-          ) | jq -c .)
-          echo $matrix
-          echo $matrix | jq .
-          echo "::set-output name=matrix::$matrix"
-
-  Check-Matrix:
-    runs-on: ubuntu-latest
-    needs: Setup-Matrix
-    steps:
-      - name: Install json2yaml
-        run: |
-          sudo npm install -g json2yaml
-
-      - name: Check matrix definition
-        run: |
-          matrix='${{ needs.Setup-Matrix.outputs.matrix }}'
-          echo $matrix
-          echo $matrix | jq .
-          echo $matrix | json2yaml
   Validation:
-    needs: Setup-Matrix
+    needs: Get-Files
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.SetupMatrix.outputs.matrix) }}
+      matrix: ${{ needs.Get-Files.outputs.paths) }}
     runs-on: ubuntu-latest
 
     steps:
