@@ -3,11 +3,13 @@ name: OpenAPI Validation
 on:
   push:
     branches:
-      - '**'
+      - 'develop'
+      - 'feature/**'
     tags:
       - '*'
     paths:
       - 'src/main/resources/**.json'
+  pull_request:
 
 jobs:
   Setup-Matrix:
@@ -20,9 +22,10 @@ jobs:
 
       - id: Set-Matrix
         run: |
-          matrix=$((
-            echo '{ "definition-file" : ['
-            cd src/main/resources/; find -name *.json | paste -sd ,; cd ../../..
+          matrix=$(( echo '{ "definition-file" : ['
+            cd src/main/resources/
+            find -name *.json | paste -sd ,
+            cd ../../..
             echo " ]}"
           ) | jq -c .)
           echo $matrix
@@ -51,7 +54,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Validate OpenAPI definition
         uses: char0n/swagger-editor-validate@v1.2.1
         with:
