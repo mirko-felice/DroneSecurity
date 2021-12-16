@@ -1,13 +1,22 @@
 package shipping.courier.entities;
 
+import com.fasterxml.jackson.annotation.*;
 import shipping.courier.specifications.NoEmptyProduct;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Abstract class to construct a generic {@link Order}.
  */
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = PlacedOrder.class, name = "placed")
+})
 public abstract class AbstractOrder implements Order {
 
     private static int fakeId = 0;
@@ -34,6 +43,18 @@ public abstract class AbstractOrder implements Order {
     @Override
     public OrderSnapshot getSnapshot() {
         return new OrderSnapshot(this.id, this.product, this.orderDate);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", "Order" + "[", "]")
+                .add("id='" + id + "'")
+                .add("orderDate=" + orderDate)
+                .add("product='" + product + "'")
+                .toString();
     }
 
     /**

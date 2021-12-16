@@ -1,5 +1,10 @@
 package shipping.courier.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import shipping.courier.serializers.DateDeserializer;
+
 import java.util.Date;
 
 /**
@@ -8,8 +13,8 @@ import java.util.Date;
 public class OrderSnapshot {
 
     private final transient String id;
-    private final transient String product;
-    private final transient Date orderDate;
+    private final String product;
+    private final Date orderDate;
 
     /**
      * Build the snapshot.
@@ -19,6 +24,20 @@ public class OrderSnapshot {
      */
     public OrderSnapshot(final String id, final String product, final Date orderDate) {
         this.id = id;
+        this.product = product;
+        this.orderDate = orderDate;
+    }
+
+    /**
+     * Build the snapshot.
+     * @param product the product to be delivered
+     * @param orderDate the {@link Date} in which the product should be/has been delivered
+     */
+    @JsonCreator
+    public OrderSnapshot(
+            @JsonProperty("product") final String product,
+            @JsonProperty("orderDate") @JsonDeserialize(using = DateDeserializer.class) final Date orderDate) {
+        this.id = "";
         this.product = product;
         this.orderDate = orderDate;
     }
