@@ -3,8 +3,9 @@ name: Build and Test
 on:
   push:
     tags: '*'
-    branches-ignore:
-      - 'renovate/**'
+    branches:
+      - 'develop'
+      - 'feature/**'
     paths-ignore:
       - 'docs/**'
       - 'README.md'
