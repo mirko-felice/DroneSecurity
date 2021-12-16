@@ -28,4 +28,12 @@ public class DeliveringOrder extends AbstractOrder {
     public FailedOrder failDelivery() {
         return new FailedOrder(this.getSnapshot());
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCurrentState() {
+        return "Order is delivering.";
+    }
 }

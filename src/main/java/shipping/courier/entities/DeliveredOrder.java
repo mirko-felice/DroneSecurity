@@ -12,4 +12,12 @@ public class DeliveredOrder extends AbstractOrder {
     public DeliveredOrder(final OrderSnapshot currentOrder) {
         super(currentOrder);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCurrentState() {
+        return "Order is delivered.";
+    }
 }

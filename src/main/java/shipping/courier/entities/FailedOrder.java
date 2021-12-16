@@ -23,4 +23,12 @@ public class FailedOrder extends AbstractOrder {
     public RescheduledOrder rescheduleDelivery(final Date newEstimatedArrival) {
         return new RescheduledOrder(getSnapshot());
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCurrentState() {
+        return "Order fails delivery.";
+    }
 }

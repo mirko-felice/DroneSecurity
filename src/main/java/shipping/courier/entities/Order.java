@@ -15,6 +15,12 @@ public interface Order {
     OrderSnapshot getSnapshot();
 
     /**
+     * Get the current state of the Order.
+     * @return the String representation of current state
+     */
+    String getCurrentState();
+
+    /**
      * Place an Order to be delivered today.
      *
      * @param product the product to be delivered

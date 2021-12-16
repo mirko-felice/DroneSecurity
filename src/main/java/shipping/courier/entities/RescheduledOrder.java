@@ -13,4 +13,11 @@ public class RescheduledOrder extends PlacedOrder {
         super(currentOrder);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCurrentState() {
+        return "Order is rescheduled.";
+    }
 }

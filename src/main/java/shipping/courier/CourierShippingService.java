@@ -42,7 +42,10 @@ public final class CourierShippingService {
         routerBuilder.operation(PERFORM_DELIVERY_OPERATION_ID)
                 .handler(routingContext -> {
                     RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-                    System.out.println(params.body().getJsonObject().mapTo(PlacedOrder.class)); // TODO check body
+                    PlacedOrder order = params.body().getJsonObject().mapTo(PlacedOrder.class);
+                    System.out.println(order); // TODO check body
+                    var deliveringOrder = order.deliver();
+                    System.out.println(deliveringOrder.getCurrentState());
                     routingContext.response().end(CORRECT_RESPONSE_TO_PERFORM_DELIVERY);
                 });
     }

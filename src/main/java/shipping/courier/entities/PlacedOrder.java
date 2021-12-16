@@ -24,4 +24,11 @@ public class PlacedOrder extends AbstractOrder {
         return new DeliveringOrder(this.getSnapshot());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCurrentState() {
+        return "Order is placed.";
+    }
 }
