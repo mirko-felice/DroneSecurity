@@ -17,5 +17,7 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2.4.0
+      - name: Gradle Wrapper Validation
+        uses: gradle/wrapper-validation-action@1.0.4
       - name: Build the project
         run: ./gradlew build
