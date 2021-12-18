@@ -1,8 +1,9 @@
-name: Test Workflow
+name: Build and Test
 
 on:
   push:
-    tags: '*'
+    tags: 
+      - '*'
     branches:
       - '**'
     paths-ignore:
