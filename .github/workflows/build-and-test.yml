@@ -1,8 +1,9 @@
-name: Test Workflow
+name: Build and Test
 
 on:
   push:
-    tags: '*'
+    tags: 
+      - '*'
     branches:
       - '**'
     paths-ignore:
@@ -17,5 +18,10 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2.4.0
+      - name: Setup JDK
+        uses: actions/setup-java@v2.4.0
+        with:
+          distribution: 'temurin'
+          java-version: '17'
       - name: Build the project
         run: ./gradlew build

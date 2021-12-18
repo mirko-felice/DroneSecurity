@@ -1,0 +1,39 @@
+package shipping.courier.entities;
+
+/**
+ * Represents an {@link Order} that is currently being delivered.
+ */
+public class DeliveringOrder extends AbstractOrder {
+
+    /**
+     * Construct the DeliveringOrder.
+     * @param currentOrder the current state of the Order
+     */
+    public DeliveringOrder(final OrderSnapshot currentOrder) {
+        super(currentOrder);
+    }
+
+    /**
+     * Confirm the delivery.
+     * @return the {@link Order} successfully delivered.
+     */
+    public DeliveredOrder confirmDelivery() {
+        return new DeliveredOrder(this.getSnapshot());
+    }
+
+    /**
+     * Miss the delivery.
+     * @return the {@link Order} representing the delivery fail.
+     */
+    public FailedOrder failDelivery() {
+        return new FailedOrder(this.getSnapshot());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getCurrentState() {
+        return "Order is delivering.";
+    }
+}
