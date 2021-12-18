@@ -13,26 +13,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  Get-Files:
+  List-Files:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2.4.0
-      - name: Path lister action
-        uses: Rishabh510/Path-lister-action@1.0
+      - name: List files
+        uses: mirko-felice/list-files-action@v1.2.1
         with:
-          path: "src/main/resources/**"
-          type: "*.json"
+          path: "src/main/resources"
+          ext: "*.json"
 
   Validation:
     needs: Get-Files
     strategy:
       fail-fast: false
-      matrix: ${{ needs.Get-Files.outputs.paths }}
+      matrix:
+        paths: ${{ fromJson(needs.List-Files.outputs.paths) }}
     runs-on: ubuntu-latest
-
     steps:
       - name: Validate OpenAPI definition
         uses: char0n/swagger-editor-validate@v1.2.1
         with:
-          definition-file: ${{ matrix.definition-file }}
+          definition-file: ${{ matrix.paths }}
