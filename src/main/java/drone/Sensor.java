@@ -1,7 +1,5 @@
 package drone;
 
-import java.util.Map;
-
 public interface Sensor {
 
     /**
@@ -33,5 +31,5 @@ public interface Sensor {
      *
      * @return Readable values obtained byt the last analysis
      */
-    Map<String, Double> getReadableValue();
+    double getReadableValue();
 }

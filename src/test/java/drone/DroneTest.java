@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 
 public class DroneTest {
 
+    private final static int PORT = 10001;
+
     /**
      * Tests drone instantiation
      */

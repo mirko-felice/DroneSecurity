@@ -1,12 +1,15 @@
 package drone;
 
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Item representing a real camera sensor and observing its values
  */
 public class Camera extends AbstractSensor {
+
+    private double data;
 
     @Override
     public void activate() {
@@ -20,8 +23,9 @@ public class Camera extends AbstractSensor {
     }
 
     @Override
-    public Map<String, Double> getReadableValue() {
+    public double getReadableValue() {
         //TODO
-        return null;
+        this.data = 3.0;
+        return this.data;
     }
 }

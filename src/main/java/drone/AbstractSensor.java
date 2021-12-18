@@ -1,7 +1,5 @@
 package drone;
 
-import java.util.Map;
-
 /**
  * Abstract sensor that defines basic sensor behaviours.
  */
@@ -50,5 +48,5 @@ public abstract class AbstractSensor implements Sensor {
     public abstract void readValue();
 
     @Override
-    public abstract Map<String, Double> getReadableValue();
+    public abstract double getReadableValue();
 }
