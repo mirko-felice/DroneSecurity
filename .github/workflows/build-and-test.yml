@@ -35,6 +35,6 @@ jobs:
       - name: Publish Release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          run: |
-            npm install
-            npx semantic-release
+        run: |
+          npm install
+          npx semantic-release
