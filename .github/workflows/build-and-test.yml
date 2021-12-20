@@ -25,3 +25,16 @@ jobs:
           java-version: '17'
       - name: Build the project
         run: ./gradlew build
+  Release:
+    if: github.ref_name == 'master'
+    needs: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2.4.0
+      - name: Publish Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          run: |
+            npm install
+            npx semantic-release

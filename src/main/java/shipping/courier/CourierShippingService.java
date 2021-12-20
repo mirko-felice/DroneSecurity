@@ -48,7 +48,7 @@ public final class CourierShippingService {
                 .handler(this::setupRescheduleDelivery);
     }
 
-    private void setupPerformDelivery(RoutingContext routingContext) {
+    private void setupPerformDelivery(final RoutingContext routingContext) {
         RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         PlacedOrder order = params.body().getJsonObject().mapTo(PlacedOrder.class);
         System.out.println(order); // TODO check body
@@ -57,8 +57,8 @@ public final class CourierShippingService {
         routingContext.response().end(CORRECT_RESPONSE_TO_PERFORM_DELIVERY);
     }
 
-    private void setupRescheduleDelivery(RoutingContext routingContext) {
-        RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
+    private void setupRescheduleDelivery(final RoutingContext routingContext) {
+        routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         // TODO refactor because needed NEW Date and order ID
         routingContext.response().end(CORRECT_RESPONSE_TO_RESCHEDULE_DELIVERY);
     }
