@@ -1,7 +1,9 @@
 plugins {
+    application
     java
     checkstyle
     pmd
+    id("org.openjfx.javafxplugin") version "0.0.10"
 }
 
 repositories {
@@ -17,6 +19,16 @@ dependencies  {
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     implementation("io.vertx:vertx-web:4.2.1")
     implementation("io.vertx:vertx-web-openapi:4.2.1")
+    implementation("io.github.palexdev:materialfx:11.12.0")
+}
+
+application {
+    mainClass.set("controller.Controller")
+}
+
+javafx {
+    version = "17"
+    modules("javafx.controls", "javafx.fxml")
 }
 
 tasks.test {
