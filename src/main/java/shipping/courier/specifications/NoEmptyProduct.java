@@ -12,6 +12,7 @@ public final class NoEmptyProduct implements Specification<OrderSnapshot> {
 
     @Override
     public boolean isSatisfiedBy(final OrderSnapshot entity) {
+        // TODO maybe refactor using: @NotNull on entity product
         return entity.getProduct() != null && !entity.getProduct().equals(EMPTY_PRODUCT);
     }
 }

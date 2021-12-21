@@ -19,7 +19,7 @@ import java.util.StringJoiner;
 })
 public abstract class AbstractOrder implements Order {
 
-    private static int fakeId = 0;
+    private static int fakeId;
     private final transient String id;
     private final transient Date orderDate;
     private final transient String product;
@@ -64,7 +64,7 @@ public abstract class AbstractOrder implements Order {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AbstractOrder that = (AbstractOrder) o;
+        final AbstractOrder that = (AbstractOrder) o;
         return id.equals(that.id) && orderDate.equals(that.orderDate) && product.equals(that.product);
     }
 

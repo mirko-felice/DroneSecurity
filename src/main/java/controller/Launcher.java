@@ -10,12 +10,17 @@ import shipping.courier.CourierShippingService;
 
 import java.util.Objects;
 
-public class Controller extends Application {
+/**
+ * Launch the application.
+ */
+public final class Launcher extends Application {
+
+    private static final String STARTING_FILENAME = "start.fxml";
 
     @Override
     public void start(final Stage primaryStage) throws Exception {
-        TitledPane pane = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("app.fxml")));
-        Scene scene = new Scene(pane);
+        final TitledPane pane = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(STARTING_FILENAME)));
+        final Scene scene = new Scene(pane);
         primaryStage.setScene(scene);
         primaryStage.setOnCloseRequest(event -> {
             Platform.exit();
@@ -24,6 +29,10 @@ public class Controller extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Main method.
+     * @param args additional arguments
+     */
     public static void main(final String[] args) {
         new CourierShippingService().startListening();
         launch(args);

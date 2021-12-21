@@ -1,10 +1,12 @@
 package shipping.courier;
 
+import utilities.CustomLogger;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.validation.RequestParameters;
 import io.vertx.ext.web.validation.ValidationHandler;
+import shipping.courier.entities.DeliveringOrder;
 import shipping.courier.entities.PlacedOrder;
 
 import java.util.Objects;
@@ -49,11 +51,11 @@ public final class CourierShippingService {
     }
 
     private void setupPerformDelivery(final RoutingContext routingContext) {
-        RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-        PlacedOrder order = params.body().getJsonObject().mapTo(PlacedOrder.class);
-        System.out.println(order); // TODO check body
-        var deliveringOrder = order.deliver();
-        System.out.println(deliveringOrder.getCurrentState());
+        final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
+        final PlacedOrder order = params.body().getJsonObject().mapTo(PlacedOrder.class);
+        CustomLogger.getLogger(getClass().getName()).info(order.toString()); // TODO check body
+        final DeliveringOrder deliveringOrder = order.deliver();
+        CustomLogger.getLogger(getClass().getName()).info(deliveringOrder.getCurrentState());
         routingContext.response().end(CORRECT_RESPONSE_TO_PERFORM_DELIVERY);
     }
 

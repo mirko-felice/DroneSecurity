@@ -27,6 +27,6 @@ public interface Order {
      * @return the {@link Order} to deliver today
      */
     static PlacedOrder placeToday(final String product) {
-        return new PlacedOrder(new OrderSnapshot("" + 0, product, new Date()));
+        return new PlacedOrder(new OrderSnapshot(String.valueOf(0), product, new Date()));
     }
 }
