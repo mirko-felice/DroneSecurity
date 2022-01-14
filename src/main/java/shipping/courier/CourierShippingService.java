@@ -1,5 +1,9 @@
 package shipping.courier;
 
+import io.vertx.core.json.Json;
+import org.jetbrains.annotations.NotNull;
+import shipping.courier.entities.Order;
+import shipping.courier.repo.OrderRepository;
 import utilities.CustomLogger;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.RoutingContext;
@@ -9,6 +13,7 @@ import io.vertx.ext.web.validation.ValidationHandler;
 import shipping.courier.entities.DeliveringOrder;
 import shipping.courier.entities.PlacedOrder;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -19,6 +24,7 @@ public final class CourierShippingService {
     private static final String OPEN_API_FILENAME = "courierShippingService.json";
     private static final String PERFORM_DELIVERY_OPERATION_ID = "performDelivery";
     private static final String RESCHEDULE_DELIVERY_OPERATION_ID = "rescheduleDelivery";
+    private static final String GET_ORDERS_OPERATION_ID = "getOrders";
     private static final String CORRECT_RESPONSE_TO_PERFORM_DELIVERY = "Delivery is performing...";
     private static final String CORRECT_RESPONSE_TO_RESCHEDULE_DELIVERY = "Order rescheduled.";
     private static final int PORT = 80;
@@ -43,14 +49,16 @@ public final class CourierShippingService {
                 .onFailure(Throwable::printStackTrace);
     }
 
-    private void setupOperations(final RouterBuilder routerBuilder) {
+    private void setupOperations(final @NotNull RouterBuilder routerBuilder) {
         routerBuilder.operation(PERFORM_DELIVERY_OPERATION_ID)
                 .handler(this::setupPerformDelivery);
         routerBuilder.operation(RESCHEDULE_DELIVERY_OPERATION_ID)
                 .handler(this::setupRescheduleDelivery);
+        routerBuilder.operation(GET_ORDERS_OPERATION_ID)
+                .handler(this::setupGetOrders);
     }
 
-    private void setupPerformDelivery(final RoutingContext routingContext) {
+    private void setupPerformDelivery(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         final PlacedOrder order = params.body().getJsonObject().mapTo(PlacedOrder.class);
         CustomLogger.getLogger(getClass().getName()).info(order.toString()); // TODO check body
@@ -59,10 +67,16 @@ public final class CourierShippingService {
         routingContext.response().end(CORRECT_RESPONSE_TO_PERFORM_DELIVERY);
     }
 
-    private void setupRescheduleDelivery(final RoutingContext routingContext) {
+    private void setupRescheduleDelivery(final @NotNull RoutingContext routingContext) {
         routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         // TODO refactor because needed NEW Date and order ID
         routingContext.response().end(CORRECT_RESPONSE_TO_RESCHEDULE_DELIVERY);
     }
 
+    private void setupGetOrders(final @NotNull RoutingContext routingContext) {
+        final List<Order> orders = OrderRepository.getInstance().getOrders();
+        routingContext.response()
+                .putHeader("Content-Type", "application/json")
+                .send(Json.encodePrettily(orders));
+    }
 }

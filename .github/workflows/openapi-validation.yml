@@ -19,7 +19,7 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v2.4.0
       - name: List files
-        uses: mirko-felice/list-files-action@v1.0.2
+        uses: mirko-felice/list-files-action@v2.0.0
         with:
           path: "src/main/resources"
           ext: "*.json"

@@ -1,5 +1,8 @@
 package shipping.courier.entities;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Date;
 
 // TODO probably Client will be linked
@@ -26,7 +29,8 @@ public interface Order {
      * @param product the product to be delivered
      * @return the {@link Order} to deliver today
      */
-    static PlacedOrder placeToday(final String product) {
+    @Contract("_ -> new")
+    static @NotNull PlacedOrder placeToday(final String product) {
         return new PlacedOrder(new OrderSnapshot(String.valueOf(0), product, new Date()));
     }
 }
