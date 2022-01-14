@@ -16,13 +16,13 @@ jobs:
   List-Files:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2.4.0
       - name: List files
-        uses: mirko-felice/list-files-action@v2.0.0
+        uses: mirko-felice/list-files-action@v3.0.0
         with:
+          repo: ${{ github.repository }}
+          ref: ${{ github.ref_name }}
           path: "src/main/resources"
-          ext: "*.json"
+          ext: ".json"
 
   Validation:
     needs: List-Files
@@ -32,6 +32,8 @@ jobs:
         paths: ${{ fromJson(needs.List-Files.outputs.paths) }}
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2.4.0
       - name: Validate OpenAPI definition
         uses: char0n/swagger-editor-validate@v1.2.1
         with:
