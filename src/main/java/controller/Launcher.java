@@ -26,6 +26,7 @@ public final class Launcher extends Application {
             Platform.exit();
             System.exit(0);
         });
+        primaryStage.setTitle("Simple Title");
         primaryStage.show();
     }
 
