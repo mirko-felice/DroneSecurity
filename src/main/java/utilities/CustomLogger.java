@@ -18,7 +18,7 @@ public final class CustomLogger {
     private CustomLogger(final String name, final String resourceBundleName) {
         this.logger = Logger.getLogger(name, resourceBundleName);
         final Properties properties = new Properties();
-        try (InputStream file = getClass().getResourceAsStream(PROPERTIES_FILENAME)) {
+        try (InputStream file = ClassLoader.getSystemResourceAsStream(PROPERTIES_FILENAME)) {
             properties.load(file);
         } catch (IOException e) {
             Logger.getGlobal().severe(e.getMessage());

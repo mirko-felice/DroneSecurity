@@ -1,7 +1,8 @@
 package shipping.courier.entities;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import shipping.courier.specifications.NoEmptyProduct;
+import utilities.DateHelper;
 
 import java.util.Date;
 import java.util.Objects;
@@ -10,13 +11,6 @@ import java.util.StringJoiner;
 /**
  * Abstract class to construct a generic {@link Order}.
  */
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "type"
-)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = PlacedOrder.class, name = "placed")
-})
 public abstract class AbstractOrder implements Order {
 
     private static int fakeId;
@@ -28,7 +22,7 @@ public abstract class AbstractOrder implements Order {
      * Construct a generic Order.
      * @param currentOrder the current state of a generic Order
      */
-    protected AbstractOrder(final OrderSnapshot currentOrder) {
+    protected AbstractOrder(@JsonProperty("snapshot") final OrderSnapshot currentOrder) {
         if (!new NoEmptyProduct().isSatisfiedBy(currentOrder))
             throw new IllegalArgumentException("Product MUST NOT be null or empty!");
 
@@ -52,7 +46,7 @@ public abstract class AbstractOrder implements Order {
     public String toString() {
         return new StringJoiner(", ", "Order" + "[", "]")
                 .add("id='" + id + "'")
-                .add("orderDate=" + orderDate)
+                .add("orderDate=" + DateHelper.FORMATTER.format(orderDate))
                 .add("product='" + product + "'")
                 .toString();
     }
