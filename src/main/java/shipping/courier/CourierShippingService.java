@@ -1,20 +1,22 @@
 package shipping.courier;
 
-import io.vertx.core.json.Json;
-import org.jetbrains.annotations.NotNull;
-import shipping.courier.entities.Order;
-import shipping.courier.repo.OrderRepository;
-import utilities.CustomLogger;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.Json;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.validation.RequestParameters;
 import io.vertx.ext.web.validation.ValidationHandler;
+import org.jetbrains.annotations.NotNull;
 import shipping.courier.entities.DeliveringOrder;
+import shipping.courier.entities.Order;
 import shipping.courier.entities.PlacedOrder;
+import shipping.courier.repo.OrderRepository;
+import utilities.CastHelper;
+import utilities.CustomLogger;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Represents the Service to perform operations useful to the Courier.
@@ -60,11 +62,15 @@ public final class CourierShippingService {
 
     private void setupPerformDelivery(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-        final PlacedOrder order = params.body().getJsonObject().mapTo(PlacedOrder.class);
-        CustomLogger.getLogger(getClass().getName()).info(order.toString()); // TODO check body
-        final DeliveringOrder deliveringOrder = order.deliver();
-        CustomLogger.getLogger(getClass().getName()).info(deliveringOrder.getCurrentState());
-        routingContext.response().end(CORRECT_RESPONSE_TO_PERFORM_DELIVERY);
+        final Optional<PlacedOrder> optionalOrder =
+                CastHelper.safeCast(params.body().getJsonObject().mapTo(Order.class), PlacedOrder.class);
+        if (optionalOrder.isPresent()) {
+            final PlacedOrder order = optionalOrder.get();
+            CustomLogger.getLogger(getClass().getName()).info(order.toString()); // TODO check body
+            final DeliveringOrder deliveringOrder = order.deliver();
+            CustomLogger.getLogger(getClass().getName()).info(deliveringOrder.getCurrentState());
+            routingContext.response().end(CORRECT_RESPONSE_TO_PERFORM_DELIVERY);
+        }
     }
 
     private void setupRescheduleDelivery(final @NotNull RoutingContext routingContext) {

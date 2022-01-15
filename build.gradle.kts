@@ -19,8 +19,9 @@ tasks.wrapper {
 dependencies  {
     implementation("org.jetbrains:annotations:23.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-    implementation("io.vertx:vertx-web:4.2.1")
-    implementation("io.vertx:vertx-web-openapi:4.2.1")
+    implementation("io.vertx:vertx-web:4.2.2")
+    implementation("io.vertx:vertx-web-openapi:4.2.2")
+    implementation("io.vertx:vertx-web-client:4.2.2")
     implementation("io.github.palexdev:materialfx:11.12.0")
 }
 
@@ -41,7 +42,7 @@ pmd {
 tasks.compileJava {
     doFirst {
         val properties = Properties()
-        val file = resources.text.fromFile("src/main/resources/controller/project.properties").asFile()
+        val file = resources.text.fromFile("src/main/resources/project.properties").asFile()
         properties.load(file.reader())
         properties.setProperty("isDebug", "true")
         properties.store(file.writer(), null)
@@ -51,7 +52,7 @@ tasks.compileJava {
 tasks.jar {
     doFirst {
         val properties = Properties()
-        val file = resources.text.fromFile("src/main/resources/controller/project.properties").asFile()
+        val file = resources.text.fromFile("src/main/resources/project.properties").asFile()
         properties.load(file.reader())
         properties.setProperty("isDebug", "false")
         properties.store(file.writer(), null)

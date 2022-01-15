@@ -1,17 +1,23 @@
 package shipping.courier.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import java.util.Date;
 
 /**
  * Represents an {@link Order} that failed to being delivered.
  */
+@JsonDeserialize(as = FailedOrder.class)
 public class FailedOrder extends AbstractOrder {
 
     /**
      * Construct the FailedOrder.
      * @param currentOrder the current state of the Order
      */
-    public FailedOrder(final OrderSnapshot currentOrder) {
+    @JsonCreator
+    public FailedOrder(@JsonProperty("snapshot") final OrderSnapshot currentOrder) {
         super(currentOrder);
     }
 

@@ -1,19 +1,21 @@
 package shipping.courier.entities;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import shipping.courier.serializers.DateDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import shipping.courier.serializers.DateSerializer;
+import shipping.courier.serializers.OrderSnapshotDeserializer;
 
 import java.util.Date;
 
 /**
  * Represents the current state of an {@link Order}.
  */
+@JsonDeserialize(using = OrderSnapshotDeserializer.class)
 public class OrderSnapshot {
 
-    private final transient String id;
+    private final String id;
     private final String product;
+    @JsonSerialize(using = DateSerializer.class)
     private final Date orderDate;
 
     /**
@@ -33,10 +35,7 @@ public class OrderSnapshot {
      * @param product the product to be delivered
      * @param orderDate the {@link Date} in which the product should be/has been delivered
      */
-    @JsonCreator
-    public OrderSnapshot(
-            @JsonProperty("product") final String product,
-            @JsonProperty("orderDate") @JsonDeserialize(using = DateDeserializer.class) final Date orderDate) {
+    public OrderSnapshot(final String product, final Date orderDate) {
         this.id = "";
         this.product = product;
         this.orderDate = orderDate;
