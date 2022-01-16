@@ -1,5 +1,8 @@
 package utilities;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -33,18 +36,9 @@ public final class CustomLogger {
      * @param name the class name related to
      * @return a new CustomLogger
      */
-    public static CustomLogger getLogger(final String name) {
+    @Contract("_ -> new")
+    public static @NotNull CustomLogger getLogger(final String name) {
         return new CustomLogger(name, null);
-    }
-
-    /**
-     * Logs the message on specific level.
-     * @param level the level to log on
-     * @param msg the message to log
-     */
-    public void log(final Level level, final String msg) {
-        if (this.isDebug)
-            this.logger.log(level, msg);
     }
 
     /**
@@ -52,6 +46,25 @@ public final class CustomLogger {
      * @param msg the message to log
      */
     public void info(final String msg) {
-        log(Level.INFO, msg);
+        log(Level.INFO, msg, null);
+    }
+
+    /**
+     * Shorthand for logging at SEVERE {@link Level}.
+     * @param msg the message to log
+     * @param throwable the associated throwable
+     */
+    public void severe(final String msg, final Throwable throwable) {
+        log(Level.SEVERE, msg, throwable);
+    }
+
+    private void log(final Level level, final String msg, final Throwable throwable) {
+        if (this.isDebug) {
+            final String message = this.logger.getName() + " -> \n" + msg + "\n";
+            if (throwable == null)
+                this.logger.log(level, message);
+            else
+                this.logger.log(level, message, throwable);
+        }
     }
 }
