@@ -3,12 +3,16 @@ package shipping.courier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import shipping.courier.entities.*;
+import utilities.CastHelper;
 
 import java.util.Calendar;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public final class OrderTest {
+/**
+ * Tests {@link Order} entity.
+ */
+final class OrderTest {
 
     private static final String EMPTY_PRODUCT = "";
     private static final String BASIC_PRODUCT = "basic";
@@ -16,47 +20,51 @@ public final class OrderTest {
     private transient Order order;
 
     @BeforeEach
-    public void setOrder() {
+    void setUp() {
         order = Order.placeToday(BASIC_PRODUCT);
     }
 
     @Test
-    public void testValidation() {
-        assertThrows(IllegalArgumentException.class, () -> Order.placeToday(null));
-        assertThrows(IllegalArgumentException.class, () -> Order.placeToday(EMPTY_PRODUCT));
+    void testValidation() {
+        assertThrows(IllegalArgumentException.class,
+                () -> Order.placeToday(null),
+                "Passing null as product should throw IllegalArgumentException");
+        assertThrows(IllegalArgumentException.class,
+                () -> Order.placeToday(EMPTY_PRODUCT),
+                "Passing empty string as product should throw IllegalArgumentException");
     }
 
     @Test
-    public void testOrdersEquality() {
-        assertEquals(order, order);
-        assertNotEquals(order, Order.placeToday(BASIC_PRODUCT));
+    void testOrdersEquality() {
+        assertEquals(order, order, "Entity should be equal to itself.");
+        assertNotEquals(order, Order.placeToday(BASIC_PRODUCT), "Entity must be unique even if build in the same way.");
     }
 
     @Test
-    public void testBasicLifeCycle() {
-        DeliveringOrder deliveringOrder = testDelivering();
+    void testBasicLifeCycle() {
+        final DeliveringOrder deliveringOrder = testDelivering();
 
-        assertNotNull(deliveringOrder.confirmDelivery());
+        assertNotNull(deliveringOrder.confirmDelivery(), "Confirming delivery should not returning null.");
     }
 
-        @Test
-    public void testRescheduleLifecycle() {
-        DeliveringOrder deliveringOrder = testDelivering();
+    @Test
+    void testRescheduleLifecycle() {
+        final DeliveringOrder deliveringOrder = testDelivering();
 
-        FailedOrder failedOrder = deliveringOrder.failDelivery();
-        assertNotNull(failedOrder);
-        Calendar today = Calendar.getInstance();
+        final FailedOrder failedOrder = deliveringOrder.failDelivery();
+        assertNotNull(failedOrder, "Failing delivery should not returning null.");
+        final Calendar today = Calendar.getInstance();
         today.add(Calendar.HOUR_OF_DAY, HOURS_OF_DAY);
-        RescheduledOrder rescheduledOrder = failedOrder.rescheduleDelivery(today.getTime());
-        assertNotNull(rescheduledOrder);
-        DeliveringOrder redeliveringOrder = rescheduledOrder.deliver();
-        assertNotNull(redeliveringOrder);
-        assertNotNull(deliveringOrder.confirmDelivery());
+        final RescheduledOrder rescheduledOrder = failedOrder.rescheduleDelivery(today.getTime());
+        assertNotNull(rescheduledOrder, "Rescheduling delivery should not returning null.");
+        final DeliveringOrder redeliveringOrder = rescheduledOrder.deliver();
+        assertNotNull(redeliveringOrder, "Delivering should not returning null.");
+        assertNotNull(deliveringOrder.confirmDelivery(), "Confirming delivery should not returning null.");
     }
 
     private DeliveringOrder testDelivering() {
-        DeliveringOrder deliveringOrder = Utilities.safeCast(order, PlacedOrder.class).orElseThrow().deliver();
-        assertNotNull(deliveringOrder);
+        final DeliveringOrder deliveringOrder = CastHelper.safeCast(order, PlacedOrder.class).orElseThrow().deliver();
+        assertNotNull(deliveringOrder, "Delivering should not returning null.");
         return deliveringOrder;
     }
 }

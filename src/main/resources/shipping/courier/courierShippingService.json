@@ -69,6 +69,27 @@
           }
         }
       }
+    },
+    "/getOrders": {
+      "get": {
+        "operationId": "getOrders",
+        "responses": {
+          "200": {
+            "description": "Successfully got Orders.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Order"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

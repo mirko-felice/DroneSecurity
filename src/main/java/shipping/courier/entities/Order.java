@@ -1,11 +1,19 @@
 package shipping.courier.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import shipping.courier.serializers.OrderDeserializer;
+
 import java.util.Date;
 
 // TODO probably Client will be linked
 /**
  * Represents the entity that the Client can create.
  */
+@JsonDeserialize(using = OrderDeserializer.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public interface Order {
 
     /**
@@ -26,7 +34,8 @@ public interface Order {
      * @param product the product to be delivered
      * @return the {@link Order} to deliver today
      */
-    static PlacedOrder placeToday(final String product) {
-        return new PlacedOrder(new OrderSnapshot("" + 0, product, new Date()));
+    @Contract("_ -> new")
+    static @NotNull PlacedOrder placeToday(final String product) {
+        return new PlacedOrder(new OrderSnapshot(String.valueOf(0), product, new Date()));
     }
 }

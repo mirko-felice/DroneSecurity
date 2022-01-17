@@ -1,13 +1,13 @@
-package shipping.courier;
+package utilities;
 
 import java.util.Optional;
 
 /**
- * Only utility methods.
+ * Helper to safe casting.
  */
-public final class Utilities {
+public final class CastHelper {
 
-    private Utilities() { }
+    private CastHelper() { }
 
     /**
      * Utility method to safe casting any class, possibly giving back an empty Optional.

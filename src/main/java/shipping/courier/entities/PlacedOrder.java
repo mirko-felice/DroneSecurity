@@ -1,10 +1,13 @@
 package shipping.courier.entities;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * Represents an {@link Order} that is currently only placed.
  */
+@JsonDeserialize(as = PlacedOrder.class)
 public class PlacedOrder extends AbstractOrder {
 
     /**
@@ -12,7 +15,7 @@ public class PlacedOrder extends AbstractOrder {
      * @param currentOrder the current state of the Order
      */
     @JsonCreator
-    public PlacedOrder(final OrderSnapshot currentOrder) {
+    public PlacedOrder(@JsonProperty("snapshot") final OrderSnapshot currentOrder) {
         super(currentOrder);
     }
 
