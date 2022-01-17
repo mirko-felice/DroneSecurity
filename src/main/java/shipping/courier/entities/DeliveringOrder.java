@@ -1,7 +1,6 @@
 package shipping.courier.entities;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
@@ -15,7 +14,7 @@ public class DeliveringOrder extends AbstractOrder {
      * @param currentOrder the current state of the Order
      */
     @JsonCreator
-    public DeliveringOrder(@JsonProperty("snapshot") final OrderSnapshot currentOrder) {
+    public DeliveringOrder(final OrderSnapshot currentOrder) {
         super(currentOrder);
     }
 

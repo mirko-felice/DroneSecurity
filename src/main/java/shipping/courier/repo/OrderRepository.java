@@ -2,6 +2,7 @@ package shipping.courier.repo;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import shipping.courier.entities.DeliveringOrder;
 import shipping.courier.entities.Order;
 
 import java.util.List;
@@ -16,6 +17,12 @@ public interface OrderRepository {
      * @return list of orders
      */
     List<Order> getOrders();
+
+    /**
+     * Save the delivering order.
+     * @param order the order to save
+     */
+    void delivering(DeliveringOrder order);
 
     /**
      * Get the instance of this repository.
