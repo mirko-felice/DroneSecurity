@@ -1,5 +1,8 @@
 package drone;
 
+/**
+ * Application that activates Drone Service.
+ */
 public final class Activation {
 
     /**
@@ -8,7 +11,7 @@ public final class Activation {
      * @param args the args that are passed to the application
      */
     public static void main(final String[] args) {
-        DroneService droneService = new DroneService();
+        final DroneService droneService = new DroneService();
         droneService.startDrone();
     }
 

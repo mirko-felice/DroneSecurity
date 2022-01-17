@@ -6,7 +6,6 @@ package drone;
 public class ProximitySensor extends AbstractSensor {
 
     private static final double TEMPORAL_DATA = 2.0;
-    private transient double data;
 
     /**
      * {@inheritDoc}
@@ -32,7 +31,6 @@ public class ProximitySensor extends AbstractSensor {
     @Override
     public double getReadableValue() {
         //TODO
-        this.data = TEMPORAL_DATA;
-        return this.data;
+        return TEMPORAL_DATA;
     }
 }

@@ -11,7 +11,7 @@ public class SensorFactory {
      * @return The instantiated accelerometer
      */
     public Sensor getAccelerometer() {
-        Sensor accelerometer = new Accelerometer();
+        final Sensor accelerometer = new Accelerometer();
         accelerometer.activate();
         return accelerometer;
     }
@@ -22,7 +22,7 @@ public class SensorFactory {
      * @return The instantiated proximity sensor
      */
     public Sensor getProximitySensor() {
-        Sensor proximitySensor = new ProximitySensor();
+        final Sensor proximitySensor = new ProximitySensor();
         proximitySensor.activate();
         return proximitySensor;
     }
@@ -33,7 +33,7 @@ public class SensorFactory {
      * @return The instantiated camera
      */
     public Sensor getCamera() {
-        Sensor camera = new Camera();
+        final Sensor camera = new Camera();
         camera.activate();
         return camera;
     }

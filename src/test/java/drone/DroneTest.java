@@ -3,16 +3,17 @@ package drone;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class DroneTest {
-
-    private static final int PORT = 10001;
+/**
+ * Test for Drone Service.
+ */
+class DroneTest {
 
     /**
      * Tests drone instantiation.
      */
     @Test
-    public void testDroneCreation() {
-        Drone drone = new Drone();
+    void testDroneCreation() {
+        final Drone drone = new Drone();
 
         Assertions.assertNotNull(drone.getProximitySensor());
         Assertions.assertInstanceOf(ProximitySensor.class, drone.getProximitySensor());

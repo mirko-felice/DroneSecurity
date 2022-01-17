@@ -5,7 +5,7 @@ package drone;
  */
 public abstract class AbstractSensor implements Sensor {
 
-    private boolean on = false;
+    private boolean on;
     private double lastReceivedValue;
 
     /**

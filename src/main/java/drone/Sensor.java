@@ -1,5 +1,8 @@
 package drone;
 
+/**
+ * Class representing a generic Sensor.
+ */
 public interface Sensor {
 
     /**

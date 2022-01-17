@@ -4,6 +4,7 @@ package drone;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.ServerWebSocket;
+import utilities.CustomLogger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +15,7 @@ import java.util.Map;
 public class DroneService {
 
     private static final int ANALIZER_SLEEP_DURATION = 2000;
-    private static final int PORT = 10001;
+    private static final int PORT = 10_001;
 
     //Drone
     private final transient Drone drone;
@@ -24,7 +25,6 @@ public class DroneService {
     // Connection
     private final transient Vertx vertx = Vertx.vertx();
     private transient ServerWebSocket socket;
-    private final transient HttpServer server;
     private final transient Map<String, Double> sensorData;
 
     /**
@@ -37,13 +37,13 @@ public class DroneService {
         this.active = false;
 
         //Init server
-        this.server = vertx.createHttpServer();
-        this.server.webSocketHandler(socketConnection -> {
+        final HttpServer server = vertx.createHttpServer();
+        server.webSocketHandler(socketConnection -> {
             socketConnection.accept();
 
             this.socket = socketConnection;
         });
-        this.server.listen(PORT);
+        server.listen(PORT);
     }
 
     /**
@@ -71,13 +71,12 @@ public class DroneService {
                     sensorData.put("accelerometer", drone.getAccelerometerSensor().getReadableValue());
                     sensorData.put("proximity", drone.getProximitySensor().getReadableValue());
                     sensorData.put("camera", drone.getCameraSensor().getReadableValue());
-                    System.out.println("Data obtained");
                     socket.writeTextMessage(sensorData.toString());
 
                     Thread.sleep(ANALIZER_SLEEP_DURATION);
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
                 //TODO
             }
         });

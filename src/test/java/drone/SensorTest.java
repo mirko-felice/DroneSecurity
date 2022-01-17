@@ -4,7 +4,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class SensorTest {
+/**
+ * Test for Sensors.
+ */
+class SensorTest {
 
     private static final SensorFactory SENSOR_FACTORY = new SensorFactory();
 
@@ -15,8 +18,8 @@ public class SensorTest {
      */
     @ParameterizedTest
     @ValueSource(classes = {Accelerometer.class, ProximitySensor.class, Camera.class})
-    public void sensorCreationTest(final Class<Sensor> sensorType) {
-        Sensor sensor = initAccelerometer(sensorType);
+    void sensorCreationTest(final Class<Sensor> sensorType) {
+        final Sensor sensor = initAccelerometer(sensorType);
         Assertions.assertInstanceOf(sensorType, sensor);
         Assertions.assertTrue(sensor.isOn());
     }
@@ -26,16 +29,13 @@ public class SensorTest {
      *
      * @param sensorClass type of the sensor to instantiate
      * @return the sensor instantiated
-     * @throws IllegalArgumentException if the type is not supported
      */
-    private Sensor initAccelerometer(final Class<Sensor> sensorClass) throws IllegalArgumentException {
+    private Sensor initAccelerometer(final Class<Sensor> sensorClass) {
         if (sensorClass.equals(Accelerometer.class))
             return SENSOR_FACTORY.getAccelerometer();
         else if (sensorClass.equals(ProximitySensor.class))
             return SENSOR_FACTORY.getProximitySensor();
-        else if (sensorClass.equals(Camera.class))
+        else
             return SENSOR_FACTORY.getCamera();
-
-        throw new IllegalArgumentException();
     }
 }
