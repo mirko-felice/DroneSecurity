@@ -1,6 +1,5 @@
 package controller;
 
-import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.client.WebClient;
 import javafx.application.Platform;
@@ -24,7 +23,6 @@ import utilities.DateHelper;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -43,12 +41,20 @@ public final class StartController implements Initializable {
     private static final String MONITORING_FILENAME = "monitor.fxml";
     private static final Runnable NOT_SELECTED_RUNNABLE = () ->
             AlertUtils.showWarningAlert("You MUST first select an order.");
-    private final transient WebClient client = WebClient.create(Vertx.vertx());
+    private final transient WebClient client;
     @FXML private transient TableView<Order> table;
     @FXML private transient TableColumn<Order, String> orderDateColumn;
     @FXML private transient TableColumn<Order, String> productColumn;
     @FXML private transient TableColumn<Order, String> stateColumn;
     @FXML private transient Button performDeliveryButton;
+
+    /**
+     * Build the Controller using the client to interact with services.
+     * @param client client to use to interact with services
+     */
+    public StartController(final WebClient client) {
+        this.client = client;
+    }
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -81,12 +87,15 @@ public final class StartController implements Initializable {
                         .onSuccess(h -> Platform.runLater(() -> {
                             try {
                                 ((Stage) this.performDeliveryButton.getScene().getWindow()).close();
-                                final URL fileUrl = Objects.requireNonNull(getClass().getResource(MONITORING_FILENAME));
-                                final Scene scene = new Scene(FXMLLoader.load(fileUrl));
+                                final URL fileUrl = getClass().getResource(MONITORING_FILENAME);
+                                final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
+                                fxmlLoader.setController(new MonitorController(this.client));
+                                final Scene scene = new Scene(fxmlLoader.load());
                                 final Stage stage = new Stage();
                                 stage.setScene(scene);
                                 stage.setTitle("Monitoring...");
                                 stage.setOnCloseRequest(event -> {
+                                    this.client.close();
                                     Platform.exit();
                                     System.exit(0);
                                 });
