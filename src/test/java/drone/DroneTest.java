@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 
 public class DroneTest {
 
-    private final static int PORT = 10001;
+    private static final int PORT = 10001;
 
     /**
-     * Tests drone instantiation
+     * Tests drone instantiation.
      */
     @Test
     public void testDroneCreation() {

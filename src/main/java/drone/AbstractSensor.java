@@ -9,44 +9,63 @@ public abstract class AbstractSensor implements Sensor {
     private double lastReceivedValue;
 
     /**
-     * Provides publicly the information that the drone is active
+     * Switches on this sensor.
      */
-    protected void switchOn(){
-        this.on = true;
+    protected void switchOn() {
+        this.setOn(true);
     }
 
     /**
-     * Provides publicly the information that the drone is NOT active
+     * Switches off this sensor.
      */
     protected void switchOff() {
-        this.on = false;
+        this.setOn(false);
+    }
+
+    private void setOn(final boolean on) {
+        this.on = on;
     }
 
     /**
-     * Sets the value that the sensor had detected
+     * Sets the value that the sensor had detected.
      *
      * @param value the value to memorize
      */
-    protected void setLastReceivedValue(double value) {
+    protected void setLastReceivedValue(final double value) {
         this.lastReceivedValue = value;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public double getValue() {
+    public double getLastReceivedValue() {
         return this.lastReceivedValue;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isOn() {
         return this.on;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public abstract void activate();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public abstract void readValue();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public abstract double getReadableValue();
 }

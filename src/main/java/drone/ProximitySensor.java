@@ -1,31 +1,38 @@
 package drone;
 
-
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Item representing a real proximity sensor and observing its values
+ * Item representing a real proximity sensor and observing its values.
  */
 public class ProximitySensor extends AbstractSensor {
 
-    private double data;
+    private static final double TEMPORAL_DATA = 2.0;
+    private transient double data;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void activate() {
         //TODO
         this.switchOn();
+
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void readValue() {
         //TODO
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double getReadableValue() {
         //TODO
-        this.data = 2.0;
+        this.data = TEMPORAL_DATA;
         return this.data;
     }
 }

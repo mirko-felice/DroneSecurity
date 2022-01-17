@@ -1,23 +1,23 @@
 package drone;
 
 /**
- * Factory assisting in sensors' creation
+ * Factory assisting in sensors' creation.
  */
 public class SensorFactory {
 
     /**
-     * Creates an accelerometer
+     * Creates an accelerometer.
      *
      * @return The instantiated accelerometer
      */
-    public Sensor getAccelerometer(){
+    public Sensor getAccelerometer() {
         Sensor accelerometer = new Accelerometer();
         accelerometer.activate();
         return accelerometer;
     }
 
     /**
-     * Creates a proximity sensor
+     * Creates a proximity sensor.
      *
      * @return The instantiated proximity sensor
      */
@@ -28,7 +28,7 @@ public class SensorFactory {
     }
 
     /**
-     * Creates a camera
+     * Creates a camera.
      *
      * @return The instantiated camera
      */
