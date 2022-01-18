@@ -21,8 +21,8 @@ public final class OrderDeserializer extends JsonDeserializer<Order> {
             throws IOException {
         final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
         final ObjectNode root = mapper.readTree(parser);
-        if (root.has("currentState")) {
-            final String currentState = root.get("currentState").asText();
+        if (root.has("events")) {
+            final String currentState = root.get("events").get(root.get("events").size() - 1).asText();
             if (currentState.contains("place"))
                 return mapper.readValue(root.toString(), PlacedOrder.class);
             else if (currentState.contains("fail"))

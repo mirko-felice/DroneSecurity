@@ -68,6 +68,7 @@ public final class CourierShippingService {
             final PlacedOrder order = optionalOrder.get();
             CustomLogger.getLogger(getClass().getName()).info(order.toString()); // TODO check body
             final DeliveringOrder deliveringOrder = order.deliver();
+            OrderRepository.getInstance().delivering(deliveringOrder);
             CustomLogger.getLogger(getClass().getName()).info(deliveringOrder.getCurrentState());
             routingContext.response().end(CORRECT_RESPONSE_TO_PERFORM_DELIVERY);
         }

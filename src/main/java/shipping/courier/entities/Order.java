@@ -2,9 +2,11 @@ package shipping.courier.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import shipping.courier.serializers.OrderDeserializer;
+import shipping.courier.serializers.OrderSerializer;
 
 import java.util.Date;
 
@@ -13,6 +15,7 @@ import java.util.Date;
  * Represents the entity that the Client can create.
  */
 @JsonDeserialize(using = OrderDeserializer.class)
+@JsonSerialize(using = OrderSerializer.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public interface Order {
 
