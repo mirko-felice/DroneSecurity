@@ -1,6 +1,6 @@
 package shipping.courier.repo;
 
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
@@ -12,8 +12,6 @@ import utilities.CustomLogger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -46,23 +44,15 @@ public final class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public List<Order> getOrders() {
-        final CompletableFuture<List<Order>> future = new CompletableFuture<>();
+    public Future<List<Order>> getOrders() {
         final List<Order> fakeOrders = this.generateFakeOrders();
-        database.find("orders", new JsonObject())
-                .onSuccess(orders -> future.complete(orders.stream()
+        return database.find("orders", new JsonObject())
+                .map(orders -> orders.stream()
                         .map(o -> Json.decodeValue(o.toString(), Order.class))
-                        .collect(Collectors.toList())))
-                .onFailure(event -> {
-                    fakeOrders.forEach(order -> database.save("orders", JsonObject.mapFrom(order)));
-                    future.complete(fakeOrders);
-                });
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
-            return null;
-        }
+                        .collect(Collectors.toList()))
+                .otherwise(fakeOrders)
+                .onFailure(event -> fakeOrders.forEach(order ->
+                        database.save("orders", JsonObject.mapFrom(order))));
     }
 
     @Override

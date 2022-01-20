@@ -26,6 +26,5 @@ public final class OrderSerializer extends JsonSerializer<Order> {
         gen.writeEndArray();
         gen.writeEndObject();
         gen.flush();
-        gen.close();
     }
 }

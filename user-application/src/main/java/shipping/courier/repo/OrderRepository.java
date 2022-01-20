@@ -1,5 +1,6 @@
 package shipping.courier.repo;
 
+import io.vertx.core.Future;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import shipping.courier.entities.DeliveringOrder;
@@ -16,7 +17,7 @@ public interface OrderRepository {
      * Get orders.
      * @return list of orders
      */
-    List<Order> getOrders();
+    Future<List<Order>> getOrders();
 
     /**
      * Save the delivering order.

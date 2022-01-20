@@ -1,5 +1,6 @@
 package shipping.courier;
 
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.RoutingContext;
@@ -81,9 +82,9 @@ public final class CourierShippingService {
     }
 
     private void setupGetOrders(final @NotNull RoutingContext routingContext) {
-        final List<Order> orders = OrderRepository.getInstance().getOrders();
-        routingContext.response()
+        final Future<List<Order>> future = OrderRepository.getInstance().getOrders();
+        future.onSuccess(orders -> routingContext.response()
                 .putHeader("Content-Type", "application/json")
-                .send(Json.encodePrettily(orders));
+                .send(Json.encodePrettily(orders)));
     }
 }
