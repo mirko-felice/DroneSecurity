@@ -25,6 +25,11 @@ public interface Sensor {
     void activate();
 
     /**
+     * Deactivates this sensor.
+     */
+    void deactivate();
+
+    /**
      * Analyzes last raw data detected and transforms it in readable values.
      */
     void readValue();

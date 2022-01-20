@@ -1,19 +1,31 @@
 package drone;
 
+import org.apache.commons.exec.CommandLine;
+import utilities.CustomLogger;
+
+import java.io.IOException;
+
 /**
  * Item representing a real accelerometer sensor and observing its values.
  */
 public class Accelerometer extends AbstractSensor {
 
-    private static final double TEMPORAL_DATA = 1.0;
+    private static final String SCRIPT_FILENAME = "test.py";
+    private transient double distance;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void activate() {
-        //TODO
-        this.switchOn();
+    protected void executeScript() {
+        try {
+            final String proximitySensorScript = CMD + SCRIPT_FOLDER + SCRIPT_FILENAME;
+            final CommandLine cmdLine = CommandLine.parse(proximitySensorScript);
+
+            getExecutor().execute(cmdLine);
+        } catch (IOException e) {
+            CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
+        }
     }
 
     /**
@@ -21,7 +33,11 @@ public class Accelerometer extends AbstractSensor {
      */
     @Override
     public void readValue() {
-        //TODO
+        if (getOutputStream().size() > 0) {
+            final String[] values = getOutputStream().toString().trim().split("\n");
+            this.distance = Double.parseDouble(values[values.length - 1]);
+            getOutputStream().reset();
+        }
     }
 
     /**
@@ -30,6 +46,6 @@ public class Accelerometer extends AbstractSensor {
     @Override
     public double getReadableValue() {
         //TODO
-        return TEMPORAL_DATA;
+        return this.distance;
     }
 }
