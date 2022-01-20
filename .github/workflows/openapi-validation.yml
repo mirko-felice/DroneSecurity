@@ -8,7 +8,7 @@ on:
     tags-ignore:
       - '*'
     paths:
-      - 'src/main/resources/**.json'
+      - 'user-application/src/main/resources/**.json'
   pull_request:
   workflow_dispatch:
 
@@ -21,7 +21,7 @@ jobs:
         with:
           repo: ${{ github.repository }}
           ref: ${{ github.ref_name }}
-          path: "src/main/resources"
+          path: "user-application/src/main/resources"
           ext: ".json"
 
   Validation:
