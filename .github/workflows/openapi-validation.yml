@@ -9,12 +9,15 @@ on:
       - '*'
     paths:
       - 'user-application/src/main/resources/**.json'
+      - '.github/workflows/openapi-validation.yml'
   pull_request:
   workflow_dispatch:
 
 jobs:
   List-Files:
     runs-on: ubuntu-latest
+    outputs:
+      paths: ${{ steps.List-Files.outputs.paths }}
     steps:
       - name: List files
         uses: mirko-felice/list-files-action@v3.0.0
@@ -37,4 +40,4 @@ jobs:
       - name: Validate OpenAPI definition
         uses: char0n/swagger-editor-validate@v1.2.1
         with:
-          definition-file: ${{ matrix.paths }}
+          definition-file: DroneSecurity/${{ matrix.paths }}
