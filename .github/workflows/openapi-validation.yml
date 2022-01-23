@@ -41,4 +41,4 @@ jobs:
       - name: Validate OpenAPI definition
         uses: char0n/swagger-editor-validate@v1.2.1
         with:
-          definition-file: DroneSecurity/${{ matrix.paths }}
+          definition-file: ${{ matrix.paths }}
