@@ -17,9 +17,10 @@ jobs:
   List-Files:
     runs-on: ubuntu-latest
     outputs:
-      paths: ${{ steps.List-Files.outputs.paths }}
+      paths: ${{ steps.list-files.outputs.paths }}
     steps:
       - name: List files
+        id: list-files
         uses: mirko-felice/list-files-action@v3.0.0
         with:
           repo: ${{ github.repository }}
