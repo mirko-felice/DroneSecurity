@@ -4,8 +4,11 @@ plugins {
     application
     checkstyle
     pmd
+    id("de.jjohannes.extra-java-module-info")
 //    id("com.github.spotbugs")
 }
+
+group = "it.unibo"
 
 repositories {
     mavenCentral()
@@ -32,10 +35,10 @@ fun setDebugMode(value: Boolean) {
 
 tasks {
 
-    withType<JavaCompile>().configureEach {
-        options.compilerArgs.add("-Xlint:deprecation")
+    compileJava {
         doFirst {
             setDebugMode(true)
+            options.compilerArgs.add("-Xlint:deprecation")
         }
     }
 
@@ -56,4 +59,12 @@ tasks {
     distTar {
         enabled = false
     }
+
+    startScripts {
+        enabled = false
+    }
+}
+
+extraJavaModuleInfo {
+    failOnMissingModuleInfo.set(false)
 }

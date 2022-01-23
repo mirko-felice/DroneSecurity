@@ -8,7 +8,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
             alias("annotations").to("org.jetbrains:annotations:23.0.0")
-            alias("junit").to("org.junit.jupiter:junit-jupiter:5.8.2")
+            alias("jupiter").to("org.junit.jupiter:junit-jupiter:5.8.2")
         }
     }
 }
