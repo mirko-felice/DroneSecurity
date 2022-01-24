@@ -42,6 +42,8 @@ jobs:
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
           git_user_signingkey: true
           git_commit_gpgsign: true
+      - name: Create artifacts
+        run: ./gradlew fatJar
       - name: Publish Release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}

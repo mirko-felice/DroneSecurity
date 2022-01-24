@@ -33,6 +33,13 @@ fun setDebugMode(value: Boolean) {
     properties.store(file.writer(), null)
 }
 
+application {
+    afterEvaluate {
+        mainModule.set(project.extra["mainModuleName"].toString())
+        mainClass.set(project.extra["mainClassName"].toString())
+    }
+}
+
 tasks {
 
     compileJava {
@@ -45,7 +52,24 @@ tasks {
     jar {
         doFirst {
             setDebugMode(false)
+            manifest {
+                attributes["Main-Class"] = project.extra["mainClassName"]
+                attributes["Automatic-Module-Name"] = project.extra["mainModuleName"]
+            }
         }
+    }
+
+    register<Jar>("fatJar") {
+        archiveClassifier.set("fat")
+        from(sourceSets.main.get().output)
+        dependsOn(configurations.compileClasspath)
+        from(configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) })
+        manifest {
+            val mainClass = project.extra["mainClassName"]
+            attributes["Main-Class"] = if (project.name == "user-application") mainClass.toString().replace("Launcher", "Starter") else mainClass
+            attributes["Automatic-Module-Name"] = project.extra["mainModuleName"]
+        }
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 
     test {
@@ -63,6 +87,7 @@ tasks {
     startScripts {
         enabled = false
     }
+
 }
 
 extraJavaModuleInfo {
