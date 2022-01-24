@@ -1,12 +1,16 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
+import com.google.gson.JsonObject;
 import it.unibo.dronesecurity.dronesystem.utilities.CustomLogger;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.HostResolver;
 import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
+import software.amazon.awssdk.crt.mqtt.MqttMessage;
+import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,10 +20,11 @@ import java.util.Map;
  */
 public class DroneService {
 
+    private static final String TOPIC = "test/testing";
     private static final int ANALIZER_SLEEP_DURATION = 2000;
     private static final int PORT = 10_001;
     private static final String SEP = FileSystems.getDefault().getSeparator();
-    private static final String CERTIFICATE_FOLDER_PATH = "certs" + SEP;
+    private static final String CERTIFICATE_FOLDER_PATH = ".." + SEP + "certs" + SEP;
     private static final String ENDPOINT = "a3mpt31aaosxce-ats.iot.us-west-2.amazonaws.com";
     private static final String CLIENT_ID = "Drone";
     private static final String CERTIFICATE_PATH = CERTIFICATE_FOLDER_PATH + "Drone.cert.pem";
@@ -108,12 +113,25 @@ public class DroneService {
                     sensorData.put("proximity", drone.getProximitySensor().getReadableValue());
                     sensorData.put("camera", drone.getCameraSensor().getReadableValue());
 
+                    this.sendData();
+
                     Thread.sleep(ANALIZER_SLEEP_DURATION);
                 }
             } catch (InterruptedException e) {
                 CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
-                //TODO
+                //Restart Drone if thread interrupted
+                this.startDrone();
             }
         });
+    }
+
+    private void sendData() {
+        final JsonObject mapJson = new JsonObject();
+        sensorData.forEach(mapJson::addProperty);
+
+        final MqttMessage message = new MqttMessage(TOPIC, mapJson.toString().getBytes(StandardCharsets.UTF_8),
+                QualityOfService.EXACTLY_ONCE);
+
+        this.connection.publish(message);
     }
 }
