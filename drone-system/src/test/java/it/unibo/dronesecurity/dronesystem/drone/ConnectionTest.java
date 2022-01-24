@@ -3,6 +3,7 @@ package it.unibo.dronesecurity.dronesystem.drone;
 import com.google.gson.JsonObject;
 import it.unibo.dronesecurity.dronesystem.utilities.CustomLogger;
 import org.junit.jupiter.api.*;
+import software.amazon.awssdk.crt.CrtRuntimeException;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.HostResolver;
@@ -34,7 +35,7 @@ class ConnectionTest {
      */
     @Test
     void testConnection() {
-        final DroneService service = new DroneService();
+        DroneService service = null;
         try (
                 EventLoopGroup eventLoopGroup =
                      new EventLoopGroup(1);
@@ -50,6 +51,7 @@ class ConnectionTest {
                                 .withKeepAliveSecs(KEEP_ALIVE_SECONDS)
                                 .build()
         ) {
+            service = new DroneService();
             connection.connect();
 
             assertSensorDataRead(connection);
@@ -59,8 +61,11 @@ class ConnectionTest {
             Thread.sleep(DEACTIVATION_DELAY);
         } catch (InterruptedException e) {
             CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
+        } catch (CrtRuntimeException e) {
+            CustomLogger.getLogger(getClass().getName()).info("No Certificate was found in the specified  folder.");
         } finally {
-            service.stopDrone();
+            if (service != null)
+                service.stopDrone();
         }
     }
 

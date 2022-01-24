@@ -3,8 +3,11 @@ package it.unibo.dronesecurity.dronesystem.utilities;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,14 +17,14 @@ import java.util.logging.Logger;
  */
 public final class CustomLogger {
 
-    private static final String PROPERTIES_FILENAME = "project.properties";
+    private static final String PROPERTIES_FILENAME = "../project.properties";
     private final transient Logger logger;
     private final transient boolean isDebug;
 
     private CustomLogger(final String name, final String resourceBundleName) {
         this.logger = Logger.getLogger(name, resourceBundleName);
         final Properties properties = new Properties();
-        try (InputStream file = ClassLoader.getSystemResourceAsStream(PROPERTIES_FILENAME)) {
+        try (InputStream file = new DataInputStream(Files.newInputStream(Path.of(PROPERTIES_FILENAME)))) {
             properties.load(file);
         } catch (IOException e) {
             Logger.getGlobal().severe(e.getMessage());
