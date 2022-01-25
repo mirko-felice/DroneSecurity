@@ -12,17 +12,11 @@ dependencies {
     implementation("io.vertx:vertx-web-openapi:$vertxVersion")
     implementation("io.vertx:vertx-web-client:$vertxVersion")
     implementation("io.vertx:vertx-mongo-client:$vertxVersion")
-    implementation("io.github.palexdev:materialfx:11.12.0")
+    implementation("org.controlsfx:controlsfx:11.1.1")
     implementation("org.slf4j:slf4j-nop:1.7.32")
-    runtimeOnly("org.openjfx:javafx-fxml:$javafx.version:win")
-    runtimeOnly("org.openjfx:javafx-fxml:$javafx.version:linux")
-    runtimeOnly("org.openjfx:javafx-fxml:$javafx.version:mac")
-    runtimeOnly("org.openjfx:javafx-controls:$javafx.version:win")
-    runtimeOnly("org.openjfx:javafx-controls:$javafx.version:linux")
-    runtimeOnly("org.openjfx:javafx-controls:$javafx.version:mac")
 }
 
-val mainClassName by extra("$group.dronesecurity.userapplication.Launcher")
+val mainClassName by extra("$group.dronesecurity.userapplication.controller.Launcher")
 val mainModuleName by extra("$group.dronesecurity.userapplication")
 
 javafx {

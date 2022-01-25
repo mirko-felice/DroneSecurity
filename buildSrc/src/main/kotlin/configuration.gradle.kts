@@ -44,7 +44,6 @@ tasks {
 
     compileJava {
         doFirst {
-            setDebugMode(true)
             options.compilerArgs.add("-Xlint:deprecation")
         }
     }
@@ -56,6 +55,12 @@ tasks {
                 attributes["Main-Class"] = project.extra["mainClassName"]
                 attributes["Automatic-Module-Name"] = project.extra["mainModuleName"]
             }
+        }
+    }
+
+    getByName("run") {
+        doFirst {
+            setDebugMode(true)
         }
     }
 

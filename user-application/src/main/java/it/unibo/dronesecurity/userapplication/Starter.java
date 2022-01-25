@@ -1,5 +1,7 @@
 package it.unibo.dronesecurity.userapplication;
 
+import it.unibo.dronesecurity.userapplication.controller.Launcher;
+
 /**
  * Starter Jar class.
  */
