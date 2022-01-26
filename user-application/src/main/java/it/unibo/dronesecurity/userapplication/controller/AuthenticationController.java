@@ -2,9 +2,9 @@ package it.unibo.dronesecurity.userapplication.controller;
 
 import io.vertx.ext.web.client.WebClient;
 import it.unibo.dronesecurity.userapplication.controller.auth.Role;
+import it.unibo.dronesecurity.userapplication.controller.auth.entities.BaseUser;
 import it.unibo.dronesecurity.userapplication.controller.auth.entities.Courier;
 import it.unibo.dronesecurity.userapplication.controller.auth.entities.Maintainer;
-import it.unibo.dronesecurity.userapplication.controller.auth.entities.BaseUser;
 import it.unibo.dronesecurity.userapplication.controller.auth.repo.AuthenticationRepository;
 import it.unibo.dronesecurity.userapplication.utilities.AlertUtils;
 import it.unibo.dronesecurity.userapplication.utilities.CustomLogger;
@@ -16,6 +16,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.Glyph;
 
 import java.io.IOException;
 import java.net.URL;
@@ -30,9 +32,12 @@ public final class AuthenticationController implements Initializable {
     private final transient WebClient client;
     @FXML private transient TextField usernameField;
     @FXML private transient PasswordField passwordField;
+    @FXML private transient TextField visiblePasswordField;
+    @FXML private transient Glyph showPasswordGlyph;
     @FXML private transient ComboBox<Role> roleComboBox;
     @FXML private transient Button loginButton;
     @FXML private transient Label validationLabel;
+    private transient boolean isPasswordShown;
 
     /**
      * Build the controller.
@@ -46,10 +51,18 @@ public final class AuthenticationController implements Initializable {
     public void initialize(final URL location, final ResourceBundle resources) {
         this.roleComboBox.getItems().addAll(Role.COURIER, Role.MAINTAINER);
         this.roleComboBox.getSelectionModel().selectFirst();
+    }
 
-//        new ValidationSupport()
-//                .registerValidator(this.usernameField, true,
-//                        Validator.createEmptyValidator(this.usernameField.getText()));
+    @FXML
+    private void showPassword() {
+        this.isPasswordShown = !this.isPasswordShown;
+        this.visiblePasswordField.setVisible(this.isPasswordShown);
+        this.passwordField.setVisible(!this.isPasswordShown);
+        this.showPasswordGlyph.setIcon(this.isPasswordShown ? FontAwesome.Glyph.EYE : FontAwesome.Glyph.EYE_SLASH);
+        if (this.isPasswordShown)
+            this.visiblePasswordField.setText(this.passwordField.getText());
+        else
+            this.passwordField.setText(this.visiblePasswordField.getText());
     }
 
     @FXML

@@ -24,6 +24,10 @@ javafx {
     modules("javafx.controls", "javafx.fxml")
 }
 
+application {
+    applicationDefaultJvmArgs = applicationDefaultJvmArgs.plus("--add-opens=javafx.graphics/javafx.scene=org.controlsfx.controls")
+}
+
 extraJavaModuleInfo {
     module("vertx-web-$vertxVersion.jar", "io.vertx.web", vertxVersion) {
         exports("io.vertx.ext.web")

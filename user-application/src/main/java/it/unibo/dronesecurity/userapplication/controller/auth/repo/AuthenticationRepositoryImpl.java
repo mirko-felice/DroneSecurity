@@ -5,9 +5,10 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 import it.unibo.dronesecurity.userapplication.controller.auth.entities.BaseUser;
-import it.unibo.dronesecurity.userapplication.utilities.CustomLogger;
+import it.unibo.dronesecurity.userapplication.utilities.PasswordHelper;
 
-import java.util.Objects;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 /**
  * Implementation of {@link AuthenticationRepository}.
@@ -26,9 +27,17 @@ public final class AuthenticationRepositoryImpl implements AuthenticationReposit
     @Override
     public Future<Boolean> authenticate(final BaseUser user) {
         final JsonObject query = JsonObject.mapFrom(user);
-        CustomLogger.getLogger(getClass().getName()).info(query.encodePrettily());
+        query.remove("password");
         return this.database.findOne("users", query, null)
-                .map(Objects::nonNull);
+                .map(userFound -> {
+                    try {
+                        return userFound != null
+                                && PasswordHelper.validatePassword(user.getPassword(),
+                                userFound.getString("password"));
+                    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                        return false;
+                    }
+                });
     }
 
     /**
