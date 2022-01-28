@@ -1,15 +1,17 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
 
+import java.util.Map;
+
 /**
  * Item representing a drone with all its physical sensors.
  */
 public class Drone {
 
     private static final SensorFactory SENSOR_FACTORY = new SensorFactory();
-    private final transient Sensor proximity;
-    private final transient Sensor accelerometer;
-    private final transient Sensor camera;
+    private final transient Sensor<Double> proximity;
+    private final transient Sensor<Map<String, Double>> accelerometer;
+    private final transient Sensor<Double> camera;
 
     /**
      * Constructs drone's sensors.
@@ -34,7 +36,7 @@ public class Drone {
      *
      * @return The proximity sensor of the drone
      */
-    public Sensor getProximitySensor() {
+    public Sensor<Double> getProximitySensor() {
         return this.proximity;
     }
 
@@ -43,7 +45,7 @@ public class Drone {
      *
      * @return The accelerometer of the drone
     */
-    public Sensor getAccelerometerSensor() {
+    public Sensor<Map<String, Double>> getAccelerometerSensor() {
         return this.accelerometer;
     }
 
@@ -52,7 +54,7 @@ public class Drone {
      *
      * @return The camera of the drone
     */
-    public Sensor getCameraSensor() {
+    public Sensor<Double> getCameraSensor() {
         return this.camera;
     }
 

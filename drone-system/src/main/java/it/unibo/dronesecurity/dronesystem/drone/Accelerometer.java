@@ -1,31 +1,27 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
-import org.apache.commons.exec.CommandLine;
-import it.unibo.dronesecurity.dronesystem.utilities.CustomLogger;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
-import java.io.IOException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Item representing a real accelerometer sensor and observing its values.
  */
-public class Accelerometer extends AbstractSensor {
+public class Accelerometer extends AbstractSensor<Map<String, Double>> {
 
-    private static final String SCRIPT_FILENAME = "test.py";
-    private transient double distance;
+    private final transient String scriptFilename =  this.isRaspberry()
+            ? "accelerometer.py"
+            : "accelerometerSimulator.py";
+    private final transient Map<String, Double> values = new ConcurrentHashMap<>();
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void executeScript() {
-        try {
-            final String proximitySensorScript = CMD + SCRIPT_FOLDER + SCRIPT_FILENAME;
-            final CommandLine cmdLine = CommandLine.parse(proximitySensorScript);
-
-            getExecutor().execute(cmdLine);
-        } catch (IOException e) {
-            CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
-        }
+    protected String getScriptName() {
+       return this.scriptFilename;
     }
 
     /**
@@ -34,8 +30,14 @@ public class Accelerometer extends AbstractSensor {
     @Override
     public void readValue() {
         if (getOutputStream().size() > 0) {
-            final String[] values = getOutputStream().toString().trim().split("\n");
-            this.distance = Double.parseDouble(values[values.length - 1]);
+            final String orig = getOutputStream().toString().trim();
+            final int index = orig.lastIndexOf("\"accelerometer") - 1;
+
+            final String jsonValues = orig.substring(index);
+            final JsonObject accelValues = JsonParser.parseString(jsonValues).getAsJsonObject().get("accelerometer")
+                    .getAsJsonObject();
+            accelValues.keySet().forEach(k -> this.values.put(k, accelValues.getAsJsonPrimitive(k).getAsDouble()));
+
             getOutputStream().reset();
         }
     }
@@ -44,8 +46,7 @@ public class Accelerometer extends AbstractSensor {
      * {@inheritDoc}
      */
     @Override
-    public double getReadableValue() {
-        //TODO
-        return this.distance;
+    public Map<String, Double> getReadableValue() {
+        return this.values;
     }
 }

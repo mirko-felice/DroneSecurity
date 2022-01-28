@@ -1,5 +1,7 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
+import java.util.Map;
+
 /**
  * Factory assisting in sensors' creation.
  */
@@ -10,8 +12,8 @@ public class SensorFactory {
      *
      * @return The instantiated accelerometer
      */
-    public Sensor getAccelerometer() {
-        final Sensor accelerometer = new Accelerometer();
+    public Sensor<Map<String, Double>> getAccelerometer() {
+        final Sensor<Map<String, Double>> accelerometer = new Accelerometer();
         accelerometer.activate();
         return accelerometer;
     }
@@ -21,8 +23,8 @@ public class SensorFactory {
      *
      * @return The instantiated proximity sensor
      */
-    public Sensor getProximitySensor() {
-        final Sensor proximitySensor = new ProximitySensor();
+    public Sensor<Double> getProximitySensor() {
+        final Sensor<Double> proximitySensor = new ProximitySensor();
         proximitySensor.activate();
         return proximitySensor;
     }
@@ -32,8 +34,8 @@ public class SensorFactory {
      *
      * @return The instantiated camera
      */
-    public Sensor getCamera() {
-        final Sensor camera = new Camera();
+    public Sensor<Double> getCamera() {
+        final Sensor<Double> camera = new Camera();
         camera.activate();
         return camera;
     }

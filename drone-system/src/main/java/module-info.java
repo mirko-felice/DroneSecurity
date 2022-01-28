@@ -5,5 +5,4 @@ open module it.unibo.dronesecurity.dronesystem {
     requires com.google.gson;
     requires java.logging;
     requires org.apache.commons.exec;
-    exports it.unibo.dronesecurity.dronesystem;
 }
