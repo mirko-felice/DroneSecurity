@@ -1,5 +1,7 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
+import com.google.gson.JsonObject;
+import org.jetbrains.annotations.NotNull;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.HostResolver;
@@ -8,6 +10,7 @@ import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.util.function.Consumer;
 
@@ -59,10 +62,13 @@ public final class Connection {
     /**
      * Publishes the message to the established connection.
      *
-     * @param message the message to be published
+     * @param topic the topic to publish on
+     * @param payload {@link JsonObject} to attach to the message
      */
-    public void publish(final MqttMessage message) {
-        this.clientConnection.publish(message);
+    public void publish(final String topic, final @NotNull JsonObject payload) {
+        this.clientConnection.publish(new MqttMessage(topic,
+                payload.toString().getBytes(StandardCharsets.UTF_8),
+                QualityOfService.AT_LEAST_ONCE));
     }
 
     /**

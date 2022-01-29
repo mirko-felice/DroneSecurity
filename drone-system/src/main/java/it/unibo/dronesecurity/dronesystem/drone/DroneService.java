@@ -2,10 +2,7 @@ package it.unibo.dronesecurity.dronesystem.drone;
 
 import com.google.gson.JsonObject;
 import it.unibo.dronesecurity.dronesystem.utilities.CustomLogger;
-import software.amazon.awssdk.crt.mqtt.MqttMessage;
-import software.amazon.awssdk.crt.mqtt.QualityOfService;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
@@ -19,6 +16,7 @@ public class DroneService {
 
     //Drone
     private final transient Drone drone;
+    private final transient Analyzer analyzer;
     private transient Thread dataAnalyzer;
     private transient boolean active;
 
@@ -34,6 +32,7 @@ public class DroneService {
         this.drone = new Drone();
         this.initAnalyzer();
         this.active = false;
+        this.analyzer = new Analyzer();
     }
 
     /**
@@ -42,6 +41,7 @@ public class DroneService {
     public void startDrone() {
         this.active = true;
         this.dataAnalyzer.start();
+        this.drone.start();
     }
 
     /**
@@ -49,6 +49,7 @@ public class DroneService {
      */
     public void stopDrone() {
         this.active = false;
+        this.drone.halt();
         this.drone.getAccelerometerSensor().deactivate();
         this.drone.getCameraSensor().deactivate();
         this.drone.getProximitySensor().deactivate();
@@ -102,6 +103,7 @@ public class DroneService {
                     this.cameraSensorData = drone.getCameraSensor().getReadableValue();
                     this.sendData();
 
+                    this.analyzeData();
                     Thread.sleep(ANALIZER_SLEEP_DURATION);
                 }
             } catch (InterruptedException e) {
@@ -112,6 +114,12 @@ public class DroneService {
         });
     }
 
+    private void analyzeData() {
+        if (this.analyzer.isProximityCritical(this.proximitySensorData)
+                || this.analyzer.isCriticalInclinationAngle(this.accelerometerSensorData))
+            this.drone.halt();
+    }
+
     private void sendData() {
         final JsonObject mapJson = new JsonObject();
         mapJson.addProperty("proximity", this.proximitySensorData);
@@ -120,9 +128,6 @@ public class DroneService {
         mapJson.add("accelerometer", accelerometerValues);
         mapJson.addProperty("camera", this.cameraSensorData);
 
-        final MqttMessage message = new MqttMessage(TOPIC, mapJson.toString().getBytes(StandardCharsets.UTF_8),
-                QualityOfService.AT_LEAST_ONCE);
-
-        Connection.getInstance().publish(message);
+        Connection.getInstance().publish(TOPIC, mapJson);
     }
 }

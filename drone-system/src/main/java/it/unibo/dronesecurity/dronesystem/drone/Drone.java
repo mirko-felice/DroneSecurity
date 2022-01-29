@@ -12,6 +12,7 @@ public class Drone {
     private final transient Sensor<Double> proximity;
     private final transient Sensor<Map<String, Double>> accelerometer;
     private final transient Sensor<Double> camera;
+    private transient boolean isMoving;
 
     /**
      * Constructs drone's sensors.
@@ -58,4 +59,25 @@ public class Drone {
         return this.camera;
     }
 
+    /**
+     * Starts moving the Drone.
+     */
+    public void start() {
+        this.isMoving = true;
+    }
+
+    /**
+     * Halts the Drone.
+     */
+    public void halt() {
+        this.isMoving = false;
+    }
+
+    /**
+     * Checks if the Drone is operating (moving).
+     * @return true if Drone is moving, false otherwise
+     */
+    public boolean isOperating() {
+        return this.isMoving;
+    }
 }
