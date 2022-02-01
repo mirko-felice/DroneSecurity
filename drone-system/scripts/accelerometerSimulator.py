@@ -1,13 +1,14 @@
 import time
 import sys
+import random as rand
 
 #Simulating Data Stream
 while True:
     print("{\"accelerometer\": {"
-    "\n        \"x\": " + str(1.2) +
-    ",\n        \"y\": " + str(0) +
-    ",\n        \"z\": " + str(1) +
+    "\n        \"x\": " + str(rand.random()) +
+    ",\n        \"y\": " + str(rand.random()) +
+    ",\n        \"z\": " + str(rand.random()) +
     "\n    }"
     "\n}")
     sys.stdout.flush()
-    time.sleep(1)
+    time.sleep(0.3)

@@ -12,6 +12,7 @@ dependencies {
     implementation("io.vertx:vertx-mongo-client:4.2.2")
     implementation("io.github.palexdev:materialfx:11.12.0")
     implementation("org.slf4j:slf4j-nop:1.7.32")
+    implementation("software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk:1.5.4")
     runtimeOnly("org.openjfx:javafx-fxml:$javafx.version:win")
     runtimeOnly("org.openjfx:javafx-fxml:$javafx.version:linux")
     runtimeOnly("org.openjfx:javafx-fxml:$javafx.version:mac")
@@ -53,5 +54,14 @@ extraJavaModuleInfo {
     module("vertx-web-4.2.2.jar", "io.vertx.web", "4.2.2") {
         exports("io.vertx.ext.web")
         requiresTransitive("io.vertx.core")
+    }
+    module("aws-crt-0.15.9.jar", "software.amazon.awssdk", "0.15.9") {
+        exports("software.amazon.awssdk.crt")
+        exports("software.amazon.awssdk.crt.mqtt")
+        exports("software.amazon.awssdk.crt.io")
+    }
+    module("aws-iot-device-sdk-1.5.4.jar", "software.amazon.awssdk.iot", "1.5.4") {
+        exports("software.amazon.awssdk.iot")
+        requiresTransitive("software.amazon.awssdk")
     }
 }

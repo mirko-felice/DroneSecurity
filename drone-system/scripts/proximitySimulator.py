@@ -1,9 +1,10 @@
 import time
 import sys
+import random as rand
 
 #Simulating Data Stream
 while True:
-	print("3.14")
+	print(str(rand.random()))
 
 	sys.stdout.flush()
-	time.sleep(1)
+	time.sleep(0.3)

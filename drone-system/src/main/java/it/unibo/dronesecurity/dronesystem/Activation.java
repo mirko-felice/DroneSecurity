@@ -8,7 +8,7 @@ import it.unibo.dronesecurity.dronesystem.utilities.CustomLogger;
  */
 public final class Activation {
 
-    private static final int TERMINATION_DELAY = 5000;
+    private static final int TERMINATION_DELAY = 25_000;
 
     /**
      * Main method for drone activation.

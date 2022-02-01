@@ -10,8 +10,8 @@ import java.util.Map;
  */
 public class DroneService {
 
-    private static final String TOPIC = "test/testing";
-    private static final int ANALIZER_SLEEP_DURATION = 2000;
+    private static final String TOPIC = "data";
+    private static final int ANALIZER_SLEEP_DURATION = 500;
     private static final int PORT = 10_001;
 
     //Drone
