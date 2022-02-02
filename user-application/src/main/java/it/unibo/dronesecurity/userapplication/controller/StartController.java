@@ -38,7 +38,7 @@ public final class StartController implements Initializable {
     private static final String GET_ORDERS_URI = BASE_URI + "/getOrders";
     private static final String PERFORM_DELIVERY_URI = BASE_URI + "/performDelivery";
     private static final String RESCHEDULE_DELIVERY_URI = BASE_URI + "/rescheduleDelivery";
-    private static final String MONITORING_FILENAME = "monitor.fxml";
+    private static final String MONITORING_FILENAME = "monitoring.fxml";
     private static final Runnable NOT_SELECTED_RUNNABLE = () ->
             AlertUtils.showWarningAlert("You MUST first select an order.");
     private final transient WebClient client;
@@ -89,7 +89,7 @@ public final class StartController implements Initializable {
                                 ((Stage) this.performDeliveryButton.getScene().getWindow()).close();
                                 final URL fileUrl = getClass().getResource(MONITORING_FILENAME);
                                 final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-                                fxmlLoader.setController(new MonitorController(this.client));
+                                fxmlLoader.setController(new MonitorController());
                                 final Scene scene = new Scene(fxmlLoader.load());
                                 final Stage stage = new Stage();
                                 stage.setScene(scene);

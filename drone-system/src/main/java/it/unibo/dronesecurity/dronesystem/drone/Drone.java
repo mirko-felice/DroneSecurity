@@ -1,15 +1,18 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
 
+import java.util.Map;
+
 /**
  * Item representing a drone with all its physical sensors.
  */
 public class Drone {
 
     private static final SensorFactory SENSOR_FACTORY = new SensorFactory();
-    private final transient Sensor proximity;
-    private final transient Sensor accelerometer;
-    private final transient Sensor camera;
+    private final transient Sensor<Double> proximity;
+    private final transient Sensor<Map<String, Double>> accelerometer;
+    private final transient Sensor<Double> camera;
+    private transient boolean isMoving;
 
     /**
      * Constructs drone's sensors.
@@ -34,7 +37,7 @@ public class Drone {
      *
      * @return The proximity sensor of the drone
      */
-    public Sensor getProximitySensor() {
+    public Sensor<Double> getProximitySensor() {
         return this.proximity;
     }
 
@@ -43,7 +46,7 @@ public class Drone {
      *
      * @return The accelerometer of the drone
     */
-    public Sensor getAccelerometerSensor() {
+    public Sensor<Map<String, Double>> getAccelerometerSensor() {
         return this.accelerometer;
     }
 
@@ -52,8 +55,29 @@ public class Drone {
      *
      * @return The camera of the drone
     */
-    public Sensor getCameraSensor() {
+    public Sensor<Double> getCameraSensor() {
         return this.camera;
     }
 
+    /**
+     * Starts moving the Drone.
+     */
+    public void start() {
+        this.isMoving = true;
+    }
+
+    /**
+     * Halts the Drone.
+     */
+    public void halt() {
+        this.isMoving = false;
+    }
+
+    /**
+     * Checks if the Drone is operating (moving).
+     * @return true if Drone is moving, false otherwise
+     */
+    public boolean isOperating() {
+        return this.isMoving;
+    }
 }

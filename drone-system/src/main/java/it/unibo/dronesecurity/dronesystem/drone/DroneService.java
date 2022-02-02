@@ -1,14 +1,8 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
+import com.google.gson.JsonObject;
 import it.unibo.dronesecurity.dronesystem.utilities.CustomLogger;
-import software.amazon.awssdk.crt.io.ClientBootstrap;
-import software.amazon.awssdk.crt.io.EventLoopGroup;
-import software.amazon.awssdk.crt.io.HostResolver;
-import software.amazon.awssdk.crt.mqtt.MqttClientConnection;
-import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
-import java.nio.file.FileSystems;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,48 +10,29 @@ import java.util.Map;
  */
 public class DroneService {
 
-    private static final int ANALIZER_SLEEP_DURATION = 2000;
+    private static final String TOPIC = "data";
+    private static final int ANALIZER_SLEEP_DURATION = 500;
     private static final int PORT = 10_001;
-    private static final String SEP = FileSystems.getDefault().getSeparator();
-    private static final String CERTIFICATE_FOLDER_PATH = "certs" + SEP;
-    private static final String ENDPOINT = "a3mpt31aaosxce-ats.iot.us-west-2.amazonaws.com";
-    private static final String CLIENT_ID = "Drone";
-    private static final String CERTIFICATE_PATH = CERTIFICATE_FOLDER_PATH + "Drone.cert.pem";
-    private static final String PRIVATE_KEY_PATH = CERTIFICATE_FOLDER_PATH + "Drone.private.key.pem";
-    private static final int KEEP_ALIVE_SECONDS = 6;
 
     //Drone
     private final transient Drone drone;
+    private final transient Analyzer analyzer;
     private transient Thread dataAnalyzer;
     private transient boolean active;
 
     // Connection
-    private final transient Map<String, Double> sensorData;
-    private final transient EventLoopGroup eventLoopGroup;
-    private final transient MqttClientConnection connection;
+    private transient Double proximitySensorData;
+    private transient Map<String, Double> accelerometerSensorData;
+    private transient Double cameraSensorData;
 
     /**
      * Constructs the drone to be observed by this drone service.
      */
     public DroneService() {
         this.drone = new Drone();
-        this.sensorData = new HashMap<>();
         this.initAnalyzer();
         this.active = false;
-
-        this.eventLoopGroup = new EventLoopGroup(1);
-
-        this.connection = AwsIotMqttConnectionBuilder
-                .newMtlsBuilderFromPath(CERTIFICATE_PATH, PRIVATE_KEY_PATH)
-                .withCertificateAuthorityFromPath("", CERTIFICATE_FOLDER_PATH + "root-CA.pem")
-                .withBootstrap(new ClientBootstrap(this.eventLoopGroup, new HostResolver(this.eventLoopGroup)))
-                .withClientId(CLIENT_ID)
-                .withEndpoint(ENDPOINT)
-                .withCleanSession(false)
-                .withKeepAliveSecs(KEEP_ALIVE_SECONDS)
-                .build();
-
-        this.connection.connect();
+        this.analyzer = new Analyzer();
     }
 
     /**
@@ -66,6 +41,7 @@ public class DroneService {
     public void startDrone() {
         this.active = true;
         this.dataAnalyzer.start();
+        this.drone.start();
     }
 
     /**
@@ -73,12 +49,11 @@ public class DroneService {
      */
     public void stopDrone() {
         this.active = false;
+        this.drone.halt();
         this.drone.getAccelerometerSensor().deactivate();
         this.drone.getCameraSensor().deactivate();
         this.drone.getProximitySensor().deactivate();
-        this.eventLoopGroup.close();
-        this.connection.disconnect();
-        this.connection.close();
+        Connection.getInstance().closeConnection();
     }
 
     /**
@@ -91,12 +66,30 @@ public class DroneService {
     }
 
     /**
-     * Gives the last data read by all sensors.
+     * Gets the last read data from proximity sensor.
      *
-     * @return Last data read by all sensors
+     * @return last read data from proximity sensor
      */
-    public Map<String, Double> getSensorData() {
-        return this.sensorData;
+    public Double getProximitySensorData() {
+        return this.proximitySensorData;
+    }
+
+    /**
+     * Gets the last read data from accelerometer sensor.
+     *
+     * @return last read data from accelerometer sensor
+     */
+    public Map<String, Double> getAccelerometerSensorData() {
+        return this.accelerometerSensorData;
+    }
+
+    /**
+     * Gets the last read data from camera.
+     *
+     * @return last read data from camera
+     */
+    public Double getCameraSensorData() {
+        return this.cameraSensorData;
     }
 
     private void initAnalyzer() {
@@ -104,16 +97,37 @@ public class DroneService {
             try {
                 while (this.active) {
                     drone.analyzeData();
-                    sensorData.put("accelerometer", drone.getAccelerometerSensor().getReadableValue());
-                    sensorData.put("proximity", drone.getProximitySensor().getReadableValue());
-                    sensorData.put("camera", drone.getCameraSensor().getReadableValue());
 
+                    this.proximitySensorData = drone.getProximitySensor().getReadableValue();
+                    this.accelerometerSensorData = drone.getAccelerometerSensor().getReadableValue();
+                    this.cameraSensorData = drone.getCameraSensor().getReadableValue();
+                    this.sendData();
+
+                    this.analyzeData();
                     Thread.sleep(ANALIZER_SLEEP_DURATION);
                 }
             } catch (InterruptedException e) {
                 CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
-                //TODO
+                //Restart Drone if thread interrupted
+                this.startDrone();
             }
         });
+    }
+
+    private void analyzeData() {
+        if (this.analyzer.isProximityCritical(this.proximitySensorData)
+                || this.analyzer.isCriticalInclinationAngle(this.accelerometerSensorData))
+            this.drone.halt();
+    }
+
+    private void sendData() {
+        final JsonObject mapJson = new JsonObject();
+        mapJson.addProperty("proximity", this.proximitySensorData);
+        final JsonObject accelerometerValues = new JsonObject();
+        this.accelerometerSensorData.forEach(accelerometerValues::addProperty);
+        mapJson.add("accelerometer", accelerometerValues);
+        mapJson.addProperty("camera", this.cameraSensorData);
+
+        Connection.getInstance().publish(TOPIC, mapJson);
     }
 }

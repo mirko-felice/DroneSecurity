@@ -1,31 +1,21 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
-import it.unibo.dronesecurity.dronesystem.utilities.CustomLogger;
-import org.apache.commons.exec.CommandLine;
-
-import java.io.*;
-
 /**
  * Item representing a real proximity sensor and observing its values.
  */
-public class ProximitySensor extends AbstractSensor {
+public class ProximitySensor extends AbstractSensor<Double> {
 
-    private static final String SCRIPT_FILENAME = "test.py";
+    private final transient String scriptFilename =  this.isRaspberry()
+            ? "proximitySensor.py"
+            : "proximitySimulator.py";
     private transient double distance;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void executeScript() {
-        try {
-            final String proximitySensorScript = CMD + SCRIPT_FOLDER + SCRIPT_FILENAME;
-            final CommandLine cmdLine = CommandLine.parse(proximitySensorScript);
-
-            getExecutor().execute(cmdLine);
-        } catch (IOException e) {
-            CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
-        }
+    protected String getScriptName() {
+        return this.scriptFilename;
     }
 
     /**
@@ -44,7 +34,7 @@ public class ProximitySensor extends AbstractSensor {
      * {@inheritDoc}
      */
     @Override
-    public double getReadableValue() {
+    public Double getReadableValue() {
         return distance;
     }
 }

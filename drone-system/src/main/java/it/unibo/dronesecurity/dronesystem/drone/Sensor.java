@@ -1,16 +1,11 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
 /**
- * Class representing a generic Sensor.
+ * Class representing a generic Sensor that returns a data of R type.
+ *
+ * @param <R> type of sensor data
  */
-public interface Sensor {
-
-    /**
-     * Gives the last value previously memorized that the sensor had detected.
-     *
-     * @return The last value detected by the sensor
-     */
-    double getLastReceivedValue();
+public interface Sensor<R> {
 
     /**
      * Informs if the sensor is active or not.
@@ -37,7 +32,7 @@ public interface Sensor {
     /**
      * Gives the last readable data obtained by the raw.
      *
-     * @return Readable values obtained byt the last analysis
+     * @return Readable values obtained by the last analysis
      */
-    double getReadableValue();
+    R getReadableValue();
 }
