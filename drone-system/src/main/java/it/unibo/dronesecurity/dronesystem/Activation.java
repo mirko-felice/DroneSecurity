@@ -1,7 +1,7 @@
 package it.unibo.dronesecurity.dronesystem;
 
 import it.unibo.dronesecurity.dronesystem.drone.DroneService;
-import it.unibo.dronesecurity.dronesystem.utilities.CustomLogger;
+import it.unibo.dronesecurity.lib.CustomLogger;
 
 /**
  * Application that activates Drone Service.

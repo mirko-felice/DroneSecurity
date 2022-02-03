@@ -1,4 +1,4 @@
-package it.unibo.dronesecurity.dronesystem.utilities;
+package it.unibo.dronesecurity.lib;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
@@ -17,7 +18,8 @@ import java.util.logging.Logger;
  */
 public final class CustomLogger {
 
-    private static final String PROPERTIES_FILENAME = "../project.properties";
+    private static final String SEPARATOR = FileSystems.getDefault().getSeparator();
+    private static final String PROPERTIES_FILENAME = ".." + SEPARATOR + "project.properties";
     private final transient Logger logger;
     private final transient boolean isDebug;
 

@@ -1,11 +1,11 @@
 package it.unibo.dronesecurity.userapplication.controller;
 
+import it.unibo.dronesecurity.lib.CustomLogger;
 import it.unibo.dronesecurity.userapplication.drone.monitoring.UserMonitoringService;
 import it.unibo.dronesecurity.userapplication.events.CriticalEvent;
 import it.unibo.dronesecurity.userapplication.events.DataReadEvent;
 import it.unibo.dronesecurity.userapplication.events.DomainEvents;
 import it.unibo.dronesecurity.userapplication.events.WarningEvent;
-import it.unibo.dronesecurity.userapplication.utilities.CustomLogger;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;

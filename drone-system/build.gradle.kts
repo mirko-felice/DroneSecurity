@@ -1,12 +1,12 @@
 plugins {
-    id("configuration")
+    id("dronesecurity-application")
 }
 
 val apacheCommonsVersion = "1.3"
 
 dependencies  {
+    implementation(project(":lib"))
     implementation("org.apache.commons:commons-exec:$apacheCommonsVersion")
-    implementation("com.google.code.gson:gson:2.8.6")
 }
 
 val mainClassName by extra("$group.dronesecurity.dronesystem.Activation")

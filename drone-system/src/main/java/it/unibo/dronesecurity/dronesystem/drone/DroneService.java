@@ -1,7 +1,8 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
 import com.google.gson.JsonObject;
-import it.unibo.dronesecurity.dronesystem.utilities.CustomLogger;
+import it.unibo.dronesecurity.lib.CustomLogger;
+import it.unibo.dronesecurity.lib.Connection;
 
 import java.util.Map;
 

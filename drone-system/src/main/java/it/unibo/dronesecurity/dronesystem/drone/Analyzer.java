@@ -1,6 +1,7 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
 import com.google.gson.JsonObject;
+import it.unibo.dronesecurity.lib.Connection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;

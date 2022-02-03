@@ -2,7 +2,8 @@ package it.unibo.dronesecurity.dronesystem.drone;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import it.unibo.dronesecurity.dronesystem.utilities.CustomLogger;
+import it.unibo.dronesecurity.lib.CustomLogger;
+import it.unibo.dronesecurity.lib.Connection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.crt.CrtRuntimeException;

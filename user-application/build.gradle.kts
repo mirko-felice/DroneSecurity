@@ -1,11 +1,12 @@
 plugins {
-    id("configuration")
+    id("dronesecurity-application")
     id("org.openjfx.javafxplugin") version "0.0.11"
 }
 
 val vertxVersion = "4.2.2"
 
 dependencies {
+    implementation(project(":lib"))
     implementation("io.vertx:vertx-web:$vertxVersion")
     implementation("io.vertx:vertx-web-openapi:$vertxVersion")
     implementation("io.vertx:vertx-web-client:$vertxVersion")

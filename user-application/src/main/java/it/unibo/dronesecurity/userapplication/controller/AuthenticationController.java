@@ -1,13 +1,13 @@
 package it.unibo.dronesecurity.userapplication.controller;
 
 import io.vertx.ext.web.client.WebClient;
+import it.unibo.dronesecurity.lib.CustomLogger;
 import it.unibo.dronesecurity.userapplication.controller.auth.Role;
 import it.unibo.dronesecurity.userapplication.controller.auth.entities.BaseUser;
 import it.unibo.dronesecurity.userapplication.controller.auth.entities.Courier;
 import it.unibo.dronesecurity.userapplication.controller.auth.entities.Maintainer;
 import it.unibo.dronesecurity.userapplication.controller.auth.repo.AuthenticationRepository;
 import it.unibo.dronesecurity.userapplication.utilities.AlertUtils;
-import it.unibo.dronesecurity.userapplication.utilities.CustomLogger;
 import it.unibo.dronesecurity.userapplication.utilities.LoggedUser;
 import javafx.application.Platform;
 import javafx.fxml.FXML;

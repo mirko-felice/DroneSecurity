@@ -4,12 +4,12 @@ import io.vertx.core.*;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
+import it.unibo.dronesecurity.lib.CustomLogger;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.DeliveringOrder;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.OrderSnapshot;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
 import org.jetbrains.annotations.NotNull;
-import it.unibo.dronesecurity.userapplication.utilities.CustomLogger;
 
 import java.util.ArrayList;
 import java.util.Date;
