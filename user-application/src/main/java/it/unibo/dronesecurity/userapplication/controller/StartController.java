@@ -2,6 +2,7 @@ package it.unibo.dronesecurity.userapplication.controller;
 
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.client.WebClient;
+import it.unibo.dronesecurity.lib.CustomLogger;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
 import javafx.application.Platform;
@@ -17,7 +18,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import it.unibo.dronesecurity.userapplication.utilities.AlertUtils;
-import it.unibo.dronesecurity.userapplication.utilities.CustomLogger;
 import it.unibo.dronesecurity.userapplication.utilities.DateHelper;
 
 import java.io.IOException;

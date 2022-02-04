@@ -1,6 +1,10 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
 import com.google.gson.JsonObject;
+import it.unibo.dronesecurity.lib.Connection;
+import it.unibo.dronesecurity.lib.MqttAlertMessageValueConstants;
+import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
+import it.unibo.dronesecurity.lib.MqttTopicConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -15,12 +19,6 @@ public final class Analyzer {
     private static final double ACCELEROMETER_CRITICAL_THRESHOLD = 30;
     private static final double ACCELEROMETER_WARNING_THRESHOLD = 30;
     private static final double PI_IN_DEGREES = Math.toDegrees(Math.PI);
-    private static final String CRITICAL_TOPIC = "critical";
-    private static final String WARNING_TOPIC = "warning";
-    private static final String CRITICAL_PROXIMITY_MESSAGE = "Critical distance!";
-    private static final String WARNING_PROXIMITY_MESSAGE = "Watch out the distance!";
-    private static final String CRITICAL_ANGLE_MESSAGE = "Critical angle!";
-    private static final String WARNING_ANGLE_MESSAGE = "Watch out the angle!";
 
     /**
      * Checks if proximity distance is critical or warning and eventually publish the alert.
@@ -32,9 +30,11 @@ public final class Analyzer {
             final boolean isWarning = proximityDistance <= PROXIMITY_WARNING_THRESHOLD;
             final boolean isCritical = proximityDistance <= PROXIMITY_CRITICAL_THRESHOLD;
             if (isCritical)
-                this.publishAlert(CRITICAL_TOPIC, CRITICAL_PROXIMITY_MESSAGE);
+                this.publishAlert(MqttTopicConstants.CRITICAL_TOPIC,
+                        MqttAlertMessageValueConstants.CRITICAL_PROXIMITY_MESSAGE);
             else if (isWarning)
-                this.publishAlert(WARNING_TOPIC, WARNING_PROXIMITY_MESSAGE);
+                this.publishAlert(MqttTopicConstants.WARNING_TOPIC,
+                        MqttAlertMessageValueConstants.WARNING_PROXIMITY_MESSAGE);
         }
         return false;
     }
@@ -46,8 +46,8 @@ public final class Analyzer {
      */
     public boolean isCriticalInclinationAngle(final @NotNull Map<String, Double> accelerometerData) {
         if (!accelerometerData.isEmpty()) {
-            final double x = accelerometerData.get("x");
-            final double z = accelerometerData.get("z");
+            final double x = accelerometerData.get(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER);
+            final double z = accelerometerData.get(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER);
             final double yaw = Math.toDegrees(Math.atan2(z, x));
 
             final boolean isWarning = yaw > ACCELEROMETER_WARNING_THRESHOLD
@@ -57,16 +57,18 @@ public final class Analyzer {
                     && yaw < PI_IN_DEGREES - ACCELEROMETER_CRITICAL_THRESHOLD;
 
             if (isCritical)
-                this.publishAlert(CRITICAL_TOPIC, CRITICAL_ANGLE_MESSAGE);
+                this.publishAlert(MqttTopicConstants.CRITICAL_TOPIC,
+                        MqttAlertMessageValueConstants.CRITICAL_ANGLE_MESSAGE);
             else if (isWarning)
-                this.publishAlert(WARNING_TOPIC, WARNING_ANGLE_MESSAGE);
+                this.publishAlert(MqttTopicConstants.WARNING_TOPIC,
+                        MqttAlertMessageValueConstants.WARNING_ANGLE_MESSAGE);
         }
         return false;
     }
 
     private void publishAlert(final String topic, final @NotNull String message) {
         final JsonObject payload = new JsonObject();
-        payload.addProperty("message", message);
+        payload.addProperty(MqttMessageParameterConstants.MESSAGE_PARAMETER, message);
         Connection.getInstance().publish(topic, payload);
     }
 }

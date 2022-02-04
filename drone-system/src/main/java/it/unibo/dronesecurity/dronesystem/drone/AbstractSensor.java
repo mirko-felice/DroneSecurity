@@ -1,7 +1,7 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
 import org.apache.commons.exec.*;
-import it.unibo.dronesecurity.dronesystem.utilities.CustomLogger;
+import it.unibo.dronesecurity.lib.CustomLogger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -7,6 +7,11 @@
     [ "@semantic-release/git", {
       "message": "chore(release): ${nextRelease.version}"
     }],
-    "@semantic-release/github"
-  ]
+    [ "@semantic-release/github" , {
+      "assets": [
+        { "path": "drone-system/build/libs/drone-system-fat.jar", "label": "Drone System executable JAR" },
+        { "path": "user-application/build/libs/user-application-fat.jar", "label": "User Application executable JAR" }
+      ]
+    }]
+    ]
 }

@@ -1,4 +1,4 @@
-package it.unibo.dronesecurity.dronesystem.drone;
+package it.unibo.dronesecurity.lib;
 
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;

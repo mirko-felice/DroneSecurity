@@ -15,6 +15,6 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(11))
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+kotlinDslPluginOptions {
+    jvmTarget.set("11")
 }

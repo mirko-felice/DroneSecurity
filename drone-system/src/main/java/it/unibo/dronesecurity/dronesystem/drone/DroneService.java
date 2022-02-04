@@ -1,6 +1,7 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
 import com.google.gson.JsonObject;
+import it.unibo.dronesecurity.lib.*;
 import com.google.gson.JsonParser;
 import it.unibo.dronesecurity.dronesystem.utilities.CustomLogger;
 
@@ -177,12 +178,12 @@ public class DroneService {
 
     private void sendData() {
         final JsonObject mapJson = new JsonObject();
-        mapJson.addProperty("proximity", this.proximitySensorData);
+        mapJson.addProperty(MqttMessageParameterConstants.PROXIMITY_PARAMETER, this.proximitySensorData);
         final JsonObject accelerometerValues = new JsonObject();
         this.accelerometerSensorData.forEach(accelerometerValues::addProperty);
-        mapJson.add("accelerometer", accelerometerValues);
-        mapJson.addProperty("camera", this.cameraSensorData);
+        mapJson.add(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER, accelerometerValues);
+        mapJson.addProperty(MqttMessageParameterConstants.CAMERA_PARAMETER, this.cameraSensorData);
 
-        Connection.getInstance().publish(DATA_TOPIC, mapJson);
+        Connection.getInstance().publish(MqttTopicConstants.DATA_TOPIC, mapJson);
     }
 }

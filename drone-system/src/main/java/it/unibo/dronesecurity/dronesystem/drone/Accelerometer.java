@@ -2,6 +2,7 @@ package it.unibo.dronesecurity.dronesystem.drone;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,8 +35,8 @@ public class Accelerometer extends AbstractSensor<Map<String, Double>> {
             final int index = orig.lastIndexOf("\"accelerometer") - 1;
 
             final String jsonValues = orig.substring(index);
-            final JsonObject accelValues = JsonParser.parseString(jsonValues).getAsJsonObject().get("accelerometer")
-                    .getAsJsonObject();
+            final JsonObject accelValues = JsonParser.parseString(jsonValues).getAsJsonObject()
+                    .get(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER).getAsJsonObject();
             accelValues.keySet().forEach(k -> this.values.put(k, accelValues.getAsJsonPrimitive(k).getAsDouble()));
 
             getOutputStream().reset();

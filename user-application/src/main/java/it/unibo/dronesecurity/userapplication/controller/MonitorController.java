@@ -1,11 +1,12 @@
 package it.unibo.dronesecurity.userapplication.controller;
 
+import it.unibo.dronesecurity.lib.CustomLogger;
+import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
 import it.unibo.dronesecurity.userapplication.drone.monitoring.UserMonitoringService;
 import it.unibo.dronesecurity.userapplication.events.CriticalEvent;
 import it.unibo.dronesecurity.userapplication.events.DataReadEvent;
 import it.unibo.dronesecurity.userapplication.events.DomainEvents;
 import it.unibo.dronesecurity.userapplication.events.WarningEvent;
-import it.unibo.dronesecurity.userapplication.utilities.CustomLogger;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -109,20 +110,26 @@ public final class MonitorController implements Initializable {
         this.proximityPreviousDataColumn.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue()));
         this.accelerometerPreviousXDataColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue().get("x")));
+                new SimpleObjectProperty<>(cell.getValue()
+                        .get(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER)));
         this.accelerometerPreviousYDataColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue().get("y")));
+                new SimpleObjectProperty<>(cell.getValue()
+                        .get(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER)));
         this.accelerometerPreviousZDataColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue().get("z")));
+                new SimpleObjectProperty<>(cell.getValue()
+                        .get(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER)));
         this.cameraPreviousDataColumn.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue()));
 
         this.currentAccelerometerXValue.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue().get("x")));
+                new SimpleObjectProperty<>(cell.getValue()
+                        .get(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER)));
         this.currentAccelerometerYValue.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue().get("y")));
+                new SimpleObjectProperty<>(cell.getValue()
+                        .get(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER)));
         this.currentAccelerometerZValue.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue().get("z")));
+                new SimpleObjectProperty<>(cell.getValue()
+                        .get(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER)));
 
     }
 }
