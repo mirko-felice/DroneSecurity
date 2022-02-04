@@ -51,7 +51,7 @@ public final class MonitorController implements Initializable {
      * Build the Controller to interact with services.
      */
     public MonitorController() {
-        monitoringService = new UserMonitoringService();
+        this.monitoringService = new UserMonitoringService();
     }
 
     @FXML
@@ -102,9 +102,9 @@ public final class MonitorController implements Initializable {
         WARNING_DOMAIN_EVENTS.register(this::onWarning);
         CRITICAL_DOMAIN_EVENTS.register(this::onCritical);
 
-        monitoringService.subscribeToDataReading(DATA_READER_DOMAIN_EVENTS);
-        monitoringService.subscribeToWarning(WARNING_DOMAIN_EVENTS);
-        monitoringService.subscribeToCritical(CRITICAL_DOMAIN_EVENTS);
+        this.monitoringService.subscribeToDataReading(DATA_READER_DOMAIN_EVENTS);
+        this.monitoringService.subscribeToWarning(WARNING_DOMAIN_EVENTS);
+        this.monitoringService.subscribeToCritical(CRITICAL_DOMAIN_EVENTS);
 
         this.proximityPreviousDataColumn.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue()));

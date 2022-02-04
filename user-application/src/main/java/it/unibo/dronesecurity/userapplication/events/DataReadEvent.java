@@ -29,7 +29,7 @@ public class DataReadEvent implements Event {
      * @return value read bt the proximity sensor
      */
     public double getProximity() {
-        return proximity;
+        return this.proximity;
     }
 
     /**
@@ -38,7 +38,7 @@ public class DataReadEvent implements Event {
      * @return value read bt the accelerometer
      */
     public Map<String, Double> getAccelerometerData() {
-        return accelerometerData;
+        return this.accelerometerData;
     }
 
     /**
@@ -47,6 +47,6 @@ public class DataReadEvent implements Event {
      * @return value read bt the camera
      */
     public double getCameraData() {
-        return cameraData;
+        return this.cameraData;
     }
 }

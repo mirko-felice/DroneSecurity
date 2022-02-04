@@ -49,7 +49,7 @@ public final class CustomLogger {
      * @param msg the message to log
      */
     public void info(final String msg) {
-        log(Level.INFO, msg, null);
+        this.log(Level.INFO, msg, null);
     }
 
     /**
@@ -58,7 +58,7 @@ public final class CustomLogger {
      * @param throwable the associated throwable
      */
     public void severe(final String msg, final Throwable throwable) {
-        log(Level.SEVERE, msg, throwable);
+        this.log(Level.SEVERE, msg, throwable);
     }
 
     private void log(final Level level, final String msg, final Throwable throwable) {

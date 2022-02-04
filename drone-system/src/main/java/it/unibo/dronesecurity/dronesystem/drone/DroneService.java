@@ -1,17 +1,25 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import it.unibo.dronesecurity.dronesystem.utilities.CustomLogger;
 
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Service providing data about drone status and its sensors.
  */
 public class DroneService {
 
-    private static final String TOPIC = "data";
+    private static final String SYNC_TOPIC = "sync";
+    private static final String DATA_TOPIC = "data";
+    private static final String STATUS_PARAMETER = "status";
+    private static final int TRAVELING_TIME = 5000;
+    private static final int CLIENT_WAITING_TIME = 1000;
     private static final int ANALIZER_SLEEP_DURATION = 500;
+    private static final int RANDOM_GENERATION_RANGE = 100;
+    private static final int SUCCESS_PERCENTAGE = 70;
     private static final int PORT = 10_001;
 
     //Drone
@@ -38,10 +46,13 @@ public class DroneService {
     /**
      * Activates the drone.
      */
-    public void startDrone() {
+    public void activateDrone() {
         this.active = true;
-        this.dataAnalyzer.start();
-        this.drone.start();
+        Connection.getInstance().subscribe(SYNC_TOPIC, msg -> {
+            final JsonObject json = JsonParser.parseString(new String(msg.getPayload())).getAsJsonObject();
+            if ("start".equals(json.getAsJsonPrimitive("message").getAsString()))
+                this.startDrone();
+        });
     }
 
     /**
@@ -92,15 +103,59 @@ public class DroneService {
         return this.cameraSensorData;
     }
 
+    private void startDrone() {
+        this.dataAnalyzer.start();
+        this.drone.start();
+        this.simulateDroneLifecycle();
+    }
+
+    //Simulates drone lifecycle sending its status to aws with 70% of successful delivers.
+    private void simulateDroneLifecycle() {
+        final JsonObject payload = new JsonObject();
+
+        try {
+            payload.addProperty(STATUS_PARAMETER, "delivering");
+            Connection.getInstance().publish(SYNC_TOPIC, payload);
+
+            Thread.sleep(TRAVELING_TIME);
+
+            final int choice = new Random().nextInt(RANDOM_GENERATION_RANGE - 1);
+            if (choice < SUCCESS_PERCENTAGE)
+                payload.addProperty(STATUS_PARAMETER, "succeeded");
+            else
+                payload.addProperty(STATUS_PARAMETER, "failed");
+            Thread.sleep(CLIENT_WAITING_TIME);
+            Connection.getInstance().publish(SYNC_TOPIC, payload);
+        } catch (InterruptedException e) {
+            CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
+        }
+
+        Connection.getInstance().subscribe(SYNC_TOPIC, msg -> {
+            final JsonObject json = JsonParser.parseString(new String(msg.getPayload())).getAsJsonObject();
+            if ("return".equals(json.getAsJsonPrimitive("message").getAsString())) {
+                payload.addProperty(STATUS_PARAMETER, "returning");
+                Connection.getInstance().publish(SYNC_TOPIC, payload);
+
+                try {
+                    Thread.sleep(TRAVELING_TIME);
+                } catch (InterruptedException e) {
+                    CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
+                }
+
+                this.stopDrone();
+            }
+        });
+    }
+
     private void initAnalyzer() {
         this.dataAnalyzer = new Thread(() -> {
             try {
                 while (this.active) {
-                    drone.analyzeData();
+                    this.drone.analyzeData();
 
-                    this.proximitySensorData = drone.getProximitySensor().getReadableValue();
-                    this.accelerometerSensorData = drone.getAccelerometerSensor().getReadableValue();
-                    this.cameraSensorData = drone.getCameraSensor().getReadableValue();
+                    this.proximitySensorData = this.drone.getProximitySensor().getReadableValue();
+                    this.accelerometerSensorData = this.drone.getAccelerometerSensor().getReadableValue();
+                    this.cameraSensorData = this.drone.getCameraSensor().getReadableValue();
                     this.sendData();
 
                     this.analyzeData();
@@ -128,6 +183,6 @@ public class DroneService {
         mapJson.add("accelerometer", accelerometerValues);
         mapJson.addProperty("camera", this.cameraSensorData);
 
-        Connection.getInstance().publish(TOPIC, mapJson);
+        Connection.getInstance().publish(DATA_TOPIC, mapJson);
     }
 }

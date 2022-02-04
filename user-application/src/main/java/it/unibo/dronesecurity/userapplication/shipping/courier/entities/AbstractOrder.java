@@ -43,9 +43,9 @@ public abstract class AbstractOrder implements Order {
     @Override
     public String toString() {
         return new StringJoiner(", ", "Order" + "[", "]")
-                .add("id='" + id + "'")
-                .add("orderDate=" + DateHelper.FORMATTER.format(orderDate))
-                .add("product='" + product + "'")
+                .add("id='" + this.id + "'")
+                .add("orderDate=" + DateHelper.FORMATTER.format(this.orderDate))
+                .add("product='" + this.product + "'")
                 .add(getCurrentState())
                 .toString();
     }
@@ -58,7 +58,7 @@ public abstract class AbstractOrder implements Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final AbstractOrder that = (AbstractOrder) o;
-        return orderDate.equals(that.orderDate) && id.equals(that.id) &&  product.equals(that.product);
+        return this.orderDate.equals(that.orderDate) && this.id.equals(that.id) && this.product.equals(that.product);
     }
 
     /**
@@ -66,6 +66,6 @@ public abstract class AbstractOrder implements Order {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, orderDate, product);
+        return Objects.hash(this.id, this.orderDate, this.product);
     }
 }

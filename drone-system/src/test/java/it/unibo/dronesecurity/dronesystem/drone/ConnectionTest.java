@@ -26,11 +26,10 @@ class ConnectionTest {
         try {
             final DroneService service = new DroneService();
 
-            Connection.getInstance();
+            Assertions.assertNotNull(Connection.getInstance());
+            this.assertSensorDataRead();
 
-            assertSensorDataRead();
-
-            service.startDrone();
+            service.activateDrone();
 
             Thread.sleep(DEACTIVATION_DELAY);
             service.stopDrone();

@@ -76,7 +76,7 @@ public final class StartController implements Initializable {
 
     @FXML
     private void performDelivery() {
-        final Optional<Order> selectedOrder = getSelectedOrder();
+        final Optional<Order> selectedOrder = this.getSelectedOrder();
         selectedOrder.ifPresentOrElse(order -> {
             // TODO how to check ???
             if (order instanceof PlacedOrder)
@@ -112,7 +112,7 @@ public final class StartController implements Initializable {
 
     @FXML
     private void rescheduleDelivery() {
-        final Optional<Order> selectedOrder = getSelectedOrder();
+        final Optional<Order> selectedOrder = this.getSelectedOrder();
         // TODO think about checking if getCurrentState().contains("fail") or instanceof FailedOrder
         selectedOrder.ifPresentOrElse(order -> {
             if (order.getCurrentState().contains("fail"))

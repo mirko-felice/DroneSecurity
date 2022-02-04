@@ -21,7 +21,7 @@ class SensorTest {
     @ParameterizedTest
     @ValueSource(classes = {Accelerometer.class, ProximitySensor.class, Camera.class})
     void sensorCreationTest(final Class<Sensor> sensorType) {
-        final Sensor sensor = initAccelerometer(sensorType);
+        final Sensor sensor = this.initAccelerometer(sensorType);
         Assertions.assertInstanceOf(sensorType, sensor);
         Assertions.assertTrue(sensor.isOn());
     }
@@ -34,7 +34,7 @@ class SensorTest {
     @ParameterizedTest
     @ValueSource(classes = {Accelerometer.class, ProximitySensor.class, Camera.class})
     void sensorDeactivationTest(final Class<Sensor> sensorType) {
-        final Sensor sensor = initAccelerometer(sensorType);
+        final Sensor sensor = this.initAccelerometer(sensorType);
         Assertions.assertTrue(sensor.isOn());
         //Waiting scripts to terminate before deactivating the sensor
         try {

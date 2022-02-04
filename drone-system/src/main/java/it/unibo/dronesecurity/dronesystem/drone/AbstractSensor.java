@@ -28,8 +28,8 @@ public abstract class AbstractSensor<R> implements Sensor<R> {
     private boolean on;
 
     private final transient Thread readingSensor = new Thread(() -> {
-        if (isPythonVersionCompatible())
-            this.executeScript(SCRIPT_FOLDER + getScriptName());
+        if (this.isPythonVersionCompatible())
+            this.executeScript(SCRIPT_FOLDER + this.getScriptName());
     });
 
     /**
