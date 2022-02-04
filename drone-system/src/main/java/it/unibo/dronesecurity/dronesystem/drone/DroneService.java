@@ -1,8 +1,7 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
 import com.google.gson.JsonObject;
-import it.unibo.dronesecurity.lib.CustomLogger;
-import it.unibo.dronesecurity.lib.Connection;
+import it.unibo.dronesecurity.lib.*;
 
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import java.util.Map;
  */
 public class DroneService {
 
-    private static final String TOPIC = "data";
     private static final int ANALIZER_SLEEP_DURATION = 500;
     private static final int PORT = 10_001;
 
@@ -123,12 +121,12 @@ public class DroneService {
 
     private void sendData() {
         final JsonObject mapJson = new JsonObject();
-        mapJson.addProperty("proximity", this.proximitySensorData);
+        mapJson.addProperty(MqttMessageParameterConstants.PROXIMITY_PARAMETER, this.proximitySensorData);
         final JsonObject accelerometerValues = new JsonObject();
         this.accelerometerSensorData.forEach(accelerometerValues::addProperty);
-        mapJson.add("accelerometer", accelerometerValues);
-        mapJson.addProperty("camera", this.cameraSensorData);
+        mapJson.add(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER, accelerometerValues);
+        mapJson.addProperty(MqttMessageParameterConstants.CAMERA_PARAMETER, this.cameraSensorData);
 
-        Connection.getInstance().publish(TOPIC, mapJson);
+        Connection.getInstance().publish(MqttTopicConstants.DATA_TOPIC, mapJson);
     }
 }
