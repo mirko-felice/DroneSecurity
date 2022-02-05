@@ -1,16 +1,24 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibo.dronesecurity.lib.*;
 
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Service providing data about drone status and its sensors.
  */
 public class DroneService {
 
+    private static final int TRAVELING_TIME = 5000;
+    private static final int CLIENT_WAITING_TIME = 1000;
     private static final int ANALIZER_SLEEP_DURATION = 500;
+    private static final int RANDOM_GENERATION_RANGE = 100;
+    private static final int SUCCESS_PERCENTAGE = 70;
     private static final int PORT = 10_001;
 
     //Drone
@@ -37,10 +45,18 @@ public class DroneService {
     /**
      * Activates the drone.
      */
-    public void startDrone() {
+    public void activateDrone() {
         this.active = true;
-        this.dataAnalyzer.start();
-        this.drone.start();
+        Connection.getInstance().subscribe(MqttTopicConstants.ORDER_TOPIC, msg -> {
+            try {
+                final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload()));
+                if (MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE
+                        .equals(json.get(MqttMessageParameterConstants.MESSAGE_PARAMETER).asText()))
+                    new Thread(this::startDrone).start();
+            } catch (JsonProcessingException e) {
+                CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
+            }
+        });
     }
 
     /**
@@ -91,15 +107,71 @@ public class DroneService {
         return this.cameraSensorData;
     }
 
+    private void startDrone() {
+        this.dataAnalyzer.start();
+        this.drone.start();
+        this.simulateDroneLifecycle();
+    }
+
+    //Simulates drone lifecycle sending its status to aws with 70% of successful delivers.
+    private void simulateDroneLifecycle() {
+        final ObjectNode payload = new ObjectMapper().createObjectNode();
+
+        try {
+            payload.put(MqttMessageParameterConstants.STATUS_PARAMETER,
+                    MqttMessageValueConstants.DELIVERING_MESSAGE);
+            Connection.getInstance().publish(MqttTopicConstants.LIFECYCLE_TOPIC, payload);
+
+            Thread.sleep(TRAVELING_TIME);
+
+            final int choice = new Random().nextInt(RANDOM_GENERATION_RANGE - 1);
+            if (choice < SUCCESS_PERCENTAGE)
+                payload.put(MqttMessageParameterConstants.STATUS_PARAMETER,
+                        MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE);
+            else
+                payload.put(MqttMessageParameterConstants.STATUS_PARAMETER,
+                        MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE);
+            Thread.sleep(CLIENT_WAITING_TIME);
+            Connection.getInstance().publish(MqttTopicConstants.LIFECYCLE_TOPIC, payload);
+        } catch (InterruptedException e) {
+            CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
+        }
+
+        Connection.getInstance().subscribe(MqttTopicConstants.ORDER_TOPIC, msg -> {
+            try {
+                final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload()));
+                if (MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE
+                        .equals(json.get(MqttMessageParameterConstants.MESSAGE_PARAMETER).asText())) {
+                    payload.put(MqttMessageParameterConstants.STATUS_PARAMETER,
+                            MqttMessageValueConstants.RETURN_ACKNOWLEDGEMENT_MESSAGE);
+                    Connection.getInstance().publish(MqttTopicConstants.LIFECYCLE_TOPIC, payload);
+                    new Thread(this::returnSimulation).start();
+                }
+            } catch (JsonProcessingException e) {
+                CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
+            }
+        });
+    }
+
+    private void returnSimulation() {
+        try {
+            Thread.sleep(TRAVELING_TIME);
+
+            this.stopDrone();
+        } catch (InterruptedException e) {
+            CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
+        }
+    }
+
     private void initAnalyzer() {
         this.dataAnalyzer = new Thread(() -> {
             try {
                 while (this.active) {
-                    drone.analyzeData();
+                    this.drone.analyzeData();
 
-                    this.proximitySensorData = drone.getProximitySensor().getReadableValue();
-                    this.accelerometerSensorData = drone.getAccelerometerSensor().getReadableValue();
-                    this.cameraSensorData = drone.getCameraSensor().getReadableValue();
+                    this.proximitySensorData = this.drone.getProximitySensor().getReadableValue();
+                    this.accelerometerSensorData = this.drone.getAccelerometerSensor().getReadableValue();
+                    this.cameraSensorData = this.drone.getCameraSensor().getReadableValue();
                     this.sendData();
 
                     this.analyzeData();
@@ -120,12 +192,13 @@ public class DroneService {
     }
 
     private void sendData() {
-        final JsonObject mapJson = new JsonObject();
-        mapJson.addProperty(MqttMessageParameterConstants.PROXIMITY_PARAMETER, this.proximitySensorData);
-        final JsonObject accelerometerValues = new JsonObject();
-        this.accelerometerSensorData.forEach(accelerometerValues::addProperty);
-        mapJson.add(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER, accelerometerValues);
-        mapJson.addProperty(MqttMessageParameterConstants.CAMERA_PARAMETER, this.cameraSensorData);
+        final ObjectMapper mapper = new ObjectMapper();
+        final ObjectNode mapJson = mapper.createObjectNode();
+        mapJson.put(MqttMessageParameterConstants.PROXIMITY_PARAMETER, this.proximitySensorData);
+        final ObjectNode accelerometerValues = mapper.createObjectNode();
+        this.accelerometerSensorData.forEach(accelerometerValues::put);
+        mapJson.set(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER, accelerometerValues);
+        mapJson.put(MqttMessageParameterConstants.CAMERA_PARAMETER, this.cameraSensorData);
 
         Connection.getInstance().publish(MqttTopicConstants.DATA_TOPIC, mapJson);
     }

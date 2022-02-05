@@ -1,16 +1,15 @@
 package it.unibo.dronesecurity.userapplication.controller;
 
-import it.unibo.dronesecurity.lib.CustomLogger;
-import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import it.unibo.dronesecurity.lib.*;
 import it.unibo.dronesecurity.userapplication.drone.monitoring.UserMonitoringService;
-import it.unibo.dronesecurity.userapplication.events.CriticalEvent;
-import it.unibo.dronesecurity.userapplication.events.DataReadEvent;
-import it.unibo.dronesecurity.userapplication.events.DomainEvents;
-import it.unibo.dronesecurity.userapplication.events.WarningEvent;
+import it.unibo.dronesecurity.userapplication.events.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -27,9 +26,15 @@ public final class MonitorController implements Initializable {
     private static final DomainEvents<DataReadEvent> DATA_READER_DOMAIN_EVENTS = new DomainEvents<>();
     private static final DomainEvents<WarningEvent> WARNING_DOMAIN_EVENTS = new DomainEvents<>();
     private static final DomainEvents<CriticalEvent> CRITICAL_DOMAIN_EVENTS = new DomainEvents<>();
+    private static final DomainEvents<StatusChangedEvent> STATUS_CHANGED_DOMAIN_EVENTS = new DomainEvents<>();
+
+    private static final String STATUS_STRING = "Status: ";
+    private static final String STARTING_STRING = "starting";
 
     private final transient UserMonitoringService monitoringService;
 
+    @FXML private transient Label statusLabel;
+    @FXML private transient Button recallButton;
     @FXML private transient Label proximityCurrentData;
     @FXML private transient TableView<Map<String, Double>> accelerometerCurrentData;
     @FXML private transient Label cameraCurrentData;
@@ -52,17 +57,47 @@ public final class MonitorController implements Initializable {
      * Build the Controller to interact with services.
      */
     public MonitorController() {
-        monitoringService = new UserMonitoringService();
+        this.monitoringService = new UserMonitoringService();
     }
 
-    @FXML
-    private void failDelivery() {
-        CustomLogger.getLogger(getClass().getName()).info("Logic will be implemented.");
-    }
+    @Override
+    public void initialize(final URL location, final ResourceBundle resources) {
+        this.statusLabel.setText(STATUS_STRING + STARTING_STRING);
+        this.recallButton.setDisable(true);
+        DATA_READER_DOMAIN_EVENTS.register(this::onDataRead);
+        WARNING_DOMAIN_EVENTS.register(this::onWarning);
+        CRITICAL_DOMAIN_EVENTS.register(this::onCritical);
+        STATUS_CHANGED_DOMAIN_EVENTS.register(this::onStatusChanged);
 
-    @FXML
-    private void confirmDelivery() {
-        CustomLogger.getLogger(getClass().getName()).info("Logic will be implemented.");
+        this.monitoringService.subscribeToDataReading(DATA_READER_DOMAIN_EVENTS);
+        this.monitoringService.subscribeToWarning(WARNING_DOMAIN_EVENTS);
+        this.monitoringService.subscribeToCritical(CRITICAL_DOMAIN_EVENTS);
+        this.monitoringService.subscribeToStatusChanges(STATUS_CHANGED_DOMAIN_EVENTS);
+
+        this.proximityPreviousDataColumn.setCellValueFactory(cell ->
+                new SimpleObjectProperty<>(cell.getValue()));
+        this.accelerometerPreviousXDataColumn.setCellValueFactory(cell ->
+                new SimpleObjectProperty<>(cell.getValue()
+                        .get(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER)));
+        this.accelerometerPreviousYDataColumn.setCellValueFactory(cell ->
+                new SimpleObjectProperty<>(cell.getValue()
+                        .get(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER)));
+        this.accelerometerPreviousZDataColumn.setCellValueFactory(cell ->
+                new SimpleObjectProperty<>(cell.getValue()
+                        .get(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER)));
+        this.cameraPreviousDataColumn.setCellValueFactory(cell ->
+                new SimpleObjectProperty<>(cell.getValue()));
+
+        this.currentAccelerometerXValue.setCellValueFactory(cell ->
+                new SimpleObjectProperty<>(cell.getValue()
+                        .get(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER)));
+        this.currentAccelerometerYValue.setCellValueFactory(cell ->
+                new SimpleObjectProperty<>(cell.getValue()
+                        .get(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER)));
+        this.currentAccelerometerZValue.setCellValueFactory(cell ->
+                new SimpleObjectProperty<>(cell.getValue()
+                        .get(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER)));
+
     }
 
     private void onDataRead(final DataReadEvent dataReadEvent) {
@@ -97,39 +132,21 @@ public final class MonitorController implements Initializable {
         });
     }
 
-    @Override
-    public void initialize(final URL location, final ResourceBundle resources) {
-        DATA_READER_DOMAIN_EVENTS.register(this::onDataRead);
-        WARNING_DOMAIN_EVENTS.register(this::onWarning);
-        CRITICAL_DOMAIN_EVENTS.register(this::onCritical);
+    private void onStatusChanged(final StatusChangedEvent statusEvent) {
+        Platform.runLater(() -> {
+            this.statusLabel.setText(STATUS_STRING + statusEvent.getStatus());
+            if (MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(statusEvent.getStatus())
+                    || MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE.equals(statusEvent.getStatus()))
+                this.recallButton.setDisable(false);
+        });
+    }
 
-        monitoringService.subscribeToDataReading(DATA_READER_DOMAIN_EVENTS);
-        monitoringService.subscribeToWarning(WARNING_DOMAIN_EVENTS);
-        monitoringService.subscribeToCritical(CRITICAL_DOMAIN_EVENTS);
-
-        this.proximityPreviousDataColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()));
-        this.accelerometerPreviousXDataColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER)));
-        this.accelerometerPreviousYDataColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER)));
-        this.accelerometerPreviousZDataColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER)));
-        this.cameraPreviousDataColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()));
-
-        this.currentAccelerometerXValue.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER)));
-        this.currentAccelerometerYValue.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER)));
-        this.currentAccelerometerZValue.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER)));
-
+    @FXML
+    private void recallDrone() {
+        final JsonNode recallMessage = new ObjectMapper().createObjectNode()
+                .put(MqttMessageParameterConstants.MESSAGE_PARAMETER,
+                        MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);
+        Connection.getInstance().publish(MqttTopicConstants.ORDER_TOPIC, recallMessage);
+        this.recallButton.setDisable(true);
     }
 }

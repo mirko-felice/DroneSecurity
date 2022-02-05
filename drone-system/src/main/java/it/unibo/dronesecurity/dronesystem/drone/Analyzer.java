@@ -1,8 +1,9 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibo.dronesecurity.lib.Connection;
-import it.unibo.dronesecurity.lib.MqttAlertMessageValueConstants;
+import it.unibo.dronesecurity.lib.MqttMessageValueConstants;
 import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
 import it.unibo.dronesecurity.lib.MqttTopicConstants;
 import org.jetbrains.annotations.NotNull;
@@ -31,10 +32,10 @@ public final class Analyzer {
             final boolean isCritical = proximityDistance <= PROXIMITY_CRITICAL_THRESHOLD;
             if (isCritical)
                 this.publishAlert(MqttTopicConstants.CRITICAL_TOPIC,
-                        MqttAlertMessageValueConstants.CRITICAL_PROXIMITY_MESSAGE);
+                        MqttMessageValueConstants.CRITICAL_PROXIMITY_MESSAGE);
             else if (isWarning)
                 this.publishAlert(MqttTopicConstants.WARNING_TOPIC,
-                        MqttAlertMessageValueConstants.WARNING_PROXIMITY_MESSAGE);
+                        MqttMessageValueConstants.WARNING_PROXIMITY_MESSAGE);
         }
         return false;
     }
@@ -58,17 +59,17 @@ public final class Analyzer {
 
             if (isCritical)
                 this.publishAlert(MqttTopicConstants.CRITICAL_TOPIC,
-                        MqttAlertMessageValueConstants.CRITICAL_ANGLE_MESSAGE);
+                        MqttMessageValueConstants.CRITICAL_ANGLE_MESSAGE);
             else if (isWarning)
                 this.publishAlert(MqttTopicConstants.WARNING_TOPIC,
-                        MqttAlertMessageValueConstants.WARNING_ANGLE_MESSAGE);
+                        MqttMessageValueConstants.WARNING_ANGLE_MESSAGE);
         }
         return false;
     }
 
     private void publishAlert(final String topic, final @NotNull String message) {
-        final JsonObject payload = new JsonObject();
-        payload.addProperty(MqttMessageParameterConstants.MESSAGE_PARAMETER, message);
+        final ObjectNode payload = new ObjectMapper().createObjectNode();
+        payload.put(MqttMessageParameterConstants.MESSAGE_PARAMETER, message);
         Connection.getInstance().publish(topic, payload);
     }
 }

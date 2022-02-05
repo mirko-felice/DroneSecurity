@@ -1,13 +1,14 @@
 package it.unibo.dronesecurity.userapplication.drone.monitoring;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vertx.core.json.JsonObject;
 import it.unibo.dronesecurity.lib.Connection;
+import it.unibo.dronesecurity.lib.CustomLogger;
 import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
 import it.unibo.dronesecurity.lib.MqttTopicConstants;
-import it.unibo.dronesecurity.userapplication.events.CriticalEvent;
-import it.unibo.dronesecurity.userapplication.events.DataReadEvent;
-import it.unibo.dronesecurity.userapplication.events.DomainEvents;
-import it.unibo.dronesecurity.userapplication.events.WarningEvent;
+import it.unibo.dronesecurity.userapplication.events.*;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -68,9 +69,19 @@ public final class UserMonitoringService {
     }
 
     /**
-     * Closes the active connection with AWS service.
+     * Subscribes to drone status topic.
+     *
+     * @param domainEvents Domain to raise events on
      */
-    public void closeConnection() {
-        Connection.getInstance().closeConnection();
+    public void subscribeToStatusChanges(final DomainEvents<StatusChangedEvent> domainEvents) {
+        Connection.getInstance().subscribe(MqttTopicConstants.LIFECYCLE_TOPIC, msg -> {
+            try {
+                final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload()));
+                final String status = json.get(MqttMessageParameterConstants.STATUS_PARAMETER).asText();
+                domainEvents.raise(new StatusChangedEvent(status));
+            } catch (JsonProcessingException e) {
+                CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
+            }
+        });
     }
 }

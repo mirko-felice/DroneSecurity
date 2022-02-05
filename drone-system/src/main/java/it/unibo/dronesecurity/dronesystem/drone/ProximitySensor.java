@@ -25,7 +25,7 @@ public class ProximitySensor extends AbstractSensor<Double> {
     public void readValue() {
         if (getOutputStream().size() > 0) {
             final String[] values = getOutputStream().toString().trim().split("\n");
-            distance = Double.parseDouble(values[values.length - 1]);
+            this.distance = Double.parseDouble(values[values.length - 1]);
             getOutputStream().reset();
         }
     }
@@ -35,6 +35,6 @@ public class ProximitySensor extends AbstractSensor<Double> {
      */
     @Override
     public Double getReadableValue() {
-        return distance;
+        return this.distance;
     }
 }

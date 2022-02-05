@@ -50,12 +50,12 @@ public final class OrderRepositoryImpl implements OrderRepository {
     @Override
     public Future<List<Order>> getOrders() {
         final List<Order> fakeOrders = this.generateFakeOrders();
-        return database.find(COLLECTION_NAME, new JsonObject())
+        return this.database.find(COLLECTION_NAME, new JsonObject())
                 .transform(orders -> {
                     List<Order> returningOrders;
                     if (orders.result().size() == 0) {
                         fakeOrders.forEach(order ->
-                                database.save(COLLECTION_NAME, JsonObject.mapFrom(order)));
+                                this.database.save(COLLECTION_NAME, JsonObject.mapFrom(order)));
                         returningOrders = fakeOrders;
                     } else {
                         returningOrders = orders.result().stream()
@@ -65,7 +65,7 @@ public final class OrderRepositoryImpl implements OrderRepository {
                     return Future.succeededFuture(returningOrders);
                 })
                 .onFailure(event -> fakeOrders.forEach(order ->
-                        database.save(COLLECTION_NAME, JsonObject.mapFrom(order))));
+                        this.database.save(COLLECTION_NAME, JsonObject.mapFrom(order))));
     }
 
     @Override
@@ -76,7 +76,7 @@ public final class OrderRepositoryImpl implements OrderRepository {
         final JsonObject what = new JsonObject();
         what.put("events", order.getCurrentState());
         update.put("$push", what);
-        database.updateCollection(COLLECTION_NAME, query, update);
+        this.database.updateCollection(COLLECTION_NAME, query, update);
     }
 
     // TODO delete it when using real orders

@@ -22,7 +22,7 @@ final class OrderTest {
 
     @BeforeEach
     void setUp() {
-        order = Order.placeToday(BASIC_PRODUCT);
+        this.order = Order.placeToday(BASIC_PRODUCT);
     }
 
     @Test
@@ -37,21 +37,22 @@ final class OrderTest {
 
     @Test
     void testOrdersEquality() throws InterruptedException {
-        assertEquals(order, order, "Entity should be equal to itself.");
+        assertEquals(this.order, this.order, "Entity should be equal to itself.");
         Thread.sleep(MILLIS_CREATION_DELAY);
-        assertNotEquals(order, Order.placeToday(BASIC_PRODUCT), "Entity must be unique even if build in the same way.");
+        assertNotEquals(this.order, Order.placeToday(BASIC_PRODUCT),
+                "Entity must be unique even if build in the same way.");
     }
 
     @Test
     void testBasicLifeCycle() {
-        final DeliveringOrder deliveringOrder = testDelivering();
+        final DeliveringOrder deliveringOrder = this.testDelivering();
 
         assertNotNull(deliveringOrder.confirmDelivery(), "Confirming delivery should not returning null.");
     }
 
     @Test
     void testRescheduleLifecycle() {
-        final DeliveringOrder deliveringOrder = testDelivering();
+        final DeliveringOrder deliveringOrder = this.testDelivering();
 
         final FailedOrder failedOrder = deliveringOrder.failDelivery();
         assertNotNull(failedOrder, "Failing delivery should not returning null.");
@@ -65,7 +66,8 @@ final class OrderTest {
     }
 
     private DeliveringOrder testDelivering() {
-        final DeliveringOrder deliveringOrder = CastHelper.safeCast(order, PlacedOrder.class).orElseThrow().deliver();
+        final DeliveringOrder deliveringOrder = CastHelper.safeCast(this.order, PlacedOrder.class)
+                .orElseThrow().deliver();
         assertNotNull(deliveringOrder, "Delivering should not returning null.");
         return deliveringOrder;
     }

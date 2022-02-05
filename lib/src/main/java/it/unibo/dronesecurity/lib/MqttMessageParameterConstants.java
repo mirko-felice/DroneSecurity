@@ -40,5 +40,10 @@ public final class MqttMessageParameterConstants {
      */
     public static final String MESSAGE_PARAMETER = "message";
 
+    /**
+     * Parameter that contains drone lifecycle updates.
+     */
+    public static final String STATUS_PARAMETER = "status";
+
     private MqttMessageParameterConstants() { }
 }

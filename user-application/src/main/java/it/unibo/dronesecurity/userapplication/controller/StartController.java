@@ -2,6 +2,7 @@ package it.unibo.dronesecurity.userapplication.controller;
 
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.client.WebClient;
+import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.lib.CustomLogger;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
@@ -76,7 +77,7 @@ public final class StartController implements Initializable {
 
     @FXML
     private void performDelivery() {
-        final Optional<Order> selectedOrder = getSelectedOrder();
+        final Optional<Order> selectedOrder = this.getSelectedOrder();
         selectedOrder.ifPresentOrElse(order -> {
             // TODO how to check ???
             if (order instanceof PlacedOrder)
@@ -95,6 +96,7 @@ public final class StartController implements Initializable {
                                 stage.setScene(scene);
                                 stage.setTitle("Monitoring...");
                                 stage.setOnCloseRequest(event -> {
+                                    Connection.getInstance().closeConnection();
                                     this.client.close();
                                     Platform.exit();
                                     System.exit(0);
@@ -112,7 +114,7 @@ public final class StartController implements Initializable {
 
     @FXML
     private void rescheduleDelivery() {
-        final Optional<Order> selectedOrder = getSelectedOrder();
+        final Optional<Order> selectedOrder = this.getSelectedOrder();
         // TODO think about checking if getCurrentState().contains("fail") or instanceof FailedOrder
         selectedOrder.ifPresentOrElse(order -> {
             if (order.getCurrentState().contains("fail"))
