@@ -76,9 +76,9 @@
         }
       }
     },
-    "/getOrders": {
+    "/listOrders": {
       "get": {
-        "operationId": "getOrders",
+        "operationId": "listOrders",
         "responses": {
           "200": {
             "description": "Successfully got Orders.",

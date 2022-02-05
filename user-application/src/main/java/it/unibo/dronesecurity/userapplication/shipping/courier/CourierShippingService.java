@@ -30,7 +30,7 @@ public final class CourierShippingService {
             + "courierShippingService.json";
     private static final String PERFORM_DELIVERY_OPERATION_ID = "performDelivery";
     private static final String RESCHEDULE_DELIVERY_OPERATION_ID = "rescheduleDelivery";
-    private static final String GET_ORDERS_OPERATION_ID = "getOrders";
+    private static final String LIST_ORDERS_OPERATION_ID = "listOrders";
     private static final String CORRECT_RESPONSE_TO_PERFORM_DELIVERY = "Delivery is performing...";
     private static final String CORRECT_RESPONSE_TO_RESCHEDULE_DELIVERY = "Order rescheduled.";
     private final transient Vertx vertx;
@@ -56,8 +56,8 @@ public final class CourierShippingService {
                         final JsonObject server = servers.getJsonObject(i);
                         final JsonObject variables = server.getJsonObject("variables");
 
-                        final String basePath = variables.getJsonObject("basePath").getString("default");
-                        final int port = variables.getJsonObject("port").getInteger("default");
+                        final String basePath = "/" + variables.getJsonObject("basePath").getString("default");
+                        final int port = Integer.parseInt(variables.getJsonObject("port").getString("default"));
                         final String host = variables.getJsonObject("host").getString("default");
 
                         globalRouter.mountSubRouter(basePath, routerBuilder.createRouter());
@@ -72,8 +72,8 @@ public final class CourierShippingService {
                 .handler(this::performDelivery);
         routerBuilder.operation(RESCHEDULE_DELIVERY_OPERATION_ID)
                 .handler(this::rescheduleDelivery);
-        routerBuilder.operation(GET_ORDERS_OPERATION_ID)
-                .handler(this::getOrders);
+        routerBuilder.operation(LIST_ORDERS_OPERATION_ID)
+                .handler(this::listOrders);
     }
 
     private void performDelivery(final @NotNull RoutingContext routingContext) {
@@ -96,7 +96,7 @@ public final class CourierShippingService {
         routingContext.response().end(CORRECT_RESPONSE_TO_RESCHEDULE_DELIVERY);
     }
 
-    private void getOrders(final @NotNull RoutingContext routingContext) {
+    private void listOrders(final @NotNull RoutingContext routingContext) {
         final Future<List<Order>> future = OrderRepository.getInstance().getOrders();
         future.onSuccess(orders -> routingContext.response()
                 .putHeader("Content-Type", "application/json")
