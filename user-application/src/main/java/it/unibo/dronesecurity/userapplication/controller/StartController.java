@@ -35,7 +35,7 @@ public final class StartController implements Initializable {
     private static final String HOST = "http://localhost:";
     private static final int PORT = 80;
     private static final String BASE_URI = HOST + PORT + "/courierShippingService";
-    private static final String GET_ORDERS_URI = BASE_URI + "/getOrders";
+    private static final String LIST_ORDERS_URI = BASE_URI + "/listOrders";
     private static final String PERFORM_DELIVERY_URI = BASE_URI + "/performDelivery";
     private static final String RESCHEDULE_DELIVERY_URI = BASE_URI + "/rescheduleDelivery";
     private static final String MONITORING_FILENAME = "monitoring.fxml";
@@ -63,7 +63,7 @@ public final class StartController implements Initializable {
         this.productColumn.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue().getSnapshot().getProduct()));
         this.stateColumn.setCellValueFactory(new PropertyValueFactory<>("currentState"));
-        this.client.get(GET_ORDERS_URI)
+        this.client.get(LIST_ORDERS_URI)
                 .send(r -> {
                     if (r.succeeded()) {
                         final List<Order> orders = r.result().bodyAsJsonArray().stream()
