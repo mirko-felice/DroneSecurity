@@ -20,5 +20,15 @@ public final class MqttTopicConstants {
      */
     public static final String CRITICAL_TOPIC = "critical";
 
+    /**
+     * Drone System and User Application synchronization topic name.
+     */
+    public static final String ORDER_TOPIC = "sync";
+
+    /**
+     * Drone System and User Application synchronization topic name.
+     */
+    public static final String LIFECYCLE_TOPIC = "lifecycle";
+
     private MqttTopicConstants() { }
 }

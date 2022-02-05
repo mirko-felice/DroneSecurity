@@ -1,7 +1,9 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import it.unibo.dronesecurity.lib.CustomLogger;
 import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
 
 import java.util.Map;
@@ -35,10 +37,14 @@ public class Accelerometer extends AbstractSensor<Map<String, Double>> {
             final int index = orig.lastIndexOf("\"accelerometer") - 1;
 
             final String jsonValues = orig.substring(index);
-            final JsonObject accelValues = JsonParser.parseString(jsonValues).getAsJsonObject()
-                    .get(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER).getAsJsonObject();
-            accelValues.keySet().forEach(k -> this.values.put(k, accelValues.getAsJsonPrimitive(k).getAsDouble()));
 
+            try {
+                final JsonNode accelValues = new ObjectMapper().readTree(jsonValues)
+                        .get(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER);
+                accelValues.fields().forEachRemaining(k -> this.values.put(k.getKey(), k.getValue().asDouble()));
+            } catch (JsonProcessingException e) {
+                CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
+            }
             getOutputStream().reset();
         }
     }

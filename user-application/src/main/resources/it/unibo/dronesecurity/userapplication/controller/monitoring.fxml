@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
@@ -16,6 +17,7 @@
                      <children>
                         <Label layoutX="85.0" layoutY="44.0" text="Proximity: " AnchorPane.topAnchor="28.0" />
                         <Label fx:id="proximityCurrentData" alignment="CENTER" layoutX="99.0" layoutY="75.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="71.0" />
+                        <Label fx:id="statusLabel" layoutX="14.0" layoutY="6.0" text="Status: " />
                      </children>
                   </AnchorPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
@@ -24,7 +26,7 @@
                           <items>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                                  <children>
-                                    <Label layoutX="65.0" text="Last measurement" AnchorPane.topAnchor="0.0" />
+                                    <Label layoutX="65.0" layoutY="6.0" text="Last measurement" AnchorPane.topAnchor="6.0" />
                                     <Label layoutX="72.0" layoutY="28.0" text="Accelerometer: " AnchorPane.topAnchor="28.0" />
                                     <TableView fx:id="accelerometerCurrentData" editable="true" layoutX="13.0" layoutY="56.0" prefHeight="50.0" prefWidth="201.0" AnchorPane.topAnchor="56.0">
                                       <columns>
@@ -42,6 +44,7 @@
                                  <children>
                                     <Label layoutX="90.0" layoutY="43.0" text="Camera: " AnchorPane.topAnchor="28.0" />
                                     <Label fx:id="cameraCurrentData" alignment="CENTER" layoutX="100.0" layoutY="69.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="71.0" />
+                                    <Button fx:id="recallButton" layoutX="162.0" layoutY="2.0" mnemonicParsing="false" onMouseClicked="#recallDrone" text="Recall" />
                                  </children>
                               </AnchorPane>
                           </items>

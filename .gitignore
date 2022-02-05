@@ -21,3 +21,4 @@ certs/
 
 # Gradle
 .gradle/
+project.properties

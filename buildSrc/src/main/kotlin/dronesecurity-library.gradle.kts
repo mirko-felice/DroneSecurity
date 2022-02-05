@@ -20,7 +20,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     implementation("software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk:$awsIotVersion")
     implementation("software.amazon.awssdk.crt:aws-crt:$awsCrtVersion")
-    implementation("com.google.code.gson:gson:2.8.6")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
 }
 
 java {

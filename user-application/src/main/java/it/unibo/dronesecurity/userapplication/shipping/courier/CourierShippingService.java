@@ -1,5 +1,8 @@
 package it.unibo.dronesecurity.userapplication.shipping.courier;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
@@ -7,7 +10,7 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.validation.RequestParameters;
 import io.vertx.ext.web.validation.ValidationHandler;
-import it.unibo.dronesecurity.lib.CustomLogger;
+import it.unibo.dronesecurity.lib.*;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.DeliveringOrder;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
@@ -71,6 +74,32 @@ public final class CourierShippingService {
             final DeliveringOrder deliveringOrder = order.deliver();
             OrderRepository.getInstance().delivering(deliveringOrder);
             CustomLogger.getLogger(getClass().getName()).info(deliveringOrder.getCurrentState());
+
+            final JsonNode messageJson = new ObjectMapper().createObjectNode()
+                    .put(MqttMessageParameterConstants.MESSAGE_PARAMETER,
+                            MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE);
+            Connection.getInstance().publish(MqttTopicConstants.ORDER_TOPIC, messageJson);
+
+            Connection.getInstance().subscribe(MqttTopicConstants.LIFECYCLE_TOPIC, msg -> {
+                try {
+                    final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload()));
+                    final String statusValue = json.get(MqttMessageParameterConstants.STATUS_PARAMETER).asText();
+                    if (MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(statusValue)) {
+                        final JsonNode message = new ObjectMapper().createObjectNode()
+                                .put(MqttMessageParameterConstants.MESSAGE_PARAMETER,
+                                        MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);
+                        Connection.getInstance().publish(MqttTopicConstants.ORDER_TOPIC, message);
+                    } else if (MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE.equals(statusValue)) {
+                        final JsonNode message = new ObjectMapper().createObjectNode()
+                                .put(MqttMessageParameterConstants.MESSAGE_PARAMETER,
+                                        MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);
+                        Connection.getInstance().publish(MqttTopicConstants.ORDER_TOPIC, message);
+                    }
+                } catch (JsonProcessingException e) {
+                    CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
+                }
+            });
+
             routingContext.response().end(CORRECT_RESPONSE_TO_PERFORM_DELIVERY);
         }
     }

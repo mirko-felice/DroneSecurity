@@ -12,6 +12,7 @@ open module it.unibo.dronesecurity.userapplication {
     requires io.vertx.web.validation;
     requires io.vertx.web;
     requires com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.annotation;
     requires io.vertx.client.mongo;
     requires org.controlsfx.controls;
 }
