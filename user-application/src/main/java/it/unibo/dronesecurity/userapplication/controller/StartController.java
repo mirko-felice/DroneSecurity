@@ -32,9 +32,9 @@ import java.util.stream.Collectors;
  */
 public final class StartController implements Initializable {
 
-    private static final String HOST = "http://localhost";
-    private static final int PORT =  8080;
-    private static final String BASE_URI = HOST + PORT;
+    private static final String HOST = "http://localhost:";
+    private static final int PORT = 80;
+    private static final String BASE_URI = HOST + PORT + "/courierShippingService";
     private static final String GET_ORDERS_URI = BASE_URI + "/getOrders";
     private static final String PERFORM_DELIVERY_URI = BASE_URI + "/performDelivery";
     private static final String RESCHEDULE_DELIVERY_URI = BASE_URI + "/rescheduleDelivery";

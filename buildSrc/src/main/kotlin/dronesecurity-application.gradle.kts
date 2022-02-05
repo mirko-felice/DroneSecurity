@@ -38,13 +38,16 @@ tasks {
     }
 
     register<Jar>("fatJar") {
+        doFirst {
+            setDebugMode(false)
+        }
         archiveClassifier.set("fat")
         from(sourceSets.main.get().output)
         dependsOn(configurations.compileClasspath)
         from(configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) })
         manifest {
             val mainClass = project.extra["mainClassName"]
-            attributes["Main-Class"] = if (project.name == "user-application") mainClass.toString().replace("Launcher", "Starter") else mainClass
+            attributes["Main-Class"] = if (project.name == "user-application") mainClass.toString().replace("controller.Launcher", "Starter") else mainClass
             attributes["Automatic-Module-Name"] = project.extra["mainModuleName"]
         }
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE

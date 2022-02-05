@@ -3,6 +3,9 @@ package it.unibo.dronesecurity.userapplication.shipping.courier;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.validation.RequestParameters;
@@ -30,7 +33,6 @@ public final class CourierShippingService {
     private static final String GET_ORDERS_OPERATION_ID = "getOrders";
     private static final String CORRECT_RESPONSE_TO_PERFORM_DELIVERY = "Delivery is performing...";
     private static final String CORRECT_RESPONSE_TO_RESCHEDULE_DELIVERY = "Order rescheduled.";
-    private static final int PORT = 80;
     private final transient Vertx vertx;
 
     /**
@@ -44,24 +46,37 @@ public final class CourierShippingService {
      * Start listening to HTTP methods.
      */
     public void startListening() {
+        final Router globalRouter = Router.router(this.vertx);
         RouterBuilder.create(this.vertx, OPEN_API_URL)
                 .onSuccess(routerBuilder -> {
                     this.setupOperations(routerBuilder);
-                    this.vertx.createHttpServer().requestHandler(routerBuilder.createRouter()).listen(PORT);
+
+                    final JsonArray servers = routerBuilder.getOpenAPI().getOpenAPI().getJsonArray("servers");
+                    for (int i = 0; i < servers.size(); i++) {
+                        final JsonObject server = servers.getJsonObject(i);
+                        final JsonObject variables = server.getJsonObject("variables");
+
+                        final String basePath = variables.getJsonObject("basePath").getString("default");
+                        final int port = variables.getJsonObject("port").getInteger("default");
+                        final String host = variables.getJsonObject("host").getString("default");
+
+                        globalRouter.mountSubRouter(basePath, routerBuilder.createRouter());
+                        this.vertx.createHttpServer().requestHandler(globalRouter).listen(port, host);
+                    }
                 })
                 .onFailure(Throwable::printStackTrace);
     }
 
     private void setupOperations(final @NotNull RouterBuilder routerBuilder) {
         routerBuilder.operation(PERFORM_DELIVERY_OPERATION_ID)
-                .handler(this::setupPerformDelivery);
+                .handler(this::performDelivery);
         routerBuilder.operation(RESCHEDULE_DELIVERY_OPERATION_ID)
-                .handler(this::setupRescheduleDelivery);
+                .handler(this::rescheduleDelivery);
         routerBuilder.operation(GET_ORDERS_OPERATION_ID)
-                .handler(this::setupGetOrders);
+                .handler(this::getOrders);
     }
 
-    private void setupPerformDelivery(final @NotNull RoutingContext routingContext) {
+    private void performDelivery(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         final Optional<PlacedOrder> optionalOrder =
                 CastHelper.safeCast(params.body().getJsonObject().mapTo(Order.class), PlacedOrder.class);
@@ -75,13 +90,13 @@ public final class CourierShippingService {
         }
     }
 
-    private void setupRescheduleDelivery(final @NotNull RoutingContext routingContext) {
+    private void rescheduleDelivery(final @NotNull RoutingContext routingContext) {
         routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         // TODO refactor because needed NEW Date and order ID
         routingContext.response().end(CORRECT_RESPONSE_TO_RESCHEDULE_DELIVERY);
     }
 
-    private void setupGetOrders(final @NotNull RoutingContext routingContext) {
+    private void getOrders(final @NotNull RoutingContext routingContext) {
         final Future<List<Order>> future = OrderRepository.getInstance().getOrders();
         future.onSuccess(orders -> routingContext.response()
                 .putHeader("Content-Type", "application/json")

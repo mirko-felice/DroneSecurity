@@ -6,9 +6,15 @@
   },
   "servers": [
     {
-      "url": "http://localhost:80/{basePath}",
+      "url": "http://{host}:{port}/{basePath}",
       "description": "Localhost server",
       "variables": {
+        "host": {
+          "default": "localhost"
+        },
+        "port": {
+          "default": "80"
+        },
         "basePath": {
           "default": "courierShippingService"
         }
