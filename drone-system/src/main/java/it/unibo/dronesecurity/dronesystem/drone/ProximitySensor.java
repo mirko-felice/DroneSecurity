@@ -6,8 +6,8 @@ package it.unibo.dronesecurity.dronesystem.drone;
 public class ProximitySensor extends AbstractSensor<Double> {
 
     private final transient String scriptFilename =  this.isRaspberry()
-            ? "proximitySensor.py"
-            : "proximitySimulator.py";
+            ? "proximitySensor"
+            : "proximitySimulator";
     private transient double distance;
 
     /**

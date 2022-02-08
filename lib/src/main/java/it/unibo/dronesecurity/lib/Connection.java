@@ -10,16 +10,9 @@ import software.amazon.awssdk.crt.mqtt.MqttMessage;
 import software.amazon.awssdk.crt.mqtt.QualityOfService;
 import software.amazon.awssdk.iot.AwsIotMqttConnectionBuilder;
 
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Properties;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * Singleton representing connection with AWS.
@@ -27,8 +20,7 @@ import java.util.logging.Logger;
 public final class Connection {
 
     private static final String SEP = FileSystems.getDefault().getSeparator();
-    private static final String PROPERTIES_FILENAME = ".." + SEP + "project.properties";
-    private static final String CERTIFICATE_FOLDER_PATH = ".." + SEP + "certs" + SEP;
+    private static final String CERTIFICATE_FOLDER_PATH = "certs" + SEP;
     private static final String ENDPOINT = "a3mpt31aaosxce-ats.iot.us-west-2.amazonaws.com";
     private static final String CERTIFICATE_PATH = CERTIFICATE_FOLDER_PATH + "Drone.cert.pem";
     private static final String PRIVATE_KEY_PATH = CERTIFICATE_FOLDER_PATH + "Drone.private.key.pem";
@@ -38,27 +30,26 @@ public final class Connection {
     private final transient EventLoopGroup eventLoopGroup;
 
     private Connection() {
-        final Properties properties = new Properties();
-        try (InputStream file = new DataInputStream(Files.newInputStream(Path.of(PROPERTIES_FILENAME)))) {
-            properties.load(file);
-        } catch (IOException e) {
-            Logger.getGlobal().severe(e.getMessage());
-        } finally {
-            final String clientID = properties.getProperty("clientID");
-            this.eventLoopGroup = new EventLoopGroup(1);
-            this.clientConnection = AwsIotMqttConnectionBuilder
-                    .newMtlsBuilderFromPath(CERTIFICATE_PATH, PRIVATE_KEY_PATH)
-                    .withCertificateAuthorityFromPath(
-                            System.getProperty("os.name").contains("win") ? "" : CERTIFICATE_FOLDER_PATH,
-                            CERTIFICATE_FOLDER_PATH + "root-CA.pem")
-                    .withBootstrap(new ClientBootstrap(this.eventLoopGroup, new HostResolver(this.eventLoopGroup)))
-                    .withClientId(clientID)
-                    .withEndpoint(ENDPOINT)
-                    .withCleanSession(false)
-                    .withKeepAliveSecs(KEEP_ALIVE_SECONDS)
-                    .build();
-            this.clientConnection.connect();
-        }
+        final String clientID;
+        final String moduleName = System.getProperty("jdk.module.main");
+        if (moduleName == null && System.getProperty("java.class.path").contains("user")
+                || moduleName != null && moduleName.contains("user"))
+            clientID = "User";
+        else
+            clientID = "Drone";
+        this.eventLoopGroup = new EventLoopGroup(1);
+        this.clientConnection = AwsIotMqttConnectionBuilder
+                .newMtlsBuilderFromPath(CERTIFICATE_PATH, PRIVATE_KEY_PATH)
+                .withCertificateAuthorityFromPath(
+                        System.getProperty("os.name").contains("win") ? "" : CERTIFICATE_FOLDER_PATH,
+                        CERTIFICATE_FOLDER_PATH + "root-CA.pem")
+                .withBootstrap(new ClientBootstrap(this.eventLoopGroup, new HostResolver(this.eventLoopGroup)))
+                .withClientId(clientID)
+                .withEndpoint(ENDPOINT)
+                .withCleanSession(false)
+                .withKeepAliveSecs(KEEP_ALIVE_SECONDS)
+                .build();
+        this.clientConnection.connect();
     }
 
     /**

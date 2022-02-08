@@ -1,26 +1,6 @@
-import java.util.Properties
-
 plugins {
     id("dronesecurity-library")
     application
-}
-
-fun setProjectProperty(property: String, value: String) {
-    val properties = Properties()
-    val file = resources.text.fromFile(rootDir.path + File.separator + "project.properties").asFile()
-    if (!file.exists())
-        file.createNewFile()
-    properties.load(file.reader())
-    properties.setProperty(property, value)
-    properties.store(file.writer(), null)
-}
-
-fun setDebugMode(value: Boolean) {
-    setProjectProperty("isDebug", value.toString())
-}
-
-fun setClientID(clientID: String) {
-    setProjectProperty("clientID", clientID)
 }
 
 application {
@@ -32,29 +12,16 @@ application {
 
 tasks {
 
-    jar {
-        doFirst {
-            setDebugMode(false)
-            if (project.name == "user-application")
-                setClientID("User")
-            else
-                setClientID("Drone")
-            manifest {
-                attributes["Main-Class"] = project.extra["mainClassName"]
-                attributes["Automatic-Module-Name"] = project.extra["mainModuleName"]
+    register<Jar>("fatJar") {
+        doLast {
+            copy {
+                from(".")
+                into(destinationDirectory)
+                include("certs/")
             }
         }
-    }
-
-    val run: JavaExec by tasks
-    run.doFirst {
-        setDebugMode(true)
-    }
-
-    register<Jar>("fatJar") {
-        doFirst {
-            setDebugMode(false)
-        }
+        group = "build"
+        description = "Assembles a runnable fat jar archive containing all the needed stuff to be executed as standalone."
         archiveClassifier.set("fat")
         from(sourceSets.main.get().output)
         dependsOn(configurations.compileClasspath)

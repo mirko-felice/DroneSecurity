@@ -5,7 +5,7 @@ package it.unibo.dronesecurity.dronesystem.drone;
  */
 public class Camera extends AbstractSensor<Double> {
 
-    private final transient String scriptFilename = this.isRaspberry() ? "camera.py" : "cameraSimulator.py";
+    private final transient String scriptFilename = this.isRaspberry() ? "camera" : "cameraSimulator";
     private transient double distance;
 
     /**

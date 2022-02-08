@@ -14,6 +14,7 @@ import java.util.Random;
  */
 public class DroneService {
 
+    private static final int BUSY_WAITING_SLEEP_TIME = 250;
     private static final int TRAVELING_TIME = 5000;
     private static final int CLIENT_WAITING_TIME = 1000;
     private static final int ANALIZER_SLEEP_DURATION = 500;
@@ -26,6 +27,7 @@ public class DroneService {
     private final transient Analyzer analyzer;
     private transient Thread dataAnalyzer;
     private transient boolean active;
+    private transient boolean started;
 
     // Connection
     private transient Double proximitySensorData;
@@ -47,6 +49,7 @@ public class DroneService {
      */
     public void activateDrone() {
         this.active = true;
+        this.dataAnalyzer.start();
         Connection.getInstance().subscribe(MqttTopicConstants.ORDER_TOPIC, msg -> {
             try {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload()));
@@ -64,6 +67,7 @@ public class DroneService {
      */
     public void stopDrone() {
         this.active = false;
+        this.started = false;
         this.drone.halt();
         this.drone.getAccelerometerSensor().deactivate();
         this.drone.getCameraSensor().deactivate();
@@ -108,7 +112,7 @@ public class DroneService {
     }
 
     private void startDrone() {
-        this.dataAnalyzer.start();
+        this.started = true;
         this.drone.start();
         this.simulateDroneLifecycle();
     }
@@ -167,6 +171,11 @@ public class DroneService {
         this.dataAnalyzer = new Thread(() -> {
             try {
                 while (this.active) {
+                    if (this.started)
+                        break;
+                    Thread.sleep(BUSY_WAITING_SLEEP_TIME);
+                }
+                while (this.started) {
                     this.drone.analyzeData();
 
                     this.proximitySensorData = this.drone.getProximitySensor().getReadableValue();

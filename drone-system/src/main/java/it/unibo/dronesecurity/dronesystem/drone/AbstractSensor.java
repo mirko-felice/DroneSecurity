@@ -1,12 +1,20 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
-import org.apache.commons.exec.*;
 import it.unibo.dronesecurity.lib.CustomLogger;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.PumpStreamHandler;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.FileSystems;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Abstract sensor that defines basic sensor behaviours.
@@ -18,7 +26,7 @@ public abstract class AbstractSensor<R> implements Sensor<R> {
     private static final int COMPATIBLE_PYTHON_MAJOR_VERSION = 3;
     private static final int COMPATIBLE_PYTHON_MINOR_VERSION = 7;
     private static final int SUCCESSFUL_TERMINATION_CODE = 1;
-    private static final String SCRIPT_FOLDER = "scripts" + FileSystems.getDefault().getSeparator();
+    private static final String SCRIPT_EXTENSION = ".py";
     private static final String CMD = System.getProperty("os.name").toLowerCase(Locale.getDefault()).contains("win")
                                                                                                         ? "python "
                                                                                                         : "python3 ";
@@ -29,7 +37,7 @@ public abstract class AbstractSensor<R> implements Sensor<R> {
 
     private final transient Thread readingSensor = new Thread(() -> {
         if (this.isPythonVersionCompatible())
-            this.executeScript(SCRIPT_FOLDER + this.getScriptName());
+            this.executeScript(this.getScriptFile(this.getScriptName()));
     });
 
     /**
@@ -116,7 +124,7 @@ public abstract class AbstractSensor<R> implements Sensor<R> {
      * @return true if is Raspberry, false otherwise
      */
     protected boolean isRaspberry() {
-        this.executeScript(SCRIPT_FOLDER + "os.py");
+        this.executeScript(this.getScriptFile("os"));
 
         final String nodeName = this.outputStream.toString().trim();
         this.outputStream.reset();
@@ -144,6 +152,18 @@ public abstract class AbstractSensor<R> implements Sensor<R> {
         } catch (IOException e) {
             CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
         }
+    }
+
+    private @Nullable String getScriptFile(final String scriptFileName) {
+        try (InputStream is =
+                     Objects.requireNonNull(getClass().getResourceAsStream(scriptFileName + SCRIPT_EXTENSION))) {
+            final Path path = Files.createTempFile(scriptFileName, SCRIPT_EXTENSION);
+            Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
+            return path.toString();
+        } catch (IOException e) {
+            CustomLogger.getLogger(getClass().getName()).severe(e.getMessage(), e);
+        }
+        return null;
     }
 
 }
