@@ -7,7 +7,7 @@ import it.unibo.dronesecurity.userapplication.controller.auth.entities.BaseUser;
 import it.unibo.dronesecurity.userapplication.controller.auth.entities.Courier;
 import it.unibo.dronesecurity.userapplication.controller.auth.entities.Maintainer;
 import it.unibo.dronesecurity.userapplication.controller.auth.repo.AuthenticationRepository;
-import it.unibo.dronesecurity.userapplication.utilities.AlertUtils;
+import it.unibo.dronesecurity.lib.AlertUtils;
 import it.unibo.dronesecurity.userapplication.utilities.LoggedUser;
 import javafx.application.Platform;
 import javafx.fxml.FXML;

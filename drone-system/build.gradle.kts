@@ -9,7 +9,7 @@ dependencies  {
     implementation("org.apache.commons:commons-exec:$apacheCommonsVersion")
 }
 
-val mainClassName by extra("$group.dronesecurity.dronesystem.Activation")
+val mainClassName by extra("$group.dronesecurity.dronesystem.drone.Activation")
 val mainModuleName by extra("$group.dronesecurity.dronesystem")
 
 extraJavaModuleInfo {

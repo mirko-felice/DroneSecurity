@@ -28,7 +28,7 @@ tasks {
         from(configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) })
         manifest {
             val mainClass = project.extra["mainClassName"]
-            attributes["Main-Class"] = if (project.name == "user-application") mainClass.toString().replace("controller.Launcher", "Starter") else mainClass
+            attributes["Main-Class"] = mainClass.toString().replaceAfterLast(".", "Starter")
             attributes["Automatic-Module-Name"] = project.extra["mainModuleName"]
         }
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE

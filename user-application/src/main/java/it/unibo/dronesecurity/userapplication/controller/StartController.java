@@ -18,7 +18,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import it.unibo.dronesecurity.userapplication.utilities.AlertUtils;
+import it.unibo.dronesecurity.lib.AlertUtils;
 import it.unibo.dronesecurity.userapplication.utilities.DateHelper;
 
 import java.io.IOException;

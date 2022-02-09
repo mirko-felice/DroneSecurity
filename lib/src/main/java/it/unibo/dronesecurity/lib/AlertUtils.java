@@ -1,6 +1,7 @@
-package it.unibo.dronesecurity.userapplication.utilities;
+package it.unibo.dronesecurity.lib;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 /**
  * Provider of {@link Alert} utility methods.
@@ -32,4 +33,19 @@ public final class AlertUtils {
         alert.setContentText(contentMessage);
         alert.show();
     }
+
+    /**
+     * Shows a Confirmation {@link Alert.AlertType} {@link Alert} without header.
+     * @param title title of the alert
+     * @param contentMessage the message to show
+     * @return true if confirmation happens
+     */
+    public static boolean showConfirmationAlert(final String title, final String contentMessage) {
+        final Alert alert = new Alert(Alert.AlertType.CONFIRMATION, contentMessage, ButtonType.YES, ButtonType.NO);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.showAndWait();
+        return alert.getResult().equals(ButtonType.YES);
+    }
+
 }

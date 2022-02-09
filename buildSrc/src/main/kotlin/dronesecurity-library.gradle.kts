@@ -3,6 +3,7 @@ plugins {
     checkstyle
     pmd
     id("de.jjohannes.extra-java-module-info")
+    id("org.openjfx.javafxplugin")
 //    id("com.github.spotbugs")
 }
 
@@ -32,6 +33,11 @@ java {
 pmd {
     ruleSetConfig = resources.text.fromFile(rootDir.path + File.separator + "config" + File.separator + "pmd" + File.separator + "pmd.xml")
     ruleSets = emptyList()
+}
+
+javafx {
+    version = "17"
+    modules("javafx.controls", "javafx.fxml")
 }
 
 tasks {

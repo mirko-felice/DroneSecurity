@@ -1,6 +1,5 @@
 plugins {
     id("dronesecurity-application")
-    id("org.openjfx.javafxplugin") version "0.0.11"
 }
 
 val vertxVersion = "4.2.2"
@@ -17,11 +16,6 @@ dependencies {
 
 val mainClassName by extra("$group.dronesecurity.userapplication.controller.Launcher")
 val mainModuleName by extra("$group.dronesecurity.userapplication")
-
-javafx {
-    version = "17"
-    modules("javafx.controls", "javafx.fxml")
-}
 
 application {
     applicationDefaultJvmArgs = applicationDefaultJvmArgs.plus("--add-opens=javafx.graphics/javafx.scene=org.controlsfx.controls")
