@@ -5,7 +5,7 @@ Questo tipo di studio individua, a partire dai [casi d'uso](../useCases), i dive
 sotto-domini che compongono il dominio principale.
 
 Sono stati quindi trascritti i casi d'uso descritti precedentemente nel file
-[_domain.cml_](Application/src/main/cml/domain.cml) usufruendo di [Context Mapper](https://contextmapper.org/)
+[_domain.cml_](user-application/src/main/cml/domain.cml) usufruendo di [Context Mapper](https://contextmapper.org/)
 come framework.
 Si è quindi pensato di suddividere il dominio in tre sotto-domini:
 * **Drone**: sotto-dominio in grado di analizzare i dati ricevuti dai sensori

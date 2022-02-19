@@ -8,7 +8,10 @@ Sono stati quindi analizzati nel dettaglio ciascuno di essi:
   Il primo di questi sostanzialmente fornisce un servizio il quale, mediante le proprie entità _Order_
   e _Drone Selection_, le quali rispettivamente rappresentano l'ordine effettuato dal cliente e
   la selezione del drone, permette di svolgere la spedizione a partire da tali entità.
-  Inoltre, permette di richiamare il drone al magazzino e di poter programmare un nuovo tentativo di consegna di uno specifico ordine.
+  Inoltre, permette di richiamare il drone al magazzino e di poter programmare un nuovo tentativo
+  di consegna di uno specifico ordine con mancata consegna.
+  Come raccomandato, per evitare lo _State Pattern_ lo stato dell'ordine è stato ripensato come differenti entità
+  rappresentanti lo specifico stato.
 
   L'aggregato Client invece, provvede, tramite un servizio apposito, le seguenti funzionalità:
     * Creazione dell'ordine, a partire da un dato prodotto;
@@ -23,15 +26,19 @@ Sono stati quindi analizzati nel dettaglio ciascuno di essi:
 
   L'aggregato _Drone System_ mostra le entità principali che gli sono necessarie per offrire le funzionalità
   richieste. Il servizio principale deve infatti poter avviare il drone a partire da un dato percorso.
-  Per fare ciò è necessaria un'entità _Drone_ la quale deve poter analizzare i dati ricevuti dai sensori annessi.
+  Per fare ciò è necessaria un'entità _Drone_ la quale deve poter leggere i dati ricevuti dai sensori annessi.
   Si potrebbe quindi risolvere mediante una collezione di entità _Sensor_, la quale fornisce i propri dati aggiornati.
+  Quindi il _Drone Service_ pubblica costantemente i dati. Inoltre, mediante l'entità _Data Analyzer_ è in grado di 
+  rilevare situazioni pericolose e nel caso si verificassero inviare un avvertimento all'aggregato _User Monitoring_. 
+  Infine, esso è in grado di tracciare lo stato corrente del Drone.
 
   L'aggregato _User Monitoring_ deve invece poter gestire tutti gli eventi causati dall'analisi dei dati che sono stati
   già studiati in precedenza.
   Sono infatti presenti i seguenti _Domain Event_:
-    * _Updated Data_, per aggiornare i dati che un utente debba controllare;
+    * _Data Read_, per aggiornare i dati che un utente debba controllare;
     * _Warning Situation_, per avvisare di una situazione potenzialmente pericolosa;
-    * _Critical Situation_, per avvertire di una situazione estremamente critica.
+    * _Critical Situation_, per avvertire di una situazione estremamente critica;
+    * _Status Changed_, per informare del cambiamento di stato del Drone durante la consegna.
 
 
 * _**Issue Reporting Context**_: questo contesto si occupa di gestire solo le segnalazioni

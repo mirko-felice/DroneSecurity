@@ -6,4 +6,5 @@
   * [Ubiquitous Language](ubiquitousLanguage)
   * [Strategic Design](strategicDesign)
   * [Tactical Design](tacticalDesign)
-  
+- [Progettazione](design) 
+- [Installazione](deployment)
