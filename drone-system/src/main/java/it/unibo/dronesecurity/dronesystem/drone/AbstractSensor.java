@@ -1,15 +1,17 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
-import it.unibo.dronesecurity.lib.CustomLogger;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -19,9 +21,9 @@ import java.util.Objects;
 /**
  * Abstract sensor that defines basic sensor behaviours.
  *
- * @param <R> type of sensor data
+ * @param <SensorData> type of sensor data
  */
-public abstract class AbstractSensor<R> implements Sensor<R> {
+public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
 
     private static final int COMPATIBLE_PYTHON_MAJOR_VERSION = 3;
     private static final int COMPATIBLE_PYTHON_MINOR_VERSION = 7;
@@ -34,11 +36,6 @@ public abstract class AbstractSensor<R> implements Sensor<R> {
     private final transient DefaultExecutor executor = new DefaultExecutor();
 
     private boolean on;
-
-    private final transient Thread readingSensor = new Thread(() -> {
-        if (this.isPythonVersionCompatible())
-            this.executeScript(this.getScriptFile(this.getScriptName()));
-    });
 
     /**
      * {@inheritDoc}
@@ -53,7 +50,10 @@ public abstract class AbstractSensor<R> implements Sensor<R> {
      */
     @Override
     public void activate() {
-        this.readingSensor.start();
+        new Thread(() -> {
+            if (this.isPythonVersionCompatible())
+                this.executeScript(this.getScriptFile(this.getScriptName()));
+        }).start();
         this.setOn(true);
     }
 
@@ -71,13 +71,13 @@ public abstract class AbstractSensor<R> implements Sensor<R> {
      * {@inheritDoc}
      */
     @Override
-    public abstract void readValue();
+    public abstract void readData();
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public abstract R getReadableValue();
+    public abstract SensorData getData();
 
     /**
      * Initialize the executor for the sensor.
@@ -96,13 +96,15 @@ public abstract class AbstractSensor<R> implements Sensor<R> {
     protected boolean isPythonVersionCompatible() {
         this.executeScript("--version");
 
-        final String pythonVersion = this.outputStream.toString().trim().split(" ")[1];
+        final String[] splitPythonVersion = this.outputStream.toString(StandardCharsets.UTF_8).trim()
+                .split(" ")[1]
+                .split("\\.");
         this.outputStream.reset();
 
         //Getting major version of python
-        final int majorPythonVersion = Integer.parseInt(pythonVersion.split("\\.")[0]);
+        final int majorPythonVersion = Integer.parseInt(splitPythonVersion[0]);
         //Getting minor version of python
-        final int minorPythonVersion = Integer.parseInt(pythonVersion.split("\\.")[1]);
+        final int minorPythonVersion = Integer.parseInt(splitPythonVersion[1]);
 
         return majorPythonVersion > COMPATIBLE_PYTHON_MAJOR_VERSION
                 || majorPythonVersion == COMPATIBLE_PYTHON_MAJOR_VERSION
@@ -123,10 +125,10 @@ public abstract class AbstractSensor<R> implements Sensor<R> {
      *
      * @return true if is Raspberry, false otherwise
      */
-    protected boolean isRaspberry() {
+    protected final boolean isRaspberry() {
         this.executeScript(this.getScriptFile("os"));
 
-        final String nodeName = this.outputStream.toString().trim();
+        final String nodeName = this.outputStream.toString(StandardCharsets.UTF_8).trim();
         this.outputStream.reset();
 
         return nodeName.toLowerCase(Locale.getDefault()).contains("raspberry");
@@ -150,18 +152,18 @@ public abstract class AbstractSensor<R> implements Sensor<R> {
         try {
             this.executor.execute(cmdLine);
         } catch (IOException e) {
-            CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
+            LoggerFactory.getLogger(getClass()).error("Can NOT execute script.", e);
         }
     }
 
-    private @Nullable String getScriptFile(final String scriptFileName) {
-        try (InputStream is =
-                     Objects.requireNonNull(getClass().getResourceAsStream(scriptFileName + SCRIPT_EXTENSION))) {
+    private @Nullable String getScriptFile(final @NotNull String scriptFileName) {
+        try (InputStream is = Objects.requireNonNull(
+                AbstractSensor.class.getResourceAsStream(scriptFileName + SCRIPT_EXTENSION))) {
             final Path path = Files.createTempFile(scriptFileName, SCRIPT_EXTENSION);
             Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
             return path.toString();
         } catch (IOException e) {
-            CustomLogger.getLogger(getClass().getName()).severe(e.getMessage(), e);
+            LoggerFactory.getLogger(getClass()).error("Can NOT read script file.", e);
         }
         return null;
     }

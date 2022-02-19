@@ -26,43 +26,43 @@ public class Drone {
     /**
     * Executes the analysis of the raw data of all sensors.
     */
-    public void analyzeData() {
-        this.proximity.readValue();
-        this.accelerometer.readValue();
-        this.camera.readValue();
+    public void readAllData() {
+        this.proximity.readData();
+        this.accelerometer.readData();
+        this.camera.readData();
     }
 
     /**
-     * Gets the proximity sensor.
+     * Gets the proximity sensor data.
      *
-     * @return The proximity sensor of the drone
+     * @return The data read by the proximity sensor of the drone
      */
-    public Sensor<Double> getProximitySensor() {
-        return this.proximity;
+    public Double getProximitySensorData() {
+        return this.proximity.getData();
     }
 
     /**
-     * Gets the accelerometer.
+     * Gets the accelerometer data.
      *
-     * @return The accelerometer of the drone
+     * @return The data read by the accelerometer of the drone
     */
-    public Sensor<Map<String, Double>> getAccelerometerSensor() {
-        return this.accelerometer;
+    public Map<String, Double> getAccelerometerSensorData() {
+        return this.accelerometer.getData();
     }
 
     /**
-     * Gets the camera.
+     * Gets the camera data.
      *
-     * @return The camera of the drone
+     * @return The data read by the camera of the drone
     */
-    public Sensor<Double> getCameraSensor() {
-        return this.camera;
+    public Double getCameraSensorData() {
+        return this.camera.getData();
     }
 
     /**
-     * Starts moving the Drone.
+     * Activates the Drone, making it operative.
      */
-    public void start() {
+    public void activate() {
         this.isMoving = true;
     }
 
@@ -71,6 +71,16 @@ public class Drone {
      */
     public void halt() {
         this.isMoving = false;
+    }
+
+    /**
+     * Deactivates the Drone, making it inoperative.
+     */
+    public void deactivate() {
+        this.isMoving = false;
+        this.proximity.deactivate();
+        this.accelerometer.deactivate();
+        this.camera.deactivate();
     }
 
     /**

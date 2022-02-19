@@ -1,17 +1,17 @@
 package it.unibo.dronesecurity.userapplication.utilities;
 
+import org.apache.commons.codec.binary.Hex;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.SecureRandom;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.SecretKeyFactory;
-import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
 /**
- * .
+ * Helper class to create and check passwords.
  */
 public final class PasswordHelper {
 
@@ -27,33 +27,36 @@ public final class PasswordHelper {
     private static final int HASH_INDEX = 2;
     private static final int RADIX = 16;
 
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
     private PasswordHelper() { }
 
     /**
-     * .
+     * Generate hash from password string.
      * @param password the password to hash
      * @return the hash
-     * @throws NoSuchAlgorithmException if
-     * @throws InvalidKeySpecException if
+     * @throws NoSuchAlgorithmException if algorithm is not available
+     * @throws InvalidKeySpecException if key is invalid
      */
-    public static String createHash(final String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public static @NotNull String createHash(final @NotNull String password)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
         final byte[] salt = new byte[SALT_BYTES];
-        new SecureRandom().nextBytes(salt);
+        SECURE_RANDOM.nextBytes(salt);
 
         final byte[] hash = hash(password.toCharArray(), salt, HASH_ITERATIONS, HASH_BYTES);
         // format iterations:salt:hash
-        return HASH_ITERATIONS + ":" + toHex(salt) + ":" +  toHex(hash);
+        return HASH_ITERATIONS + ":" + Hex.encodeHexString(salt) + ":" + Hex.encodeHexString(hash);
     }
 
     /**
-     * .
+     * Checks if passwords are the same.
      * @param password the password to validate
      * @param storedPassword the real password
      * @return true if passwords are equals, otherwise false
-     * @throws NoSuchAlgorithmException if
-     * @throws InvalidKeySpecException if
+     * @throws NoSuchAlgorithmException if algorithm is not available
+     * @throws InvalidKeySpecException if key is invalid
      */
-    public static boolean validatePassword(final String password, final String storedPassword)
+    public static boolean validatePassword(final @NotNull String password, final @NotNull String storedPassword)
             throws NoSuchAlgorithmException, InvalidKeySpecException {
         // Decode the hash into its parameters
         final String[] params = storedPassword.split(":");
@@ -69,7 +72,7 @@ public final class PasswordHelper {
     }
 
     @Contract(pure = true)
-    private static boolean slowEquals(final byte[] a, final byte[] b) {
+    private static boolean slowEquals(final byte @NotNull [] a, final byte @NotNull [] b) {
         int diff = a.length ^ b.length;
         for (int i = 0; i < a.length && i < b.length; i++)
             diff |= a[i] ^ b[i];
@@ -82,7 +85,7 @@ public final class PasswordHelper {
         return SecretKeyFactory.getInstance(HASH_ALGORITHM).generateSecret(spec).getEncoded();
     }
 
-    private static byte[] fromHex(final @NotNull String hex) {
+    private static byte @NotNull [] fromHex(final @NotNull String hex) {
         final byte[] binary = new byte[hex.length() / 2];
         for (int i = 0; i < binary.length; i++) {
             binary[i] = (byte) Integer.parseInt(hex.substring(2 * i, 2 * i + 2), RADIX);
@@ -90,13 +93,4 @@ public final class PasswordHelper {
         return binary;
     }
 
-    private static @NotNull String toHex(final byte[] array) {
-        final BigInteger bi = new BigInteger(1, array);
-        final String hex = bi.toString(RADIX);
-        final int paddingLength = array.length * 2 - hex.length();
-        if (paddingLength > 0)
-            return String.format("%0" + paddingLength + "d", 0) + hex;
-        else
-            return hex;
-    }
 }

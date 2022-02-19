@@ -1,6 +1,6 @@
 package it.unibo.dronesecurity.userapplication.utilities;
 
-import it.unibo.dronesecurity.userapplication.controller.auth.entities.BaseUser;
+import it.unibo.dronesecurity.userapplication.auth.entities.BaseUser;
 
 /**
  * Helper class to set and get the current logged {@link BaseUser}.

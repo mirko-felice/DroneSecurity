@@ -2,6 +2,7 @@ package it.unibo.dronesecurity.lib;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.crt.io.ClientBootstrap;
 import software.amazon.awssdk.crt.io.EventLoopGroup;
 import software.amazon.awssdk.crt.io.HostResolver;
@@ -26,7 +27,6 @@ public final class Connection {
 
     private static final int KEEP_ALIVE_SECONDS = 6;
     private static Connection singleton;
-    // TODO final
     private final transient EventLoopGroup eventLoopGroup;
     private final transient Properties properties;
     private transient MqttClientConnection clientConnection;
@@ -59,7 +59,7 @@ public final class Connection {
     /**
      * Connects the client to the server.
      *
-     * @return {@link CompletableFuture} giving true only if connection is established correctly
+     * @return {@link CompletableFuture} giving true only if session is resumed, otherwise false
      */
     public CompletableFuture<Boolean> connect() {
         this.readProperties();
@@ -111,7 +111,7 @@ public final class Connection {
 
             this.buildConnection();
         } catch (IOException e) {
-            CustomLogger.getLogger(getClass().getName()).severe(e.getMessage(), e);
+            LoggerFactory.getLogger(getClass()).error("Can NOT read file .properties.", e);
         }
     }
 
@@ -125,7 +125,7 @@ public final class Connection {
                 .withBootstrap(new ClientBootstrap(this.eventLoopGroup, new HostResolver(this.eventLoopGroup)))
                 .withClientId(this.clientID)
                 .withEndpoint(this.endpoint)
-                .withCleanSession(false)
+                .withCleanSession(true)
                 .withKeepAliveSecs(KEEP_ALIVE_SECONDS)
                 .build();
     }

@@ -3,16 +3,16 @@ package it.unibo.dronesecurity.userapplication.events;
 /**
  * The event to be raised when the drone informs of a critical situation.
  */
-public class CriticalEvent implements Event {
-    private final String msg;
+public class CriticalSituation implements Event {
+    private final String message;
 
     /**
      * Instantiates the Critical event.
      *
-     * @param msg message that was received
+     * @param message message that was received
      */
-    public CriticalEvent(final String msg) {
-        this.msg = msg;
+    public CriticalSituation(final String message) {
+        this.message = message;
     }
 
     /**
@@ -20,7 +20,7 @@ public class CriticalEvent implements Event {
      *
      * @return the message read by the event
      */
-    public String getMsg() {
-        return this.msg;
+    public String getMessage() {
+        return this.message;
     }
 }

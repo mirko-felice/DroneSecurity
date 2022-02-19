@@ -1,9 +1,9 @@
 package it.unibo.dronesecurity.userapplication.shipping.courier.entities;
 
-import it.unibo.dronesecurity.userapplication.shipping.courier.specifications.NoEmptyProduct;
 import it.unibo.dronesecurity.userapplication.utilities.DateHelper;
+import it.unibo.dronesecurity.userapplication.utilities.EmptyProductException;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -13,29 +13,65 @@ import java.util.StringJoiner;
 public abstract class AbstractOrder implements Order {
 
     private final transient String id;
-    private final transient Date orderDate;
     private final transient String product;
+    private final transient Instant placingDate;
+    private final transient Instant estimatedArrival;
 
     /**
-     * Construct a generic Order.
-     * @param currentOrder the current state of a generic Order
+     * Build a generic Order.
+     * @param id the order identifier
+     * @param product the ordered product
+     * @param placingDate the date in which the order has been placed
+     * @param estimatedArrival the date in which the order should arrive
      */
-    protected AbstractOrder(final OrderSnapshot currentOrder) {
-        if (!new NoEmptyProduct().isSatisfiedBy(currentOrder))
-            throw new IllegalArgumentException("Product MUST NOT be null or empty!");
+    protected AbstractOrder(final String id, final String product, final Instant placingDate,
+                            final Instant estimatedArrival) {
+        if (product == null || product.isEmpty())
+            throw new EmptyProductException();
 
-        this.product = currentOrder.getProduct();
-        this.id = currentOrder.getId(); // TODO think about new id generation (should get last id)
-        this.orderDate = currentOrder.getOrderDate();
+        this.id = id; // TODO think about new id generation (should get last id)
+        this.product = product;
+        this.placingDate = placingDate;
+        this.estimatedArrival = estimatedArrival; // TODO check estimated is after placing
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public OrderSnapshot getSnapshot() {
-        return new OrderSnapshot(this.id, this.product, this.orderDate);
+    public String getId() {
+        return this.id;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getProduct() {
+        return this.product;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Instant getPlacingDate() {
+        return this.placingDate;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Instant getEstimatedArrival() {
+        return this.estimatedArrival;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public abstract String getCurrentState();
 
     /**
      * {@inheritDoc}
@@ -44,9 +80,9 @@ public abstract class AbstractOrder implements Order {
     public String toString() {
         return new StringJoiner(", ", "Order" + "[", "]")
                 .add("id='" + this.id + "'")
-                .add("orderDate=" + DateHelper.FORMATTER.format(this.orderDate))
+                .add("placingDate=" + DateHelper.FORMATTER.format(this.placingDate))
                 .add("product='" + this.product + "'")
-                .add(getCurrentState())
+                .add(this.getCurrentState())
                 .toString();
     }
 
@@ -58,7 +94,8 @@ public abstract class AbstractOrder implements Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final AbstractOrder that = (AbstractOrder) o;
-        return this.orderDate.equals(that.orderDate) && this.id.equals(that.id) && this.product.equals(that.product);
+        return this.placingDate.equals(that.placingDate) && this.id.equals(that.id)
+                && this.product.equals(that.product);
     }
 
     /**
@@ -66,6 +103,6 @@ public abstract class AbstractOrder implements Order {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.orderDate, this.product);
+        return Objects.hash(this.id, this.placingDate, this.product);
     }
 }

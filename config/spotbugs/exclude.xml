@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter
+        xmlns="https://github.com/spotbugs/filter/3.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
+    <Match>
+        <Bug pattern="DM_EXIT" />
+    </Match>
+
+    <Match>
+        <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
+    </Match>
+
+    <Match>
+        <Bug pattern="CRLF_INJECTION_LOGS" />
+    </Match>
+
+    <Match>
+        <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING" />
+    </Match>
+
+    <Match>
+        <Bug pattern="PATH_TRAVERSAL_IN" />
+    </Match>
+
+    <Match>
+        <Bug pattern="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY" />
+        <Class name="it.unibo.dronesecurity.userapplication.shipping.courier.entities.RescheduledOrder" />
+    </Match>
+
+</FindBugsFilter>

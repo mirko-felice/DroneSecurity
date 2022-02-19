@@ -1,10 +1,10 @@
-package it.unibo.dronesecurity.userapplication.controller.auth.repo;
+package it.unibo.dronesecurity.userapplication.auth.repo;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
-import it.unibo.dronesecurity.userapplication.controller.auth.entities.BaseUser;
+import it.unibo.dronesecurity.userapplication.auth.entities.BaseUser;
 import it.unibo.dronesecurity.userapplication.utilities.PasswordHelper;
 
 import java.security.NoSuchAlgorithmException;
@@ -35,7 +35,7 @@ public final class AuthenticationRepositoryImpl implements AuthenticationReposit
                                 && PasswordHelper.validatePassword(user.getPassword(),
                                 userFound.getString("password"));
                     } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-                        return false;
+                        return Boolean.FALSE;
                     }
                 });
     }

@@ -110,7 +110,10 @@
           "product": {
             "type": "string"
           },
-          "orderDate": {
+          "placingDate": {
+            "$ref": "#/components/schemas/OrderDate"
+          },
+          "estimatedArrival": {
             "$ref": "#/components/schemas/OrderDate"
           }
         }

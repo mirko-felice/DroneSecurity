@@ -1,13 +1,12 @@
 package it.unibo.dronesecurity.userapplication.controller;
 
-import io.vertx.ext.web.client.WebClient;
-import it.unibo.dronesecurity.lib.CustomLogger;
-import it.unibo.dronesecurity.userapplication.controller.auth.Role;
-import it.unibo.dronesecurity.userapplication.controller.auth.entities.BaseUser;
-import it.unibo.dronesecurity.userapplication.controller.auth.entities.Courier;
-import it.unibo.dronesecurity.userapplication.controller.auth.entities.Maintainer;
-import it.unibo.dronesecurity.userapplication.controller.auth.repo.AuthenticationRepository;
 import it.unibo.dronesecurity.lib.AlertUtils;
+import it.unibo.dronesecurity.userapplication.auth.entities.Role;
+import it.unibo.dronesecurity.userapplication.auth.entities.BaseUser;
+import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
+import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
+import it.unibo.dronesecurity.userapplication.auth.repo.AuthenticationRepository;
+import it.unibo.dronesecurity.userapplication.utilities.ClientHelper;
 import it.unibo.dronesecurity.userapplication.utilities.LoggedUser;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -18,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,23 +29,13 @@ import java.util.ResourceBundle;
 public final class AuthenticationController implements Initializable {
 
     private static final String COURIER_FXML = "orders.fxml";
-    private final transient WebClient client;
     @FXML private transient TextField usernameField;
     @FXML private transient PasswordField passwordField;
     @FXML private transient TextField visiblePasswordField;
     @FXML private transient Glyph showPasswordGlyph;
     @FXML private transient ComboBox<Role> roleComboBox;
     @FXML private transient Button loginButton;
-    @FXML private transient Label validationLabel;
     private transient boolean isPasswordShown;
-
-    /**
-     * Build the controller.
-     * @param client the client to interact with services
-     */
-    public AuthenticationController(final WebClient client) {
-        this.client = client;
-    }
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -88,20 +78,19 @@ public final class AuthenticationController implements Initializable {
                             ((Stage) this.loginButton.getScene().getWindow()).close();
                             final URL fileUrl = getClass().getResource(COURIER_FXML);
                             final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-                            fxmlLoader.setController(new StartController(this.client));
+                            fxmlLoader.setController(new OrdersController());
                             final Scene scene = new Scene(fxmlLoader.load());
                             final Stage stage = new Stage();
                             stage.setScene(scene);
                             stage.setTitle("Orders");
                             stage.setOnCloseRequest(event -> {
-                                this.client.close();
+                                ClientHelper.WEB_CLIENT.close();
                                 Platform.exit();
                                 System.exit(0);
                             });
                             stage.show();
                         } catch (IOException e) {
-                            CustomLogger.getLogger(getClass().getName())
-                                    .severe("Error creating the new window:", e);
+                            LoggerFactory.getLogger(getClass()).error("Error creating the new window:", e);
                         }
                     else
                         AlertUtils.showErrorAlert("Username and/or passwords are wrong!");

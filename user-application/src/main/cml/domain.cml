@@ -11,56 +11,78 @@ ContextMap DroneManagementMap {
 BoundedContext DroneContext implements Drone {
 	type = FEATURE
 	
-	Aggregate DroneSystem {
-		
-		enum SensorType {
-			PROXIMITY, ACCELEROMETER, CAMERA
-		}
+	Aggregate Drone {
 		
 		ValueObject SensorData
 		ValueObject Path
 		
 		Entity Sensor {
-			String name
-			- SensorType sensorType
 			- SensorData data
+			
+			def void activate();
+			def void deactivate();
+			def void isOn();
+			def void readData();
+			def SensorData getData();
+		}
+		
+		Service DataAnalyzer {
+			@AlertLevel checkDataAlertLevel(@SensorData sensorData);
+		}
+		
+		enum AlertLevel {
+			NONE, WARNING, CRITICAL;
 		}
 		
 		Entity Drone {
 			String id
 			- List<Sensor> sensors
 
-			def @SensorData analyzeData();
-			def private void preventAccident();
+			def void readAllData();
+			def @SensorData getAllData();
+			def void activate();
+			def void halt();
+			def void deactivate();
+			def boolean isOperating();
 		}
 		
-		DomainEvent UpdatedData {
-			- SensorData sensorData
+		DomainEvent StatusChanged {
+			String status
+		}
+		
+		DomainEvent DataRead {
+			- List<SensorData> sensorData
 		}
 		
 		DomainEvent WarningSituation {
-			- SensorData sensorData
+			String message
 		}
 		
 		DomainEvent CriticalSituation {
-			- SensorData sensorData
+			String message
 		}
 		
 		Service DroneService {
 			@Drone drone;
 			
-			void startDrone(@Path path_);
+			void waitForDeliveryAssignment();
+			private void startDrone(@Path path_);
+			private void stopDrone();
+			
+			private void publishData();
+			private void publishAlert();
+			private void publishCurrentStatus();
 		}
 	}
 	
 	Aggregate UserMonitoring {
-		Entity User
 		
 		Service UserMonitoringService {
 			
-			void onWarningSituation();
-			void onCriticalSituation();
-			void onDataReceived();
+			void subscribeToDataRead(@DataRead domainEvent);
+			void subscribeToWarningSituation(@WarningSituation domainEvent);
+			void subscribeToCriticalSituation(@CriticalSituation domainEvent);
+			void subscribeToDroneStatusChange(@StatusChanged domainEvent);
 		}
 	}
 }
@@ -141,18 +163,37 @@ BoundedContext ShippingContext implements Shipping {
 	
 	Aggregate CourierShipping {
 		
-		Entity Order {
+		abstract Entity Order {
 			String id
-			Date estimatedArrival
 			String product
+			Date placingDate
+			Date estimatedArrival
+			
+			Repository OrderRepository {
+				List<@Order> getOrders();
+				@Order getOrderById(String orderId);
+				void delivering(@DeliveringOrder order);
+				void confirmedDelivery(@DeliveredOrder order);
+				void failedDelivery(@FailedOrder order);
+			}
 		}
 		
+		Entity PlacedOrder extends Order
+		
+		Entity DeliveringOrder extends Order
+		
+		Entity DeliveredOrder extends Order
+		
+		Entity FailedOrder extends Order
+	
+		Entity RescheduledOrder extends PlacedOrder
+			
 		Entity DroneSelection
 		
 		Service CourierShippingService {
-			void performDelivery(@Order order, @DroneSelection droneSelection);
+			void performDelivery(@PlacedOrder order, @DroneSelection droneSelection);
 			void callBack(@DroneSelection droneSelection);
-			Date rescheduleDelivery(@Order order);
+			Date rescheduleDelivery(@FailedOrder order);
 		}
 	}
 	

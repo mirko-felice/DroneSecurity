@@ -1,6 +1,5 @@
 package it.unibo.dronesecurity.userapplication.shipping.courier.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import it.unibo.dronesecurity.userapplication.shipping.courier.serializers.OrderDeserializer;
@@ -8,7 +7,8 @@ import it.unibo.dronesecurity.userapplication.shipping.courier.serializers.Order
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 // TODO probably Client will be linked
 /**
@@ -16,14 +16,31 @@ import java.util.Date;
  */
 @JsonDeserialize(using = OrderDeserializer.class)
 @JsonSerialize(using = OrderSerializer.class)
-@JsonIgnoreProperties(ignoreUnknown = true)
 public interface Order {
 
     /**
-     * Returns a snapshot of the current Order.
-     * @return an {@link OrderSnapshot} instance representing the current state of the Order
+     * Returns the order identifier.
+     * @return the order ID
      */
-    OrderSnapshot getSnapshot();
+    String getId();
+
+    /**
+     * Returns the ordered product.
+     * @return the product
+     */
+    String getProduct();
+
+    /**
+     * Returns the date in which the order has been placed.
+     * @return the placing date
+     */
+    Instant getPlacingDate();
+
+    /**
+     * Returns the date in which the order should arrive.
+     * @return the estimated arrival
+     */
+    Instant getEstimatedArrival();
 
     /**
      * Get the current state of the Order.
@@ -39,6 +56,7 @@ public interface Order {
      */
     @Contract("_ -> new")
     static @NotNull PlacedOrder placeToday(final String product) {
-        return new PlacedOrder(new OrderSnapshot(String.valueOf(0), product, new Date()));
+        final Instant now = Instant.now();
+        return new PlacedOrder(String.valueOf(0), product,  now, now.plus(1, ChronoUnit.DAYS));
     }
 }

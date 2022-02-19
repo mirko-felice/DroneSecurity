@@ -13,13 +13,6 @@ application {
 tasks {
 
     register<Jar>("fatJar") {
-        doLast {
-            copy {
-                from(".")
-                into(destinationDirectory)
-                include("certs/")
-            }
-        }
         group = "build"
         description = "Assembles a runnable fat jar archive containing all the needed stuff to be executed as standalone."
         archiveClassifier.set("fat")
@@ -28,7 +21,9 @@ tasks {
         from(configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) })
         manifest {
             val mainClass = project.extra["mainClassName"]
-            attributes["Main-Class"] = mainClass.toString().replaceAfterLast(".", "Starter")
+            val lastName = mainClass.toString().substring(mainClass.toString().lastIndexOf("."))
+            val withoutLastName = mainClass.toString().replace(lastName, "")
+            attributes["Main-Class"] = withoutLastName.replaceAfterLast(".", "Starter")
             attributes["Automatic-Module-Name"] = project.extra["mainModuleName"]
         }
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE

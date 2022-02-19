@@ -5,4 +5,6 @@ open module it.unibo.dronesecurity.dronesystem {
     requires org.apache.commons.exec;
     requires org.jetbrains.annotations;
     requires com.fasterxml.jackson.databind;
+    requires software.amazon.awssdk;
+    requires org.slf4j;
 }

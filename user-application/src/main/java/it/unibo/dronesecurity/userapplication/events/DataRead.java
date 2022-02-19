@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * The event to be raised when the drone publishes its sensor data.
  */
-public class DataReadEvent implements Event {
+public class DataRead implements Event {
     private final double proximity;
     private final Map<String, Double> accelerometerData;
     private final double cameraData;
@@ -17,16 +17,16 @@ public class DataReadEvent implements Event {
      * @param accelerometer data read by the accelerometer
      * @param camera data read by the camera
      */
-    public DataReadEvent(final double proximity, final Map<String, Double> accelerometer, final double camera) {
+    public DataRead(final double proximity, final Map<String, Double> accelerometer, final double camera) {
         this.proximity = proximity;
-        this.accelerometerData = accelerometer;
+        this.accelerometerData = Map.copyOf(accelerometer);
         this.cameraData = camera;
     }
 
     /**
      * Gets proximity sensor data.
      *
-     * @return value read bt the proximity sensor
+     * @return value read by the proximity sensor
      */
     public double getProximity() {
         return this.proximity;
@@ -35,16 +35,16 @@ public class DataReadEvent implements Event {
     /**
      * Gets accelerometer data.
      *
-     * @return value read bt the accelerometer
+     * @return value read by the accelerometer
      */
     public Map<String, Double> getAccelerometerData() {
-        return this.accelerometerData;
+        return Map.copyOf(this.accelerometerData);
     }
 
     /**
      * Gets camera data.
      *
-     * @return value read bt the camera
+     * @return value read by the camera
      */
     public double getCameraData() {
         return this.cameraData;

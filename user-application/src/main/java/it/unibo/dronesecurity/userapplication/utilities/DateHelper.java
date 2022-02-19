@@ -1,7 +1,7 @@
 package it.unibo.dronesecurity.userapplication.utilities;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 /**
@@ -13,7 +13,8 @@ public final class DateHelper {
     /**
      * Date Formatter to parse and format date values.
      */
-    public static final DateFormat FORMATTER = new SimpleDateFormat(ORDER_DATE_FORMAT, Locale.ITALY);
+    public static final DateTimeFormatter FORMATTER =
+            DateTimeFormatter.ofPattern(ORDER_DATE_FORMAT, Locale.ITALY).withZone(ZoneId.systemDefault());
 
     private DateHelper() { }
 }

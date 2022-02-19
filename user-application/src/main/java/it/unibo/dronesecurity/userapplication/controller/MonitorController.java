@@ -7,12 +7,14 @@ import it.unibo.dronesecurity.userapplication.drone.monitoring.UserMonitoringSer
 import it.unibo.dronesecurity.userapplication.events.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.Map;
@@ -23,10 +25,10 @@ import java.util.ResourceBundle;
  */
 public final class MonitorController implements Initializable {
 
-    private static final DomainEvents<DataReadEvent> DATA_READER_DOMAIN_EVENTS = new DomainEvents<>();
-    private static final DomainEvents<WarningEvent> WARNING_DOMAIN_EVENTS = new DomainEvents<>();
-    private static final DomainEvents<CriticalEvent> CRITICAL_DOMAIN_EVENTS = new DomainEvents<>();
-    private static final DomainEvents<StatusChangedEvent> STATUS_CHANGED_DOMAIN_EVENTS = new DomainEvents<>();
+    private static final DomainEvents<DataRead> DATA_READER_DOMAIN_EVENTS = new DomainEvents<>();
+    private static final DomainEvents<WarningSituation> WARNING_DOMAIN_EVENTS = new DomainEvents<>();
+    private static final DomainEvents<CriticalSituation> CRITICAL_DOMAIN_EVENTS = new DomainEvents<>();
+    private static final DomainEvents<StatusChanged> STATUS_CHANGED_DOMAIN_EVENTS = new DomainEvents<>();
 
     private static final String STATUS_STRING = "Status: ";
     private static final String STARTING_STRING = "starting";
@@ -69,10 +71,10 @@ public final class MonitorController implements Initializable {
         CRITICAL_DOMAIN_EVENTS.register(this::onCritical);
         STATUS_CHANGED_DOMAIN_EVENTS.register(this::onStatusChanged);
 
-        this.monitoringService.subscribeToDataReading(DATA_READER_DOMAIN_EVENTS);
-        this.monitoringService.subscribeToWarning(WARNING_DOMAIN_EVENTS);
-        this.monitoringService.subscribeToCritical(CRITICAL_DOMAIN_EVENTS);
-        this.monitoringService.subscribeToStatusChanges(STATUS_CHANGED_DOMAIN_EVENTS);
+        this.monitoringService.subscribeToDataRead(DATA_READER_DOMAIN_EVENTS);
+        this.monitoringService.subscribeToWarningSituation(WARNING_DOMAIN_EVENTS);
+        this.monitoringService.subscribeToCriticalSituation(CRITICAL_DOMAIN_EVENTS);
+        this.monitoringService.subscribeToDroneStatusChange(STATUS_CHANGED_DOMAIN_EVENTS);
 
         this.proximityPreviousDataColumn.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue()));
@@ -100,39 +102,40 @@ public final class MonitorController implements Initializable {
 
     }
 
-    private void onDataRead(final DataReadEvent dataReadEvent) {
+    private void onDataRead(final DataRead dataRead) {
         Platform.runLater(() -> {
             if (!this.proximityCurrentData.getText().isEmpty())
-                this.proximityPreviousData.getItems().add(0, Double.parseDouble(this.proximityCurrentData.getText()));
+                this.proximityPreviousData.getItems().add(0, Double.valueOf(this.proximityCurrentData.getText()));
 
-            if (!this.accelerometerCurrentData.getItems().isEmpty())
-                this.accelerometerPreviousData.getItems().add(0, this.accelerometerCurrentData.getItems().get(0));
+            final ObservableList<Map<String, Double>> accelerometerValues = this.accelerometerCurrentData.getItems();
+            if (!accelerometerValues.isEmpty())
+                this.accelerometerPreviousData.getItems().add(0, accelerometerValues.get(0));
 
             if (!this.cameraCurrentData.getText().isEmpty())
-                this.cameraPreviousData.getItems().add(0, Double.parseDouble(this.cameraCurrentData.getText()));
+                this.cameraPreviousData.getItems().add(0, Double.valueOf(this.cameraCurrentData.getText()));
 
-            this.proximityCurrentData.setText(String.valueOf(dataReadEvent.getProximity()));
+            this.proximityCurrentData.setText(String.valueOf(dataRead.getProximity()));
 
-            this.accelerometerCurrentData.getItems().clear();
-            this.accelerometerCurrentData.getItems().add(dataReadEvent.getAccelerometerData());
+            accelerometerValues.clear();
+            accelerometerValues.add(dataRead.getAccelerometerData());
 
-            this.cameraCurrentData.setText(String.valueOf(dataReadEvent.getCameraData()));
+            this.cameraCurrentData.setText(String.valueOf(dataRead.getCameraData()));
         });
     }
 
-    private void onWarning(final WarningEvent warningEvent) {
+    private void onWarning(final WarningSituation warningSituation) {
         Platform.runLater(() -> {
-            CustomLogger.getLogger(getClass().getName()).info(warningEvent.getMsg());
+            LoggerFactory.getLogger(getClass()).info(warningSituation.getMessage());
         });
     }
 
-    private void onCritical(final CriticalEvent criticalEvent) {
+    private void onCritical(final CriticalSituation criticalSituation) {
         Platform.runLater(() -> {
-            CustomLogger.getLogger(getClass().getName()).info(criticalEvent.getMsg());
+            LoggerFactory.getLogger(getClass()).info(criticalSituation.getMessage());
         });
     }
 
-    private void onStatusChanged(final StatusChangedEvent statusEvent) {
+    private void onStatusChanged(final StatusChanged statusEvent) {
         Platform.runLater(() -> {
             this.statusLabel.setText(STATUS_STRING + statusEvent.getStatus());
             if (MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(statusEvent.getStatus())

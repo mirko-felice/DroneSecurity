@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
-import org.jetbrains.annotations.NotNull;
 import it.unibo.dronesecurity.userapplication.utilities.DateHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
@@ -15,12 +15,13 @@ import java.io.IOException;
 public final class OrderSerializer extends JsonSerializer<Order> {
 
     @Override
-    public void serialize(final Order value, final @NotNull JsonGenerator gen, final SerializerProvider serializers)
-            throws IOException {
+    public void serialize(final @NotNull Order value, final @NotNull JsonGenerator gen,
+                          final SerializerProvider serializers) throws IOException {
         gen.writeStartObject();
-        gen.writeStringField("id", value.getSnapshot().getId());
-        gen.writeStringField("product", value.getSnapshot().getProduct());
-        gen.writeStringField("orderDate", DateHelper.FORMATTER.format(value.getSnapshot().getOrderDate()));
+        gen.writeStringField("id", value.getId());
+        gen.writeStringField("product", value.getProduct());
+        gen.writeStringField("placingDate", DateHelper.FORMATTER.format(value.getPlacingDate()));
+        gen.writeStringField("estimatedArrival", DateHelper.FORMATTER.format(value.getEstimatedArrival()));
         gen.writeArrayFieldStart("events");
         gen.writeString(value.getCurrentState());
         gen.writeEndArray();

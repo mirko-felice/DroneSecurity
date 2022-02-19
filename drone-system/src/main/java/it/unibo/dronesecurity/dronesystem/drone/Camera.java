@@ -1,11 +1,12 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Item representing a real camera sensor and observing its values.
  */
 public class Camera extends AbstractSensor<Double> {
 
-    private final transient String scriptFilename = this.isRaspberry() ? "camera" : "cameraSimulator";
     private transient double distance;
 
     /**
@@ -13,16 +14,16 @@ public class Camera extends AbstractSensor<Double> {
      */
     @Override
     protected String getScriptName() {
-        return this.scriptFilename;
+        return this.isRaspberry() ? "camera" : "cameraSimulator";
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void readValue() {
+    public void readData() {
         if (getOutputStream().size() > 0) {
-            final String[] values = getOutputStream().toString().trim().split("\n");
+            final String[] values = getOutputStream().toString(StandardCharsets.UTF_8).trim().split("\n");
             this.distance = Double.parseDouble(values[values.length - 1]);
             getOutputStream().reset();
         }
@@ -32,7 +33,7 @@ public class Camera extends AbstractSensor<Double> {
      * {@inheritDoc}
      */
     @Override
-    public Double getReadableValue() {
+    public Double getData() {
         return this.distance;
     }
 }

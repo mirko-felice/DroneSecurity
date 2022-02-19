@@ -1,39 +1,44 @@
 package it.unibo.dronesecurity.userapplication.shipping.courier.entities;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * Represents an {@link Order} that failed to being delivered.
  */
-@JsonDeserialize(as = FailedOrder.class)
-public class FailedOrder extends AbstractOrder {
+public final class FailedOrder extends AbstractOrder {
 
     /**
-     * Construct the FailedOrder.
-     * @param currentOrder the current state of the Order
+     * Build the failed Order.
+     * @param id the order identifier
+     * @param product the ordered product
+     * @param placingDate the date in which the order has been placed
+     * @param estimatedArrival the date in which the order should have arrived
      */
-    @JsonCreator
-    public FailedOrder(final OrderSnapshot currentOrder) {
-        super(currentOrder);
+    public FailedOrder(final String id, final String product, final Instant placingDate,
+                       final Instant estimatedArrival) {
+        super(id, product, placingDate, estimatedArrival);
     }
 
     /**
      * Reschedule the Order to be delivered the given @Date.
-     * @param newEstimatedArrival new Date the Order will be delivered
+     * @param newEstimatedArrival the new date in which the order should arrive
      * @return the {@link Order} that has been rescheduled
      */
-    public RescheduledOrder rescheduleDelivery(final Date newEstimatedArrival) {
-        return new RescheduledOrder(getSnapshot());
+    @Contract("_ -> new")
+    public @NotNull RescheduledOrder rescheduleDelivery(final Instant newEstimatedArrival) {
+        return new RescheduledOrder(this.getId(), this.getProduct(), this.getPlacingDate(),
+                this.getEstimatedArrival(), newEstimatedArrival);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Contract(pure = true)
     @Override
-    public String getCurrentState() {
+    public @NotNull String getCurrentState() {
         return "Order fails delivery.";
     }
 }

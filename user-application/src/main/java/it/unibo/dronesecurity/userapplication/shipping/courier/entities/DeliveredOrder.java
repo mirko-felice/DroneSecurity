@@ -1,28 +1,32 @@
 package it.unibo.dronesecurity.userapplication.shipping.courier.entities;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
+import java.time.Instant;
 
 /**
  * Represents an {@link Order} that has been successfully delivered.
  */
-@JsonDeserialize(as = DeliveredOrder.class)
-public class DeliveredOrder extends AbstractOrder {
+public final class DeliveredOrder extends AbstractOrder {
 
     /**
-     * Construct the DeliveredOrder.
-     * @param currentOrder the current state of the Order
+     * Build the delivered Order.
+     * @param id the order identifier
+     * @param product the ordered product
+     * @param placingDate the date in which the order has been placed
+     * @param arrival the date in which the order arrived
      */
-    @JsonCreator
-    public DeliveredOrder(final OrderSnapshot currentOrder) {
-        super(currentOrder);
+    public DeliveredOrder(final String id, final String product, final Instant placingDate, final Instant arrival) {
+        super(id, product, placingDate, arrival);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Contract(pure = true)
     @Override
-    public String getCurrentState() {
+    public @NotNull String getCurrentState() {
         return "Order is delivered.";
     }
 }

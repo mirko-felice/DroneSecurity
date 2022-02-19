@@ -11,7 +11,7 @@ dependencies {
     implementation("io.vertx:vertx-web-client:$vertxVersion")
     implementation("io.vertx:vertx-mongo-client:$vertxVersion")
     implementation("org.controlsfx:controlsfx:11.1.1")
-    implementation("org.slf4j:slf4j-nop:1.7.32")
+    implementation("commons-codec:commons-codec:1.15")
 }
 
 val mainClassName by extra("$group.dronesecurity.userapplication.controller.Launcher")

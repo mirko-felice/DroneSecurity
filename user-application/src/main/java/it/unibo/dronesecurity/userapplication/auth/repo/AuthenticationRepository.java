@@ -1,7 +1,7 @@
-package it.unibo.dronesecurity.userapplication.controller.auth.repo;
+package it.unibo.dronesecurity.userapplication.auth.repo;
 
 import io.vertx.core.Future;
-import it.unibo.dronesecurity.userapplication.controller.auth.entities.BaseUser;
+import it.unibo.dronesecurity.userapplication.auth.entities.BaseUser;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

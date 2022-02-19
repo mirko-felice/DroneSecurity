@@ -1,20 +1,22 @@
 package it.unibo.dronesecurity.userapplication.shipping.courier.repo;
 
-import io.vertx.core.*;
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
-import it.unibo.dronesecurity.lib.CustomLogger;
-import it.unibo.dronesecurity.userapplication.shipping.courier.entities.DeliveringOrder;
-import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
-import it.unibo.dronesecurity.userapplication.shipping.courier.entities.OrderSnapshot;
-import it.unibo.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
+import it.unibo.dronesecurity.userapplication.shipping.courier.entities.*;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.security.SecureRandom;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +30,7 @@ public final class OrderRepositoryImpl implements OrderRepository {
             "HDD", "SSD", "MOUSE", "KEYBOARD", "HEADSET", "MONITOR", "WEBCAM", "CONTROLLER", "USB", "HDMI" };
     private static OrderRepositoryImpl singleton;
     private final transient MongoClient database;
+    private final transient SecureRandom randomGenerator = new SecureRandom();
 
     private OrderRepositoryImpl() {
         final JsonObject config = new JsonObject();
@@ -53,7 +56,7 @@ public final class OrderRepositoryImpl implements OrderRepository {
         return this.database.find(COLLECTION_NAME, new JsonObject())
                 .transform(orders -> {
                     List<Order> returningOrders;
-                    if (orders.result().size() == 0) {
+                    if (orders.result().isEmpty()) {
                         fakeOrders.forEach(order ->
                                 this.database.save(COLLECTION_NAME, JsonObject.mapFrom(order)));
                         returningOrders = fakeOrders;
@@ -69,9 +72,30 @@ public final class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public Future<Order> getOrderById(final String orderId) {
+        return this.database.findOne(COLLECTION_NAME, new JsonObject().put("id", orderId), null)
+                .map(o -> Json.decodeValue(o.toString(), Order.class))
+                .otherwiseEmpty();
+    }
+
+    @Override
     public void delivering(final @NotNull DeliveringOrder order) {
+        this.updateOrderEvents(order);
+    }
+
+    @Override
+    public void confirmedDelivery(final DeliveredOrder order) {
+        this.updateOrderEvents(order);
+    }
+
+    @Override
+    public void failedDelivery(final FailedOrder order) {
+        this.updateOrderEvents(order);
+    }
+
+    private void updateOrderEvents(final @NotNull Order order) {
         final JsonObject query = new JsonObject();
-        query.put("id", order.getSnapshot().getId());
+        query.put("id", order.getId());
         final JsonObject update = new JsonObject();
         final JsonObject what = new JsonObject();
         what.put("events", order.getCurrentState());
@@ -82,19 +106,21 @@ public final class OrderRepositoryImpl implements OrderRepository {
     // TODO delete it when using real orders
     private @NotNull List<Order> generateFakeOrders() {
         final List<Order> orders = new ArrayList<>();
-        final Random r = new Random();
-        for (int i = 0; i <= r.nextInt(FAKE_PRODUCTS_MAX_VALUE); i++)
-            try {
-                final String product = FAKE_PRODUCTS[r.nextInt(FAKE_PRODUCTS_MAX_VALUE)];
-                orders.add(this.generateOrder(i, product));
-                Thread.sleep(1); // it will be deleted, only to differentiate dates
-            } catch (InterruptedException e) {
-                CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
-            }
+        final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        for (int i = 0; i <= this.randomGenerator.nextInt(FAKE_PRODUCTS_MAX_VALUE); i++) {
+            final int j = i;
+            executor.schedule(() -> {
+                final String product = FAKE_PRODUCTS[this.randomGenerator.nextInt(FAKE_PRODUCTS_MAX_VALUE)];
+                orders.add(this.generateOrder(j, product));
+            }, 1, TimeUnit.MILLISECONDS);
+        }
+        executor.shutdown();
         return orders;
     }
 
-    private Order generateOrder(final int i, final String product) {
-        return new PlacedOrder(new OrderSnapshot(String.valueOf(i), product, new Date()));
+    @Contract("_, _ -> new")
+    private @NotNull Order generateOrder(final int i, final String product) {
+        final Instant now = Instant.now();
+        return new PlacedOrder(String.valueOf(i), product, now, now.plus(1, ChronoUnit.DAYS));
     }
 }

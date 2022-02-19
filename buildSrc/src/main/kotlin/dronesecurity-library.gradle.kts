@@ -1,13 +1,13 @@
+import com.github.spotbugs.snom.Confidence
+
 plugins {
     `java-library`
     checkstyle
     pmd
     id("de.jjohannes.extra-java-module-info")
     id("org.openjfx.javafxplugin")
-//    id("com.github.spotbugs")
+    id("com.github.spotbugs")
 }
-
-group = "it.unibo"
 
 val awsCrtVersion = "0.15.15"
 val awsIotVersion = "1.5.4"
@@ -22,6 +22,9 @@ dependencies {
     implementation("software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk:$awsIotVersion")
     implementation("software.amazon.awssdk.crt:aws-crt:$awsCrtVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
+    spotbugsPlugins("com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.0")
+    spotbugsPlugins("com.mebigfatguy.sb-contrib:sb-contrib:7.4.7")
+    implementation("ch.qos.logback:logback-classic:1.2.10")
 }
 
 java {
@@ -31,8 +34,13 @@ java {
 }
 
 pmd {
-    ruleSetConfig = resources.text.fromFile(rootDir.path + File.separator + "config" + File.separator + "pmd" + File.separator + "pmd.xml")
+    ruleSetConfig = resources.text.fromFile(rootDir.path + properties["pmd.config"])
     ruleSets = emptyList()
+}
+
+spotbugs {
+    reportLevel.set(Confidence.MIN_VALUE)
+    excludeFilter.set(file(rootDir.path + properties["spotbugs.excludeFile"].toString()))
 }
 
 javafx {
@@ -50,6 +58,31 @@ tasks {
 
     test {
         useJUnitPlatform()
+    }
+
+    spotbugsMain {
+        reports {
+            enabledReports.add(create("html"))
+        }
+    }
+
+    spotbugsTest {
+        reports {
+            enabledReports.add(create("html"))
+        }
+    }
+
+    javadoc {
+        val options = options.windowTitle(project.name + " API")
+        doFirst {
+            val links = options.links
+            configurations.runtimeClasspath.get().allDependencies
+                .filter { it.name != "lib" }
+                .map { it.group + "/" + it.name + "/" + it.version }
+                .forEach { links?.add("https://javadoc.io/doc/$it") }
+            links?.add("https://docs.oracle.com/en/java/javase/11/docs/api/")
+//            classpath.files.addAll(files(project(":lib").sourceSets.main.get().allJava))
+        }
     }
 
 }

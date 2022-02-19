@@ -1,36 +1,42 @@
 package it.unibo.dronesecurity.userapplication.shipping.courier.entities;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
+import java.time.Instant;
 
 /**
  * Represents an {@link Order} that is currently only placed.
  */
-@JsonDeserialize(as = PlacedOrder.class)
 public class PlacedOrder extends AbstractOrder {
 
     /**
-     * Construct the PlacedOrder.
-     * @param currentOrder the current state of the Order
+     * Build the placed Order.
+     * @param id the order identifier
+     * @param product the ordered product
+     * @param placingDate the date in which the order has been placed
+     * @param estimatedArrival the date in which the order should arrive
      */
-    @JsonCreator
-    public PlacedOrder(final OrderSnapshot currentOrder) {
-        super(currentOrder);
+    public PlacedOrder(final String id, final String product, final Instant placingDate,
+                       final Instant estimatedArrival) {
+        super(id, product, placingDate, estimatedArrival);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Contract(pure = true)
+    @Override
+    public @NotNull String getCurrentState() {
+        return "Order is placed.";
     }
 
     /**
      * Deliver the Order returning the corresponding entity.
      * @return the {@link Order} that is being delivered.
      */
-    public DeliveringOrder deliver() {
-        return new DeliveringOrder(this.getSnapshot());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getCurrentState() {
-        return "Order is placed.";
+    @Contract(" -> new")
+    public @NotNull DeliveringOrder deliver() {
+        return new DeliveringOrder(this.getId(), this.getProduct(), this.getPlacingDate(), this.getEstimatedArrival());
     }
 }

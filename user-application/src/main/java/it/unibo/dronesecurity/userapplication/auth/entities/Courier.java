@@ -1,6 +1,4 @@
-package it.unibo.dronesecurity.userapplication.controller.auth.entities;
-
-import it.unibo.dronesecurity.userapplication.controller.auth.Role;
+package it.unibo.dronesecurity.userapplication.auth.entities;
 
 /**
  * Entity representing the Courier user.

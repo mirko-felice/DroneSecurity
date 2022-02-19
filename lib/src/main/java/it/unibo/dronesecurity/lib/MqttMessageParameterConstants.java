@@ -45,5 +45,10 @@ public final class MqttMessageParameterConstants {
      */
     public static final String STATUS_PARAMETER = "status";
 
+    /**
+     * Parameter that contains order identifier.
+     */
+    public static final String ORDER_ID_PARAMETER = "orderId";
+
     private MqttMessageParameterConstants() { }
 }

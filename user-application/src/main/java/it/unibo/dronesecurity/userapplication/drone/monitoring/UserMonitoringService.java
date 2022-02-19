@@ -5,11 +5,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vertx.core.json.JsonObject;
 import it.unibo.dronesecurity.lib.Connection;
-import it.unibo.dronesecurity.lib.CustomLogger;
 import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
 import it.unibo.dronesecurity.lib.MqttTopicConstants;
 import it.unibo.dronesecurity.userapplication.events.*;
+import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,9 +24,9 @@ public final class UserMonitoringService {
      *
      * @param domainEvents Domain to raise events on
      */
-    public void subscribeToDataReading(final DomainEvents<DataReadEvent> domainEvents) {
+    public void subscribeToDataRead(final DomainEvents<DataRead> domainEvents) {
         Connection.getInstance().subscribe(MqttTopicConstants.DATA_TOPIC, msg -> {
-            final JsonObject json = new JsonObject(new String(msg.getPayload()));
+            final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
             final double proximity = json.getDouble(MqttMessageParameterConstants.PROXIMITY_PARAMETER);
 
             final JsonObject accelerometerJson =
@@ -40,7 +41,7 @@ public final class UserMonitoringService {
 
             final double camera = json.getDouble(MqttMessageParameterConstants.CAMERA_PARAMETER);
 
-            domainEvents.raise(new DataReadEvent(proximity, accelerometer, camera));
+            domainEvents.raise(new DataRead(proximity, accelerometer, camera));
         });
     }
 
@@ -49,10 +50,10 @@ public final class UserMonitoringService {
      *
      * @param domainEvents Domain to raise events on
      */
-    public void subscribeToWarning(final DomainEvents<WarningEvent> domainEvents) {
+    public void subscribeToWarningSituation(final DomainEvents<WarningSituation> domainEvents) {
         Connection.getInstance().subscribe(MqttTopicConstants.WARNING_TOPIC, msg -> {
-            final JsonObject json = new JsonObject(new String(msg.getPayload()));
-            domainEvents.raise(new WarningEvent(json.getString(MqttMessageParameterConstants.MESSAGE_PARAMETER)));
+            final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
+            domainEvents.raise(new WarningSituation(json.getString(MqttMessageParameterConstants.MESSAGE_PARAMETER)));
         });
     }
 
@@ -61,10 +62,10 @@ public final class UserMonitoringService {
      *
      * @param domainEvents Domain to raise events on
      */
-    public void subscribeToCritical(final DomainEvents<CriticalEvent> domainEvents) {
+    public void subscribeToCriticalSituation(final DomainEvents<CriticalSituation> domainEvents) {
         Connection.getInstance().subscribe(MqttTopicConstants.CRITICAL_TOPIC, msg -> {
-            final JsonObject json = new JsonObject(new String(msg.getPayload()));
-            domainEvents.raise(new CriticalEvent(json.getString(MqttMessageParameterConstants.MESSAGE_PARAMETER)));
+            final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
+            domainEvents.raise(new CriticalSituation(json.getString(MqttMessageParameterConstants.MESSAGE_PARAMETER)));
         });
     }
 
@@ -73,14 +74,14 @@ public final class UserMonitoringService {
      *
      * @param domainEvents Domain to raise events on
      */
-    public void subscribeToStatusChanges(final DomainEvents<StatusChangedEvent> domainEvents) {
+    public void subscribeToDroneStatusChange(final DomainEvents<StatusChanged> domainEvents) {
         Connection.getInstance().subscribe(MqttTopicConstants.LIFECYCLE_TOPIC, msg -> {
             try {
-                final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload()));
+                final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
                 final String status = json.get(MqttMessageParameterConstants.STATUS_PARAMETER).asText();
-                domainEvents.raise(new StatusChangedEvent(status));
+                domainEvents.raise(new StatusChanged(status));
             } catch (JsonProcessingException e) {
-                CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
+                LoggerFactory.getLogger(getClass()).error("Can NOT read json correctly.", e);
             }
         });
     }

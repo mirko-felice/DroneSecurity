@@ -3,9 +3,10 @@ package it.unibo.dronesecurity.dronesystem.drone;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.unibo.dronesecurity.lib.CustomLogger;
 import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
+import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,9 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Accelerometer extends AbstractSensor<Map<String, Double>> {
 
-    private final transient String scriptFilename =  this.isRaspberry()
-            ? "accelerometer"
-            : "accelerometerSimulator";
     private final transient Map<String, Double> values = new ConcurrentHashMap<>();
 
     /**
@@ -24,16 +22,16 @@ public class Accelerometer extends AbstractSensor<Map<String, Double>> {
      */
     @Override
     protected String getScriptName() {
-       return this.scriptFilename;
+       return this.isRaspberry() ? "accelerometer" : "accelerometerSimulator";
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void readValue() {
+    public void readData() {
         if (getOutputStream().size() > 0) {
-            final String orig = getOutputStream().toString().trim();
+            final String orig = getOutputStream().toString(StandardCharsets.UTF_8).trim();
             final int index = orig.lastIndexOf("\"accelerometer") - 1;
 
             final String jsonValues = orig.substring(index);
@@ -43,7 +41,7 @@ public class Accelerometer extends AbstractSensor<Map<String, Double>> {
                         .get(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER);
                 accelValues.fields().forEachRemaining(k -> this.values.put(k.getKey(), k.getValue().asDouble()));
             } catch (JsonProcessingException e) {
-                CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
+                LoggerFactory.getLogger(getClass()).error("Can NOT read json correctly.", e);
             }
             getOutputStream().reset();
         }
@@ -53,7 +51,7 @@ public class Accelerometer extends AbstractSensor<Map<String, Double>> {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Double> getReadableValue() {
-        return this.values;
+    public Map<String, Double> getData() {
+        return Map.copyOf(this.values);
     }
 }

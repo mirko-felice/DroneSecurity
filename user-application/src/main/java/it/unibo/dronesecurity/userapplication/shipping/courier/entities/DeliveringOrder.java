@@ -1,44 +1,51 @@
 package it.unibo.dronesecurity.userapplication.shipping.courier.entities;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
+import java.time.Instant;
 
 /**
  * Represents an {@link Order} that is currently being delivered.
  */
-@JsonDeserialize(as = DeliveringOrder.class)
-public class DeliveringOrder extends AbstractOrder {
+public final class DeliveringOrder extends AbstractOrder {
 
     /**
-     * Construct the DeliveringOrder.
-     * @param currentOrder the current state of the Order
+     * Build the delivering Order.
+     * @param id the order identifier
+     * @param product the ordered product
+     * @param placingDate the date in which the order has been placed
+     * @param estimatedArrival the date in which the order should arrive
      */
-    @JsonCreator
-    public DeliveringOrder(final OrderSnapshot currentOrder) {
-        super(currentOrder);
+    public DeliveringOrder(final String id, final String product, final Instant placingDate,
+                           final Instant estimatedArrival) {
+        super(id, product, placingDate, estimatedArrival);
     }
 
     /**
      * Confirm the delivery.
      * @return the {@link Order} successfully delivered.
      */
-    public DeliveredOrder confirmDelivery() {
-        return new DeliveredOrder(this.getSnapshot());
+    @Contract(" -> new")
+    public @NotNull DeliveredOrder confirmDelivery() {
+        return new DeliveredOrder(this.getId(), this.getProduct(), this.getPlacingDate(), this.getEstimatedArrival());
     }
 
     /**
      * Miss the delivery.
      * @return the {@link Order} representing the delivery fail.
      */
-    public FailedOrder failDelivery() {
-        return new FailedOrder(this.getSnapshot());
+    @Contract(" -> new")
+    public @NotNull FailedOrder failDelivery() {
+        return new FailedOrder(this.getId(), this.getProduct(), this.getPlacingDate(), this.getEstimatedArrival());
     }
 
     /**
      * {@inheritDoc}
      */
+    @Contract(pure = true)
     @Override
-    public String getCurrentState() {
+    public @NotNull String getCurrentState() {
         return "Order is delivering.";
     }
 }

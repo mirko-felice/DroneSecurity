@@ -25,6 +25,7 @@
         <exclude name="ShortVariable"/>
         <exclude name="CommentDefaultAccessModifier"/>
         <exclude name="ShortClassName"/>
+        <exclude name="GenericsNaming"/>
     </rule>
 
     <rule ref="category/java/design.xml" >

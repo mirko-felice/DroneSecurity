@@ -1,11 +1,6 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import it.unibo.dronesecurity.lib.Connection;
-import it.unibo.dronesecurity.lib.MqttMessageValueConstants;
 import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
-import it.unibo.dronesecurity.lib.MqttTopicConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -13,7 +8,7 @@ import java.util.Map;
 /**
  * Sensor Data analyzer to check critical or warning situations.
  */
-public final class Analyzer {
+public final class DataAnalyzer {
 
     private static final double PROXIMITY_WARNING_THRESHOLD = 50;
     private static final double PROXIMITY_CRITICAL_THRESHOLD = 30;
@@ -22,30 +17,28 @@ public final class Analyzer {
     private static final double PI_IN_DEGREES = Math.toDegrees(Math.PI);
 
     /**
-     * Checks if proximity distance is critical or warning and eventually publish the alert.
+     * Checks if proximity distance is critical or warning giving back an {@link AlertLevel}.
      * @param proximityDistance distance collected by the {@link ProximitySensor}
-     * @return true if proximity distance is critical, false otherwise
+     * @return an {@link AlertLevel}
      */
-    public boolean isProximityCritical(final Double proximityDistance) {
+    public AlertLevel checkProximitySensorDataAlertLevel(final Double proximityDistance) {
         if (proximityDistance > 0) {
             final boolean isWarning = proximityDistance <= PROXIMITY_WARNING_THRESHOLD;
             final boolean isCritical = proximityDistance <= PROXIMITY_CRITICAL_THRESHOLD;
             if (isCritical)
-                this.publishAlert(MqttTopicConstants.CRITICAL_TOPIC,
-                        MqttMessageValueConstants.CRITICAL_PROXIMITY_MESSAGE);
+                return AlertLevel.CRITICAL;
             else if (isWarning)
-                this.publishAlert(MqttTopicConstants.WARNING_TOPIC,
-                        MqttMessageValueConstants.WARNING_PROXIMITY_MESSAGE);
+                return AlertLevel.WARNING;
         }
-        return false;
+        return AlertLevel.NONE;
     }
 
     /**
-     * Checks if inclination angle is critical or warning and eventually publish the alert.
+     * Checks if inclination angle is critical or warning giving back an {@link AlertLevel}.
      * @param accelerometerData map of data collected by the {@link Accelerometer}
-     * @return true if inclination angle is critical, false otherwise
+     * @return an {@link AlertLevel}
      */
-    public boolean isCriticalInclinationAngle(final @NotNull Map<String, Double> accelerometerData) {
+    public AlertLevel checkAccelerometerDataAlertLevel(final @NotNull Map<String, Double> accelerometerData) {
         if (!accelerometerData.isEmpty()) {
             final double x = accelerometerData.get(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER);
             final double z = accelerometerData.get(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER);
@@ -58,18 +51,11 @@ public final class Analyzer {
                     && yaw < PI_IN_DEGREES - ACCELEROMETER_CRITICAL_THRESHOLD;
 
             if (isCritical)
-                this.publishAlert(MqttTopicConstants.CRITICAL_TOPIC,
-                        MqttMessageValueConstants.CRITICAL_ANGLE_MESSAGE);
+                return AlertLevel.CRITICAL;
             else if (isWarning)
-                this.publishAlert(MqttTopicConstants.WARNING_TOPIC,
-                        MqttMessageValueConstants.WARNING_ANGLE_MESSAGE);
+                return AlertLevel.WARNING;
         }
-        return false;
+        return AlertLevel.NONE;
     }
 
-    private void publishAlert(final String topic, final @NotNull String message) {
-        final ObjectNode payload = new ObjectMapper().createObjectNode();
-        payload.put(MqttMessageParameterConstants.MESSAGE_PARAMETER, message);
-        Connection.getInstance().publish(topic, payload);
-    }
 }

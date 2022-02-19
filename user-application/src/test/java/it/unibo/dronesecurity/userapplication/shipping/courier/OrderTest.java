@@ -6,6 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Calendar;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,9 +41,13 @@ final class OrderTest {
     @Test
     void testOrdersEquality() throws InterruptedException {
         assertEquals(this.order, this.order, "Entity should be equal to itself.");
-        Thread.sleep(MILLIS_CREATION_DELAY);
-        assertNotEquals(this.order, Order.placeToday(BASIC_PRODUCT),
-                "Entity must be unique even if build in the same way.");
+        final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        executor.schedule(() -> assertNotEquals(this.order, Order.placeToday(BASIC_PRODUCT),
+                "Entity must be unique even if build in the same way."),
+                MILLIS_CREATION_DELAY, TimeUnit.MILLISECONDS);
+        executor.shutdown();
+        assertTrue(executor.awaitTermination(2, TimeUnit.SECONDS),
+                "Executor does not terminate correctly.");
     }
 
     @Test
@@ -58,7 +65,7 @@ final class OrderTest {
         assertNotNull(failedOrder, "Failing delivery should not returning null.");
         final Calendar today = Calendar.getInstance();
         today.add(Calendar.HOUR_OF_DAY, HOURS_OF_DAY);
-        final RescheduledOrder rescheduledOrder = failedOrder.rescheduleDelivery(today.getTime());
+        final RescheduledOrder rescheduledOrder = failedOrder.rescheduleDelivery(today.toInstant());
         assertNotNull(rescheduledOrder, "Rescheduling delivery should not returning null.");
         final DeliveringOrder redeliveringOrder = rescheduledOrder.deliver();
         assertNotNull(redeliveringOrder, "Delivering should not returning null.");

@@ -1,7 +1,6 @@
-package it.unibo.dronesecurity.userapplication.controller.auth.entities;
+package it.unibo.dronesecurity.userapplication.auth.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.unibo.dronesecurity.userapplication.controller.auth.Role;
 
 /**
  * Base implementation of {@link User}.

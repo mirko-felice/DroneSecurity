@@ -3,9 +3,9 @@ package it.unibo.dronesecurity.dronesystem.drone;
 /**
  * Class representing a generic Sensor that returns a data of R type.
  *
- * @param <R> type of sensor data
+ * @param <SensorData> type of sensor data
  */
-public interface Sensor<R> {
+public interface Sensor<SensorData> {
 
     /**
      * Informs if the sensor is active or not.
@@ -27,12 +27,12 @@ public interface Sensor<R> {
     /**
      * Analyzes last raw data detected and transforms it in readable values.
      */
-    void readValue();
+    void readData();
 
     /**
      * Gives the last readable data obtained by the raw.
      *
      * @return Readable values obtained by the last analysis
      */
-    R getReadableValue();
+    SensorData getData();
 }

@@ -1,6 +1,4 @@
-package it.unibo.dronesecurity.userapplication.controller.auth;
-
-import it.unibo.dronesecurity.userapplication.controller.auth.entities.BaseUser;
+package it.unibo.dronesecurity.userapplication.auth.entities;
 
 /**
  * Enum representing roles of the {@link BaseUser}.

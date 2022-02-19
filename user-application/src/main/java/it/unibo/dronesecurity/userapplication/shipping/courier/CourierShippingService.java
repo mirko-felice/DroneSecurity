@@ -13,15 +13,22 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.validation.RequestParameters;
 import io.vertx.ext.web.validation.ValidationHandler;
-import it.unibo.dronesecurity.lib.*;
+import it.unibo.dronesecurity.lib.Connection;
+import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
+import it.unibo.dronesecurity.lib.MqttMessageValueConstants;
+import it.unibo.dronesecurity.lib.MqttTopicConstants;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.DeliveringOrder;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
 import it.unibo.dronesecurity.userapplication.shipping.courier.repo.OrderRepository;
-import org.jetbrains.annotations.NotNull;
 import it.unibo.dronesecurity.userapplication.utilities.CastHelper;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.crt.mqtt.MqttMessage;
 
-import java.util.*;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents the Service to perform operations useful to the Courier.
@@ -81,41 +88,48 @@ public final class CourierShippingService {
 
     private void performDelivery(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-        final Optional<PlacedOrder> optionalOrder =
-                CastHelper.safeCast(params.body().getJsonObject().mapTo(Order.class), PlacedOrder.class);
-        if (optionalOrder.isPresent()) {
-            final PlacedOrder order = optionalOrder.get();
-            CustomLogger.getLogger(getClass().getName()).info(order.toString()); // TODO check body
+        final PlacedOrder order = params.body().getJsonObject().mapTo(PlacedOrder.class);
+        if (order != null) {
+            LoggerFactory.getLogger(getClass()).info(order.toString()); // TODO check body
             final DeliveringOrder deliveringOrder = order.deliver();
             OrderRepository.getInstance().delivering(deliveringOrder);
-            CustomLogger.getLogger(getClass().getName()).info(deliveringOrder.getCurrentState());
+            LoggerFactory.getLogger(getClass()).info(deliveringOrder.getCurrentState());
 
             final JsonNode messageJson = new ObjectMapper().createObjectNode()
                     .put(MqttMessageParameterConstants.MESSAGE_PARAMETER,
-                            MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE);
-            Connection.getInstance().publish(MqttTopicConstants.ORDER_TOPIC, messageJson);
+                            MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE)
+                    .put(MqttMessageParameterConstants.ORDER_ID_PARAMETER, order.getId());
+            final Connection connection = Connection.getInstance();
+            connection.publish(MqttTopicConstants.ORDER_TOPIC, messageJson);
 
-            Connection.getInstance().subscribe(MqttTopicConstants.LIFECYCLE_TOPIC, msg -> {
-                try {
-                    final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload()));
-                    final String statusValue = json.get(MqttMessageParameterConstants.STATUS_PARAMETER).asText();
-                    if (MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(statusValue)) {
-                        final JsonNode message = new ObjectMapper().createObjectNode()
-                                .put(MqttMessageParameterConstants.MESSAGE_PARAMETER,
-                                        MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);
-                        Connection.getInstance().publish(MqttTopicConstants.ORDER_TOPIC, message);
-                    } else if (MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE.equals(statusValue)) {
-                        final JsonNode message = new ObjectMapper().createObjectNode()
-                                .put(MqttMessageParameterConstants.MESSAGE_PARAMETER,
-                                        MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);
-                        Connection.getInstance().publish(MqttTopicConstants.ORDER_TOPIC, message);
-                    }
-                } catch (JsonProcessingException e) {
-                    CustomLogger.getLogger(getClass().getName()).info(e.getMessage());
-                }
-            });
-
+            connection.subscribe(MqttTopicConstants.LIFECYCLE_TOPIC, this::callback);
             routingContext.response().end(CORRECT_RESPONSE_TO_PERFORM_DELIVERY);
+        }
+    }
+
+    private void callback(final @NotNull MqttMessage msg) {
+        try {
+            final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
+            final String orderId = json.get(MqttMessageParameterConstants.ORDER_ID_PARAMETER).asText();
+            final String statusValue = json.get(MqttMessageParameterConstants.STATUS_PARAMETER).asText();
+            final OrderRepository orderRepository = OrderRepository.getInstance();
+            final Optional<DeliveringOrder> optionalOrder =
+                    CastHelper.safeCast(orderRepository.getOrderById(orderId), DeliveringOrder.class);
+            if (optionalOrder.isPresent()) {
+                final Connection connection = Connection.getInstance();
+                if (MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(statusValue))
+                    orderRepository.confirmedDelivery(optionalOrder.get().confirmDelivery());
+                else if (MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE.equals(statusValue))
+                    orderRepository.failedDelivery(optionalOrder.get().failDelivery());
+
+                // TODO maybe catch else branch that does NOT send this message
+                final JsonNode message = new ObjectMapper().createObjectNode()
+                        .put(MqttMessageParameterConstants.MESSAGE_PARAMETER,
+                                MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);
+                connection.publish(MqttTopicConstants.ORDER_TOPIC, message);
+            }
+        } catch (JsonProcessingException e) {
+            LoggerFactory.getLogger(getClass()).error("Can NOT convert Json to Java Object.", e);
         }
     }
 
