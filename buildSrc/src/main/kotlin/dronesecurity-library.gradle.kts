@@ -1,4 +1,5 @@
 import com.github.spotbugs.snom.Confidence
+import java.util.Properties
 
 plugins {
     `java-library`
@@ -7,6 +8,7 @@ plugins {
     id("de.jjohannes.extra-java-module-info")
     id("org.openjfx.javafxplugin")
     id("com.github.spotbugs")
+    id("org.sonarqube")
 }
 
 val awsCrtVersion = "0.15.15"
@@ -25,6 +27,12 @@ dependencies {
     spotbugsPlugins("com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.0")
     spotbugsPlugins("com.mebigfatguy.sb-contrib:sb-contrib:7.4.7")
     implementation("ch.qos.logback:logback-classic:1.2.10")
+}
+
+sonarqube.properties {
+    val sonarProperties = Properties()
+    file("../sonar.properties").inputStream().use { sonarProperties.load(it) }
+    property("sonar.login", sonarProperties.getProperty("token"))
 }
 
 java {

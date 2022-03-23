@@ -15,3 +15,4 @@ build/
 certs/
 project.properties
 *.puml
+sonar.properties
