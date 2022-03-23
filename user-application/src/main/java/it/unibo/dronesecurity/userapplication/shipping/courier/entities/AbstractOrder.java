@@ -12,10 +12,10 @@ import java.util.StringJoiner;
  */
 public abstract class AbstractOrder implements Order {
 
-    private final transient String id;
-    private final transient String product;
-    private final transient Instant placingDate;
-    private final transient Instant estimatedArrival;
+    private final String id;
+    private final String product;
+    private final Instant placingDate;
+    private final Instant estimatedArrival;
 
     /**
      * Build a generic Order.
@@ -66,12 +66,6 @@ public abstract class AbstractOrder implements Order {
     public Instant getEstimatedArrival() {
         return this.estimatedArrival;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public abstract String getCurrentState();
 
     /**
      * {@inheritDoc}

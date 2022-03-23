@@ -42,11 +42,11 @@ public final class OrdersController implements Initializable {
     private static final String MONITORING_FILENAME = "monitoring.fxml";
     private static final Runnable NOT_SELECTED_RUNNABLE = () ->
             AlertUtils.showWarningAlert("You MUST first select an order.");
-    @FXML private transient TableView<Order> table;
-    @FXML private transient TableColumn<Order, String> orderDateColumn;
-    @FXML private transient TableColumn<Order, String> productColumn;
-    @FXML private transient TableColumn<Order, String> stateColumn;
-    @FXML private transient Button performDeliveryButton;
+    @FXML private TableView<Order> table;
+    @FXML private TableColumn<Order, String> orderDateColumn;
+    @FXML private TableColumn<Order, String> productColumn;
+    @FXML private TableColumn<Order, String> stateColumn;
+    @FXML private Button performDeliveryButton;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {

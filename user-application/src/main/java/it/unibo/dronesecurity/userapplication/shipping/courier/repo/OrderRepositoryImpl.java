@@ -29,8 +29,8 @@ public final class OrderRepositoryImpl implements OrderRepository {
     private static final String[] FAKE_PRODUCTS = {
             "HDD", "SSD", "MOUSE", "KEYBOARD", "HEADSET", "MONITOR", "WEBCAM", "CONTROLLER", "USB", "HDMI" };
     private static OrderRepositoryImpl singleton;
-    private final transient MongoClient database;
-    private final transient SecureRandom randomGenerator = new SecureRandom();
+    private final MongoClient database;
+    private final SecureRandom randomGenerator = new SecureRandom();
 
     private OrderRepositoryImpl() {
         final JsonObject config = new JsonObject();

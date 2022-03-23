@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Accelerometer extends AbstractSensor<Map<String, Double>> {
 
-    private final transient Map<String, Double> values = new ConcurrentHashMap<>();
+    private final Map<String, Double> values = new ConcurrentHashMap<>();
 
     /**
      * {@inheritDoc}

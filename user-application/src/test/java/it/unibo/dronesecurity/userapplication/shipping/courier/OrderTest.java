@@ -21,7 +21,7 @@ final class OrderTest {
     private static final String BASIC_PRODUCT = "basic";
     private static final int HOURS_OF_DAY = 24;
     private static final int MILLIS_CREATION_DELAY = 1000;
-    private transient Order order;
+    private Order order;
 
     @BeforeEach
     void setUp() {

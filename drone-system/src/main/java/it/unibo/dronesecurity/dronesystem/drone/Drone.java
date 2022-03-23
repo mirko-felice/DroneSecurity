@@ -9,10 +9,10 @@ import java.util.Map;
 public class Drone {
 
     private static final SensorFactory SENSOR_FACTORY = new SensorFactory();
-    private final transient Sensor<Double> proximity;
-    private final transient Sensor<Map<String, Double>> accelerometer;
-    private final transient Sensor<Double> camera;
-    private transient boolean isMoving;
+    private final Sensor<Double> proximity;
+    private final Sensor<Map<String, Double>> accelerometer;
+    private final Sensor<Double> camera;
+    private boolean isMoving;
 
     /**
      * Constructs drone's sensors.

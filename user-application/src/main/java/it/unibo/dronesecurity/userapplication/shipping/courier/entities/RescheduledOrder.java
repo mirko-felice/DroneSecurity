@@ -4,13 +4,14 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
+import java.util.Objects;
 
 /**
  * Represents an {@link Order} that has been rescheduled.
  */
 public final class RescheduledOrder extends PlacedOrder {
 
-    private final transient Instant newEstimatedArrival;
+    private final Instant newEstimatedArrival;
 
     /**
      * Build the rescheduled Order.
@@ -41,5 +42,19 @@ public final class RescheduledOrder extends PlacedOrder {
      */
     public Instant getNewEstimatedArrival() {
         return this.newEstimatedArrival;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        final RescheduledOrder that = (RescheduledOrder) o;
+        return this.getNewEstimatedArrival().equals(that.getNewEstimatedArrival());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), this.getNewEstimatedArrival());
     }
 }

@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class Camera extends AbstractSensor<Double> {
 
-    private transient double distance;
+    private double distance;
 
     /**
      * {@inheritDoc}

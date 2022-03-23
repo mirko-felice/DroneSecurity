@@ -33,21 +33,21 @@ public final class ConnectionController implements Initializable {
 
     private static final String SEP = FileSystems.getDefault().getSeparator();
     private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("*.pem", "*.crt", "*.key");
-    @FXML private transient Label certsFolderLabel;
-    @FXML private transient Label certificateFileLabel;
-    @FXML private transient Label privateKeyFileLabel;
-    @FXML private transient Label certificateAuthorityFileLabel;
-    @FXML private transient Button saveSettingsButton;
-    @FXML private transient TextField endpointTextField;
-    @FXML private transient TextField clientIdTextField;
-    @FXML private transient ProgressBar progressBar;
-    private final transient Properties properties = new Properties();
-    private transient DirectoryChooser directoryChooser;
-    private transient FileChooser fileChooser;
-    private transient File certsFolder;
-    private transient File certificateFile;
-    private transient File privateKeyFile;
-    private transient File certificateAuthorityFile;
+    @FXML private Label certsFolderLabel;
+    @FXML private Label certificateFileLabel;
+    @FXML private Label privateKeyFileLabel;
+    @FXML private Label certificateAuthorityFileLabel;
+    @FXML private Button saveSettingsButton;
+    @FXML private TextField endpointTextField;
+    @FXML private TextField clientIdTextField;
+    @FXML private ProgressBar progressBar;
+    private final Properties properties = new Properties();
+    private DirectoryChooser directoryChooser;
+    private FileChooser fileChooser;
+    private File certsFolder;
+    private File certificateFile;
+    private File privateKeyFile;
+    private File certificateAuthorityFile;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -57,30 +57,30 @@ public final class ConnectionController implements Initializable {
                 .add(new FileChooser.ExtensionFilter("Certificate file", ALLOWED_EXTENSIONS));
         this.endpointTextField.setText("");
         if (new File(PropertiesConstants.PROPERTIES_FILENAME).exists())
-        try (InputStream inputStream = Files.newInputStream(Path.of(PropertiesConstants.PROPERTIES_FILENAME))) {
-            this.properties.load(inputStream);
+            try (InputStream inputStream = Files.newInputStream(Path.of(PropertiesConstants.PROPERTIES_FILENAME))) {
+                this.properties.load(inputStream);
 
-            final String certsFolderPath = this.properties.getProperty(PropertiesConstants.CERTS_FOLDER_PATH) + SEP;
-            final String certificateFileName =
-                    this.properties.getProperty(PropertiesConstants.CERTIFICATE_FILENAME);
-            final String privateKeyFileName = this.properties.getProperty(PropertiesConstants.PRIVATE_KEY_FILENAME);
-            final String certificateAuthorityFileName =
-                    this.properties.getProperty(PropertiesConstants.CERTIFICATE_AUTHORITY_FILENAME);
+                final String certsFolderPath = this.properties.getProperty(PropertiesConstants.CERTS_FOLDER_PATH) + SEP;
+                final String certificateFileName =
+                        this.properties.getProperty(PropertiesConstants.CERTIFICATE_FILENAME);
+                final String privateKeyFileName = this.properties.getProperty(PropertiesConstants.PRIVATE_KEY_FILENAME);
+                final String certificateAuthorityFileName =
+                        this.properties.getProperty(PropertiesConstants.CERTIFICATE_AUTHORITY_FILENAME);
 
-            this.certsFolder = new File(certsFolderPath);
-            this.certificateFile = new File(certsFolderPath, certificateFileName);
-            this.privateKeyFile = new File(certsFolderPath, privateKeyFileName);
-            this.certificateAuthorityFile = new File(certsFolderPath, certificateAuthorityFileName);
+                this.certsFolder = new File(certsFolderPath);
+                this.certificateFile = new File(certsFolderPath, certificateFileName);
+                this.privateKeyFile = new File(certsFolderPath, privateKeyFileName);
+                this.certificateAuthorityFile = new File(certsFolderPath, certificateAuthorityFileName);
 
-            this.certsFolderLabel.setText(certsFolderPath.replace("\\\\", "\\"));
-            this.certificateFileLabel.setText(certificateFileName);
-            this.privateKeyFileLabel.setText(privateKeyFileName);
-            this.certificateAuthorityFileLabel.setText(certificateAuthorityFileName);
-            this.endpointTextField.setText(this.properties.getProperty(PropertiesConstants.ENDPOINT));
-            this.clientIdTextField.setText(this.properties.getProperty(PropertiesConstants.CLIENT_ID));
-        } catch (IOException e) {
-            LoggerFactory.getLogger(getClass()).error("Can NOT read file .properties.", e);
-        }
+                this.certsFolderLabel.setText(certsFolderPath.replace("\\\\", "\\"));
+                this.certificateFileLabel.setText(certificateFileName);
+                this.privateKeyFileLabel.setText(privateKeyFileName);
+                this.certificateAuthorityFileLabel.setText(certificateAuthorityFileName);
+                this.endpointTextField.setText(this.properties.getProperty(PropertiesConstants.ENDPOINT));
+                this.clientIdTextField.setText(this.properties.getProperty(PropertiesConstants.CLIENT_ID));
+            } catch (IOException e) {
+                LoggerFactory.getLogger(getClass()).error("Can NOT read file .properties.", e);
+            }
     }
 
     @FXML

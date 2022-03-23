@@ -29,13 +29,13 @@ import java.util.ResourceBundle;
 public final class AuthenticationController implements Initializable {
 
     private static final String COURIER_FXML = "orders.fxml";
-    @FXML private transient TextField usernameField;
-    @FXML private transient PasswordField passwordField;
-    @FXML private transient TextField visiblePasswordField;
-    @FXML private transient Glyph showPasswordGlyph;
-    @FXML private transient ComboBox<Role> roleComboBox;
-    @FXML private transient Button loginButton;
-    private transient boolean isPasswordShown;
+    @FXML private TextField usernameField;
+    @FXML private PasswordField passwordField;
+    @FXML private TextField visiblePasswordField;
+    @FXML private Glyph showPasswordGlyph;
+    @FXML private ComboBox<Role> roleComboBox;
+    @FXML private Button loginButton;
+    private boolean isPasswordShown;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -72,7 +72,7 @@ public final class AuthenticationController implements Initializable {
         }
         AuthenticationRepository.getInstance().authenticate(user)
                 .onSuccess(isLogged -> Platform.runLater(() -> {
-                    if (isLogged)
+                    if (Boolean.TRUE.equals(isLogged))
                         try {
                             LoggedUser.set(user);
                             ((Stage) this.loginButton.getScene().getWindow()).close();

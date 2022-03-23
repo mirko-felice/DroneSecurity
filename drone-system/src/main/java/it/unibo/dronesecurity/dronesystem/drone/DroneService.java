@@ -25,26 +25,26 @@ import java.util.concurrent.TimeUnit;
  */
 public class DroneService {
 
-    private static final int TRAVELING_TIME = 5000;
-    private static final int CLIENT_WAITING_TIME = 1000;
-    private static final int ANALIZER_SLEEP_DURATION = 500;
+    private static final long TRAVELING_TIME = 5000;
+    private static final long CLIENT_WAITING_TIME = 1000;
+    private static final long ANALIZER_SLEEP_DURATION = 500;
     private static final int RANDOM_GENERATION_RANGE = 100;
     private static final int SUCCESS_PERCENTAGE = 70;
 
     //Drone
-    private final transient Drone drone;
-    private final transient DataAnalyzer dataAnalyzer;
-    private final transient Thread dataMonitoringAgent;
-    private final transient SecureRandom randomGenerator;
-    private final transient CountDownLatch latch;
-    private final transient ScheduledExecutorService executor;
+    private final Drone drone;
+    private final DataAnalyzer dataAnalyzer;
+    private final Thread dataMonitoringAgent;
+    private final SecureRandom randomGenerator;
+    private final CountDownLatch latch;
+    private final ScheduledExecutorService executor;
 
     // Connection
-    private transient Double proximitySensorData;
-    private transient Map<String, Double> accelerometerSensorData;
-    private transient Double cameraSensorData;
+    private Double proximitySensorData;
+    private Map<String, Double> accelerometerSensorData;
+    private Double cameraSensorData;
 
-    private transient String currentOrderId;
+    private String currentOrderId;
 
     /**
      * Constructs the drone to be observed by this drone service.
@@ -131,8 +131,7 @@ public class DroneService {
                 }, 0, ANALIZER_SLEEP_DURATION, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 LoggerFactory.getLogger(getClass()).info(e.getMessage());
-                //Restart Drone if thread interrupted
-//                this.startDrone();
+                Thread.currentThread().interrupt();
             }
         });
     }

@@ -16,7 +16,7 @@ import java.security.spec.InvalidKeySpecException;
 public final class AuthenticationRepositoryImpl implements AuthenticationRepository {
 
     private static AuthenticationRepositoryImpl singleton;
-    private final transient MongoClient database;
+    private final MongoClient database;
 
     private AuthenticationRepositoryImpl() {
         final JsonObject config = new JsonObject();

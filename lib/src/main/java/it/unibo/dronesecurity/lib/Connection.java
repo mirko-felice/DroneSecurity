@@ -27,15 +27,15 @@ public final class Connection {
 
     private static final int KEEP_ALIVE_SECONDS = 6;
     private static Connection singleton;
-    private final transient EventLoopGroup eventLoopGroup;
-    private final transient Properties properties;
-    private transient MqttClientConnection clientConnection;
-    private transient String certsFolderPath;
-    private transient String certificateFile;
-    private transient String privateKeyFile;
-    private transient String certificateAuthorityFile;
-    private transient String endpoint;
-    private transient String clientID;
+    private final EventLoopGroup eventLoopGroup;
+    private final Properties properties;
+    private MqttClientConnection clientConnection;
+    private String certsFolderPath;
+    private String certificateFile;
+    private String privateKeyFile;
+    private String certificateAuthorityFile;
+    private String endpoint;
+    private String clientID;
 
     private Connection() {
         this.eventLoopGroup = new EventLoopGroup(1);

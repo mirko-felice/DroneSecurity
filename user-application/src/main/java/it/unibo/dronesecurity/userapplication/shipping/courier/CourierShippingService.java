@@ -43,7 +43,10 @@ public final class CourierShippingService {
     private static final String LIST_ORDERS_OPERATION_ID = "listOrders";
     private static final String CORRECT_RESPONSE_TO_PERFORM_DELIVERY = "Delivery is performing...";
     private static final String CORRECT_RESPONSE_TO_RESCHEDULE_DELIVERY = "Order rescheduled.";
-    private final transient Vertx vertx;
+    private static final String DEFAULT_KEY = "default";
+    private static final String SEP = "/";
+    private static final int CLIENT_ERROR_CODE = 400;
+    private final Vertx vertx;
 
     /**
      * Build the Service.
@@ -66,9 +69,9 @@ public final class CourierShippingService {
                         final JsonObject server = servers.getJsonObject(i);
                         final JsonObject variables = server.getJsonObject("variables");
 
-                        final String basePath = "/" + variables.getJsonObject("basePath").getString("default");
-                        final int port = Integer.parseInt(variables.getJsonObject("port").getString("default"));
-                        final String host = variables.getJsonObject("host").getString("default");
+                        final String basePath = SEP + variables.getJsonObject("basePath").getString(DEFAULT_KEY);
+                        final int port = Integer.parseInt(variables.getJsonObject("port").getString(DEFAULT_KEY));
+                        final String host = variables.getJsonObject("host").getString(DEFAULT_KEY);
 
                         globalRouter.mountSubRouter(basePath, routerBuilder.createRouter());
                         this.vertx.createHttpServer().requestHandler(globalRouter).listen(port, host);
@@ -89,11 +92,11 @@ public final class CourierShippingService {
     private void performDelivery(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         final PlacedOrder order = params.body().getJsonObject().mapTo(PlacedOrder.class);
-        if (order != null) {
-            LoggerFactory.getLogger(getClass()).info(order.toString()); // TODO check body
+        if (order == null)
+            routingContext.response().setStatusCode(CLIENT_ERROR_CODE).end();
+        else {
             final DeliveringOrder deliveringOrder = order.deliver();
             OrderRepository.getInstance().delivering(deliveringOrder);
-            LoggerFactory.getLogger(getClass()).info(deliveringOrder.getCurrentState());
 
             final JsonNode messageJson = new ObjectMapper().createObjectNode()
                     .put(MqttMessageParameterConstants.MESSAGE_PARAMETER,

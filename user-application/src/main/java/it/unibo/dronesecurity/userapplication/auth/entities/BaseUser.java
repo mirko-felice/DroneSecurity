@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class BaseUser implements User {
 
-    @JsonProperty private final transient String username;
-    @JsonProperty private final transient String password;
-    @JsonProperty private final transient Role role;
+    @JsonProperty private final String username;
+    @JsonProperty private final String password;
+    @JsonProperty private final Role role;
 
     /**
      * Build the User.

@@ -33,27 +33,27 @@ public final class MonitorController implements Initializable {
     private static final String STATUS_STRING = "Status: ";
     private static final String STARTING_STRING = "starting";
 
-    private final transient UserMonitoringService monitoringService;
+    private final UserMonitoringService monitoringService;
 
-    @FXML private transient Label statusLabel;
-    @FXML private transient Button recallButton;
-    @FXML private transient Label proximityCurrentData;
-    @FXML private transient TableView<Map<String, Double>> accelerometerCurrentData;
-    @FXML private transient Label cameraCurrentData;
+    @FXML private Label statusLabel;
+    @FXML private Button recallButton;
+    @FXML private Label proximityCurrentData;
+    @FXML private TableView<Map<String, Double>> accelerometerCurrentData;
+    @FXML private Label cameraCurrentData;
 
-    @FXML private transient TableView<Double> proximityPreviousData;
-    @FXML private transient TableView<Map<String, Double>> accelerometerPreviousData;
-    @FXML private transient TableView<Double> cameraPreviousData;
+    @FXML private TableView<Double> proximityPreviousData;
+    @FXML private TableView<Map<String, Double>> accelerometerPreviousData;
+    @FXML private TableView<Double> cameraPreviousData;
 
-    @FXML private transient TableColumn<Double, Double> proximityPreviousDataColumn;
-    @FXML private transient TableColumn<Map<String, Double>, Double> accelerometerPreviousXDataColumn;
-    @FXML private transient TableColumn<Map<String, Double>, Double> accelerometerPreviousYDataColumn;
-    @FXML private transient TableColumn<Map<String, Double>, Double> accelerometerPreviousZDataColumn;
-    @FXML private transient TableColumn<Double, Double> cameraPreviousDataColumn;
+    @FXML private TableColumn<Double, Double> proximityPreviousDataColumn;
+    @FXML private TableColumn<Map<String, Double>, Double> accelerometerPreviousXDataColumn;
+    @FXML private TableColumn<Map<String, Double>, Double> accelerometerPreviousYDataColumn;
+    @FXML private TableColumn<Map<String, Double>, Double> accelerometerPreviousZDataColumn;
+    @FXML private TableColumn<Double, Double> cameraPreviousDataColumn;
 
-    @FXML private transient TableColumn<Map<String, Double>, Double> currentAccelerometerXValue;
-    @FXML private transient TableColumn<Map<String, Double>, Double> currentAccelerometerYValue;
-    @FXML private transient TableColumn<Map<String, Double>, Double> currentAccelerometerZValue;
+    @FXML private TableColumn<Map<String, Double>, Double> currentAccelerometerXValue;
+    @FXML private TableColumn<Map<String, Double>, Double> currentAccelerometerYValue;
+    @FXML private TableColumn<Map<String, Double>, Double> currentAccelerometerZValue;
 
     /**
      * Build the Controller to interact with services.
@@ -124,15 +124,11 @@ public final class MonitorController implements Initializable {
     }
 
     private void onWarning(final WarningSituation warningSituation) {
-        Platform.runLater(() -> {
-            LoggerFactory.getLogger(getClass()).info(warningSituation.getMessage());
-        });
+        Platform.runLater(() -> LoggerFactory.getLogger(getClass()).info(warningSituation.getMessage()));
     }
 
     private void onCritical(final CriticalSituation criticalSituation) {
-        Platform.runLater(() -> {
-            LoggerFactory.getLogger(getClass()).info(criticalSituation.getMessage());
-        });
+        Platform.runLater(() -> LoggerFactory.getLogger(getClass()).info(criticalSituation.getMessage()));
     }
 
     private void onStatusChanged(final StatusChanged statusEvent) {

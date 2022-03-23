@@ -10,7 +10,7 @@ import java.util.function.Consumer;
  */
 public class DomainEvents<T extends Event> {
 
-    private final transient List<Consumer<T>> consumers;
+    private final List<Consumer<T>> consumers;
 
     /**
      * Builds the Domain Events.

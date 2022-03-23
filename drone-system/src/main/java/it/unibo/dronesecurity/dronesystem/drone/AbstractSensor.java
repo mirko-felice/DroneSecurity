@@ -4,19 +4,25 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Abstract sensor that defines basic sensor behaviours.
@@ -32,8 +38,8 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
     private static final String CMD = System.getProperty("os.name").toLowerCase(Locale.getDefault()).contains("win")
                                                                                                         ? "python "
                                                                                                         : "python3 ";
-    private final transient ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    private final transient DefaultExecutor executor = new DefaultExecutor();
+    private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    private final DefaultExecutor executor = new DefaultExecutor();
 
     private boolean on;
 
@@ -66,18 +72,6 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
         this.executor.getWatchdog().destroyProcess();
         this.setOn(false);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public abstract void readData();
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public abstract SensorData getData();
 
     /**
      * Initialize the executor for the sensor.
@@ -159,7 +153,25 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
     private @Nullable String getScriptFile(final @NotNull String scriptFileName) {
         try (InputStream is = Objects.requireNonNull(
                 AbstractSensor.class.getResourceAsStream(scriptFileName + SCRIPT_EXTENSION))) {
-            final Path path = Files.createTempFile(scriptFileName, SCRIPT_EXTENSION);
+            final Path path;
+            if (SystemUtils.IS_OS_UNIX) {
+                final FileAttribute<Set<PosixFilePermission>> attributes =
+                        PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------"));
+                path = Files.createTempFile(scriptFileName, SCRIPT_EXTENSION, attributes);
+            } else {
+                path = Files.createTempFile(scriptFileName, SCRIPT_EXTENSION);
+                final File file = path.toFile();
+                if (file.setReadable(true, true)) {
+                    LoggerFactory.getLogger(getClass()).error("Can NOT create readable file.");
+                    return null;
+                } else if (file.setWritable(true, true)) {
+                    LoggerFactory.getLogger(getClass()).error("Can NOT create writable file.");
+                    return null;
+                } else if (file.setExecutable(true, true)) {
+                    LoggerFactory.getLogger(getClass()).error("Can NOT create executable file.");
+                    return null;
+                }
+            }
             Files.copy(is, path, StandardCopyOption.REPLACE_EXISTING);
             return path.toString();
         } catch (IOException e) {
