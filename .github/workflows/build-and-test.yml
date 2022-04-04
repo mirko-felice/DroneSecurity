@@ -5,8 +5,7 @@ on:
     tags-ignore:
       - '*'
     branches:
-      - 'develop'
-      - 'feature/**'
+      - '**'
     paths-ignore:
       - 'docs/**'
       - 'README.md'
