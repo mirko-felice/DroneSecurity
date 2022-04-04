@@ -2,9 +2,11 @@ name: Build and Test
 
 on:
   push:
-    tags-ignore:
-      - '**'
     branches:
+      - 'master'
+      - 'develop'
+      - 'feature/**'
+    tags-ignore:
       - '**'
     paths-ignore:
       - 'docs/**'

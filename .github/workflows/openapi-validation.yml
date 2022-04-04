@@ -3,7 +3,9 @@ name: OpenAPI Validation
 on:
   push:
     branches:
-      - '**'
+      - 'master'
+      - 'develop'
+      - 'feature/**'
     tags-ignore:
       - '**'
     paths:
