@@ -161,13 +161,16 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
             } else {
                 path = Files.createTempFile(scriptFileName, SCRIPT_EXTENSION);
                 final File file = path.toFile();
-                if (!file.setReadable(true, true)) {
+                final boolean isNotReadable = !file.setReadable(true, true);
+                final boolean isNotWritable = !file.setWritable(true, true);
+                final boolean isNotExecutable = !file.setExecutable(true, true);
+                if (isNotReadable) {
                     LoggerFactory.getLogger(getClass()).error("Can NOT create readable file.");
                     return null;
-                } else if (!file.setWritable(true, true)) {
+                } else if (isNotWritable) {
                     LoggerFactory.getLogger(getClass()).error("Can NOT create writable file.");
                     return null;
-                } else if (!file.setExecutable(true, true)) {
+                } else if (isNotExecutable) {
                     LoggerFactory.getLogger(getClass()).error("Can NOT create executable file.");
                     return null;
                 }
