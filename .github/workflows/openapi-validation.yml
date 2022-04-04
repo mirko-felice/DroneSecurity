@@ -3,10 +3,9 @@ name: OpenAPI Validation
 on:
   push:
     branches:
-      - 'develop'
-      - 'feature/**'
+      - '**'
     tags-ignore:
-      - '*'
+      - '**'
     paths:
       - 'user-application/src/main/resources/**.json'
       - '.github/workflows/openapi-validation.yml'
@@ -24,7 +23,7 @@ jobs:
         uses: mirko-felice/list-files-action@v3.0.1
         with:
           repo: ${{ github.repository }}
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.ref }}
           path: "user-application/src/main/resources"
           ext: ".json"
 
