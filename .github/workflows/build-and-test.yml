@@ -3,7 +3,7 @@ name: Build and Test
 on:
   push:
     tags-ignore:
-      - '*'
+      - '**'
     branches:
       - '**'
     paths-ignore:
@@ -12,6 +12,7 @@ on:
       - 'LICENSE'
       - '**.cml'
       - 'CHANGELOG.md'
+      - 'package-lock.json'
       - '.github/renovate.json'
   pull_request:
 

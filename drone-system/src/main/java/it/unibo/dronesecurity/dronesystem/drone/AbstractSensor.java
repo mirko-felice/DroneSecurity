@@ -120,7 +120,7 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
      * @return true if is Raspberry, false otherwise
      */
     protected final boolean isRaspberry() {
-        this.executeScript(this.getScriptFile("os"));
+        this.executeScript(this.getScriptFile("os_detector"));
 
         final String nodeName = this.outputStream.toString(StandardCharsets.UTF_8).trim();
         this.outputStream.reset();

@@ -1,9 +1,9 @@
 import time
 import sys
 
-#Simulating Data Stream
+# Simulating Data Stream
 while True:
-	print("3.14")
+    print("3.14")
 
-	sys.stdout.flush()
-	time.sleep(1)
+    sys.stdout.flush()
+    time.sleep(1)
