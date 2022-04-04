@@ -1,12 +1,14 @@
 package it.unibo.dronesecurity.dronesystem.drone;
 
-import it.unibo.dronesecurity.lib.*;
+import it.unibo.dronesecurity.lib.AlertUtils;
+import it.unibo.dronesecurity.lib.Connection;
+import it.unibo.dronesecurity.lib.ConnectionController;
+import it.unibo.dronesecurity.lib.PropertiesConstants;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +19,6 @@ import java.io.IOException;
 public final class Activation extends Application {
 
     private static final String CONNECTION_FXML = "connection.fxml";
-    private static final String FILE_PROPERTIES_NOT_FOUND =
-            "File .properties not found! Generate file adding 'generate-properties' as parameter to execute command";
 
     @Override
     public void start(final Stage stage) throws IOException {
@@ -26,28 +26,15 @@ public final class Activation extends Application {
 
         if (getParameters().getRaw().contains("generate-properties")) {
             if (!propertiesFile.exists() || AlertUtils.showConfirmationAlert("File properties already found!",
-                    "Would you like to reset values?")) {
-                final FXMLLoader fxmlLoader = new FXMLLoader(ConnectionController.class.getResource(CONNECTION_FXML));
-                fxmlLoader.setController(new ConnectionController());
-                final Scene scene = new Scene(fxmlLoader.load());
-                stage.setScene(scene);
-                stage.setOnCloseRequest(event -> {
-                    Platform.exit();
-                    System.exit(0);
-                });
-                stage.setTitle("Connection settings");
-                stage.setOnHidden(ignored -> this.startDroneService());
-                stage.show();
-            } else {
+                    "Would you like to reset values?"))
+                this.generateProperties(stage);
+            else
                 this.connectAndStart();
-            }
         } else {
-            if (propertiesFile.exists()) {
+            if (propertiesFile.exists())
                 this.connectAndStart();
-            } else {
-                Platform.exit();
-                LoggerFactory.getLogger(getClass()).error(FILE_PROPERTIES_NOT_FOUND);
-            }
+            else
+                this.generateProperties(stage);
         }
     }
 
@@ -68,5 +55,19 @@ public final class Activation extends Application {
     private void startDroneService() {
         Platform.exit();
         new DroneService().waitForDeliveryAssignment();
+    }
+
+    private void generateProperties(final Stage stage) throws IOException {
+        final FXMLLoader fxmlLoader = new FXMLLoader(ConnectionController.class.getResource(CONNECTION_FXML));
+        fxmlLoader.setController(new ConnectionController());
+        final Scene scene = new Scene(fxmlLoader.load());
+        stage.setScene(scene);
+        stage.setOnCloseRequest(event -> {
+            Platform.exit();
+            System.exit(0);
+        });
+        stage.setTitle("Connection settings");
+        stage.setOnHidden(ignored -> this.startDroneService());
+        stage.show();
     }
 }
