@@ -13,6 +13,7 @@ plugins {
 
 val awsCrtVersion = "0.15.15"
 val awsIotVersion = "1.5.4"
+val javaVersion = properties["java.version"].toString()
 
 repositories {
     mavenCentral()
@@ -20,7 +21,8 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains:annotations:23.0.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation(platform("org.junit:junit-bom:5.8.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk:$awsIotVersion")
     implementation("software.amazon.awssdk.crt:aws-crt:$awsCrtVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
@@ -31,13 +33,15 @@ dependencies {
 
 sonarqube.properties {
     val sonarProperties = Properties()
-    file("../sonar.properties").inputStream().use { sonarProperties.load(it) }
+    file(".." + File.separator + "sonar.properties").inputStream().use { sonarProperties.load(it) }
     property("sonar.login", sonarProperties.getProperty("token"))
+    property("sonar.sources", sourceSets.main.get().allJava.srcDirs)
+    property("sonar.tests", sourceSets.test.get().allJava.srcDirs)
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
+        languageVersion.set(JavaLanguageVersion.of(javaVersion))
     }
 }
 
@@ -52,7 +56,7 @@ spotbugs {
 }
 
 javafx {
-    version = "17"
+    version = javaVersion
     modules("javafx.controls", "javafx.fxml")
 }
 
@@ -61,11 +65,15 @@ tasks {
     compileJava {
         doFirst {
             options.compilerArgs.add("-Xlint:deprecation")
+            options.encoding = "UTF-8"
         }
     }
 
     test {
         useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
     }
 
     spotbugsMain {
@@ -88,8 +96,7 @@ tasks {
                 .filter { it.name != "lib" }
                 .map { it.group + "/" + it.name + "/" + it.version }
                 .forEach { links?.add("https://javadoc.io/doc/$it") }
-            links?.add("https://docs.oracle.com/en/java/javase/11/docs/api/")
-//            classpath.files.addAll(files(project(":lib").sourceSets.main.get().allJava))
+            links?.add("https://docs.oracle.com/en/java/javase/${javaVersion}/docs/api/")
         }
     }
 
