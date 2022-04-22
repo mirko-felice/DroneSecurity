@@ -2,7 +2,10 @@ package it.unibo.dronesecurity.userapplication.controller;
 
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.client.WebClient;
-import it.unibo.dronesecurity.lib.*;
+import it.unibo.dronesecurity.lib.AlertUtils;
+import it.unibo.dronesecurity.lib.Connection;
+import it.unibo.dronesecurity.lib.ConnectionController;
+import it.unibo.dronesecurity.lib.PropertiesConstants;
 import it.unibo.dronesecurity.userapplication.shipping.courier.CourierShippingService;
 import javafx.application.Application;
 import javafx.application.Platform;

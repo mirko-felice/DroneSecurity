@@ -1,7 +1,6 @@
 open module it.unibo.dronesecurity.lib {
     exports it.unibo.dronesecurity.lib;
 
-    requires transitive java.logging;
     requires transitive javafx.controls;
     requires transitive javafx.fxml;
 
