@@ -7,7 +7,7 @@ import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
 import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
 import it.unibo.dronesecurity.userapplication.auth.repo.AuthenticationRepository;
 import it.unibo.dronesecurity.userapplication.utilities.ClientHelper;
-import it.unibo.dronesecurity.userapplication.utilities.LoggedUser;
+import it.unibo.dronesecurity.userapplication.utilities.UserHelper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -74,7 +74,7 @@ public final class AuthenticationController implements Initializable {
                 .onSuccess(isLogged -> Platform.runLater(() -> {
                     if (Boolean.TRUE.equals(isLogged))
                         try {
-                            LoggedUser.set(user);
+                            UserHelper.setLoggedUser(user);
                             ((Stage) this.loginButton.getScene().getWindow()).close();
                             final URL fileUrl = getClass().getResource(COURIER_FXML);
                             final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
