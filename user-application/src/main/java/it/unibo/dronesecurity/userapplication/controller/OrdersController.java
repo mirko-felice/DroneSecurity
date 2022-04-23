@@ -1,12 +1,15 @@
 package it.unibo.dronesecurity.userapplication.controller;
 
 import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonObject;
 import it.unibo.dronesecurity.lib.AlertUtils;
 import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
 import it.unibo.dronesecurity.userapplication.utilities.ClientHelper;
 import it.unibo.dronesecurity.userapplication.utilities.DateHelper;
+import it.unibo.dronesecurity.userapplication.utilities.UserHelper;
+import it.unibo.dronesecurity.userapplication.utilities.OrderConstants;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -71,10 +74,13 @@ public final class OrdersController implements Initializable {
         final Optional<Order> selectedOrder = this.getSelectedOrder();
         selectedOrder.ifPresentOrElse(order -> {
             // TODO how to check ???
-            if (order instanceof PlacedOrder)
+            if (order instanceof PlacedOrder) {
+                final JsonObject body = new JsonObject()
+                        .put(OrderConstants.ORDER_KEY, order)
+                        .put(OrderConstants.COURIER_KEY, UserHelper.getLoggedUser());
                 ClientHelper.WEB_CLIENT.post(PERFORM_DELIVERY_URI)
                         .putHeader("Content-Type", "application/json")
-                        .sendBuffer(Json.encodeToBuffer(order))
+                        .sendBuffer(body.toBuffer())
                         .onSuccess(h -> Platform.runLater(() -> {
                             try {
                                 ((Stage) this.performDeliveryButton.getScene().getWindow()).close();
@@ -96,7 +102,7 @@ public final class OrdersController implements Initializable {
                                 LoggerFactory.getLogger(getClass()).error("Error creating the new window:", e);
                             }
                         }));
-            else
+            } else
                 AlertUtils.showErrorAlert("You can NOT deliver an order that isn't placed.");
         }, NOT_SELECTED_RUNNABLE);
     }

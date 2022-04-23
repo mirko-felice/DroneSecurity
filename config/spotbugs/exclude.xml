@@ -28,4 +28,9 @@
         <Class name="it.unibo.dronesecurity.userapplication.shipping.courier.entities.RescheduledOrder" />
     </Match>
 
+    <Match>
+        <Bug pattern="FCBL_FIELD_COULD_BE_LOCAL" />
+        <Class name="~.*\.*Builder" />
+    </Match>
+
 </FindBugsFilter>

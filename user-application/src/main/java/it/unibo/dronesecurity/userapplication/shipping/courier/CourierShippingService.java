@@ -22,6 +22,7 @@ import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
 import it.unibo.dronesecurity.userapplication.shipping.courier.repo.OrderRepository;
 import it.unibo.dronesecurity.userapplication.utilities.CastHelper;
+import it.unibo.dronesecurity.userapplication.utilities.OrderConstants;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
@@ -91,7 +92,8 @@ public final class CourierShippingService {
 
     private void performDelivery(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-        final PlacedOrder order = params.body().getJsonObject().mapTo(PlacedOrder.class);
+        final JsonObject body = params.body().getJsonObject();
+        final PlacedOrder order = body.getJsonObject(OrderConstants.ORDER_KEY).mapTo(PlacedOrder.class);
         if (order == null)
             routingContext.response().setStatusCode(CLIENT_ERROR_CODE).end();
         else {
@@ -99,9 +101,10 @@ public final class CourierShippingService {
             OrderRepository.getInstance().delivering(deliveringOrder);
 
             final JsonNode messageJson = new ObjectMapper().createObjectNode()
-                    .put(MqttMessageParameterConstants.MESSAGE_PARAMETER,
+                    .put(MqttMessageParameterConstants.SYNC_PARAMETER,
                             MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE)
-                    .put(MqttMessageParameterConstants.ORDER_ID_PARAMETER, order.getId());
+                    .put(MqttMessageParameterConstants.ORDER_ID_PARAMETER, order.getId())
+                    .put(MqttMessageParameterConstants.COURIER_PARAMETER, body.getString(OrderConstants.COURIER_KEY));
             final Connection connection = Connection.getInstance();
             connection.publish(MqttTopicConstants.ORDER_TOPIC, messageJson);
 
@@ -127,7 +130,7 @@ public final class CourierShippingService {
 
                 // TODO maybe catch else branch that does NOT send this message
                 final JsonNode message = new ObjectMapper().createObjectNode()
-                        .put(MqttMessageParameterConstants.MESSAGE_PARAMETER,
+                        .put(MqttMessageParameterConstants.SYNC_PARAMETER,
                                 MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);
                 connection.publish(MqttTopicConstants.ORDER_TOPIC, message);
             }

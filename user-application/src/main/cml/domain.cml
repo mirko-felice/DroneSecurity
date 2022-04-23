@@ -133,10 +133,6 @@ BoundedContext NegligenceReportingContext implements Reporting {
 			- NegligenceMaintainer referenceMaintainer
 		}
 		
-		DomainEvent NewNegligence {
-			- NegligenceReport report
-		}
-		
 		Service DroneReportService {
 			
 			void reportsNegligence(@NegligenceReport report);
@@ -149,8 +145,12 @@ BoundedContext NegligenceReportingContext implements Reporting {
 			String id
 		}
 		
-		Entity NegligenceMaintainer 
-		
+		Entity NegligenceMaintainer
+
+		DomainEvent NewNegligence {
+            - NegligenceReport report
+        }
+
 		Service MaintainerNegligenceReportService {
 			
 			void onNewNegligence();

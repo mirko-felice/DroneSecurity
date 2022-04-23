@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unibo.dronesecurity.lib.*;
 import it.unibo.dronesecurity.userapplication.drone.monitoring.UserMonitoringService;
 import it.unibo.dronesecurity.userapplication.events.*;
+import it.unibo.dronesecurity.userapplication.negligence.MaintainerNegligenceReportService;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
@@ -14,6 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
@@ -29,11 +31,14 @@ public final class MonitorController implements Initializable {
     private static final DomainEvents<WarningSituation> WARNING_DOMAIN_EVENTS = new DomainEvents<>();
     private static final DomainEvents<CriticalSituation> CRITICAL_DOMAIN_EVENTS = new DomainEvents<>();
     private static final DomainEvents<StatusChanged> STATUS_CHANGED_DOMAIN_EVENTS = new DomainEvents<>();
+    private static final DomainEvents<NewNegligence> NEGLIGENCE_DOMAIN_EVENTS = new DomainEvents<>();
+    private static final DomainEvents<StandardSituation> STANDARD_SITUATION_DOMAIN_EVENTS = new DomainEvents<>();
 
     private static final String STATUS_STRING = "Status: ";
     private static final String STARTING_STRING = "starting";
 
     private final UserMonitoringService monitoringService;
+    private final MaintainerNegligenceReportService maintainerNegligenceReportService;
 
     @FXML private Label statusLabel;
     @FXML private Button recallButton;
@@ -60,6 +65,7 @@ public final class MonitorController implements Initializable {
      */
     public MonitorController() {
         this.monitoringService = new UserMonitoringService();
+        this.maintainerNegligenceReportService = new MaintainerNegligenceReportService(NEGLIGENCE_DOMAIN_EVENTS);
     }
 
     @Override
@@ -70,11 +76,16 @@ public final class MonitorController implements Initializable {
         WARNING_DOMAIN_EVENTS.register(this::onWarning);
         CRITICAL_DOMAIN_EVENTS.register(this::onCritical);
         STATUS_CHANGED_DOMAIN_EVENTS.register(this::onStatusChanged);
+        STANDARD_SITUATION_DOMAIN_EVENTS.register(this::backOnStandardSituation);
+
+        NEGLIGENCE_DOMAIN_EVENTS.register(this::onNewNegligence);
+        this.maintainerNegligenceReportService.subscribeToNegligenceReports();
 
         this.monitoringService.subscribeToDataRead(DATA_READER_DOMAIN_EVENTS);
         this.monitoringService.subscribeToWarningSituation(WARNING_DOMAIN_EVENTS);
         this.monitoringService.subscribeToCriticalSituation(CRITICAL_DOMAIN_EVENTS);
-        this.monitoringService.subscribeToDroneStatusChange(STATUS_CHANGED_DOMAIN_EVENTS);
+        this.monitoringService.subscribeToOrderStatusChange(STATUS_CHANGED_DOMAIN_EVENTS);
+        this.monitoringService.subscribeToStandardSituation(STANDARD_SITUATION_DOMAIN_EVENTS);
 
         this.proximityPreviousDataColumn.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue()));
@@ -124,11 +135,11 @@ public final class MonitorController implements Initializable {
     }
 
     private void onWarning(final WarningSituation warningSituation) {
-        Platform.runLater(() -> LoggerFactory.getLogger(getClass()).info(warningSituation.getMessage()));
+        Platform.runLater(() -> LoggerFactory.getLogger(getClass()).info(warningSituation.getType().toString()));
     }
 
     private void onCritical(final CriticalSituation criticalSituation) {
-        Platform.runLater(() -> LoggerFactory.getLogger(getClass()).info(criticalSituation.getMessage()));
+        Platform.runLater(() -> LoggerFactory.getLogger(getClass()).info(criticalSituation.getType().toString()));
     }
 
     private void onStatusChanged(final StatusChanged statusEvent) {
@@ -140,10 +151,20 @@ public final class MonitorController implements Initializable {
         });
     }
 
+    private void onNewNegligence(final @NotNull NewNegligence newNegligence) {
+        // TODO do something with the negligence report visually
+        LoggerFactory.getLogger(this.getClass()).debug("{}", newNegligence);
+    }
+
+    private void backOnStandardSituation(final @NotNull StandardSituation standardSituation) {
+        // TODO do something when standard situation comes back
+        LoggerFactory.getLogger(this.getClass()).debug("{}", standardSituation);
+    }
+
     @FXML
     private void recallDrone() {
         final JsonNode recallMessage = new ObjectMapper().createObjectNode()
-                .put(MqttMessageParameterConstants.MESSAGE_PARAMETER,
+                .put(MqttMessageParameterConstants.SYNC_PARAMETER,
                         MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);
         Connection.getInstance().publish(MqttTopicConstants.ORDER_TOPIC, recallMessage);
         this.recallButton.setDisable(true);

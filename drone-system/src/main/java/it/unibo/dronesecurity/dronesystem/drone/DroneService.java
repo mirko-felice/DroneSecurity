@@ -72,7 +72,7 @@ public class DroneService {
             try {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
                 if (MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE
-                        .equals(json.get(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER).asText())) {
+                        .equals(json.get(MqttMessageParameterConstants.SYNC_PARAMETER).asText())) {
                     this.currentOrderId = json.get(MqttMessageParameterConstants.ORDER_ID_PARAMETER).asText();
                     this.currentCourier = json.get(MqttMessageParameterConstants.COURIER_PARAMETER).asText();
                     new Thread(this::startDrone).start();
@@ -112,7 +112,7 @@ public class DroneService {
             try {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
                 if (MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE
-                        .equals(json.get(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER).asText())) {
+                        .equals(json.get(MqttMessageParameterConstants.SYNC_PARAMETER).asText())) {
                     PublishHelper.publishCurrentStatus(MqttMessageValueConstants.RETURN_ACKNOWLEDGEMENT_MESSAGE,
                             this.currentOrderId);
                     this.executor.schedule(this::stopDrone, TRAVELING_TIME, TimeUnit.MILLISECONDS);
@@ -162,11 +162,7 @@ public class DroneService {
             PublishHelper.publishCurrentAlertLevel(this.currentProximityAlertLevel, AlertType.DISTANCE);
             if (this.currentProximityAlertLevel == AlertLevel.CRITICAL) {
                 this.drone.halt();
-                final NegligenceReport report = new NegligenceReport(
-                        this.currentCourier,
-                        this.proximitySensorData,
-                        this.accelerometerSensorData);
-                this.droneReportService.reportsNegligence(report);
+                this.reportNegligence();
             }
         }
     }
@@ -179,17 +175,20 @@ public class DroneService {
             PublishHelper.publishCurrentAlertLevel(this.currentAccelerometerAlertLevel, AlertType.ANGLE);
             if (this.currentAccelerometerAlertLevel == AlertLevel.CRITICAL) {
                 this.drone.halt();
-                final NegligenceReport report = new NegligenceReport(
-                        this.currentCourier,
-                        this.proximitySensorData,
-                        this.accelerometerSensorData);
-                this.droneReportService.reportsNegligence(report);
+                this.reportNegligence();
             }
         }
     }
 
     private void analyzeCamera() {
-        LoggerFactory.getLogger(this.getClass()).debug(String.valueOf(this.cameraSensorData));
+        LoggerFactory.getLogger(this.getClass()).debug("{}", this.cameraSensorData);
     }
 
+    private void reportNegligence() {
+        final NegligenceReport report = new NegligenceReport(
+                this.currentCourier,
+                this.proximitySensorData,
+                this.accelerometerSensorData);
+        this.droneReportService.reportsNegligence(report);
+    }
 }

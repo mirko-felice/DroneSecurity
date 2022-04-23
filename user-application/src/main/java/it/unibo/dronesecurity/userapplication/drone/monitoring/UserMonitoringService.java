@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vertx.core.json.JsonObject;
-import it.unibo.dronesecurity.lib.Connection;
-import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
-import it.unibo.dronesecurity.lib.MqttTopicConstants;
+import it.unibo.dronesecurity.lib.*;
 import it.unibo.dronesecurity.userapplication.events.*;
 import org.slf4j.LoggerFactory;
 
@@ -46,35 +44,54 @@ public final class UserMonitoringService {
     }
 
     /**
-     * Subscribes to the warning topic.
+     * Subscribes to the warning situations.
      *
      * @param domainEvents Domain to raise events on
      */
     public void subscribeToWarningSituation(final DomainEvents<WarningSituation> domainEvents) {
-        Connection.getInstance().subscribe(MqttTopicConstants.WARNING_TOPIC, msg -> {
+        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC, msg -> {
             final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
-            domainEvents.raise(new WarningSituation(json.getString(MqttMessageParameterConstants.MESSAGE_PARAMETER)));
+            if (json.getString(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER)
+                    .equals(AlertLevel.WARNING.toString()))
+                domainEvents.raise(
+                        new WarningSituation(json.getString(MqttMessageParameterConstants.ALERT_TYPE_PARAMETER)));
         });
     }
 
     /**
-     * Subscribes to the critical topic.
+     * Subscribes to the critical situations.
      *
      * @param domainEvents Domain to raise events on
      */
     public void subscribeToCriticalSituation(final DomainEvents<CriticalSituation> domainEvents) {
-        Connection.getInstance().subscribe(MqttTopicConstants.CRITICAL_TOPIC, msg -> {
+        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC, msg -> {
             final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
-            domainEvents.raise(new CriticalSituation(json.getString(MqttMessageParameterConstants.MESSAGE_PARAMETER)));
+            if (json.getString(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER)
+                    .equals(AlertLevel.CRITICAL.toString()))
+                domainEvents.raise(
+                        new CriticalSituation(json.getString(MqttMessageParameterConstants.ALERT_TYPE_PARAMETER)));
         });
     }
 
+    /**
+     * Subscribes to the standard situations.
+     *
+     * @param domainEvents Domain to raise events on
+     */
+    public void subscribeToStandardSituation(final DomainEvents<StandardSituation> domainEvents) {
+        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC, msg -> {
+            final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
+            if (json.getString(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER)
+                    .equals(AlertLevel.NONE.toString()))
+                domainEvents.raise(new StandardSituation());
+        });
+    }
     /**
      * Subscribes to drone status topic.
      *
      * @param domainEvents Domain to raise events on
      */
-    public void subscribeToDroneStatusChange(final DomainEvents<StatusChanged> domainEvents) {
+    public void subscribeToOrderStatusChange(final DomainEvents<StatusChanged> domainEvents) {
         Connection.getInstance().subscribe(MqttTopicConstants.LIFECYCLE_TOPIC, msg -> {
             try {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));

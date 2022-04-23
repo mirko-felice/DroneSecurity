@@ -1,26 +1,28 @@
 package it.unibo.dronesecurity.userapplication.events;
 
+import it.unibo.dronesecurity.lib.AlertType;
+
 /**
  * The event to be raised when the drone informs of a warning situation.
  */
 public class WarningSituation implements Event {
-    private final String message;
+    private final AlertType type;
 
     /**
      * Instantiates the Warning event.
      *
-     * @param message message that was received
+     * @param type type of the alert
      */
-    public WarningSituation(final String message) {
-        this.message = message;
+    public WarningSituation(final String type) {
+        this.type = AlertType.valueOf(type);
     }
 
     /**
-     * Gets the message of the event.
+     * Gets the type of the alert.
      *
-     * @return the message read by the event
+     * @return the {@link AlertType}
      */
-    public String getMessage() {
-        return this.message;
+    public AlertType getType() {
+        return this.type;
     }
 }

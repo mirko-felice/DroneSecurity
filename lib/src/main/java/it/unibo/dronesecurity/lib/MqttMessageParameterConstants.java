@@ -36,6 +36,11 @@ public final class MqttMessageParameterConstants {
     public static final String ACCELEROMETER_Z_PARAMETER = "z";
 
     /**
+     * Parameter that contains synchronization message.
+     */
+    public static final String SYNC_PARAMETER = "sync";
+
+    /**
      * Parameter that contains current {@link AlertLevel}.
      */
     public static final String ALERT_LEVEL_PARAMETER = "level";
@@ -61,9 +66,9 @@ public final class MqttMessageParameterConstants {
     public static final String COURIER_PARAMETER = "courier";
 
     /**
-     * Parameter that contains all the data collected for a Negligence Report.
+     * Parameter that contains negligent for a Negligence Report.
      */
-    public static final String NEGLIGENCE_DATA_PARAMETER = "data";
+    public static final String NEGLIGENT_PARAMETER = "negligent";
 
     private MqttMessageParameterConstants() { }
 }
