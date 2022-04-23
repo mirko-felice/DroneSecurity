@@ -3,11 +3,9 @@ package it.unibo.dronesecurity.dronesystem.drone;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import it.unibo.dronesecurity.lib.Connection;
-import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
-import it.unibo.dronesecurity.lib.MqttMessageValueConstants;
-import it.unibo.dronesecurity.lib.MqttTopicConstants;
+import it.unibo.dronesecurity.dronesystem.drone.report.DroneReportService;
+import it.unibo.dronesecurity.dronesystem.drone.report.NegligenceReport;
+import it.unibo.dronesecurity.lib.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
@@ -45,6 +43,12 @@ public class DroneService {
     private Double cameraSensorData;
 
     private String currentOrderId;
+    private String currentCourier;
+
+    // Reporting
+    private final DroneReportService droneReportService;
+    private AlertLevel currentProximityAlertLevel;
+    private AlertLevel currentAccelerometerAlertLevel;
 
     /**
      * Constructs the drone to be observed by this drone service.
@@ -56,6 +60,7 @@ public class DroneService {
         this.randomGenerator = new SecureRandom();
         this.latch = new CountDownLatch(1);
         this.executor = Executors.newScheduledThreadPool(2);
+        this.droneReportService = new DroneReportService();
     }
 
     /**
@@ -67,8 +72,9 @@ public class DroneService {
             try {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
                 if (MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE
-                        .equals(json.get(MqttMessageParameterConstants.MESSAGE_PARAMETER).asText())) {
+                        .equals(json.get(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER).asText())) {
                     this.currentOrderId = json.get(MqttMessageParameterConstants.ORDER_ID_PARAMETER).asText();
+                    this.currentCourier = json.get(MqttMessageParameterConstants.COURIER_PARAMETER).asText();
                     new Thread(this::startDrone).start();
                 }
             } catch (JsonProcessingException e) {
@@ -91,21 +97,24 @@ public class DroneService {
 
     //Simulates drone lifecycle sending its status to aws with 70% of successful delivers.
     private void simulateDroneLifecycle() {
-        this.publishCurrentStatus(MqttMessageValueConstants.DELIVERING_MESSAGE);
+        PublishHelper.publishCurrentStatus(MqttMessageValueConstants.DELIVERING_MESSAGE, this.currentOrderId);
         this.executor.schedule(() -> {
             final int choice = this.randomGenerator.nextInt(RANDOM_GENERATION_RANGE - 1);
             if (choice < SUCCESS_PERCENTAGE)
-                this.publishCurrentStatus(MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE);
+                PublishHelper.publishCurrentStatus(MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE,
+                        this.currentOrderId);
             else
-                this.publishCurrentStatus(MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE);
+                PublishHelper.publishCurrentStatus(MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE,
+                        this.currentOrderId);
         }, TRAVELING_TIME + CLIENT_WAITING_TIME, TimeUnit.MILLISECONDS);
 
         Connection.getInstance().subscribe(MqttTopicConstants.ORDER_TOPIC, msg -> {
             try {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
                 if (MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE
-                        .equals(json.get(MqttMessageParameterConstants.MESSAGE_PARAMETER).asText())) {
-                    this.publishCurrentStatus(MqttMessageValueConstants.RETURN_ACKNOWLEDGEMENT_MESSAGE);
+                        .equals(json.get(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER).asText())) {
+                    PublishHelper.publishCurrentStatus(MqttMessageValueConstants.RETURN_ACKNOWLEDGEMENT_MESSAGE,
+                            this.currentOrderId);
                     this.executor.schedule(this::stopDrone, TRAVELING_TIME, TimeUnit.MILLISECONDS);
                 }
             } catch (JsonProcessingException e) {
@@ -125,7 +134,10 @@ public class DroneService {
                     this.proximitySensorData = this.drone.getProximitySensorData();
                     this.accelerometerSensorData = this.drone.getAccelerometerSensorData();
                     this.cameraSensorData = this.drone.getCameraSensorData();
-                    this.publishData();
+                    PublishHelper.publishData(
+                            this.proximitySensorData,
+                            this.accelerometerSensorData,
+                            this.cameraSensorData);
 
                     this.analyzeData();
                 }, 0, ANALIZER_SLEEP_DURATION, TimeUnit.MILLISECONDS);
@@ -137,54 +149,47 @@ public class DroneService {
     }
 
     private void analyzeData() {
-        switch (this.dataAnalyzer.checkProximitySensorDataAlertLevel(this.proximitySensorData)) {
-            case CRITICAL:
+        this.analyzeProximity();
+        this.analyzeAccelerometer();
+        this.analyzeCamera();
+    }
+
+    private void analyzeProximity() {
+        final AlertLevel previous = this.currentProximityAlertLevel;
+        this.currentProximityAlertLevel = this.dataAnalyzer
+                .checkProximitySensorDataAlertLevel(this.proximitySensorData);
+        if (this.currentProximityAlertLevel != previous) {
+            PublishHelper.publishCurrentAlertLevel(this.currentProximityAlertLevel, AlertType.DISTANCE);
+            if (this.currentProximityAlertLevel == AlertLevel.CRITICAL) {
                 this.drone.halt();
-                this.publishAlert(MqttTopicConstants.CRITICAL_TOPIC,
-                        MqttMessageValueConstants.CRITICAL_PROXIMITY_MESSAGE);
-                break;
-            case WARNING:
-                this.publishAlert(MqttTopicConstants.WARNING_TOPIC,
-                        MqttMessageValueConstants.WARNING_PROXIMITY_MESSAGE);
-                break;
-            default:
-        }
-        switch (this.dataAnalyzer.checkAccelerometerDataAlertLevel(this.accelerometerSensorData)) {
-            case CRITICAL:
-                this.drone.halt();
-                this.publishAlert(MqttTopicConstants.CRITICAL_TOPIC,
-                        MqttMessageValueConstants.CRITICAL_ANGLE_MESSAGE);
-                break;
-            case WARNING:
-                this.publishAlert(MqttTopicConstants.WARNING_TOPIC,
-                        MqttMessageValueConstants.WARNING_ANGLE_MESSAGE);
-                break;
-            default:
+                final NegligenceReport report = new NegligenceReport(
+                        this.currentCourier,
+                        this.proximitySensorData,
+                        this.accelerometerSensorData);
+                this.droneReportService.reportsNegligence(report);
+            }
         }
     }
 
-    private void publishData() {
-        final ObjectMapper mapper = new ObjectMapper();
-        final ObjectNode mapJson = mapper.createObjectNode();
-        mapJson.put(MqttMessageParameterConstants.PROXIMITY_PARAMETER, this.proximitySensorData);
-        final ObjectNode accelerometerValues = mapper.createObjectNode();
-        this.accelerometerSensorData.forEach(accelerometerValues::put);
-        mapJson.set(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER, accelerometerValues);
-        mapJson.put(MqttMessageParameterConstants.CAMERA_PARAMETER, this.cameraSensorData);
-
-        Connection.getInstance().publish(MqttTopicConstants.DATA_TOPIC, mapJson);
+    private void analyzeAccelerometer() {
+        final AlertLevel previous = this.currentAccelerometerAlertLevel;
+        this.currentAccelerometerAlertLevel = this.dataAnalyzer
+                .checkAccelerometerDataAlertLevel(this.accelerometerSensorData);
+        if (this.currentAccelerometerAlertLevel != previous) {
+            PublishHelper.publishCurrentAlertLevel(this.currentAccelerometerAlertLevel, AlertType.ANGLE);
+            if (this.currentAccelerometerAlertLevel == AlertLevel.CRITICAL) {
+                this.drone.halt();
+                final NegligenceReport report = new NegligenceReport(
+                        this.currentCourier,
+                        this.proximitySensorData,
+                        this.accelerometerSensorData);
+                this.droneReportService.reportsNegligence(report);
+            }
+        }
     }
 
-    private void publishAlert(final String topic, final @NotNull String message) {
-        final ObjectNode payload = new ObjectMapper().createObjectNode();
-        payload.put(MqttMessageParameterConstants.MESSAGE_PARAMETER, message);
-        Connection.getInstance().publish(topic, payload);
+    private void analyzeCamera() {
+        LoggerFactory.getLogger(this.getClass()).debug(String.valueOf(this.cameraSensorData));
     }
 
-    private void publishCurrentStatus(final String status) {
-        final ObjectNode payload = new ObjectMapper().createObjectNode();
-        payload.put(MqttMessageParameterConstants.ORDER_ID_PARAMETER, this.currentOrderId);
-        payload.put(MqttMessageParameterConstants.STATUS_PARAMETER, status);
-        Connection.getInstance().publish(MqttTopicConstants.LIFECYCLE_TOPIC, payload);
-    }
 }
