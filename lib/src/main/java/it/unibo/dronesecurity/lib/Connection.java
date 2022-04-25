@@ -40,7 +40,11 @@ public final class Connection {
     private Connection() {
         this.eventLoopGroup = new EventLoopGroup(1);
         this.properties = new Properties();
-        this.readProperties();
+        try {
+            this.readProperties();
+        } catch (IOException e) {
+            LoggerFactory.getLogger(getClass()).error("Can NOT read file .properties.", e);
+        }
     }
 
     /**
@@ -62,7 +66,12 @@ public final class Connection {
      * @return {@link CompletableFuture} giving true only if session is resumed, otherwise false
      */
     public CompletableFuture<Boolean> connect() {
-        this.readProperties();
+        try {
+            this.readProperties();
+        } catch (IOException e) {
+            LoggerFactory.getLogger(getClass()).error("Can NOT read file .properties.", e);
+            return CompletableFuture.failedFuture(e);
+        }
         return this.clientConnection.connect();
     }
 
@@ -97,7 +106,7 @@ public final class Connection {
         this.clientConnection.close();
     }
 
-    private void readProperties() {
+    private void readProperties() throws IOException {
         try (InputStream inputStream = Files.newInputStream(Path.of(PropertiesConstants.PROPERTIES_FILENAME))) {
             this.properties.load(inputStream);
 
@@ -110,8 +119,6 @@ public final class Connection {
             this.clientID = this.properties.getProperty(PropertiesConstants.CLIENT_ID);
 
             this.buildConnection();
-        } catch (IOException e) {
-            LoggerFactory.getLogger(getClass()).error("Can NOT read file .properties.", e);
         }
     }
 
