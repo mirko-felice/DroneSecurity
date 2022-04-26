@@ -32,7 +32,9 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - name: Build the project
-        run: ./gradlew build
+        uses: gradle/gradle-build-actions@v2.1.5
+        with:
+          arguments: build
   Release:
     if: github.ref_name == 'master'
     needs: Test
