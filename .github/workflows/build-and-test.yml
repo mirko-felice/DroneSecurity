@@ -32,7 +32,7 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - name: Build the project
-        uses: gradle/gradle-build-actions@v2.1.5
+        uses: gradle/gradle-build-action@v2.1.5
         with:
           arguments: build
   Release:
