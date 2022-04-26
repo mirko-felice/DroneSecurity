@@ -5,6 +5,7 @@ plugins {
     `java-library`
     checkstyle
     pmd
+    jacoco
     id("de.jjohannes.extra-java-module-info")
     id("org.openjfx.javafxplugin")
     id("com.github.spotbugs")
@@ -62,6 +63,9 @@ javafx {
 
 tasks {
 
+    val sonar = tasks.getByName("sonarqube")
+    sonar.dependsOn(test)
+
     compileJava {
         doFirst {
             options.compilerArgs.add("-Xlint:deprecation")
@@ -74,6 +78,12 @@ tasks {
         testLogging {
             events("passed", "skipped", "failed")
         }
+        finalizedBy(jacocoTestReport)
+    }
+
+    jacocoTestReport {
+        dependsOn(test)
+        reports.xml.required.set(true)
     }
 
     spotbugsMain {
