@@ -6,7 +6,6 @@ import it.unibo.dronesecurity.lib.AlertUtils;
 import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.lib.ConnectionController;
 import it.unibo.dronesecurity.lib.PropertiesConstants;
-import it.unibo.dronesecurity.userapplication.shipping.courier.CourierShippingService;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -52,7 +51,6 @@ public final class Launcher extends Application {
      * @param args additional arguments
      */
     public static void main(final String[] args) {
-        new CourierShippingService().startListening();
         launch(args);
     }
 
