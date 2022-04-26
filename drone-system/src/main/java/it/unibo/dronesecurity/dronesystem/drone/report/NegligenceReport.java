@@ -12,17 +12,21 @@ public final class NegligenceReport {
     private final String negligent;
     private final double proximity;
     private final Map<String, Double> accelerometer;
+    private final double camera;
 
     /**
      * Build the report.
      * @param negligent the negligent leading the drone
      * @param proximity the proximity data detected by its sensor
      * @param accelerometer the accelerometer data detected by its sensor
+     * @param camera the camera data detected by its sensor
      */
-    public NegligenceReport(final String negligent, final double proximity, final Map<String, Double> accelerometer) {
+    public NegligenceReport(final String negligent, final double proximity, final Map<String, Double> accelerometer,
+                            final double camera) {
         this.negligent = negligent;
         this.proximity = proximity;
         this.accelerometer = Map.copyOf(accelerometer);
+        this.camera = camera;
     }
 
     /**
@@ -47,5 +51,13 @@ public final class NegligenceReport {
      */
     public @Unmodifiable Map<String, Double> getAccelerometer() {
         return Map.copyOf(this.accelerometer);
+    }
+
+    /**
+     * Gets the camera data.
+     * @return the camera data
+     */
+    public double getCamera() {
+        return this.camera;
     }
 }

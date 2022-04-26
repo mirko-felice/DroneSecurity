@@ -61,6 +61,8 @@ public class DroneService {
         this.latch = new CountDownLatch(1);
         this.executor = Executors.newScheduledThreadPool(2);
         this.droneReportService = new DroneReportService();
+        this.currentProximityAlertLevel = AlertLevel.NONE;
+        this.currentAccelerometerAlertLevel = AlertLevel.NONE;
     }
 
     /**
@@ -181,14 +183,15 @@ public class DroneService {
     }
 
     private void analyzeCamera() {
-        LoggerFactory.getLogger(this.getClass()).debug("{}", this.cameraSensorData);
+        // TODO analyze camera
     }
 
     private void reportNegligence() {
         final NegligenceReport report = new NegligenceReport(
                 this.currentCourier,
                 this.proximitySensorData,
-                this.accelerometerSensorData);
+                this.accelerometerSensorData,
+                this.cameraSensorData);
         this.droneReportService.reportsNegligence(report);
     }
 }

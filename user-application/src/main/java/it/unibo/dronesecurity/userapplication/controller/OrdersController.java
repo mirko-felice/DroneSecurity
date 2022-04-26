@@ -77,7 +77,7 @@ public final class OrdersController implements Initializable {
             if (order instanceof PlacedOrder) {
                 final JsonObject body = new JsonObject()
                         .put(OrderConstants.ORDER_KEY, order)
-                        .put(OrderConstants.COURIER_KEY, UserHelper.getLoggedUser());
+                        .put(OrderConstants.COURIER_KEY, UserHelper.getLoggedUser().getUsername());
                 ClientHelper.WEB_CLIENT.post(PERFORM_DELIVERY_URI)
                         .putHeader("Content-Type", "application/json")
                         .sendBuffer(body.toBuffer())

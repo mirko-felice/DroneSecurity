@@ -1,9 +1,9 @@
 package it.unibo.dronesecurity.userapplication.negligence.serializers;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
@@ -13,6 +13,7 @@ import it.unibo.dronesecurity.userapplication.negligence.report.NegligenceReport
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -30,9 +31,17 @@ public final class NegligenceReportDeserializer extends JsonDeserializer<Neglige
         final Courier courier = NegligenceACL.retrieveCourier(negligent);
 
         final double proximity = root.get(MqttMessageParameterConstants.PROXIMITY_PARAMETER).asDouble();
-        final ConcurrentHashMap<String, Double> accelerometer = mapper.readValue(
-                root.get(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER).asText(),
-                new AccelerometerTypeReference());
+        final JsonNode accelerometerData = root.get(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER);
+        final Map<String, Double> accelerometer = new ConcurrentHashMap<>();
+        accelerometer.put(
+                MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER,
+                accelerometerData.get(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER).asDouble());
+        accelerometer.put(
+                MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER,
+                accelerometerData.get(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER).asDouble());
+        accelerometer.put(
+                MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER,
+                accelerometerData.get(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER).asDouble());
 
         return NegligenceReport.Builder.fromNegligent(courier)
                 .withProximity(proximity)
@@ -40,8 +49,4 @@ public final class NegligenceReportDeserializer extends JsonDeserializer<Neglige
                 .build();
     }
 
-    /**
-     * {@link TypeReference} used to deserialize into Accelerometer data type.
-     */
-    private static class AccelerometerTypeReference extends TypeReference<ConcurrentHashMap<String, Double>> { }
 }
