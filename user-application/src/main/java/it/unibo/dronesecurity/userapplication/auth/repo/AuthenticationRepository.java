@@ -1,12 +1,12 @@
 package it.unibo.dronesecurity.userapplication.auth.repo;
 
 import io.vertx.core.Future;
-import it.unibo.dronesecurity.userapplication.auth.entities.BaseUser;
+import it.unibo.dronesecurity.userapplication.auth.entities.User;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Repository to perform different actions on {@link BaseUser} entity.
+ * Repository to perform different actions on {@link User} entity.
  */
 public interface AuthenticationRepository {
 
@@ -15,7 +15,7 @@ public interface AuthenticationRepository {
      * @param user the user to authenticate
      * @return the {@link Future} containing the result
      */
-    Future<Boolean> authenticate(BaseUser user);
+    Future<Boolean> authenticate(User user);
 
     /**
      * Get the instance of this repository.

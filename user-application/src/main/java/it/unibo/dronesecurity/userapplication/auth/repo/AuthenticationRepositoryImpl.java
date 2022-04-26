@@ -4,7 +4,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
-import it.unibo.dronesecurity.userapplication.auth.entities.BaseUser;
+import it.unibo.dronesecurity.userapplication.auth.entities.User;
 import it.unibo.dronesecurity.userapplication.utilities.PasswordHelper;
 
 import java.security.NoSuchAlgorithmException;
@@ -25,7 +25,7 @@ public final class AuthenticationRepositoryImpl implements AuthenticationReposit
     }
 
     @Override
-    public Future<Boolean> authenticate(final BaseUser user) {
+    public Future<Boolean> authenticate(final User user) {
         final JsonObject query = JsonObject.mapFrom(user);
         query.remove("password");
         return this.database.findOne("users", query, null)
