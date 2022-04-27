@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Base implementation of {@link User}.
  */
-public class BaseUser implements User {
+class BaseUser implements User {
 
     @JsonProperty private final String username;
     @JsonProperty private final String password;

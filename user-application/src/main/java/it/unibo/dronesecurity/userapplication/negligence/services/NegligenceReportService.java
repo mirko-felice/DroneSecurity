@@ -1,4 +1,4 @@
-package it.unibo.dronesecurity.userapplication.negligence;
+package it.unibo.dronesecurity.userapplication.negligence.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,6 +7,7 @@ import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.lib.MqttTopicConstants;
 import it.unibo.dronesecurity.userapplication.events.DomainEvents;
 import it.unibo.dronesecurity.userapplication.events.NewNegligence;
+import it.unibo.dronesecurity.userapplication.negligence.report.NegligenceActionForm;
 import it.unibo.dronesecurity.userapplication.negligence.report.NegligenceReport;
 import it.unibo.dronesecurity.userapplication.negligence.report.NegligenceRepository;
 import org.jetbrains.annotations.NotNull;
@@ -14,35 +15,48 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Service providing method to subscribe to {@link NewNegligence} events.
+ * Service providing methods both for the needs of the courier and for the maintainer.
  */
-public class MaintainerNegligenceReportService {
+public class NegligenceReportService implements CourierNegligenceReportService, MaintainerNegligenceReportService {
 
-    private final DomainEvents<NewNegligence> negligenceDomainEvents;
+    private static NegligenceReportService singleton;
 
     /**
-     * Build the Service.
-     * @param negligenceDomainEvents {@link DomainEvents} used to register base behaviour known by this service
+     * Get the Singleton instance.
+     * @return the singleton
      */
-    public MaintainerNegligenceReportService(final @NotNull DomainEvents<NewNegligence> negligenceDomainEvents) {
-        this.negligenceDomainEvents = negligenceDomainEvents;
-        this.negligenceDomainEvents.register(this::onNewNegligence);
+    public static NegligenceReportService getInstance() {
+        synchronized (NegligenceReportService.class) {
+            if (singleton == null)
+                singleton = new NegligenceReportService();
+            return singleton;
+        }
     }
 
     /**
-     * Subscribe to {@link NewNegligence} events.
+     * {@inheritDoc}
      */
-    public void subscribeToNegligenceReports() {
+    @Override
+    public void subscribeToNegligenceReports(final @NotNull DomainEvents<NewNegligence> domainEvents) {
+        domainEvents.register(this::onNewNegligence);
         Connection.getInstance().subscribe(MqttTopicConstants.NEGLIGENCE_REPORTS_TOPIC, msg -> {
             try {
                 final NegligenceReport report = new ObjectMapper().readValue(
                         new String(msg.getPayload(), StandardCharsets.UTF_8),
                         NegligenceReport.class);
-                this.negligenceDomainEvents.raise(new NewNegligence(report));
+                domainEvents.raise(new NewNegligence(report));
             } catch (JsonProcessingException e) {
                 LoggerFactory.getLogger(this.getClass()).error("Can NOT convert negligence report.", e);
             }
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void takeAction(final NegligenceActionForm form) {
+        NegligenceRepository.getInstance().takeAction(form);
     }
 
     private void onNewNegligence(final @NotNull NewNegligence newNegligence) {

@@ -12,6 +12,12 @@ public interface NegligenceRepository {
     void createReport(NegligenceReport report);
 
     /**
+     * Take action saving the {@link NegligenceActionForm}.
+     * @param form form to be saved
+     */
+    void takeAction(NegligenceActionForm form);
+
+    /**
      * Get the instance of this repository.
      * @return the instance
      */

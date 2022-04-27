@@ -1,6 +1,7 @@
 package it.unibo.dronesecurity.userapplication.controller;
 
 import it.unibo.dronesecurity.lib.AlertUtils;
+import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.userapplication.auth.entities.*;
 import it.unibo.dronesecurity.userapplication.auth.repo.AuthenticationRepository;
 import it.unibo.dronesecurity.userapplication.shipping.courier.CourierShippingService;
@@ -26,11 +27,13 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * Controller dedicated to {@link BaseUser} authentication.
+ * Controller dedicated to {@link User} authentication.
  */
 public final class AuthenticationController implements Initializable {
 
     private static final String COURIER_FXML = "orders.fxml";
+    private static final String MAINTAINER_FXML = "maintainer.fxml";
+    private static final String UNEXPECTED_VALUE = "Unexpected value: ";
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
     @FXML private TextField visiblePasswordField;
@@ -67,35 +70,28 @@ public final class AuthenticationController implements Initializable {
                 .onSuccess(isLogged -> {
                     if (Boolean.TRUE.equals(isLogged)) {
                         UserHelper.setLoggedUser(user); // TODO retrieve all information from db(?)
-                        new CourierShippingService().startListening().onComplete(res -> {
-                            if (res.succeeded())
-                                Platform.runLater(() -> {
-                                    try {
-                                        ((Stage) this.loginButton.getScene().getWindow()).close();
-                                        final URL fileUrl = getClass().getResource(COURIER_FXML);
-                                        final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-                                        fxmlLoader.setController(new OrdersController());
-                                        final Scene scene = new Scene(fxmlLoader.load());
-                                        final Stage stage = new Stage();
-                                        stage.setScene(scene);
-                                        stage.setTitle("Orders");
-                                        stage.setOnCloseRequest(event -> {
-                                            ClientHelper.WEB_CLIENT.close();
-                                            Platform.exit();
-                                            System.exit(0);
-                                        });
-                                        stage.show();
-                                    } catch (IOException e) {
-                                        LoggerFactory.getLogger(getClass()).error("Error creating the new window:", e);
-                                    }
+                        switch (user.getRole()) {
+                            case COURIER:
+                                new CourierShippingService().startListening().onComplete(res -> {
+                                    if (res.succeeded())
+                                        this.showNextWindow(user.getRole());
+                                    else
+                                        LoggerFactory.getLogger(getClass()).error("Error creating the service:",
+                                                res.cause());
+                                    this.activeLogin();
                                 });
-                            else
-                                LoggerFactory.getLogger(getClass()).error("Error creating the service:", res.cause());
-                            this.progressBar.setVisible(false);
-                            this.loginButton.setDisable(false);
-                        });
-                    } else
-                        AlertUtils.showErrorAlert("Username and/or passwords are wrong!");
+                                break;
+                            case MAINTAINER:
+                                this.showNextWindow(user.getRole());
+                                this.activeLogin();
+                                break;
+                            default:
+                                throw new IllegalStateException(UNEXPECTED_VALUE + user.getRole());
+                        }
+                    } else {
+                        AlertUtils.showErrorAlert("Username and/or passwords and/or role are wrong!");
+                        this.activeLogin();
+                    }
                 });
     }
 
@@ -115,7 +111,53 @@ public final class AuthenticationController implements Initializable {
             case MAINTAINER:
                 return new Maintainer(username, password);
             default:
-                throw new IllegalStateException("Unexpected value: " + this.roleComboBox.getValue());
+                throw new IllegalStateException(UNEXPECTED_VALUE + this.roleComboBox.getValue());
         }
+    }
+
+    private void showNextWindow(final @NotNull Role role) {
+        Platform.runLater(() -> {
+            final String fxml;
+            final Object controller;
+            final String title;
+            switch (role) {
+                case COURIER:
+                    fxml = COURIER_FXML;
+                    controller = new OrdersController();
+                    title = "Orders";
+                    break;
+                case MAINTAINER:
+                    fxml = MAINTAINER_FXML;
+                    controller = new MaintainerController();
+                    title = "Maintainer";
+                    break;
+                default:
+                    throw new IllegalStateException(UNEXPECTED_VALUE + role);
+            }
+            try {
+                ((Stage) this.loginButton.getScene().getWindow()).close();
+                final URL fileUrl = getClass().getResource(fxml);
+                final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
+                fxmlLoader.setController(controller);
+                final Scene scene = new Scene(fxmlLoader.load());
+                final Stage stage = new Stage();
+                stage.setScene(scene);
+                stage.setTitle(title);
+                stage.setOnCloseRequest(event -> {
+                    ClientHelper.WEB_CLIENT.close();
+                    Connection.getInstance().closeConnection();
+                    Platform.exit();
+                    System.exit(0);
+                });
+                stage.show();
+            } catch (IOException e) {
+                LoggerFactory.getLogger(getClass()).error("Error creating the new window:", e);
+            }
+        });
+    }
+
+    private void activeLogin() {
+        this.progressBar.setVisible(false);
+        this.loginButton.setDisable(false);
     }
 }

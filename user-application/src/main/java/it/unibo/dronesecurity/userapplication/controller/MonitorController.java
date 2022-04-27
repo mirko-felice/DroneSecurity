@@ -2,10 +2,13 @@ package it.unibo.dronesecurity.userapplication.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.unibo.dronesecurity.lib.*;
+import it.unibo.dronesecurity.lib.Connection;
+import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
+import it.unibo.dronesecurity.lib.MqttMessageValueConstants;
+import it.unibo.dronesecurity.lib.MqttTopicConstants;
 import it.unibo.dronesecurity.userapplication.drone.monitoring.UserMonitoringService;
 import it.unibo.dronesecurity.userapplication.events.*;
-import it.unibo.dronesecurity.userapplication.negligence.MaintainerNegligenceReportService;
+import it.unibo.dronesecurity.userapplication.negligence.services.CourierNegligenceReportService;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
@@ -38,7 +41,7 @@ public final class MonitorController implements Initializable {
     private static final String STARTING_STRING = "starting";
 
     private final UserMonitoringService monitoringService;
-    private final MaintainerNegligenceReportService maintainerNegligenceReportService;
+    private final CourierNegligenceReportService negligenceReportService;
 
     @FXML private Label statusLabel;
     @FXML private Button recallButton;
@@ -65,7 +68,7 @@ public final class MonitorController implements Initializable {
      */
     public MonitorController() {
         this.monitoringService = new UserMonitoringService();
-        this.maintainerNegligenceReportService = new MaintainerNegligenceReportService(NEGLIGENCE_DOMAIN_EVENTS);
+        this.negligenceReportService = CourierNegligenceReportService.getInstance();
     }
 
     @Override
@@ -79,7 +82,7 @@ public final class MonitorController implements Initializable {
         STANDARD_SITUATION_DOMAIN_EVENTS.register(this::backOnStandardSituation);
 
         NEGLIGENCE_DOMAIN_EVENTS.register(this::onNewNegligence);
-        this.maintainerNegligenceReportService.subscribeToNegligenceReports();
+        this.negligenceReportService.subscribeToNegligenceReports(NEGLIGENCE_DOMAIN_EVENTS);
 
         this.monitoringService.subscribeToDataRead(DATA_READER_DOMAIN_EVENTS);
         this.monitoringService.subscribeToWarningSituation(WARNING_DOMAIN_EVENTS);

@@ -9,7 +9,8 @@ import io.vertx.ext.mongo.MongoClient;
  */
 public final class NegligenceRepositoryImpl implements NegligenceRepository {
 
-    private static final String COLLECTION_NAME = "negligenceReports";
+    private static final String REPORTS_COLLECTION_NAME = "negligenceReports";
+    private static final String FORMS_COLLECTION_NAME = "negligenceActionForms";
     private static NegligenceRepositoryImpl singleton;
     private final MongoClient database;
 
@@ -33,7 +34,12 @@ public final class NegligenceRepositoryImpl implements NegligenceRepository {
 
     @Override
     public void createReport(final NegligenceReport report) {
-        this.database.save(COLLECTION_NAME, JsonObject.mapFrom(report));
+        this.database.save(REPORTS_COLLECTION_NAME, JsonObject.mapFrom(report));
+    }
+
+    @Override
+    public void takeAction(final NegligenceActionForm form) {
+        this.database.save(FORMS_COLLECTION_NAME, JsonObject.mapFrom(form));
     }
 
 }
