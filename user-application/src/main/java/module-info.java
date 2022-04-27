@@ -3,7 +3,8 @@ open module it.unibo.dronesecurity.userapplication {
 
     requires it.unibo.dronesecurity.lib;
     requires org.jetbrains.annotations;
-    requires software.amazon.awssdk;
+    requires aws.iot.device.sdk;
+    requires aws.crt;
 
     requires io.vertx.web.client;
     requires io.vertx.core;

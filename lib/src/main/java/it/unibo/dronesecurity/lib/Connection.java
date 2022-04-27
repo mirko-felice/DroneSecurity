@@ -25,7 +25,6 @@ import java.util.function.Consumer;
  */
 public final class Connection {
 
-    private static final int KEEP_ALIVE_SECONDS = 6;
     private static Connection singleton;
     private final EventLoopGroup eventLoopGroup;
     private final Properties properties;
@@ -133,7 +132,6 @@ public final class Connection {
                 .withClientId(this.clientID)
                 .withEndpoint(this.endpoint)
                 .withCleanSession(true)
-                .withKeepAliveSecs(KEEP_ALIVE_SECONDS)
                 .build();
     }
 }

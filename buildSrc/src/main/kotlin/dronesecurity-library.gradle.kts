@@ -12,8 +12,7 @@ plugins {
     id("org.sonarqube")
 }
 
-val awsCrtVersion = "0.15.15"
-val awsIotVersion = "1.5.4"
+val awsIotVersion = "1.8.4"
 val javaVersion = properties["java.version"].toString()
 
 repositories {
@@ -25,7 +24,6 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     implementation("software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk:$awsIotVersion")
-    implementation("software.amazon.awssdk.crt:aws-crt:$awsCrtVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.1")
     spotbugsPlugins("com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.0")
     spotbugsPlugins("com.mebigfatguy.sb-contrib:sb-contrib:7.4.7")
@@ -114,14 +112,4 @@ tasks {
 
 extraJavaModuleInfo {
     failOnMissingModuleInfo.set(false)
-
-    module("aws-crt-$awsCrtVersion.jar", "software.amazon.awssdk", awsCrtVersion) {
-        exports("software.amazon.awssdk.crt")
-        exports("software.amazon.awssdk.crt.mqtt")
-        exports("software.amazon.awssdk.crt.io")
-    }
-    module("aws-iot-device-sdk-$awsIotVersion.jar", "software.amazon.awssdk.iot", awsIotVersion) {
-        exports("software.amazon.awssdk.iot")
-        requiresTransitive("software.amazon.awssdk")
-    }
 }
