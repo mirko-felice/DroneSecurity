@@ -115,6 +115,23 @@ public final class OrdersController implements Initializable {
             }, NOT_SELECTED_RUNNABLE);
     }
 
+    @FXML
+    private void fillIssue() {
+        Platform.runLater(() -> {
+            try {
+                final URL fileUrl = getClass().getResource("issue.fxml");
+                final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
+                final Scene scene = new Scene(fxmlLoader.load());
+                final Stage stage = new Stage();
+                stage.setScene(scene);
+                stage.setTitle("Sending Issue...");
+                stage.show();
+            } catch (IOException e) {
+                LoggerFactory.getLogger(getClass()).error("Error creating the new window:", e);
+            }
+        });
+    }
+
     private Optional<Order> getSelectedOrder() {
         return Optional.ofNullable(this.table.getSelectionModel().getSelectedItem());
     }

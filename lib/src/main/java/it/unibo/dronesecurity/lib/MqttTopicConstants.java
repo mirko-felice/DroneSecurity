@@ -30,5 +30,10 @@ public final class MqttTopicConstants {
      */
     public static final String LIFECYCLE_TOPIC = "lifecycle";
 
+    /**
+     * Issue report related topic name.
+     */
+    public static final String ISSUE_TOPIC = "issue";
+
     private MqttTopicConstants() { }
 }

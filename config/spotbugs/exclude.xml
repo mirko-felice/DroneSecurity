@@ -28,4 +28,9 @@
         <Class name="it.unibo.dronesecurity.userapplication.shipping.courier.entities.RescheduledOrder" />
     </Match>
 
+    <Match>
+        <Bug pattern="MS_EXPOSE_REP" />
+        <Class name="it.unibo.dronesecurity.userapplication.issue.courier.repo.IssueReportRepositoryImpl" />
+    </Match>
+
 </FindBugsFilter>
