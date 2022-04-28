@@ -107,9 +107,9 @@ public final class AuthenticationController implements Initializable {
         final String password = this.passwordField.getText();
         switch (this.roleComboBox.getValue()) {
             case COURIER:
-                return new Courier(username, password);
+                return Courier.forAuthentication(username, password);
             case MAINTAINER:
-                return new Maintainer(username, password);
+                return Maintainer.complete(username, password);
             default:
                 throw new IllegalStateException(UNEXPECTED_VALUE + this.roleComboBox.getValue());
         }

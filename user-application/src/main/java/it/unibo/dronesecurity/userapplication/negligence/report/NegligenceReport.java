@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
 import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
+import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
 import it.unibo.dronesecurity.userapplication.negligence.serializers.NegligenceReportDeserializer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +21,7 @@ public final class NegligenceReport {
 
     private final Courier negligent;
     private final ObjectNode data;
+    private final Maintainer assigner;
 
     private NegligenceReport(final @NotNull Builder builder) {
         this.negligent = builder.negligent;
@@ -32,6 +34,7 @@ public final class NegligenceReport {
             builder.accelerometerData.forEach(accelerometerValues::put);
             this.data.set(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER, accelerometerValues);
         }
+        this.assigner = builder.assigner;
     }
 
     /**
@@ -51,6 +54,14 @@ public final class NegligenceReport {
     }
 
     /**
+     * .
+     * @return .
+     */
+    public Maintainer getAssigner() {
+        return this.assigner;
+    }
+
+    /**
      * Builder class to apply Builder Pattern in order to differentiate multiple type of instantiation.
      */
     public static final class Builder {
@@ -58,20 +69,22 @@ public final class NegligenceReport {
         private final Courier negligent;
         private Double proximity;
         private Map<String, Double> accelerometerData;
+        private final Maintainer assigner;
 
-        private Builder(final Courier negligent) {
+        private Builder(final Courier negligent, final Maintainer assigner) {
             this.negligent = negligent;
+            this.assigner = assigner;
             this.accelerometerData = new HashMap<>();
         }
 
         /**
          * Creates builder starting from the negligent.
          * @param negligent the {@link Courier} that has committed negligence
+         * @param assigner the {@link Maintainer} assigned to the report
          * @return a new {@link Builder}
          */
-        @Contract(value = "_ -> new", pure = true)
-        public static @NotNull Builder fromNegligent(final Courier negligent) {
-            return new Builder(negligent);
+        public static @NotNull Builder fromNegligent(final Courier negligent, final Maintainer assigner) {
+            return new Builder(negligent, assigner);
         }
 
         /**

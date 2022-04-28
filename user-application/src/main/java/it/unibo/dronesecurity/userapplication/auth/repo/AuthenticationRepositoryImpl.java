@@ -4,8 +4,11 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
+import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
+import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
 import it.unibo.dronesecurity.userapplication.auth.entities.User;
 import it.unibo.dronesecurity.userapplication.utilities.PasswordHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -15,6 +18,8 @@ import java.security.spec.InvalidKeySpecException;
  */
 public final class AuthenticationRepositoryImpl implements AuthenticationRepository {
 
+    private static final String COLLECTION_NAME = "users";
+    private static final String PASSWORD_FIELD = "password";
     private static AuthenticationRepositoryImpl singleton;
     private final MongoClient database;
 
@@ -25,19 +30,35 @@ public final class AuthenticationRepositoryImpl implements AuthenticationReposit
     }
 
     @Override
-    public Future<Boolean> authenticate(final User user) {
-        final JsonObject query = JsonObject.mapFrom(user);
-        query.remove("password");
-        return this.database.findOne("users", query, null)
+    public Future<Boolean> authenticate(final @NotNull User user) {
+        final JsonObject query = new JsonObject().put("username", user.getUsername());
+        return this.database.findOne(COLLECTION_NAME, query, null)
                 .map(userFound -> {
                     try {
                         return userFound != null
                                 && PasswordHelper.validatePassword(user.getPassword(),
-                                userFound.getString("password"));
+                                userFound.getString(PASSWORD_FIELD));
                     } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
                         return Boolean.FALSE;
                     }
                 });
+    }
+
+    @Override
+    public Future<Courier> retrieveCourierFromUsername(final String username) {
+        return this.retrieveUserFromUsername(username)
+                .flatMap(user -> {
+                    final String password = user.getString(PASSWORD_FIELD);
+                    final String supervisor = user.getString("supervisor");
+                    final Future<Maintainer> maintainer = this.retrieveMaintainerFromUsername(supervisor);
+                    return maintainer.map(sup -> Courier.complete(username, password, sup));
+                });
+    }
+
+    @Override
+    public Future<Maintainer> retrieveMaintainerFromUsername(final String username) {
+        return this.retrieveUserFromUsername(username)
+                .map(user -> Maintainer.complete(username, user.getString(PASSWORD_FIELD)));
     }
 
     /**
@@ -50,5 +71,10 @@ public final class AuthenticationRepositoryImpl implements AuthenticationReposit
                 singleton = new AuthenticationRepositoryImpl();
             return singleton;
         }
+    }
+
+    private Future<JsonObject> retrieveUserFromUsername(final String username) {
+        final JsonObject query = new JsonObject().put("user", username);
+        return this.database.findOne(COLLECTION_NAME, query, null);
     }
 }
