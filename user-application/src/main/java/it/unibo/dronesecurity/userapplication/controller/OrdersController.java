@@ -6,25 +6,20 @@ import it.unibo.dronesecurity.lib.AlertUtils;
 import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
-import it.unibo.dronesecurity.userapplication.utilities.ClientHelper;
-import it.unibo.dronesecurity.userapplication.utilities.DateHelper;
-import it.unibo.dronesecurity.userapplication.utilities.UserHelper;
-import it.unibo.dronesecurity.userapplication.utilities.OrderConstants;
+import it.unibo.dronesecurity.userapplication.utilities.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -43,6 +38,7 @@ public final class OrdersController implements Initializable {
     private static final String PERFORM_DELIVERY_URI = BASE_URI + "/performDelivery";
     private static final String RESCHEDULE_DELIVERY_URI = BASE_URI + "/rescheduleDelivery";
     private static final String MONITORING_FILENAME = "monitoring.fxml";
+    private static final String NEGLIGENCE_REPORTS_FILENAME = "negligenceReports.fxml";
     private static final Runnable NOT_SELECTED_RUNNABLE = () ->
             AlertUtils.showWarningAlert("You MUST first select an order.");
     @FXML private TableView<Order> table;
@@ -50,6 +46,7 @@ public final class OrdersController implements Initializable {
     @FXML private TableColumn<Order, String> productColumn;
     @FXML private TableColumn<Order, String> stateColumn;
     @FXML private Button performDeliveryButton;
+    @FXML private Button showReportsButton;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -82,15 +79,13 @@ public final class OrdersController implements Initializable {
                         .putHeader("Content-Type", "application/json")
                         .sendBuffer(body.toBuffer())
                         .onSuccess(h -> Platform.runLater(() -> {
-                            try {
-                                ((Stage) this.performDeliveryButton.getScene().getWindow()).close();
-                                final URL fileUrl = getClass().getResource(MONITORING_FILENAME);
-                                final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-                                fxmlLoader.setController(new MonitorController());
-                                final Scene scene = new Scene(fxmlLoader.load());
-                                final Stage stage = new Stage();
-                                stage.setScene(scene);
-                                stage.setTitle("Monitoring...");
+                            ((Stage) this.performDeliveryButton.getScene().getWindow()).close();
+                            final URL fileUrl = getClass().getResource(MONITORING_FILENAME);
+                            final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
+                            fxmlLoader.setController(new MonitorController());
+                            final Optional<Stage> optionalStage = FXHelper.createWindow(Modality.NONE,
+                                    "Monitoring...", fxmlLoader);
+                            optionalStage.ifPresent(stage -> {
                                 stage.setOnCloseRequest(event -> {
                                     Connection.getInstance().closeConnection();
                                     ClientHelper.WEB_CLIENT.close();
@@ -98,9 +93,7 @@ public final class OrdersController implements Initializable {
                                     System.exit(0);
                                 });
                                 stage.show();
-                            } catch (IOException e) {
-                                LoggerFactory.getLogger(getClass()).error("Error creating the new window:", e);
-                            }
+                            });
                         }));
             } else
                 AlertUtils.showErrorAlert("You can NOT deliver an order that isn't placed.");
@@ -119,6 +112,18 @@ public final class OrdersController implements Initializable {
             else
                 AlertUtils.showErrorAlert("You can NOT reschedule an order that isn't failed.");
             }, NOT_SELECTED_RUNNABLE);
+    }
+
+    @FXML
+    private void showReports() {
+        final URL fileUrl = getClass().getResource(NEGLIGENCE_REPORTS_FILENAME);
+        final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
+        fxmlLoader.setController(new NegligenceReportsController());
+        final Optional<Stage> optionalStage = FXHelper.createWindow(Modality.WINDOW_MODAL, "Reports", fxmlLoader);
+        optionalStage.ifPresent(stage -> {
+            stage.initOwner(this.showReportsButton.getScene().getWindow());
+            stage.showAndWait();
+        });
     }
 
     private Optional<Order> getSelectedOrder() {

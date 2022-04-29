@@ -46,4 +46,9 @@ class BaseUser implements User {
     public Role getRole() {
         return this.role;
     }
+
+    @Override
+    public String toString() {
+        return this.username;
+    }
 }

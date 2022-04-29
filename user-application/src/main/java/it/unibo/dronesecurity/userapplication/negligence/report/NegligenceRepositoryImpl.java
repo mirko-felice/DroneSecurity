@@ -1,8 +1,13 @@
 package it.unibo.dronesecurity.userapplication.negligence.report;
 
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link NegligenceRepository}.
@@ -42,4 +47,12 @@ public final class NegligenceRepositoryImpl implements NegligenceRepository {
         this.database.save(FORMS_COLLECTION_NAME, JsonObject.mapFrom(form));
     }
 
+    @Override
+    public Future<List<NegligenceReport>> retrieveReportsForCourier(final String username) {
+        final JsonObject query = new JsonObject().put("negligent", username);
+        return this.database.find(REPORTS_COLLECTION_NAME, query)
+                .map(all -> all.stream()
+                        .map(report -> Json.decodeValue(report.toString(), NegligenceReport.class))
+                        .collect(Collectors.toList()));
+    }
 }
