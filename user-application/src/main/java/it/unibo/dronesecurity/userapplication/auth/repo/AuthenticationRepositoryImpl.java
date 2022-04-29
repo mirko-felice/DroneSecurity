@@ -74,7 +74,7 @@ public final class AuthenticationRepositoryImpl implements AuthenticationReposit
     }
 
     private Future<JsonObject> retrieveUserFromUsername(final String username) {
-        final JsonObject query = new JsonObject().put("user", username);
+        final JsonObject query = new JsonObject().put("username", username);
         return this.database.findOne(COLLECTION_NAME, query, null);
     }
 }
