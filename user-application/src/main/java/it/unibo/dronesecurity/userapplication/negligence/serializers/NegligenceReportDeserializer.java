@@ -56,6 +56,7 @@ public final class NegligenceReportDeserializer extends JsonDeserializer<Neglige
                     .build();
         } catch (InterruptedException e) {
             LoggerFactory.getLogger(this.getClass()).warn("Could not retrieve Courier from database", e);
+            Thread.currentThread().interrupt();
             return null;
         }
     }
