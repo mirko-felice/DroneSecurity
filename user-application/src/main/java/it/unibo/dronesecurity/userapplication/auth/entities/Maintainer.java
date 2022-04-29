@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public final class Maintainer extends BaseUser {
 
     private Maintainer(final String username, final String password) {
-        super(username, password, Role.COURIER);
+        super(username, password, Role.MAINTAINER);
     }
 
     /**
