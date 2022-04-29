@@ -6,16 +6,17 @@ import it.unibo.dronesecurity.lib.AlertUtils;
 import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.lib.ConnectionController;
 import it.unibo.dronesecurity.lib.PropertiesConstants;
+import it.unibo.dronesecurity.userapplication.utilities.FXHelper;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.Optional;
 
 /**
  * Launch the application.
@@ -55,23 +56,18 @@ public final class Launcher extends Application {
     }
 
     private void showLogin() {
-        try {
-            Connection.getInstance().connect();
-            final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(LOGIN_FXML));
-            final WebClient client = WebClient.create(Vertx.vertx());
-            fxmlLoader.setController(new AuthenticationController());
-            final Stage stage = new Stage();
-            final Scene scene = new Scene(fxmlLoader.load());
-            stage.setScene(scene);
+        Connection.getInstance().connect();
+        final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(LOGIN_FXML));
+        final WebClient client = WebClient.create(Vertx.vertx());
+        fxmlLoader.setController(new AuthenticationController());
+        final Optional<Stage> optionalStage = FXHelper.createWindow(Modality.NONE, "Login", fxmlLoader);
+        optionalStage.ifPresent(stage -> {
             stage.setOnCloseRequest(event -> {
                 client.close();
                 Platform.exit();
                 System.exit(0);
             });
-            stage.setTitle("Login");
             stage.show();
-        } catch (IOException e) {
-            LoggerFactory.getLogger(getClass()).error("Can NOT load login interface.", e);
-        }
+        });
     }
 }
