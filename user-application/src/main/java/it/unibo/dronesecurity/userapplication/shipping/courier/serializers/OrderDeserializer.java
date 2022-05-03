@@ -13,8 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 /**
  * Deserialize {@link Order} into the correct implementation basing on the current state of it.
@@ -31,11 +29,8 @@ public final class OrderDeserializer extends JsonDeserializer<Order> {
             final String currentState = events.get(events.size() - 1).asText();
             final String id = root.get("id").asText();
             final String product = root.get("product").asText();
-            final ZoneId zoneId = ZoneId.systemDefault();
-            final Instant placingDate = LocalDateTime.parse(root.get("placingDate").asText(),
-                    DateHelper.FORMATTER).atZone(zoneId).toInstant();
-            final Instant estimatedArrival = LocalDateTime.parse(root.get("estimatedArrival").asText(),
-                    DateHelper.FORMATTER).atZone(zoneId).toInstant();
+            final Instant placingDate = DateHelper.toInstant(root.get("placingDate").asText());
+            final Instant estimatedArrival = DateHelper.toInstant(root.get("estimatedArrival").asText());
             if (currentState.contains("place"))
                 return new PlacedOrder(id, product, placingDate, estimatedArrival);
             else if (currentState.contains("fail"))

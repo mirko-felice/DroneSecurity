@@ -1,6 +1,9 @@
 package it.unibo.dronesecurity.dronesystem.drone.report;
 
-import org.jetbrains.annotations.Unmodifiable;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -10,9 +13,7 @@ import java.util.Map;
 public final class NegligenceReport {
 
     private final String negligent;
-    private final double proximity;
-    private final Map<String, Double> accelerometer;
-    private final double camera;
+    private final ObjectNode data;
 
     /**
      * Build the report.
@@ -21,12 +22,19 @@ public final class NegligenceReport {
      * @param accelerometer the accelerometer data detected by its sensor
      * @param camera the camera data detected by its sensor
      */
-    public NegligenceReport(final String negligent, final double proximity, final Map<String, Double> accelerometer,
+    public NegligenceReport(final String negligent,
+                            final double proximity,
+                            final @NotNull Map<String, Double> accelerometer,
                             final double camera) {
         this.negligent = negligent;
-        this.proximity = proximity;
-        this.accelerometer = Map.copyOf(accelerometer);
-        this.camera = camera;
+        final ObjectMapper objectMapper = new ObjectMapper();
+        this.data = objectMapper.createObjectNode();
+
+        this.data.put(MqttMessageParameterConstants.PROXIMITY_PARAMETER, proximity);
+        final ObjectNode accelerometerData = objectMapper.createObjectNode();
+        accelerometer.forEach(accelerometerData::put);
+        this.data.set(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER, accelerometerData);
+        this.data.put(MqttMessageParameterConstants.CAMERA_PARAMETER, camera);
     }
 
     /**
@@ -38,26 +46,10 @@ public final class NegligenceReport {
     }
 
     /**
-     * Gets the proximity data.
-     * @return the proximity
+     * Gets the collected data as a Json.
+     * @return the data
      */
-    public double getProximity() {
-        return this.proximity;
-    }
-
-    /**
-     * Gets the accelerometer data.
-     * @return the accelerometer data
-     */
-    public @Unmodifiable Map<String, Double> getAccelerometer() {
-        return Map.copyOf(this.accelerometer);
-    }
-
-    /**
-     * Gets the camera data.
-     * @return the camera data
-     */
-    public double getCamera() {
-        return this.camera;
+    public ObjectNode getData() {
+        return this.data.deepCopy();
     }
 }

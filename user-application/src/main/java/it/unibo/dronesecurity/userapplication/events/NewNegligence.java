@@ -1,7 +1,7 @@
 package it.unibo.dronesecurity.userapplication.events;
 
 import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
-import it.unibo.dronesecurity.userapplication.negligence.report.NegligenceReport;
+import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceReport;
 import org.jetbrains.annotations.NotNull;
 
 /**

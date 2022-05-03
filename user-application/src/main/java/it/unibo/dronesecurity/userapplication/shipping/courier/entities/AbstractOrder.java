@@ -74,7 +74,7 @@ public abstract class AbstractOrder implements Order {
     public String toString() {
         return new StringJoiner(", ", "Order" + "[", "]")
                 .add("id='" + this.id + "'")
-                .add("placingDate=" + DateHelper.FORMATTER.format(this.placingDate))
+                .add("placingDate=" + DateHelper.toString(this.placingDate))
                 .add("product='" + this.product + "'")
                 .add(this.getCurrentState())
                 .toString();

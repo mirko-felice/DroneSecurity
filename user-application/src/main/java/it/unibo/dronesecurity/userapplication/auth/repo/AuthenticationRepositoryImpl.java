@@ -31,7 +31,9 @@ public final class AuthenticationRepositoryImpl implements AuthenticationReposit
 
     @Override
     public Future<Boolean> authenticate(final @NotNull User user) {
-        final JsonObject query = new JsonObject().put("username", user.getUsername());
+        final JsonObject query = new JsonObject()
+                .put("username", user.getUsername())
+                .put("role", user.getRole());
         return this.database.findOne(COLLECTION_NAME, query, null)
                 .map(userFound -> {
                     try {

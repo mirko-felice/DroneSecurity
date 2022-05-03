@@ -2,15 +2,15 @@ package it.unibo.dronesecurity.userapplication.negligence.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.vertx.core.impl.logging.LoggerFactory;
 import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.lib.MqttTopicConstants;
 import it.unibo.dronesecurity.userapplication.events.DomainEvents;
 import it.unibo.dronesecurity.userapplication.events.NewNegligence;
-import it.unibo.dronesecurity.userapplication.negligence.report.NegligenceActionForm;
-import it.unibo.dronesecurity.userapplication.negligence.report.NegligenceReport;
-import it.unibo.dronesecurity.userapplication.negligence.report.NegligenceRepository;
+import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceActionForm;
+import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceReport;
+import it.unibo.dronesecurity.userapplication.negligence.repo.NegligenceRepository;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 

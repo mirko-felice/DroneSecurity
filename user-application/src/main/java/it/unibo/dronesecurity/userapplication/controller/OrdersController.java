@@ -51,7 +51,7 @@ public final class OrdersController implements Initializable {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         this.orderDateColumn.setCellValueFactory(cell -> new SimpleObjectProperty<>(
-                DateHelper.FORMATTER.format(cell.getValue().getPlacingDate())));
+                DateHelper.toString(cell.getValue().getPlacingDate())));
         this.productColumn.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue().getProduct()));
         this.stateColumn.setCellValueFactory(new PropertyValueFactory<>("currentState"));

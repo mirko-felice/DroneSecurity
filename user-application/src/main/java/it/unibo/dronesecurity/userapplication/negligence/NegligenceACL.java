@@ -13,7 +13,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public final class NegligenceACL {
 
-    private static final CountDownLatch LATCH = new CountDownLatch(1);
+    private static CountDownLatch latch = new CountDownLatch(1);
 
     private NegligenceACL() { }
 
@@ -25,8 +25,9 @@ public final class NegligenceACL {
     @Contract("_ -> new")
     public static Courier retrieveCourier(final String courier) throws InterruptedException {
         final Future<Courier> future = AuthenticationRepository.getInstance().retrieveCourierFromUsername(courier)
-                .onSuccess(unused -> LATCH.countDown());
-        LATCH.await();
+                .onSuccess(unused -> latch.countDown());
+        latch.await();
+        latch = new CountDownLatch(1);
         return future.result();
     }
 }

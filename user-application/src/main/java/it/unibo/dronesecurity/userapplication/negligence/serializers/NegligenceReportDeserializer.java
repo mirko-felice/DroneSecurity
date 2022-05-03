@@ -10,50 +10,50 @@ import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
 import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
 import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
 import it.unibo.dronesecurity.userapplication.negligence.NegligenceACL;
-import it.unibo.dronesecurity.userapplication.negligence.report.NegligenceReport;
+import it.unibo.dronesecurity.userapplication.negligence.entities.*;
+import it.unibo.dronesecurity.userapplication.utilities.DateHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.time.Instant;
 
 /**
- * Deserialize {@link NegligenceReport} using {@link NegligenceReport.Builder}.
+ * Deserialize {@link NegligenceReport} into {@link OpenNegligenceReport} or {@link ClosedNegligenceReport}.
  */
 public final class NegligenceReportDeserializer extends JsonDeserializer<NegligenceReport> {
+
+    private static final String ASSIGNER_NOT_EXPECTED = "Report assigner is not the real supervisor of %s as expected.";
 
     @Override
     public @Nullable NegligenceReport deserialize(@NotNull final JsonParser parser, final DeserializationContext ctx)
             throws IOException {
-        final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
-        final ObjectNode root = mapper.readTree(parser);
-
-        final String negligent = root.get(MqttMessageParameterConstants.NEGLIGENT_PARAMETER).asText();
-        final Courier courier;
         try {
-            courier = NegligenceACL.retrieveCourier(negligent);
+            final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
+            final ObjectNode root = mapper.readTree(parser);
 
-            final double proximity = root.get(MqttMessageParameterConstants.PROXIMITY_PARAMETER).asDouble();
-            final JsonNode accelerometerData = root.get(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER);
-            final Map<String, Double> accelerometer = new ConcurrentHashMap<>();
-            accelerometer.put(
-                    MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER,
-                    accelerometerData.get(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER).asDouble());
-            accelerometer.put(
-                    MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER,
-                    accelerometerData.get(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER).asDouble());
-            accelerometer.put(
-                    MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER,
-                    accelerometerData.get(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER).asDouble());
+            final String negligent = root.get(MqttMessageParameterConstants.NEGLIGENT_PARAMETER).asText();
+            final Courier courier = NegligenceACL.retrieveCourier(negligent);
 
             final Maintainer maintainer = courier.getSupervisor();
+            if (root.has("assigner") && !maintainer.getUsername().equals(root.get("assigner").asText()))
+                throw new IllegalStateException(String.format(ASSIGNER_NOT_EXPECTED, courier.getUsername()));
 
-            return NegligenceReport.Builder.fromNegligent(courier, maintainer)
+            final JsonNode data = root.get("data");
+            final double proximity = data.get(MqttMessageParameterConstants.PROXIMITY_PARAMETER).asDouble();
+            final JsonNode accelerometerData = data.get(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER);
+
+            final BaseNegligenceReport.Builder builder = new BaseNegligenceReport.Builder(courier, maintainer)
                     .withProximity(proximity)
-                    .withAccelerometerData(accelerometer)
-                    .build();
+                    .withAccelerometerData(accelerometerData);
+
+            final boolean isClosed = root.has("closingInstant");
+            if (isClosed) {
+                final Instant closingInstant = DateHelper.toInstant(root.get("closingInstant").asText());
+                return new ClosedNegligenceReportImpl(builder, closingInstant);
+            } else
+                return new OpenNegligenceReportImpl(builder);
         } catch (InterruptedException e) {
             LoggerFactory.getLogger(this.getClass()).warn("Could not retrieve Courier from database", e);
             Thread.currentThread().interrupt();

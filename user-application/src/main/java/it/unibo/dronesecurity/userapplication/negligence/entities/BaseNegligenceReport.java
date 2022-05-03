@@ -1,29 +1,32 @@
-package it.unibo.dronesecurity.userapplication.negligence.report;
+package it.unibo.dronesecurity.userapplication.negligence.entities;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
 import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
 import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
-import it.unibo.dronesecurity.userapplication.negligence.serializers.NegligenceReportDeserializer;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents the report used to record the commitment of a negligence by a {@link Courier}.
+ * Base implementation of {@link NegligenceReport}.
  */
-@JsonDeserialize(using = NegligenceReportDeserializer.class)
-public final class NegligenceReport {
+public class BaseNegligenceReport implements NegligenceReport {
 
     private final Courier negligent;
     private final ObjectNode data;
     private final Maintainer assigner;
 
-    private NegligenceReport(final @NotNull Builder builder) {
+    /**
+     * Build the report.
+     * @param builder builder containing all information needed
+     */
+    protected BaseNegligenceReport(final @NotNull Builder builder) {
         this.negligent = builder.negligent;
         final ObjectMapper mapper = new ObjectMapper();
         this.data = mapper.createObjectNode();
@@ -38,27 +41,37 @@ public final class NegligenceReport {
     }
 
     /**
-     * Gets the negligent as a {@link Courier}.
-     * @return the negligent
+     * {@inheritDoc}
      */
+    @Override
     public Courier getNegligent() {
         return this.negligent;
     }
 
     /**
-     * Gets the data collected in that instant.
-     * @return the {@link ObjectNode} representing the data
+     * {@inheritDoc}
      */
+    @Override
     public ObjectNode getData() {
         return this.data.deepCopy();
     }
 
     /**
-     * .
-     * @return .
+     * {@inheritDoc}
      */
+    @Override
     public Maintainer getAssigner() {
         return this.assigner;
+    }
+
+    /**
+     * Generates a Builder from current information.
+     * @return a new {@link Builder}
+     */
+    protected Builder generateBaseBuilder() {
+        return new Builder(this.negligent, this.assigner)
+                .withProximity(this.data.get(MqttMessageParameterConstants.PROXIMITY_PARAMETER).asDouble())
+                .withAccelerometerData(this.data.get(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER));
     }
 
     /**
@@ -68,23 +81,19 @@ public final class NegligenceReport {
 
         private final Courier negligent;
         private Double proximity;
-        private Map<String, Double> accelerometerData;
+        private final Map<String, Double> accelerometerData;
         private final Maintainer assigner;
+        private Instant closingInstant;
 
-        private Builder(final Courier negligent, final Maintainer assigner) {
+        /**
+         * Creates the builder with needed parameters.
+         * @param negligent the {@link Courier} that has committed negligence
+         * @param assigner the {@link Maintainer} assigned to the report
+         */
+        public Builder(final Courier negligent, final Maintainer assigner) {
             this.negligent = negligent;
             this.assigner = assigner;
             this.accelerometerData = new HashMap<>();
-        }
-
-        /**
-         * Creates builder starting from the negligent.
-         * @param negligent the {@link Courier} that has committed negligence
-         * @param assigner the {@link Maintainer} assigned to the report
-         * @return a new {@link Builder}
-         */
-        public static @NotNull Builder fromNegligent(final Courier negligent, final Maintainer assigner) {
-            return new Builder(negligent, assigner);
         }
 
         /**
@@ -102,8 +111,27 @@ public final class NegligenceReport {
          * @param accelerometerSensorData accelerometer data
          * @return this
          */
-        public Builder withAccelerometerData(final Map<String, Double> accelerometerSensorData) {
-            this.accelerometerData = Map.copyOf(accelerometerSensorData);
+        @Contract("_ -> this")
+        public Builder withAccelerometerData(final @NotNull JsonNode accelerometerSensorData) {
+            this.accelerometerData.put(
+                    MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER,
+                    accelerometerSensorData.get(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER).asDouble());
+            this.accelerometerData.put(
+                    MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER,
+                    accelerometerSensorData.get(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER).asDouble());
+            this.accelerometerData.put(
+                    MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER,
+                    accelerometerSensorData.get(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER).asDouble());
+            return this;
+        }
+
+        /**
+         * Sets the report as closed.
+         * @param instant instant when the report has been closed
+         * @return this
+         */
+        public Builder closed(final Instant instant) {
+            this.closingInstant = instant;
             return this;
         }
 
@@ -113,7 +141,9 @@ public final class NegligenceReport {
          */
         @Contract(" -> new")
         public @NotNull NegligenceReport build() {
-            return new NegligenceReport(this);
+            return this.closingInstant == null
+                    ? new OpenNegligenceReportImpl(this)
+                    : new ClosedNegligenceReportImpl(this, this.closingInstant);
         }
     }
 }

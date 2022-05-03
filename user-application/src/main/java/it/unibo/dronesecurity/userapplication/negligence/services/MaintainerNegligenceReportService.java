@@ -2,7 +2,7 @@ package it.unibo.dronesecurity.userapplication.negligence.services;
 
 import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
 import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
-import it.unibo.dronesecurity.userapplication.negligence.report.NegligenceActionForm;
+import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceActionForm;
 
 /**
  * Service dedicated to {@link Maintainer} needs, related to negligence reporting.
