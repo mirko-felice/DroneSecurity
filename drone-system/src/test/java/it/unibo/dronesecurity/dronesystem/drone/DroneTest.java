@@ -46,7 +46,7 @@ class DroneTest {
 
             Assertions.assertTrue(drone.getCameraSensorData() > 0.0);
 
-            drone.halt();
+            drone.deactivate();
             Assertions.assertFalse(drone.isOperating());
         }, SENSOR_DATA_READING_WAITING_TIME, TimeUnit.SECONDS);
         executor.shutdown();
