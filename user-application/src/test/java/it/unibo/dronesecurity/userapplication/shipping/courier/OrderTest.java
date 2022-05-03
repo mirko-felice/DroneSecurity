@@ -2,6 +2,7 @@ package it.unibo.dronesecurity.userapplication.shipping.courier;
 
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.*;
 import it.unibo.dronesecurity.userapplication.utilities.CastHelper;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +25,7 @@ final class OrderTest {
     private Order order;
 
     @BeforeEach
-    void setUp() {
+    void setup() {
         this.order = Order.placeToday(BASIC_PRODUCT);
     }
 
@@ -72,7 +73,7 @@ final class OrderTest {
         assertNotNull(deliveringOrder.confirmDelivery(), "Confirming delivery should not returning null.");
     }
 
-    private DeliveringOrder testDelivering() {
+    private @NotNull DeliveringOrder testDelivering() {
         final DeliveringOrder deliveringOrder = CastHelper.safeCast(this.order, PlacedOrder.class)
                 .orElseThrow().deliver();
         assertNotNull(deliveringOrder, "Delivering should not returning null.");
