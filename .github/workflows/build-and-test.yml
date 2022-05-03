@@ -19,8 +19,11 @@ on:
   pull_request:
 
 jobs:
-  Test:
-    runs-on: ubuntu-latest
+  Build:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2.4.0
@@ -37,7 +40,7 @@ jobs:
           arguments: build
   Release:
     if: github.ref_name == 'master'
-    needs: Test
+    needs: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
