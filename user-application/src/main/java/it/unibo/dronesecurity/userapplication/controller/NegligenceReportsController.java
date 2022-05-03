@@ -1,6 +1,5 @@
 package it.unibo.dronesecurity.userapplication.controller;
 
-import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import it.unibo.dronesecurity.userapplication.auth.entities.User;
 import it.unibo.dronesecurity.userapplication.negligence.entities.ClosedNegligenceReport;
@@ -9,27 +8,27 @@ import it.unibo.dronesecurity.userapplication.negligence.entities.OpenNegligence
 import it.unibo.dronesecurity.userapplication.negligence.repo.NegligenceRepository;
 import it.unibo.dronesecurity.userapplication.utilities.FXHelper;
 import it.unibo.dronesecurity.userapplication.utilities.UserHelper;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import org.controlsfx.control.MasterDetailPane;
+import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Controller dedicated to list and control {@link NegligenceReport}.
  */
 public class NegligenceReportsController implements Initializable {
 
-    private static final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(2);
-    private static final long REPORT_LOADING_TIME = 500;
     @FXML private MasterDetailPane openReportsPane;
     @FXML private MasterDetailPane closedReportsPane;
     private TableView<OpenNegligenceReport> openReportsTable;
@@ -57,19 +56,12 @@ public class NegligenceReportsController implements Initializable {
             default:
                 throw new IllegalStateException("Unexpected value: " + user.getRole());
         }
-        openReportsFuture.onSuccess(reports -> {
-            this.openReportsTable.setItems(FXCollections.observableList(reports));
-            SCHEDULER.schedule(() -> this.openReportsTable.getColumns().forEach(col -> col.setResizable(false)),
-                    REPORT_LOADING_TIME, TimeUnit.MILLISECONDS);
-        });
+        openReportsFuture.onSuccess(reports -> Platform.runLater(() ->
+                this.openReportsTable.setItems(FXCollections.observableList(reports))));
 
-        closedReportsFuture.onSuccess(reports -> {
-            this.closedReportsTable.setItems(FXCollections.observableList(reports));
-            SCHEDULER.schedule(() -> this.closedReportsTable.getColumns().forEach(col -> col.setResizable(false)),
-                    REPORT_LOADING_TIME, TimeUnit.MILLISECONDS);
-        });
+        closedReportsFuture.onSuccess(reports -> Platform.runLater(() ->
+                this.closedReportsTable.setItems(FXCollections.observableList(reports))));
 
-        CompositeFuture.join(openReportsFuture, closedReportsFuture).onSuccess(ignored -> SCHEDULER.shutdown());
         this.openReportsTable = FXHelper.generateTable("openReportsTable",
                 value -> this.openReportsPane.setDetailNode(new Label(value.toString())),
                 value -> this.openReportsPane.setDetailNode(new Label(value.toString())));
@@ -80,6 +72,31 @@ public class NegligenceReportsController implements Initializable {
 
         this.openReportsPane.setMasterNode(this.openReportsTable);
         this.closedReportsPane.setMasterNode(this.closedReportsTable);
+        this.openReportsTable.itemsProperty().addListener(new NegligenceReportListener<>(() ->
+                this.openReportsTable.getColumns().forEach(col -> col.setResizable(false))));
+        this.closedReportsTable.itemsProperty().addListener(new NegligenceReportListener<>(() ->
+                this.closedReportsTable.getColumns().forEach(col -> col.setResizable(false))));
+    }
+
+    /**
+     * {@link ChangeListener} that on changed event it runs a {@link Runnable} and remove itself from listening over.
+     * @param <T> type parameter
+     */
+    private static final class NegligenceReportListener<T> implements ChangeListener<ObservableList<T>> {
+
+        private final Runnable changedRunnable;
+
+        private NegligenceReportListener(final Runnable changedRunnable) {
+            this.changedRunnable = changedRunnable;
+        }
+
+        @Override
+        public void changed(final @NotNull ObservableValue<? extends ObservableList<T>> observable,
+                            final ObservableList<T> oldValue,
+                            final ObservableList<T> newValue) {
+            this.changedRunnable.run();
+            observable.removeListener(this);
+        }
     }
 
 }
