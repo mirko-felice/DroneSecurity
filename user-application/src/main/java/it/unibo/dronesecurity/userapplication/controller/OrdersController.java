@@ -82,7 +82,6 @@ public final class OrdersController implements Initializable {
                             ((Stage) this.performDeliveryButton.getScene().getWindow()).close();
                             final URL fileUrl = getClass().getResource(MONITORING_FILENAME);
                             final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-                            fxmlLoader.setController(new MonitorController());
                             final Optional<Stage> optionalStage = FXHelper.createWindow(Modality.NONE,
                                     "Monitoring...", fxmlLoader);
                             optionalStage.ifPresent(stage -> {
@@ -118,7 +117,6 @@ public final class OrdersController implements Initializable {
     private void showReports() {
         final URL fileUrl = getClass().getResource(NEGLIGENCE_REPORTS_FILENAME);
         final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-        fxmlLoader.setController(new NegligenceReportsController());
         final Optional<Stage> optionalStage = FXHelper.createWindow(Modality.WINDOW_MODAL, "Reports", fxmlLoader);
         optionalStage.ifPresent(stage -> {
             stage.initOwner(this.showReportsButton.getScene().getWindow());

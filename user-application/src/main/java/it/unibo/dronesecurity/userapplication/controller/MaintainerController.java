@@ -47,11 +47,8 @@ public class MaintainerController implements Initializable {
         try {
             final URL fileUrl = MaintainerController.class.getResource(NEGLIGENCE_REPORTS_FILENAME);
             final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-            fxmlLoader.setController(new NegligenceReportsController());
             this.pane.add(fxmlLoader.load(),  0, 0, 2, 1);
-            final Tab closedTab = ((TabPane) this.pane.lookup("#tabPane")).getTabs().get(1);
-            closedTab.setOnSelectionChanged(event -> {
-                final boolean isSelected = closedTab.isSelected();
+            ((NegligenceReportsController) fxmlLoader.getController()).setOnClosedTabSelectionChanged(isSelected -> {
                 this.takeActionButton.setDisable(isSelected);
                 this.solution.setDisable(isSelected);
             });

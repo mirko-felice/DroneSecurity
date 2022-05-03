@@ -7,106 +7,118 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<SplitPane dividerPositions="0.2387" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="534.0" prefWidth="695.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
-  <items>
+<SplitPane fx:controller="it.unibo.dronesecurity.userapplication.controller.MonitorController" dividerPositions="0.2387" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+           minWidth="-Infinity" orientation="VERTICAL" prefHeight="534.0" prefWidth="695.0"
+           xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-         <children>
-            <SplitPane dividerPositions="0.33" layoutX="111.0" layoutY="-54.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                     <children>
-                        <Label layoutX="85.0" layoutY="44.0" text="Proximity: " AnchorPane.topAnchor="28.0" />
-                        <Label fx:id="proximityCurrentData" alignment="CENTER" layoutX="99.0" layoutY="75.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="71.0" />
-                        <Label fx:id="statusLabel" layoutX="14.0" layoutY="6.0" text="Status: " />
-                     </children>
-                  </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                     <children>
-                        <SplitPane dividerPositions="0.5" layoutX="124.0" layoutY="-49.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                          <items>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                 <children>
-                                    <Label layoutX="65.0" layoutY="6.0" text="Last measurement" AnchorPane.topAnchor="6.0" />
-                                    <Label layoutX="72.0" layoutY="28.0" text="Accelerometer: " AnchorPane.topAnchor="28.0" />
-                                    <TableView fx:id="accelerometerCurrentData" editable="true" layoutX="13.0" layoutY="56.0" prefHeight="50.0" prefWidth="201.0" AnchorPane.topAnchor="56.0">
-                                      <columns>
-                                        <TableColumn fx:id="currentAccelerometerXValue" prefWidth="67.0" style="-fx-alignment: CENTER;" text="X" />
-                                        <TableColumn fx:id="currentAccelerometerYValue" prefWidth="67.0" style="-fx-alignment: CENTER;" text="Y" />
-                                          <TableColumn fx:id="currentAccelerometerZValue" prefWidth="67.0" style="-fx-alignment: CENTER;" text="Z" />
-                                      </columns>
-                                       <columnResizePolicy>
-                                          <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                                       </columnResizePolicy>
-                                    </TableView>
-                                 </children>
-                              </AnchorPane>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                 <children>
-                                    <Label layoutX="90.0" layoutY="43.0" text="Camera: " AnchorPane.topAnchor="28.0" />
-                                    <Label fx:id="cameraCurrentData" alignment="CENTER" layoutX="100.0" layoutY="69.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="71.0" />
-                                    <Button fx:id="recallButton" layoutX="162.0" layoutY="2.0" mnemonicParsing="false" onMouseClicked="#recallDrone" text="Recall" />
-                                 </children>
-                              </AnchorPane>
-                          </items>
-                        </SplitPane>
-                     </children>
-                  </AnchorPane>
-              </items>
-            </SplitPane>
-         </children></AnchorPane>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-         <children>
-            <SplitPane dividerPositions="0.33" layoutX="209.0" layoutY="156.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                     <children>
-                        <TableView fx:id="proximityPreviousData" layoutX="13.0" layoutY="30.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="29.0">
-                          <columns>
-                            <TableColumn fx:id="proximityPreviousDataColumn" prefWidth="199.0" style="-fx-alignment: CENTER;" text="Proximity" />
-                          </columns>
-                           <columnResizePolicy>
-                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                           </columnResizePolicy>
+        <SplitPane dividerPositions="0.33" layoutX="111.0" layoutY="-54.0" prefHeight="160.0" prefWidth="200.0"
+                   AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                   AnchorPane.topAnchor="0.0">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                <Label layoutX="85.0" layoutY="44.0" text="Proximity: " AnchorPane.topAnchor="28.0"/>
+                <Label fx:id="proximityCurrentData" alignment="CENTER" layoutX="99.0" layoutY="75.0"
+                       AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0"
+                       AnchorPane.topAnchor="71.0"/>
+                <Label fx:id="statusLabel" layoutX="14.0" layoutY="6.0" text="Status: "/>
+            </AnchorPane>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                <SplitPane dividerPositions="0.5" layoutX="124.0" layoutY="-49.0" prefHeight="160.0"
+                           prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                        <Label layoutX="65.0" layoutY="6.0" text="Last measurement"
+                               AnchorPane.topAnchor="6.0"/>
+                        <Label layoutX="72.0" layoutY="28.0" text="Accelerometer: "
+                               AnchorPane.topAnchor="28.0"/>
+                        <TableView fx:id="accelerometerCurrentData" editable="true" layoutX="13.0"
+                                   layoutY="56.0" prefHeight="50.0" prefWidth="201.0"
+                                   AnchorPane.topAnchor="56.0">
+                            <columns>
+                                <TableColumn fx:id="currentAccelerometerXValue" prefWidth="67.0"
+                                             style="-fx-alignment: CENTER;" text="X"/>
+                                <TableColumn fx:id="currentAccelerometerYValue" prefWidth="67.0"
+                                             style="-fx-alignment: CENTER;" text="Y"/>
+                                <TableColumn fx:id="currentAccelerometerZValue" prefWidth="67.0"
+                                             style="-fx-alignment: CENTER;" text="Z"/>
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                            </columnResizePolicy>
                         </TableView>
-                     </children>
-                  </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                     <children>
-                        <SplitPane dividerPositions="0.5" layoutX="130.0" layoutY="49.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                          <items>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                 <children>
-                                    <Label layoutX="50.0" layoutY="6.0" text="Previous measurements" AnchorPane.topAnchor="0.0" />
-                                    <TableView fx:id="accelerometerPreviousData" layoutX="13.0" layoutY="29.0" prefHeight="365.0" prefWidth="200.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="29.0">
-                                      <columns>
-                                        <TableColumn fx:id="accelerometerPreviousXDataColumn" prefWidth="67.0" style="-fx-alignment: CENTER;" text="X" />
-                                        <TableColumn fx:id="accelerometerPreviousYDataColumn" prefWidth="67.0" style="-fx-alignment: CENTER;" text="Y" />
-                                          <TableColumn fx:id="accelerometerPreviousZDataColumn" prefWidth="67.0" style="-fx-alignment: CENTER;" text="Z" />
-                                      </columns>
-                                       <columnResizePolicy>
-                                          <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                                       </columnResizePolicy>
-                                    </TableView>
-                                 </children>
-                              </AnchorPane>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                 <children>
-                                    <TableView fx:id="cameraPreviousData" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="29.0">
-                                       <columns>
-                                          <TableColumn fx:id="cameraPreviousDataColumn" prefWidth="200.0" style="-fx-alignment: CENTER;" text="Camera" />
-                                       </columns>
-                                       <columnResizePolicy>
-                                          <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                                       </columnResizePolicy>
-                                    </TableView>
-                                 </children>
-                              </AnchorPane>
-                          </items>
-                        </SplitPane>
-                     </children>
-                  </AnchorPane>
-              </items>
-            </SplitPane>
-         </children></AnchorPane>
-  </items>
+                    </AnchorPane>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                        <Label layoutX="90.0" layoutY="43.0" text="Camera: "
+                               AnchorPane.topAnchor="28.0"/>
+                        <Label fx:id="cameraCurrentData" alignment="CENTER" layoutX="100.0"
+                               layoutY="69.0" AnchorPane.leftAnchor="12.0"
+                               AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="71.0"/>
+                        <Button fx:id="recallButton" layoutX="162.0" layoutY="2.0"
+                                mnemonicParsing="false" onMouseClicked="#recallDrone"
+                                text="Recall"/>
+                    </AnchorPane>
+                </SplitPane>
+            </AnchorPane>
+        </SplitPane>
+    </AnchorPane>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+        <SplitPane dividerPositions="0.33" layoutX="209.0" layoutY="156.0" prefHeight="160.0" prefWidth="200.0"
+                   AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                   AnchorPane.topAnchor="0.0">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                <TableView fx:id="proximityPreviousData" layoutX="13.0" layoutY="30.0" prefHeight="200.0"
+                           prefWidth="200.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0"
+                           AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="29.0">
+                    <columns>
+                        <TableColumn fx:id="proximityPreviousDataColumn" prefWidth="199.0"
+                                     style="-fx-alignment: CENTER;" text="Proximity"/>
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TableView>
+            </AnchorPane>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                <SplitPane dividerPositions="0.5" layoutX="130.0" layoutY="49.0" prefHeight="160.0"
+                           prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                        <Label layoutX="50.0" layoutY="6.0" text="Previous measurements"
+                               AnchorPane.topAnchor="0.0"/>
+                        <TableView fx:id="accelerometerPreviousData" layoutX="13.0" layoutY="29.0"
+                                   prefHeight="365.0" prefWidth="200.0"
+                                   AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0"
+                                   AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="29.0">
+                            <columns>
+                                <TableColumn fx:id="accelerometerPreviousXDataColumn"
+                                             prefWidth="67.0" style="-fx-alignment: CENTER;"
+                                             text="X"/>
+                                <TableColumn fx:id="accelerometerPreviousYDataColumn"
+                                             prefWidth="67.0" style="-fx-alignment: CENTER;"
+                                             text="Y"/>
+                                <TableColumn fx:id="accelerometerPreviousZDataColumn"
+                                             prefWidth="67.0" style="-fx-alignment: CENTER;"
+                                             text="Z"/>
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                            </columnResizePolicy>
+                        </TableView>
+                    </AnchorPane>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                        <TableView fx:id="cameraPreviousData" prefHeight="200.0" prefWidth="200.0"
+                                   AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0"
+                                   AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="29.0">
+                            <columns>
+                                <TableColumn fx:id="cameraPreviousDataColumn" prefWidth="200.0"
+                                             style="-fx-alignment: CENTER;" text="Camera"/>
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                            </columnResizePolicy>
+                        </TableView>
+                    </AnchorPane>
+                </SplitPane>
+            </AnchorPane>
+        </SplitPane>
+    </AnchorPane>
 </SplitPane>

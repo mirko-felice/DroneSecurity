@@ -16,6 +16,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import org.controlsfx.control.MasterDetailPane;
 import org.jetbrains.annotations.NotNull;
@@ -23,12 +24,14 @@ import org.jetbrains.annotations.NotNull;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 /**
  * Controller dedicated to list and control {@link NegligenceReport}.
  */
 public class NegligenceReportsController implements Initializable {
 
+    @FXML private Tab closedReportsTab;
     @FXML private MasterDetailPane openReportsPane;
     @FXML private MasterDetailPane closedReportsPane;
     private TableView<OpenNegligenceReport> openReportsTable;
@@ -76,6 +79,16 @@ public class NegligenceReportsController implements Initializable {
                 this.openReportsTable.getColumns().forEach(col -> col.setResizable(false))));
         this.closedReportsTable.itemsProperty().addListener(new NegligenceReportListener<>(() ->
                 this.closedReportsTable.getColumns().forEach(col -> col.setResizable(false))));
+    }
+
+
+    /**
+     * Sets a {@link javafx.event.EventHandler} on closed reports tab selection changed.
+     * @param tabSelectedConsumer {@link Consumer} to use on tab selection
+     */
+    public void setOnClosedTabSelectionChanged(final Consumer<Boolean> tabSelectedConsumer) {
+        this.closedReportsTab.setOnSelectionChanged(ignored ->
+                tabSelectedConsumer.accept(this.closedReportsTab.isSelected()));
     }
 
     /**

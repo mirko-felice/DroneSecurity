@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,9 +58,8 @@ public final class Activation extends Application {
         new DroneService().waitForDeliveryAssignment();
     }
 
-    private void generateProperties(final Stage stage) throws IOException {
+    private void generateProperties(final @NotNull Stage stage) throws IOException {
         final FXMLLoader fxmlLoader = new FXMLLoader(ConnectionController.class.getResource(CONNECTION_FXML));
-        fxmlLoader.setController(new ConnectionController());
         final Scene scene = new Scene(fxmlLoader.load());
         stage.setScene(scene);
         stage.setOnCloseRequest(event -> {

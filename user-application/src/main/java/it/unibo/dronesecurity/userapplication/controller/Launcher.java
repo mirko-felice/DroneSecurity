@@ -33,7 +33,6 @@ public final class Launcher extends Application {
                 "Would you like to reset values?")) {
             stage.setResizable(false);
             final FXMLLoader fxmlLoader = new FXMLLoader(ConnectionController.class.getResource(CONNECTION_FXML));
-            fxmlLoader.setController(new ConnectionController());
             final Scene scene = new Scene(fxmlLoader.load());
             stage.setScene(scene);
             stage.setOnCloseRequest(event -> {
@@ -59,7 +58,6 @@ public final class Launcher extends Application {
         Connection.getInstance().connect();
         final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(LOGIN_FXML));
         final WebClient client = WebClient.create(Vertx.vertx());
-        fxmlLoader.setController(new AuthenticationController());
         final Optional<Stage> optionalStage = FXHelper.createWindow(Modality.NONE, "Login", fxmlLoader);
         optionalStage.ifPresent(stage -> {
             stage.setOnCloseRequest(event -> {

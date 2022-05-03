@@ -122,17 +122,14 @@ public final class AuthenticationController implements Initializable {
     private void showNextWindow(final @NotNull Role role) {
         Platform.runLater(() -> {
             final String fxml;
-            final Object controller;
             final String title;
             switch (role) {
                 case COURIER:
                     fxml = COURIER_FXML;
-                    controller = new OrdersController();
                     title = "Orders";
                     break;
                 case MAINTAINER:
                     fxml = MAINTAINER_FXML;
-                    controller = new MaintainerController();
                     title = "Maintainer";
                     break;
                 default:
@@ -141,7 +138,6 @@ public final class AuthenticationController implements Initializable {
             ((Stage) this.loginButton.getScene().getWindow()).close();
             final URL fileUrl = getClass().getResource(fxml);
             final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-            fxmlLoader.setController(controller);
             final Optional<Stage> optionalStage = FXHelper.createWindow(Modality.NONE, title, fxmlLoader);
             optionalStage.ifPresent(stage -> {
                 stage.setOnCloseRequest(event -> {
