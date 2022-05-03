@@ -21,9 +21,9 @@ import java.util.ResourceBundle;
 /**
  * Controller dedicated to control main window of a {@link Maintainer}.
  */
-public class MaintainerController implements Initializable {
+public class NegligenceController implements Initializable {
 
-    private static final String NEGLIGENCE_REPORTS_FILENAME = "negligenceReports.fxml";
+    private static final String NEGLIGENCE_DATA_FILENAME = "negligenceData.fxml";
     private static final DomainEvents<NewNegligence> NEGLIGENCE_DOMAIN_EVENTS = new DomainEvents<>();
     private final MaintainerNegligenceReportService negligenceReportService;
     @FXML private GridPane pane;
@@ -33,7 +33,7 @@ public class MaintainerController implements Initializable {
     /**
      * Build the controller.
      */
-    public MaintainerController() {
+    public NegligenceController() {
         this.negligenceReportService = MaintainerNegligenceReportService.getInstance();
         NEGLIGENCE_DOMAIN_EVENTS.register(this::onNewNegligence);
         this.negligenceReportService.subscribeToNegligenceReports(NEGLIGENCE_DOMAIN_EVENTS);
@@ -45,10 +45,10 @@ public class MaintainerController implements Initializable {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         try {
-            final URL fileUrl = MaintainerController.class.getResource(NEGLIGENCE_REPORTS_FILENAME);
+            final URL fileUrl = NegligenceController.class.getResource(NEGLIGENCE_DATA_FILENAME);
             final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
             this.pane.add(fxmlLoader.load(),  0, 0, 2, 1);
-            ((NegligenceReportsController) fxmlLoader.getController()).setOnClosedTabSelectionChanged(isSelected -> {
+            ((NegligenceDataController) fxmlLoader.getController()).setOnClosedTabSelectionChanged(isSelected -> {
                 this.takeActionButton.setDisable(isSelected);
                 this.solution.setDisable(isSelected);
             });

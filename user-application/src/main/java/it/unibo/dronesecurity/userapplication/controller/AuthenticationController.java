@@ -36,7 +36,7 @@ import java.util.ResourceBundle;
 public final class AuthenticationController implements Initializable {
 
     private static final String COURIER_FXML = "orders.fxml";
-    private static final String MAINTAINER_FXML = "maintainer.fxml";
+    private static final String NEGLIGENCE_FXML = "negligence.fxml";
     private static final String UNEXPECTED_VALUE = "Unexpected value: ";
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
@@ -129,7 +129,7 @@ public final class AuthenticationController implements Initializable {
                     title = "Orders";
                     break;
                 case MAINTAINER:
-                    fxml = MAINTAINER_FXML;
+                    fxml = NEGLIGENCE_FXML;
                     title = "Maintainer";
                     break;
                 default:

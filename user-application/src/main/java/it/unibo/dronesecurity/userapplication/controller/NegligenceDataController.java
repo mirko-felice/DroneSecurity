@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 /**
  * Controller dedicated to list and control {@link NegligenceReport}.
  */
-public class NegligenceReportsController implements Initializable {
+public class NegligenceDataController implements Initializable {
 
     @FXML private Tab closedReportsTab;
     @FXML private MasterDetailPane openReportsPane;

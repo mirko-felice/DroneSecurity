@@ -38,7 +38,7 @@ public final class OrdersController implements Initializable {
     private static final String PERFORM_DELIVERY_URI = BASE_URI + "/performDelivery";
     private static final String RESCHEDULE_DELIVERY_URI = BASE_URI + "/rescheduleDelivery";
     private static final String MONITORING_FILENAME = "monitoring.fxml";
-    private static final String NEGLIGENCE_REPORTS_FILENAME = "negligenceReports.fxml";
+    private static final String NEGLIGENCE_DATA_FILENAME = "negligenceData.fxml";
     private static final Runnable NOT_SELECTED_RUNNABLE = () ->
             AlertUtils.showWarningAlert("You MUST first select an order.");
     @FXML private TableView<Order> table;
@@ -115,7 +115,7 @@ public final class OrdersController implements Initializable {
 
     @FXML
     private void showReports() {
-        final URL fileUrl = getClass().getResource(NEGLIGENCE_REPORTS_FILENAME);
+        final URL fileUrl = getClass().getResource(NEGLIGENCE_DATA_FILENAME);
         final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
         final Optional<Stage> optionalStage = FXHelper.createWindow(Modality.WINDOW_MODAL, "Reports", fxmlLoader);
         optionalStage.ifPresent(stage -> {
