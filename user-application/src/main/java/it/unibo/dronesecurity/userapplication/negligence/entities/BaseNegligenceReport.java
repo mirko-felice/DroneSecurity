@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
 import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
 import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
+import it.unibo.dronesecurity.userapplication.utilities.ReportEmptyDataException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -131,6 +132,8 @@ public class BaseNegligenceReport implements NegligenceReport {
          * @return this
          */
         public Builder closed(final Instant instant) {
+            if (this.proximity == null && this.accelerometerData.isEmpty())
+                throw new ReportEmptyDataException();
             this.closingInstant = instant;
             return this;
         }

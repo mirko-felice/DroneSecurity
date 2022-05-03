@@ -7,7 +7,6 @@ import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
  */
 public final class EmptyProductException extends IllegalArgumentException {
 
-
     private static final long serialVersionUID = -4065673531474257544L;
 
     /**
