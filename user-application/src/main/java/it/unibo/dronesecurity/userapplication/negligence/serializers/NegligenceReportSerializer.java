@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import it.unibo.dronesecurity.userapplication.negligence.entities.ClosedNegligenceReport;
 import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceReport;
 import it.unibo.dronesecurity.userapplication.utilities.DateHelper;
+import it.unibo.dronesecurity.userapplication.negligence.utilities.NegligenceConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -23,12 +24,12 @@ public class NegligenceReportSerializer extends JsonSerializer<NegligenceReport>
     public void serialize(final @NotNull NegligenceReport value, final @NotNull JsonGenerator gen,
                           final SerializerProvider serializers) throws IOException {
         gen.writeStartObject();
-        gen.writeStringField("negligent", value.getNegligent().getUsername());
-        gen.writeStringField("assigner", value.getAssigner().getUsername());
-        gen.writeObjectField("data", value.getData());
+        gen.writeStringField(NegligenceConstants.NEGLIGENT, value.getNegligent().getUsername());
+        gen.writeStringField(NegligenceConstants.ASSIGNEE, value.assignedTo().getUsername());
+        gen.writeObjectField(NegligenceConstants.DATA, value.getData());
         if (value instanceof ClosedNegligenceReport) {
             final Instant closingInstant = ((ClosedNegligenceReport) value).getClosingInstant();
-            gen.writeStringField("closingInstant", DateHelper.toString(closingInstant));
+            gen.writeStringField(NegligenceConstants.CLOSING_INSTANT, DateHelper.toString(closingInstant));
         }
         gen.writeEndObject();
         gen.flush();

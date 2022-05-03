@@ -28,9 +28,9 @@ public interface NegligenceReport {
     ObjectNode getData();
 
     /**
-     * Gets the assigner as a {@link Maintainer}.
-     * @return the assigner
+     * Gets the {@link Maintainer} assigned to the report.
+     * @return the assignee
      */
-    Maintainer getAssigner();
+    Maintainer assignedTo();
 
 }

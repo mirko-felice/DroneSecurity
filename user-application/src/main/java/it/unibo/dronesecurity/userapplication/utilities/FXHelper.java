@@ -72,10 +72,10 @@ public final class FXHelper {
         final TableColumn<T, Courier> negligentColumn =
                 initializeColumn("Negligent", Courier.class, courierClicked);
 
-        final TableColumn<T, Maintainer> assignerColumn =
-                initializeColumn("Assigner", Maintainer.class, maintainerClicked);
+        final TableColumn<T, Maintainer> assignedToColumn =
+                initializeColumn("Assigned To", Maintainer.class, maintainerClicked);
 
-        table.getColumns().addAll(Arrays.asList(negligentColumn, assignerColumn));
+        table.getColumns().addAll(Arrays.asList(negligentColumn, assignedToColumn));
         return table;
     }
 

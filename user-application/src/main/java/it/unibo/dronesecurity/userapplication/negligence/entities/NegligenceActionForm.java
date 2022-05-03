@@ -14,7 +14,7 @@ public interface NegligenceActionForm {
     NegligenceReport getReport();
 
     /**
-     * Simple textual representation of assigner solution.
+     * Simple textual representation of assignee solution.
      * @return the solution as a {@link String}
      */
     String getSolution();

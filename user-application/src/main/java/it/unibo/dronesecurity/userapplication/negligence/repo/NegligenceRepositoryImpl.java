@@ -6,6 +6,7 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 import it.unibo.dronesecurity.userapplication.negligence.entities.*;
+import it.unibo.dronesecurity.userapplication.negligence.utilities.NegligenceConstants;
 
 import java.time.Instant;
 import java.util.List;
@@ -58,25 +59,25 @@ public final class NegligenceRepositoryImpl implements NegligenceRepository {
 
     @Override
     public Future<List<OpenNegligenceReport>> retrieveOpenReportsForCourier(final String username) {
-        final JsonObject query = new JsonObject().put("negligent", username);
+        final JsonObject query = new JsonObject().put(NegligenceConstants.NEGLIGENT, username);
         return this.retrieveReportsForUser(query, OpenNegligenceReport.class);
     }
 
     @Override
     public Future<List<ClosedNegligenceReport>> retrieveClosedReportsForCourier(final String username) {
-        final JsonObject query = new JsonObject().put("negligent", username);
+        final JsonObject query = new JsonObject().put(NegligenceConstants.NEGLIGENT, username);
         return this.retrieveReportsForUser(query, ClosedNegligenceReport.class);
     }
 
     @Override
     public Future<List<OpenNegligenceReport>> retrieveOpenReportsForMaintainer(final String username) {
-        final JsonObject query = new JsonObject().put("assigner", username);
+        final JsonObject query = new JsonObject().put(NegligenceConstants.ASSIGNEE, username);
         return this.retrieveReportsForUser(query, OpenNegligenceReport.class);
     }
 
     @Override
     public Future<List<ClosedNegligenceReport>> retrieveClosedReportsForMaintainer(final String username) {
-        final JsonObject query = new JsonObject().put("assigner", username);
+        final JsonObject query = new JsonObject().put(NegligenceConstants.ASSIGNEE, username);
         return this.retrieveReportsForUser(query, ClosedNegligenceReport.class);
     }
 

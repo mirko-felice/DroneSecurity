@@ -21,7 +21,7 @@ public class BaseNegligenceReport implements NegligenceReport {
 
     private final Courier negligent;
     private final ObjectNode data;
-    private final Maintainer assigner;
+    private final Maintainer assignee;
 
     /**
      * Build the report.
@@ -38,7 +38,7 @@ public class BaseNegligenceReport implements NegligenceReport {
             builder.accelerometerData.forEach(accelerometerValues::put);
             this.data.set(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER, accelerometerValues);
         }
-        this.assigner = builder.assigner;
+        this.assignee = builder.assignee;
     }
 
     /**
@@ -61,8 +61,8 @@ public class BaseNegligenceReport implements NegligenceReport {
      * {@inheritDoc}
      */
     @Override
-    public Maintainer getAssigner() {
-        return this.assigner;
+    public Maintainer assignedTo() {
+        return this.assignee;
     }
 
     /**
@@ -70,7 +70,7 @@ public class BaseNegligenceReport implements NegligenceReport {
      * @return a new {@link Builder}
      */
     protected Builder generateBaseBuilder() {
-        return new Builder(this.negligent, this.assigner)
+        return new Builder(this.negligent, this.assignee)
                 .withProximity(this.data.get(MqttMessageParameterConstants.PROXIMITY_PARAMETER).asDouble())
                 .withAccelerometerData(this.data.get(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER));
     }
@@ -83,17 +83,17 @@ public class BaseNegligenceReport implements NegligenceReport {
         private final Courier negligent;
         private Double proximity;
         private final Map<String, Double> accelerometerData;
-        private final Maintainer assigner;
+        private final Maintainer assignee;
         private Instant closingInstant;
 
         /**
          * Creates the builder with needed parameters.
          * @param negligent the {@link Courier} that has committed negligence
-         * @param assigner the {@link Maintainer} assigned to the report
+         * @param assignee the {@link Maintainer} assigned to the report
          */
-        public Builder(final Courier negligent, final Maintainer assigner) {
+        public Builder(final Courier negligent, final Maintainer assignee) {
             this.negligent = negligent;
-            this.assigner = assigner;
+            this.assignee = assignee;
             this.accelerometerData = new HashMap<>();
         }
 

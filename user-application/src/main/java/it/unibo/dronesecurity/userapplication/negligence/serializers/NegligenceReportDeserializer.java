@@ -6,11 +6,11 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
 import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
 import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
 import it.unibo.dronesecurity.userapplication.negligence.NegligenceACL;
 import it.unibo.dronesecurity.userapplication.negligence.entities.*;
+import it.unibo.dronesecurity.userapplication.negligence.utilities.NegligenceConstants;
 import it.unibo.dronesecurity.userapplication.utilities.DateHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +24,7 @@ import java.time.Instant;
  */
 public final class NegligenceReportDeserializer extends JsonDeserializer<NegligenceReport> {
 
-    private static final String ASSIGNER_NOT_EXPECTED = "Report assigner is not the real supervisor of %s as expected.";
+    private static final String ASSIGNEE_NOT_EXPECTED = "Report assignee is not the real supervisor of %s as expected.";
 
     @Override
     public @Nullable NegligenceReport deserialize(@NotNull final JsonParser parser, final DeserializationContext ctx)
@@ -33,24 +33,26 @@ public final class NegligenceReportDeserializer extends JsonDeserializer<Neglige
             final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
             final ObjectNode root = mapper.readTree(parser);
 
-            final String negligent = root.get(MqttMessageParameterConstants.NEGLIGENT_PARAMETER).asText();
+            final String negligent = root.get(NegligenceConstants.NEGLIGENT).asText();
             final Courier courier = NegligenceACL.retrieveCourier(negligent);
 
             final Maintainer maintainer = courier.getSupervisor();
-            if (root.has("assigner") && !maintainer.getUsername().equals(root.get("assigner").asText()))
-                throw new IllegalStateException(String.format(ASSIGNER_NOT_EXPECTED, courier.getUsername()));
+            if (root.has(NegligenceConstants.ASSIGNEE) && !maintainer.getUsername().equals(
+                    root.get(NegligenceConstants.ASSIGNEE).asText()))
+                throw new IllegalStateException(String.format(ASSIGNEE_NOT_EXPECTED, courier.getUsername()));
 
-            final JsonNode data = root.get("data");
-            final double proximity = data.get(MqttMessageParameterConstants.PROXIMITY_PARAMETER).asDouble();
-            final JsonNode accelerometerData = data.get(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER);
+            final JsonNode data = root.get(NegligenceConstants.DATA);
+            final double proximity = data.get(NegligenceConstants.PROXIMITY).asDouble();
+            final JsonNode accelerometerData = data.get(NegligenceConstants.ACCELEROMETER);
 
             final BaseNegligenceReport.Builder builder = new BaseNegligenceReport.Builder(courier, maintainer)
                     .withProximity(proximity)
                     .withAccelerometerData(accelerometerData);
 
-            final boolean isClosed = root.has("closingInstant");
+            final boolean isClosed = root.has(NegligenceConstants.CLOSING_INSTANT);
             if (isClosed) {
-                final Instant closingInstant = DateHelper.toInstant(root.get("closingInstant").asText());
+                final Instant closingInstant =
+                        DateHelper.toInstant(root.get(NegligenceConstants.CLOSING_INSTANT).asText());
                 return new ClosedNegligenceReportImpl(builder, closingInstant);
             } else
                 return new OpenNegligenceReportImpl(builder);
