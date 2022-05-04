@@ -11,7 +11,7 @@ plugins {
     id("org.sonarqube")
 }
 
-val awsCrtVersion = "0.15.15"
+val awsCrtVersion = "0.16.7"
 val awsIotVersion = "1.5.4"
 
 repositories {
