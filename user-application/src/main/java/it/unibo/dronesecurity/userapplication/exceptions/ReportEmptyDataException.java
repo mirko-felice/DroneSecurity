@@ -1,4 +1,4 @@
-package it.unibo.dronesecurity.userapplication.utilities;
+package it.unibo.dronesecurity.userapplication.exceptions;
 
 import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceReport;
 
@@ -7,7 +7,7 @@ import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceRepo
  */
 public class ReportEmptyDataException extends IllegalArgumentException {
 
-    private static final long serialVersionUID = -5999987812227600513L;
+    private static final long serialVersionUID = 2L;
 
     /**
      * Build the exception.

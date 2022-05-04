@@ -1,7 +1,7 @@
 package it.unibo.dronesecurity.userapplication.shipping.courier.entities;
 
 import it.unibo.dronesecurity.userapplication.utilities.DateHelper;
-import it.unibo.dronesecurity.userapplication.utilities.EmptyProductException;
+import it.unibo.dronesecurity.userapplication.exceptions.EmptyProductException;
 
 import java.time.Instant;
 import java.util.Objects;

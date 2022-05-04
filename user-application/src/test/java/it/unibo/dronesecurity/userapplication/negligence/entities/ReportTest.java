@@ -2,7 +2,7 @@ package it.unibo.dronesecurity.userapplication.negligence.entities;
 
 import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
 import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
-import it.unibo.dronesecurity.userapplication.utilities.ReportEmptyDataException;
+import it.unibo.dronesecurity.userapplication.exceptions.ReportEmptyDataException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
