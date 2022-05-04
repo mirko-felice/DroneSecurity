@@ -1,16 +1,15 @@
 package it.unibo.dronesecurity.userapplication.controller;
 
 import it.unibo.dronesecurity.lib.AlertUtils;
-import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
 import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
 import it.unibo.dronesecurity.userapplication.auth.entities.Role;
 import it.unibo.dronesecurity.userapplication.auth.entities.User;
 import it.unibo.dronesecurity.userapplication.auth.repo.AuthenticationRepository;
 import it.unibo.dronesecurity.userapplication.shipping.courier.CourierShippingService;
-import it.unibo.dronesecurity.userapplication.utilities.ClientHelper;
 import it.unibo.dronesecurity.userapplication.utilities.FXHelper;
 import it.unibo.dronesecurity.userapplication.utilities.UserHelper;
+import it.unibo.dronesecurity.userapplication.utilities.VertxHelper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,7 +26,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -76,7 +74,7 @@ public final class AuthenticationController implements Initializable {
                         UserHelper.setLoggedUser(user); // TODO retrieve all information from db(?)
                         switch (user.getRole()) {
                             case COURIER:
-                                new CourierShippingService().startListening().onComplete(res -> {
+                                VertxHelper.VERTX.deployVerticle(new CourierShippingService()).onComplete(res -> {
                                     if (res.succeeded())
                                         this.showNextWindow(user.getRole());
                                     else
@@ -138,16 +136,7 @@ public final class AuthenticationController implements Initializable {
             ((Stage) this.loginButton.getScene().getWindow()).close();
             final URL fileUrl = getClass().getResource(fxml);
             final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-            final Optional<Stage> optionalStage = FXHelper.createWindow(Modality.NONE, title, fxmlLoader);
-            optionalStage.ifPresent(stage -> {
-                stage.setOnCloseRequest(event -> {
-                    ClientHelper.WEB_CLIENT.close();
-                    Connection.getInstance().closeConnection();
-                    Platform.exit();
-                    System.exit(0);
-                });
-                stage.show();
-            });
+            FXHelper.initializeWindow(Modality.NONE, title, fxmlLoader).ifPresent(Stage::show);
         });
     }
 

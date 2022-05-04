@@ -1,9 +1,12 @@
 package it.unibo.dronesecurity.userapplication.utilities;
 
+import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
 import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
 import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceReport;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -12,6 +15,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +31,41 @@ import java.util.function.Consumer;
  */
 public final class FXHelper {
 
+    private static final EventHandler<WindowEvent> CLOSING_HANDLER = event -> {
+        VertxHelper.WEB_CLIENT.close();
+        VertxHelper.VERTX.close();
+        Connection.getInstance().closeConnection();
+        Platform.exit();
+        System.exit(0);
+    };
+
     private FXHelper() { }
+
+    /**
+     * Create basic window using parameters.
+     * @param stage stage to initialize
+     * @param modality modality to initialize window
+     * @param title title to set on the window
+     * @param loader loader to use to load the scene from fxml
+     * @return an {@link Optional} indicating if an error happened during the loading of resource file or not
+     */
+    public static Optional<Stage> initializeWindow(final @NotNull Stage stage,
+                                                   final Modality modality,
+                                                   final String title,
+                                                   final @NotNull FXMLLoader loader) {
+        try {
+            stage.setScene(new Scene(loader.load()));
+            stage.initModality(modality);
+            stage.setTitle(title);
+            stage.setResizable(false);
+            if (modality == Modality.NONE)
+                stage.setOnCloseRequest(CLOSING_HANDLER);
+            return Optional.of(stage);
+        } catch (IOException e) {
+            LoggerFactory.getLogger(FXHelper.class).error("Error creating the new window:", e);
+            return Optional.empty();
+        }
+    }
 
     /**
      * Create basic window using parameters.
@@ -36,19 +74,10 @@ public final class FXHelper {
      * @param loader loader to use to load the scene from fxml
      * @return an {@link Optional} indicating if an error happened during the loading of resource file or not
      */
-    public static Optional<Stage> createWindow(final Modality modality, final String title,
-                                               final @NotNull FXMLLoader loader) {
-        try {
-            final Stage stage = new Stage();
-            stage.setScene(new Scene(loader.load()));
-            stage.initModality(modality);
-            stage.setTitle(title);
-            stage.setResizable(false);
-            return Optional.of(stage);
-        } catch (IOException e) {
-            LoggerFactory.getLogger(FXHelper.class).error("Error creating the new window:", e);
-            return Optional.empty();
-        }
+    public static Optional<Stage> initializeWindow(final Modality modality,
+                                                   final String title,
+                                                   final @NotNull FXMLLoader loader) {
+        return initializeWindow(new Stage(), modality, title, loader);
     }
 
     /**

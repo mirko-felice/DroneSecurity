@@ -3,7 +3,6 @@ package it.unibo.dronesecurity.userapplication.controller;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import it.unibo.dronesecurity.lib.AlertUtils;
-import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
 import it.unibo.dronesecurity.userapplication.utilities.*;
@@ -32,7 +31,7 @@ import java.util.stream.Collectors;
 public final class OrdersController implements Initializable {
 
     private static final String HOST = "http://localhost:";
-    private static final int PORT = 80;
+    private static final int PORT = 15_000;
     private static final String BASE_URI = HOST + PORT + "/courierShippingService";
     private static final String LIST_ORDERS_URI = BASE_URI + "/listOrders";
     private static final String PERFORM_DELIVERY_URI = BASE_URI + "/performDelivery";
@@ -55,7 +54,7 @@ public final class OrdersController implements Initializable {
         this.productColumn.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue().getProduct()));
         this.stateColumn.setCellValueFactory(new PropertyValueFactory<>("currentState"));
-        ClientHelper.WEB_CLIENT.get(LIST_ORDERS_URI)
+        VertxHelper.WEB_CLIENT.get(LIST_ORDERS_URI)
                 .send(r -> {
                     if (r.succeeded()) {
                         final List<Order> orders = r.result().bodyAsJsonArray().stream()
@@ -75,24 +74,15 @@ public final class OrdersController implements Initializable {
                 final JsonObject body = new JsonObject()
                         .put(OrderConstants.ORDER_KEY, order)
                         .put(OrderConstants.COURIER_KEY, UserHelper.getLoggedUser().getUsername());
-                ClientHelper.WEB_CLIENT.post(PERFORM_DELIVERY_URI)
+                VertxHelper.WEB_CLIENT.post(PERFORM_DELIVERY_URI)
                         .putHeader("Content-Type", "application/json")
                         .sendBuffer(body.toBuffer())
                         .onSuccess(h -> Platform.runLater(() -> {
                             ((Stage) this.performDeliveryButton.getScene().getWindow()).close();
                             final URL fileUrl = getClass().getResource(MONITORING_FILENAME);
                             final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-                            final Optional<Stage> optionalStage = FXHelper.createWindow(Modality.NONE,
-                                    "Monitoring...", fxmlLoader);
-                            optionalStage.ifPresent(stage -> {
-                                stage.setOnCloseRequest(event -> {
-                                    Connection.getInstance().closeConnection();
-                                    ClientHelper.WEB_CLIENT.close();
-                                    Platform.exit();
-                                    System.exit(0);
-                                });
-                                stage.show();
-                            });
+                            FXHelper.initializeWindow(Modality.NONE, "Monitoring...", fxmlLoader)
+                                    .ifPresent(Stage::show);
                         }));
             } else
                 AlertUtils.showErrorAlert("You can NOT deliver an order that isn't placed.");
@@ -105,7 +95,7 @@ public final class OrdersController implements Initializable {
         // TODO think about checking if getCurrentState().contains("fail") or instanceof FailedOrder
         selectedOrder.ifPresentOrElse(order -> {
             if (order.getCurrentState().contains("fail"))
-                ClientHelper.WEB_CLIENT.post(RESCHEDULE_DELIVERY_URI)
+                VertxHelper.WEB_CLIENT.post(RESCHEDULE_DELIVERY_URI)
                         .putHeader("Content-Type", "application/json")
                         .sendBuffer(Json.encodeToBuffer(order));
             else
@@ -117,8 +107,7 @@ public final class OrdersController implements Initializable {
     private void showReports() {
         final URL fileUrl = getClass().getResource(NEGLIGENCE_DATA_FILENAME);
         final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-        final Optional<Stage> optionalStage = FXHelper.createWindow(Modality.WINDOW_MODAL, "Reports", fxmlLoader);
-        optionalStage.ifPresent(stage -> {
+        FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Reports", fxmlLoader).ifPresent(stage -> {
             stage.initOwner(this.showReportsButton.getScene().getWindow());
             stage.showAndWait();
         });

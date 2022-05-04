@@ -1,11 +1,10 @@
 package it.unibo.dronesecurity.userapplication.shipping.courier.repo;
 
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.*;
+import it.unibo.dronesecurity.userapplication.utilities.VertxHelper;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,14 +28,7 @@ public final class OrderRepositoryImpl implements OrderRepository {
     private static final String[] FAKE_PRODUCTS = {
             "HDD", "SSD", "MOUSE", "KEYBOARD", "HEADSET", "MONITOR", "WEBCAM", "CONTROLLER", "USB", "HDMI" };
     private static OrderRepositoryImpl singleton;
-    private final MongoClient database;
     private final SecureRandom randomGenerator = new SecureRandom();
-
-    private OrderRepositoryImpl() {
-        final JsonObject config = new JsonObject();
-        config.put("db_name", "drone");
-        this.database = MongoClient.create(Vertx.currentContext().owner(), config);
-    }
 
     /**
      * Get the Singleton instance.
@@ -53,12 +45,12 @@ public final class OrderRepositoryImpl implements OrderRepository {
     @Override
     public Future<List<Order>> getOrders() {
         final List<Order> fakeOrders = this.generateFakeOrders();
-        return this.database.find(COLLECTION_NAME, new JsonObject())
+        return VertxHelper.MONGO_CLIENT.find(COLLECTION_NAME, new JsonObject())
                 .transform(orders -> {
                     List<Order> returningOrders;
                     if (orders.result().isEmpty()) {
                         fakeOrders.forEach(order ->
-                                this.database.save(COLLECTION_NAME, JsonObject.mapFrom(order)));
+                                VertxHelper.MONGO_CLIENT.save(COLLECTION_NAME, JsonObject.mapFrom(order)));
                         returningOrders = fakeOrders;
                     } else {
                         returningOrders = orders.result().stream()
@@ -68,12 +60,12 @@ public final class OrderRepositoryImpl implements OrderRepository {
                     return Future.succeededFuture(returningOrders);
                 })
                 .onFailure(event -> fakeOrders.forEach(order ->
-                        this.database.save(COLLECTION_NAME, JsonObject.mapFrom(order))));
+                        VertxHelper.MONGO_CLIENT.save(COLLECTION_NAME, JsonObject.mapFrom(order))));
     }
 
     @Override
     public Future<Order> getOrderById(final String orderId) {
-        return this.database.findOne(COLLECTION_NAME, new JsonObject().put("id", orderId), null)
+        return VertxHelper.MONGO_CLIENT.findOne(COLLECTION_NAME, new JsonObject().put("id", orderId), null)
                 .map(o -> Json.decodeValue(o.toString(), Order.class))
                 .otherwiseEmpty();
     }
@@ -100,7 +92,7 @@ public final class OrderRepositoryImpl implements OrderRepository {
         final JsonObject what = new JsonObject();
         what.put("events", order.getCurrentState());
         update.put("$push", what);
-        this.database.updateCollection(COLLECTION_NAME, query, update);
+        VertxHelper.MONGO_CLIENT.updateCollection(COLLECTION_NAME, query, update);
     }
 
     // TODO delete it when using real orders
