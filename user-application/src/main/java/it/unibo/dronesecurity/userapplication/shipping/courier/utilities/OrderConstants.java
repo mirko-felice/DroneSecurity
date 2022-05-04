@@ -1,4 +1,4 @@
-package it.unibo.dronesecurity.userapplication.utilities;
+package it.unibo.dronesecurity.userapplication.shipping.courier.utilities;
 
 /**
  *  Order related strings.

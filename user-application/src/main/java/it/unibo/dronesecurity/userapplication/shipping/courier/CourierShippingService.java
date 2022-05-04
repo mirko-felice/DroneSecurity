@@ -22,7 +22,7 @@ import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Deliveri
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
 import it.unibo.dronesecurity.userapplication.shipping.courier.repo.OrderRepository;
 import it.unibo.dronesecurity.userapplication.utilities.CastHelper;
-import it.unibo.dronesecurity.userapplication.utilities.OrderConstants;
+import it.unibo.dronesecurity.userapplication.shipping.courier.utilities.OrderConstants;
 import org.jetbrains.annotations.NotNull;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 
