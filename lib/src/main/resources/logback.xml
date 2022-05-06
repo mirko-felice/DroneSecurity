@@ -9,4 +9,8 @@
     <root level="debug">
         <appender-ref ref="STDOUT" />
     </root>
+
+    <logger name="org.mongodb.driver" level="WARNING" additivity="false" />
+    <logger name="io.vertx" level="WARNING" additivity="false" />
+    <logger name="io.netty" level="WARNING" additivity="false" />
 </configuration>

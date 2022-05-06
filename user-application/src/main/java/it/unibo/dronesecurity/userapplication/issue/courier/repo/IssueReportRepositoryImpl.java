@@ -5,8 +5,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.CreatedIssue;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.NotCreatedIssue;
+import it.unibo.dronesecurity.userapplication.issue.courier.issues.OpenIssue;
+import it.unibo.dronesecurity.userapplication.issue.courier.issues.BaseIssue;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +25,7 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
     private IssueReportRepositoryImpl() {
         final JsonObject config = new JsonObject();
         config.put("db_name", "drone");
+        //TODO move vertx instantiating to a previous phase.
         this.database = MongoClient.create(Vertx.vertx(), config);
     }
 
@@ -45,7 +46,7 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
     }
 
     @Override
-    public void addIssue(final NotCreatedIssue issue) {
+    public void addIssue(final BaseIssue issue) {
         final JsonObject newIssue = new JsonObject();
         this.getLastID().onComplete(id -> {
             if (id.succeeded())
@@ -58,14 +59,15 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
     }
 
     @Override
-    public Future<List<CreatedIssue>> getIssues() {
+    public Future<List<OpenIssue>> getIssues() {
         return this.database.find(COLLECTION_NAME, new JsonObject())
                 .transform(issues -> {
-                    List<CreatedIssue> result = Collections.emptyList();
+                    List<OpenIssue> result = Collections.emptyList();
                     if (!issues.result().isEmpty())
                         result = issues.result().stream()
-                                .map(json -> Json.decodeValue(json.toString(), CreatedIssue.class))
+                                .map(json -> Json.decodeValue(json.toString(), OpenIssue.class))
                                 .collect(Collectors.toList());
+
                     return Future.succeededFuture(result);
                 });
     }
