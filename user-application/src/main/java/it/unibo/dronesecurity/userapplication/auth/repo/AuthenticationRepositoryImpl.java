@@ -1,10 +1,10 @@
 package it.unibo.dronesecurity.userapplication.auth.repo;
 
 import io.vertx.core.Future;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
-import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
-import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
-import it.unibo.dronesecurity.userapplication.auth.entities.User;
+import it.unibo.dronesecurity.userapplication.auth.entities.*;
+import it.unibo.dronesecurity.userapplication.auth.utilities.UserConstants;
 import it.unibo.dronesecurity.userapplication.utilities.PasswordHelper;
 import it.unibo.dronesecurity.userapplication.utilities.VertxHelper;
 import org.jetbrains.annotations.NotNull;
@@ -18,42 +18,7 @@ import java.security.spec.InvalidKeySpecException;
 public final class AuthenticationRepositoryImpl implements AuthenticationRepository {
 
     private static final String COLLECTION_NAME = "users";
-    private static final String PASSWORD_FIELD = "password";
     private static AuthenticationRepositoryImpl singleton;
-
-    @Override
-    public Future<Boolean> authenticate(final @NotNull User user) {
-        final JsonObject query = new JsonObject()
-                .put("username", user.getUsername())
-                .put("role", user.getRole());
-        return VertxHelper.MONGO_CLIENT.findOne(COLLECTION_NAME, query, null)
-                .map(userFound -> {
-                    try {
-                        return userFound != null
-                                && PasswordHelper.validatePassword(user.getPassword(),
-                                userFound.getString(PASSWORD_FIELD));
-                    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-                        return Boolean.FALSE;
-                    }
-                });
-    }
-
-    @Override
-    public Future<Courier> retrieveCourierFromUsername(final String username) {
-        return this.retrieveUserFromUsername(username)
-                .flatMap(user -> {
-                    final String password = user.getString(PASSWORD_FIELD);
-                    final String supervisor = user.getString("supervisor");
-                    final Future<Maintainer> maintainer = this.retrieveMaintainerFromUsername(supervisor);
-                    return maintainer.map(sup -> Courier.complete(username, password, sup));
-                });
-    }
-
-    @Override
-    public Future<Maintainer> retrieveMaintainerFromUsername(final String username) {
-        return this.retrieveUserFromUsername(username)
-                .map(user -> Maintainer.complete(username, user.getString(PASSWORD_FIELD)));
-    }
 
     /**
      * Get the Singleton instance.
@@ -67,8 +32,30 @@ public final class AuthenticationRepositoryImpl implements AuthenticationReposit
         }
     }
 
+    @Override
+    public Future<LoggedUser> authenticate(final @NotNull NotLoggedUser user) {
+        final JsonObject query = new JsonObject().put(UserConstants.USERNAME, user.getUsername());
+        return VertxHelper.MONGO_CLIENT.findOne(COLLECTION_NAME, query, null)
+                .transform(res -> {
+                    try {
+                        if (res.succeeded() && PasswordHelper.validatePassword(user.getPassword(),
+                                res.result().getString(UserConstants.PASSWORD))) {
+                            return Future.succeededFuture(Json.decodeValue(res.result().toBuffer(), LoggedUser.class));
+                        } else
+                            return Future.failedFuture(res.cause());
+                    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                        return Future.failedFuture(e);
+                    }
+                });
+    }
+
+    @Override
+    public Future<Courier> retrieveCourier(final String username) {
+        return this.retrieveUserFromUsername(username).map(user -> Json.decodeValue(user.toBuffer(), Courier.class));
+    }
+
     private Future<JsonObject> retrieveUserFromUsername(final String username) {
-        final JsonObject query = new JsonObject().put("username", username);
+        final JsonObject query = new JsonObject().put(UserConstants.USERNAME, username);
         return VertxHelper.MONGO_CLIENT.findOne(COLLECTION_NAME, query, null);
     }
 }

@@ -1,14 +1,17 @@
 package it.unibo.dronesecurity.userapplication.negligence.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.lib.MqttTopicConstants;
+import it.unibo.dronesecurity.userapplication.auth.repo.AuthenticationRepository;
 import it.unibo.dronesecurity.userapplication.events.DomainEvents;
 import it.unibo.dronesecurity.userapplication.events.NewNegligence;
 import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceActionForm;
 import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceReport;
 import it.unibo.dronesecurity.userapplication.negligence.repo.NegligenceRepository;
+import it.unibo.dronesecurity.userapplication.negligence.utilities.NegligenceConstants;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
@@ -41,10 +44,20 @@ public class NegligenceReportService implements CourierNegligenceReportService, 
         domainEvents.register(this::onNewNegligence);
         Connection.getInstance().subscribe(MqttTopicConstants.NEGLIGENCE_REPORTS_TOPIC, msg -> {
             try {
-                final NegligenceReport report = new ObjectMapper().readValue(
-                        new String(msg.getPayload(), StandardCharsets.UTF_8),
-                        NegligenceReport.class);
-                domainEvents.raise(new NewNegligence(report));
+                final ObjectMapper mapper = new ObjectMapper();
+                final JsonNode json = mapper.readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
+                AuthenticationRepository.getInstance().retrieveCourier(json.get(NegligenceConstants.NEGLIGENT).asText())
+                        .onSuccess(courier -> {
+                            try {
+                                final NegligenceReport report = mapper.reader()
+                                        .forType(NegligenceReport.class)
+                                        .withAttribute(NegligenceConstants.ASSIGNEE, courier.getSupervisor())
+                                        .readValue(json.toString());
+                                domainEvents.raise(new NewNegligence(report));
+                            } catch (JsonProcessingException e) {
+                                LoggerFactory.getLogger(this.getClass()).error("Can NOT convert negligence report.", e);
+                            }
+                        });
             } catch (JsonProcessingException e) {
                 LoggerFactory.getLogger(this.getClass()).error("Can NOT convert negligence report.", e);
             }

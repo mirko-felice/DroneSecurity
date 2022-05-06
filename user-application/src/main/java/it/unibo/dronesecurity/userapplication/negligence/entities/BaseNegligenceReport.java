@@ -19,9 +19,9 @@ import java.util.Map;
  */
 public class BaseNegligenceReport implements NegligenceReport {
 
-    private final Courier negligent;
+    private final String negligent;
     private final ObjectNode data;
-    private final Maintainer assignee;
+    private final String assignee;
 
     /**
      * Build the report.
@@ -45,7 +45,7 @@ public class BaseNegligenceReport implements NegligenceReport {
      * {@inheritDoc}
      */
     @Override
-    public Courier getNegligent() {
+    public String getNegligent() {
         return this.negligent;
     }
 
@@ -61,7 +61,7 @@ public class BaseNegligenceReport implements NegligenceReport {
      * {@inheritDoc}
      */
     @Override
-    public Maintainer assignedTo() {
+    public String assignedTo() {
         return this.assignee;
     }
 
@@ -80,10 +80,10 @@ public class BaseNegligenceReport implements NegligenceReport {
      */
     public static final class Builder {
 
-        private final Courier negligent;
+        private final String negligent;
         private Double proximity;
         private final Map<String, Double> accelerometerData;
-        private final Maintainer assignee;
+        private final String assignee;
         private Instant closingInstant;
 
         /**
@@ -91,7 +91,7 @@ public class BaseNegligenceReport implements NegligenceReport {
          * @param negligent the {@link Courier} that has committed negligence
          * @param assignee the {@link Maintainer} assigned to the report
          */
-        public Builder(final Courier negligent, final Maintainer assignee) {
+        public Builder(final String negligent, final String assignee) {
             this.negligent = negligent;
             this.assignee = assignee;
             this.accelerometerData = new HashMap<>();

@@ -99,7 +99,7 @@ public final class OrderRepositoryImpl implements OrderRepository {
     private @NotNull List<Order> generateFakeOrders() {
         final List<Order> orders = new ArrayList<>();
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        for (int i = 0; i <= this.randomGenerator.nextInt(FAKE_PRODUCTS_MAX_VALUE); i++) {
+        for (int i = 0; i <= FAKE_PRODUCTS_MAX_VALUE; i++) {
             final int j = i;
             executor.schedule(() -> {
                 final String product = FAKE_PRODUCTS[this.randomGenerator.nextInt(FAKE_PRODUCTS_MAX_VALUE)];

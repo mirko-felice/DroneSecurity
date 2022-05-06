@@ -16,7 +16,7 @@ public class ClosedNegligenceReportImpl extends BaseNegligenceReport implements 
      * @param builder builder containing all base information
      * @param closingInstant the instant when the report has been closed
      */
-    public ClosedNegligenceReportImpl(final @NotNull Builder builder, final Instant closingInstant) {
+    ClosedNegligenceReportImpl(final @NotNull Builder builder, final Instant closingInstant) {
         super(builder);
         this.closingInstant = closingInstant;
     }

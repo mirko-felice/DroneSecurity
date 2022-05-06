@@ -36,7 +36,8 @@ import java.util.List;
  */
 public final class CourierShippingService extends AbstractVerticle {
 
-    private static final String OPEN_API_URL = "https://raw.githubusercontent.com/mirko-felice/DroneSecurity/develop/"
+    private static final String OPEN_API_URL = "https://raw.githubusercontent.com/mirko-felice/DroneSecurity/feature/"
+            + "negligence-context/"
             + "user-application/src/main/resources/it/unibo/dronesecurity/userapplication/shipping/courier/"
             + "courierShippingService.json";
     private static final String PERFORM_DELIVERY_OPERATION_ID = "performDelivery";
@@ -49,8 +50,7 @@ public final class CourierShippingService extends AbstractVerticle {
     private static final int CLIENT_ERROR_CODE = 400;
 
     @Override
-    public void start(final Promise<Void> startPromise) throws Exception {
-        super.start(startPromise);
+    public void start(final @NotNull Promise<Void> startPromise) {
         final Router globalRouter = Router.router(this.getVertx());
         RouterBuilder.create(this.getVertx(), OPEN_API_URL)
                 .onSuccess(routerBuilder -> {

@@ -1,9 +1,7 @@
 package it.unibo.dronesecurity.userapplication.auth.repo;
 
 import io.vertx.core.Future;
-import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
-import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
-import it.unibo.dronesecurity.userapplication.auth.entities.User;
+import it.unibo.dronesecurity.userapplication.auth.entities.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,25 +11,18 @@ import org.jetbrains.annotations.NotNull;
 public interface AuthenticationRepository {
 
     /**
-     * Authenticate the user, returning if he can access or not.
+     * Authenticate a {@link NotLoggedUser} returning a {@link LoggedUser}.
      * @param user the user to authenticate
      * @return the {@link Future} containing the result
      */
-    Future<Boolean> authenticate(User user);
+    Future<LoggedUser> authenticate(NotLoggedUser user);
 
     /**
-     * Retrieve the {@link Courier} starting from his username.
-     * @param username username to find
-     * @return the {@link Courier}
+     * Retrieve the {@link Courier} associated with the given username.
+     * @param username courier's username
+     * @return the {@link Future} containing the result
      */
-    Future<Courier> retrieveCourierFromUsername(String username);
-
-    /**
-     * Retrieve the {@link Maintainer} starting from his username.
-     * @param username username to find
-     * @return the {@link Maintainer}
-     */
-    Future<Maintainer> retrieveMaintainerFromUsername(String username);
+    Future<Courier> retrieveCourier(String username);
 
     /**
      * Get the instance of this repository.

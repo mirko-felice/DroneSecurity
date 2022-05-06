@@ -1,7 +1,7 @@
 package it.unibo.dronesecurity.userapplication.controller;
 
 import io.vertx.core.Future;
-import it.unibo.dronesecurity.userapplication.auth.entities.User;
+import it.unibo.dronesecurity.userapplication.auth.entities.LoggedUser;
 import it.unibo.dronesecurity.userapplication.negligence.entities.ClosedNegligenceReport;
 import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceReport;
 import it.unibo.dronesecurity.userapplication.negligence.entities.OpenNegligenceReport;
@@ -42,7 +42,7 @@ public class NegligenceDataController implements Initializable {
      */
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        final User user = UserHelper.getLoggedUser();
+        final LoggedUser user = UserHelper.getLoggedUser();
         final NegligenceRepository repository = NegligenceRepository.getInstance();
         final String username = user.getUsername();
         final Future<List<OpenNegligenceReport>> openReportsFuture;

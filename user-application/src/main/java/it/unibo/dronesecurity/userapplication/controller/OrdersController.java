@@ -31,9 +31,9 @@ import java.util.stream.Collectors;
  */
 public final class OrdersController implements Initializable {
 
-    private static final String HOST = "http://localhost:";
+    private static final String HOST = "localhost";
     private static final int PORT = 15_000;
-    private static final String BASE_URI = HOST + PORT + "/courierShippingService";
+    private static final String BASE_URI = "/courierShippingService";
     private static final String LIST_ORDERS_URI = BASE_URI + "/listOrders";
     private static final String PERFORM_DELIVERY_URI = BASE_URI + "/performDelivery";
     private static final String RESCHEDULE_DELIVERY_URI = BASE_URI + "/rescheduleDelivery";
@@ -55,7 +55,7 @@ public final class OrdersController implements Initializable {
         this.productColumn.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue().getProduct()));
         this.stateColumn.setCellValueFactory(new PropertyValueFactory<>("currentState"));
-        VertxHelper.WEB_CLIENT.get(LIST_ORDERS_URI)
+        VertxHelper.WEB_CLIENT.get(PORT, HOST, LIST_ORDERS_URI)
                 .send(r -> {
                     if (r.succeeded()) {
                         final List<Order> orders = r.result().bodyAsJsonArray().stream()
@@ -75,7 +75,7 @@ public final class OrdersController implements Initializable {
                 final JsonObject body = new JsonObject()
                         .put(OrderConstants.ORDER_KEY, order)
                         .put(OrderConstants.COURIER_KEY, UserHelper.getLoggedUser().getUsername());
-                VertxHelper.WEB_CLIENT.post(PERFORM_DELIVERY_URI)
+                VertxHelper.WEB_CLIENT.post(PORT, HOST, PERFORM_DELIVERY_URI)
                         .putHeader("Content-Type", "application/json")
                         .sendBuffer(body.toBuffer())
                         .onSuccess(h -> Platform.runLater(() -> {
@@ -96,7 +96,7 @@ public final class OrdersController implements Initializable {
         // TODO think about checking if getCurrentState().contains("fail") or instanceof FailedOrder
         selectedOrder.ifPresentOrElse(order -> {
             if (order.getCurrentState().contains("fail"))
-                VertxHelper.WEB_CLIENT.post(RESCHEDULE_DELIVERY_URI)
+                VertxHelper.WEB_CLIENT.post(PORT, HOST, RESCHEDULE_DELIVERY_URI)
                         .putHeader("Content-Type", "application/json")
                         .sendBuffer(Json.encodeToBuffer(order));
             else

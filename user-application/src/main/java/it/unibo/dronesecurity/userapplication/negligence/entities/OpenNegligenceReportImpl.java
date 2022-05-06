@@ -14,7 +14,7 @@ public final class OpenNegligenceReportImpl extends BaseNegligenceReport impleme
      * Build the report.
      * @param builder builder containing all information needed
      */
-    public OpenNegligenceReportImpl(final @NotNull Builder builder) {
+    OpenNegligenceReportImpl(final @NotNull Builder builder) {
         super(builder);
     }
 

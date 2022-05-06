@@ -24,8 +24,8 @@ public class NegligenceReportSerializer extends JsonSerializer<NegligenceReport>
     public void serialize(final @NotNull NegligenceReport value, final @NotNull JsonGenerator gen,
                           final SerializerProvider serializers) throws IOException {
         gen.writeStartObject();
-        gen.writeStringField(NegligenceConstants.NEGLIGENT, value.getNegligent().getUsername());
-        gen.writeStringField(NegligenceConstants.ASSIGNEE, value.assignedTo().getUsername());
+        gen.writeObjectField(NegligenceConstants.NEGLIGENT, value.getNegligent());
+        gen.writeObjectField(NegligenceConstants.ASSIGNEE, value.assignedTo());
         gen.writeObjectField(NegligenceConstants.DATA, value.getData());
         if (value instanceof ClosedNegligenceReport) {
             final Instant closingInstant = ((ClosedNegligenceReport) value).getClosingInstant();

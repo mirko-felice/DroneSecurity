@@ -1,13 +1,13 @@
 package it.unibo.dronesecurity.userapplication.utilities;
 
-import it.unibo.dronesecurity.userapplication.auth.entities.User;
+import it.unibo.dronesecurity.userapplication.auth.entities.LoggedUser;
 
 /**
- * Helper class to set and get the current logged {@link User}.
+ * Helper class to set and get the current {@link LoggedUser}.
  */
 public final class UserHelper {
 
-    private static User user;
+    private static LoggedUser user;
 
     private UserHelper() { }
 
@@ -15,7 +15,7 @@ public final class UserHelper {
      * Set the logged user.
      * @param loggedUser the user to set logged
      */
-    public static void setLoggedUser(final User loggedUser) {
+    public static void setLoggedUser(final LoggedUser loggedUser) {
         UserHelper.user = loggedUser;
     }
 
@@ -23,7 +23,7 @@ public final class UserHelper {
      * Get the logged user.
      * @return the user logged
      */
-    public static User getLoggedUser() {
+    public static LoggedUser getLoggedUser() {
         return user;
     }
 }

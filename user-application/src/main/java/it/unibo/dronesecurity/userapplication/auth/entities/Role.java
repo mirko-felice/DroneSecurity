@@ -1,7 +1,7 @@
 package it.unibo.dronesecurity.userapplication.auth.entities;
 
 /**
- * Enum representing roles of the {@link BaseUser}.
+ * Enum representing roles of the {@link BaseLoggedUser}.
  */
 public enum Role {
     /**

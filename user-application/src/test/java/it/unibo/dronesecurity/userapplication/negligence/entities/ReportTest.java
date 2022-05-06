@@ -1,7 +1,5 @@
 package it.unibo.dronesecurity.userapplication.negligence.entities;
 
-import it.unibo.dronesecurity.userapplication.auth.entities.Courier;
-import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
 import it.unibo.dronesecurity.userapplication.exceptions.ReportEmptyDataException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,13 +13,11 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 final class ReportTest {
 
-    private static final Maintainer MAINTAINER = Maintainer.complete("maintainer", "maintainerPassword");
-    private static final Courier COURIER = Courier.complete("courier", "courierPassword", MAINTAINER);
     private BaseNegligenceReport.Builder builder;
 
     @BeforeEach
     void setup() {
-        this.builder = new BaseNegligenceReport.Builder(COURIER, MAINTAINER);
+        this.builder = new BaseNegligenceReport.Builder("courier", "maintainer");
     }
 
     @Test

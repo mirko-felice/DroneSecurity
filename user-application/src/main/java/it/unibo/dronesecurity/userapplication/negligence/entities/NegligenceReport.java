@@ -19,7 +19,7 @@ public interface NegligenceReport {
      * Gets the negligent as a {@link Courier}.
      * @return the negligent
      */
-    Courier getNegligent();
+    String getNegligent();
 
     /**
      * Gets the data collected in that instant.
@@ -31,6 +31,6 @@ public interface NegligenceReport {
      * Gets the {@link Maintainer} assigned to the report.
      * @return the assignee
      */
-    Maintainer assignedTo();
+    String assignedTo();
 
 }

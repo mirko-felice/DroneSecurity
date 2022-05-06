@@ -1,54 +1,37 @@
 package it.unibo.dronesecurity.userapplication.auth.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Objects;
 
 /**
- * Base implementation of {@link User}.
+ * Implementation of {@link User}.
  */
 class BaseUser implements User {
 
-    @JsonProperty private final String username;
-    @JsonProperty private final String password;
-    @JsonProperty private final Role role;
+    private final String username;
 
     /**
-     * Build the User.
+     * Build the Base User.
      * @param username his username
-     * @param password his password
-     * @param role his {@link Role}
      */
-    protected BaseUser(final String username, final String password, final Role role) {
+    protected BaseUser(final String username) {
         this.username = username;
-        this.password = password;
-        this.role = role;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String getUsername() {
         return this.username;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Role getRole() {
-        return this.role;
+    public final boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || this.getClass() != o.getClass()) return false;
+        final BaseUser baseUser = (BaseUser) o;
+        return this.getUsername().equals(baseUser.getUsername());
     }
 
     @Override
-    public String toString() {
-        return this.username;
+    public final int hashCode() {
+        return Objects.hash(this.getUsername());
     }
 }
