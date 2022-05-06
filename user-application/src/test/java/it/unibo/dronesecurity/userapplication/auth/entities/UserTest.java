@@ -26,7 +26,7 @@ final class UserTest {
     void testUsersEquality() {
         final String username = "username";
         final User notLoggedUser = new NotLoggedUserImpl(username, "password");
-        assertEquals(this.baseUser,notLoggedUser, SHOULD_BE_EQUALS);
+        assertEquals(this.baseUser, notLoggedUser, SHOULD_BE_EQUALS);
 
         final User courier = new Courier(username, "supervisor");
         assertEquals(courier, this.baseUser, SHOULD_BE_EQUALS);
