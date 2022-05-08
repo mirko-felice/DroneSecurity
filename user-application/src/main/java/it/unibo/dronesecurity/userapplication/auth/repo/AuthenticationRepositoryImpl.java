@@ -54,6 +54,11 @@ public final class AuthenticationRepositoryImpl implements AuthenticationReposit
         return this.retrieveUserFromUsername(username).map(user -> Json.decodeValue(user.toBuffer(), Courier.class));
     }
 
+    @Override
+    public Future<Maintainer> retrieveMaintainer(final String username) {
+        return this.retrieveUserFromUsername(username).map(user -> Json.decodeValue(user.toBuffer(), Maintainer.class));
+    }
+
     private Future<JsonObject> retrieveUserFromUsername(final String username) {
         final JsonObject query = new JsonObject().put(UserConstants.USERNAME, username);
         return VertxHelper.MONGO_CLIENT.findOne(COLLECTION_NAME, query, null);

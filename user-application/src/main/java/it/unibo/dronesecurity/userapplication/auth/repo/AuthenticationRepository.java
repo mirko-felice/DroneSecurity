@@ -25,6 +25,13 @@ public interface AuthenticationRepository {
     Future<Courier> retrieveCourier(String username);
 
     /**
+     * Retrieve the {@link Maintainer} associated with the given username.
+     * @param username maintainer's username
+     * @return the {@link Future} containing the result
+     */
+    Future<Maintainer> retrieveMaintainer(String username);
+
+    /**
      * Get the instance of this repository.
      * @return the instance
      */

@@ -15,7 +15,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
 import org.controlsfx.control.MasterDetailPane;
@@ -31,6 +30,7 @@ import java.util.function.Consumer;
  */
 public class NegligenceDataController implements Initializable {
 
+    private static final String DETAIL_FILENAME = "detail.fxml";
     @FXML private Tab closedReportsTab;
     @FXML private MasterDetailPane openReportsPane;
     @FXML private MasterDetailPane closedReportsPane;
@@ -65,22 +65,23 @@ public class NegligenceDataController implements Initializable {
         closedReportsFuture.onSuccess(reports -> Platform.runLater(() ->
                 this.closedReportsTable.setItems(FXCollections.observableList(reports))));
 
-        this.openReportsTable = FXHelper.generateTable("openReportsTable",
-                value -> this.openReportsPane.setDetailNode(new Label(value.toString())),
-                value -> this.openReportsPane.setDetailNode(new Label(value.toString())));
+        final URL fileUrl = NegligenceDataController.class.getResource(DETAIL_FILENAME);
+        this.openReportsTable =
+                FXHelper.generateTableWithDetails(fileUrl, this.openReportsPane);
+        if (this.openReportsTable != null) {
+            this.openReportsPane.setMasterNode(this.openReportsTable);
+            this.openReportsTable.itemsProperty().addListener(new NegligenceReportListener<>(() ->
+                    this.openReportsTable.getColumns().forEach(col -> col.setResizable(false))));
+        }
 
-        this.closedReportsTable = FXHelper.generateTable("closedReportsTable",
-                value -> this.closedReportsPane.setDetailNode(new Label(value.toString())),
-                value -> this.closedReportsPane.setDetailNode(new Label(value.toString())));
-
-        this.openReportsPane.setMasterNode(this.openReportsTable);
-        this.closedReportsPane.setMasterNode(this.closedReportsTable);
-        this.openReportsTable.itemsProperty().addListener(new NegligenceReportListener<>(() ->
-                this.openReportsTable.getColumns().forEach(col -> col.setResizable(false))));
-        this.closedReportsTable.itemsProperty().addListener(new NegligenceReportListener<>(() ->
-                this.closedReportsTable.getColumns().forEach(col -> col.setResizable(false))));
+        this.closedReportsTable =
+                FXHelper.generateTableWithDetails(fileUrl, this.closedReportsPane);
+        if (this.closedReportsTable != null) {
+            this.closedReportsPane.setMasterNode(this.closedReportsTable);
+            this.closedReportsTable.itemsProperty().addListener(new NegligenceReportListener<>(() ->
+                    this.closedReportsTable.getColumns().forEach(col -> col.setResizable(false))));
+        }
     }
-
 
     /**
      * Sets a {@link javafx.event.EventHandler} on closed reports tab selection changed.
