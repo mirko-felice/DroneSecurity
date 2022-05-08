@@ -1,5 +1,6 @@
 package it.unibo.dronesecurity.userapplication.utilities;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.userapplication.auth.entities.LoggedUser;
 import it.unibo.dronesecurity.userapplication.auth.repo.AuthenticationRepository;
@@ -98,15 +99,7 @@ public final class FXHelper {
             final FXMLLoader loader = new FXMLLoader(detailFile);
             masterDetailPane.setDetailNode(loader.load());
             final DetailController controller = loader.getController();
-
-            final Consumer<LoggedUser> userConsumer = loggedUser ->
-                    Platform.runLater(() -> controller.updateDetails(loggedUser));
-
-            final Consumer<String> courierConsumer = value ->
-                    AuthenticationRepository.getInstance().retrieveCourier(value).onSuccess(userConsumer::accept);
-            final Consumer<String> maintainerConsumer = value ->
-                    AuthenticationRepository.getInstance().retrieveMaintainer(value).onSuccess(userConsumer::accept);
-            return generateTable(courierConsumer, maintainerConsumer);
+            return generateTable(controller);
         } catch (IOException e) {
             LoggerFactory.getLogger(FXHelper.class).error("Can NOT load the detail fxml file.", e);
             return null;
@@ -114,27 +107,39 @@ public final class FXHelper {
     }
 
     private static <T extends NegligenceReport> @NotNull TableView<T> generateTable(
-            final Consumer<String> courierClicked,
-            final Consumer<String> maintainerClicked) {
+            final DetailController controller) {
         final TableView<T> table = new TableView<>();
         table.setPlaceholder(new Label("No reports found."));
         table.getSelectionModel().setCellSelectionEnabled(true);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+        final Consumer<LoggedUser> userConsumer = loggedUser ->
+                Platform.runLater(() -> controller.updateDetails(loggedUser));
+
+        final Consumer<String> courierConsumer = value ->
+                AuthenticationRepository.getInstance().retrieveCourier(value).onSuccess(userConsumer::accept);
+
         final TableColumn<T, String> negligentColumn =
-                initializeColumn("Negligent", String.class, "getNegligent", courierClicked);
+                initializeColumn("Negligent", String.class, "getNegligent", courierConsumer);
 
+        final Consumer<String> maintainerConsumer = value ->
+                AuthenticationRepository.getInstance().retrieveMaintainer(value).onSuccess(userConsumer::accept);
         final TableColumn<T, String> assignedToColumn =
-                initializeColumn("Assigned To", String.class, "assignedTo", maintainerClicked);
+                initializeColumn("Assigned To", String.class, "assignedTo", maintainerConsumer);
 
-        table.getColumns().addAll(Arrays.asList(negligentColumn, assignedToColumn));
+        final Consumer<ObjectNode> dataConsumer = data ->
+                Platform.runLater(() -> controller.updateDetails(data));
+        final TableColumn<T, ObjectNode> dataColumn =
+                initializeColumn("Data", ObjectNode.class, "getData", dataConsumer);
+
+        table.getColumns().addAll(Arrays.asList(negligentColumn, assignedToColumn, dataColumn));
         return table;
     }
 
     private static <T extends NegligenceReport, S> @NotNull TableColumn<T, S> initializeColumn(
             final String header,
             final Class<S> type,
-            final S value,
+            final String methodName,
             final Consumer<S> mouseClickedListener) {
         final TableColumn<T, S> column = new TableColumn<>(header);
         column.setCellFactory(ignored -> new NegligenceReportCell<>(mouseClickedListener));
@@ -142,7 +147,7 @@ public final class FXHelper {
             try {
                 final Method[] methods = NegligenceReport.class.getMethods();
                 final S object = type.cast(Arrays.stream(methods)
-                        .filter(m -> m.getName().equals(value))
+                        .filter(m -> m.getName().equals(methodName))
                         .findFirst()
                         .orElseThrow()
                         .invoke(cell.getValue()));
