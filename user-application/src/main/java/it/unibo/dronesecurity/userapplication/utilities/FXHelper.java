@@ -1,10 +1,10 @@
 package it.unibo.dronesecurity.userapplication.utilities;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.userapplication.auth.entities.LoggedUser;
 import it.unibo.dronesecurity.userapplication.auth.repo.AuthenticationRepository;
 import it.unibo.dronesecurity.userapplication.controller.DetailController;
+import it.unibo.dronesecurity.userapplication.negligence.entities.DroneData;
 import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceReport;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -127,10 +127,10 @@ public final class FXHelper {
         final TableColumn<T, String> assignedToColumn =
                 initializeColumn("Assigned To", String.class, "assignedTo", maintainerConsumer);
 
-        final Consumer<ObjectNode> dataConsumer = data ->
+        final Consumer<DroneData> dataConsumer = data ->
                 Platform.runLater(() -> controller.updateDetails(data));
-        final TableColumn<T, ObjectNode> dataColumn =
-                initializeColumn("Data", ObjectNode.class, "getData", dataConsumer);
+        final TableColumn<T, DroneData> dataColumn =
+                initializeColumn("Data", DroneData.class, "getData", dataConsumer);
 
         table.getColumns().addAll(Arrays.asList(negligentColumn, assignedToColumn, dataColumn));
         return table;

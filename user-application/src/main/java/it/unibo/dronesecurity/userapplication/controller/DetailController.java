@@ -1,8 +1,7 @@
 package it.unibo.dronesecurity.userapplication.controller;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibo.dronesecurity.userapplication.auth.entities.LoggedUser;
-import it.unibo.dronesecurity.userapplication.negligence.utilities.NegligenceConstants;
+import it.unibo.dronesecurity.userapplication.negligence.entities.DroneData;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -27,6 +26,8 @@ public class DetailController implements Initializable {
 
     @FXML private Label proximityLabel;
     @FXML private Label proximityValueLabel;
+    @FXML private Label accelerometerLabel;
+    @FXML private Label accelerometerValueLabel;
     private List<Node> userElements;
     private List<Node> dataElements;
 
@@ -38,7 +39,8 @@ public class DetailController implements Initializable {
         this.userElements = new ArrayList<>(
                 Arrays.asList(this.usernameLabel, this.usernameValueLabel, this.roleLabel, this.roleValueLabel));
         this.dataElements = new ArrayList<>(
-                Arrays.asList(this.proximityLabel, this.proximityValueLabel));
+                Arrays.asList(this.proximityLabel, this.proximityValueLabel,
+                        this.accelerometerLabel, this.accelerometerValueLabel));
     }
 
     /**
@@ -53,11 +55,12 @@ public class DetailController implements Initializable {
     }
 
     /**
-     * Update detail node using a {@link ObjectNode}.
+     * Update detail node using a {@link DroneData}.
      * @param data data object providing information
      */
-    public void updateDetails(final @NotNull ObjectNode data) {
-        this.proximityValueLabel.setText(data.get(NegligenceConstants.PROXIMITY).asText());
+    public void updateDetails(final @NotNull DroneData data) {
+        this.proximityValueLabel.setText(String.valueOf(data.getProximity()));
+        this.accelerometerValueLabel.setText(data.getAccelerometer().toString());
         this.userElements.forEach(n -> n.setVisible(false));
         this.dataElements.forEach(n -> n.setVisible(true));
     }

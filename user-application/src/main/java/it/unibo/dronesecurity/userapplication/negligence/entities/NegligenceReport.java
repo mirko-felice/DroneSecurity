@@ -25,7 +25,7 @@ public interface NegligenceReport {
      * Gets the data collected in that instant.
      * @return the {@link ObjectNode} representing the data
      */
-    ObjectNode getData();
+    DroneData getData();
 
     /**
      * Gets the {@link Maintainer} assigned to the report.
