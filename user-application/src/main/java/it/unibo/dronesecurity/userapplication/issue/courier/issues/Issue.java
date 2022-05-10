@@ -38,4 +38,10 @@ public interface Issue {
      * @return the creation timestamp
      */
     Instant getReportingDate();
+
+    /**
+     * Gets the string representation of the state of the object.
+     * @return the string representation of the state
+     */
+    String getState();
 }

@@ -21,9 +21,12 @@ public class IssueSerializer extends JsonSerializer<Issue> {
     public void serialize(final @NotNull Issue value, final @NotNull JsonGenerator gen,
                           final SerializerProvider serializers) throws IOException {
         gen.writeStartObject();
-        gen.writeStringField("subject", value.getSubject());
-        gen.writeStringField("details", value.getDetails());
-        gen.writeStringField("courier", value.getCourier());
-        gen.writeStringField("sent", DateHelper.FORMATTER.format(value.getReportingDate()));
+
+        gen.writeStringField(IssueStringHelper.SUBJECT, value.getSubject());
+        gen.writeStringField(IssueStringHelper.DETAILS, value.getDetails());
+        gen.writeStringField(IssueStringHelper.COURIER, value.getCourier());
+        gen.writeStringField(IssueStringHelper.SENDING_INSTANT,
+                DateHelper.FORMATTER.format(value.getReportingDate()));
+        gen.writeStringField(IssueStringHelper.STATUS, value.getState());
     }
 }

@@ -1,8 +1,9 @@
 package it.unibo.dronesecurity.userapplication.issue.courier.repo;
 
 import io.vertx.core.Future;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.OpenIssue;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.BaseIssue;
+import it.unibo.dronesecurity.userapplication.issue.courier.issues.ClosedIssue;
+import it.unibo.dronesecurity.userapplication.issue.courier.issues.CreatedIssue;
+import it.unibo.dronesecurity.userapplication.issue.courier.issues.Issue;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,13 +18,19 @@ public interface IssueReportRepository {
      * Add new open issue.
      * @param issue the issue to add to repository
      */
-    void addIssue(BaseIssue issue);
+    void addIssue(Issue issue);
 
     /**
-     * Gets all issues.
-     * @return the list of issues contained in repository
+     * Gets all open issues of the currently logged user.
+     * @return the list of open issues contained in repository
      */
-    Future<List<OpenIssue>> getIssues();
+    Future<List<CreatedIssue>> getOpenIssues();
+
+    /**
+     * Gets all closed issues of the currently logged user.
+     * @return the list of closed issues contained in repository
+     */
+    Future<List<ClosedIssue>> getClosedIssues();
 
     /**
      * Get the instance of this repository.

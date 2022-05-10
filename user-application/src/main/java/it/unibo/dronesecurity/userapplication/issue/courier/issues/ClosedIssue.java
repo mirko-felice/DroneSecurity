@@ -6,9 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Instant;
 
 /**
- * Class representing an issue that has been created and sent.
+ * Class representing a solved issue report.
  */
-public class OpenIssue extends CreatedIssue {
+public class ClosedIssue extends CreatedIssue {
 
     /**
      * Builds a new issue report.
@@ -19,7 +19,7 @@ public class OpenIssue extends CreatedIssue {
      * @param courierUsername username of the courier who sends the issue
      * @param sendingTime the timestamp of when the issue was sent
      */
-    public OpenIssue(final String subject,
+    public ClosedIssue(final String subject,
                      @NotNull final int id,
                      final String issueInfo,
                      final String courierUsername,
@@ -32,6 +32,6 @@ public class OpenIssue extends CreatedIssue {
      */
     @Override
     public String getState() {
-        return IssueStringHelper.STATUS_OPEN;
+        return IssueStringHelper.STATUS_CLOSED;
     }
 }

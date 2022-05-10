@@ -77,11 +77,11 @@
                   <Label text="at:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                   <Label fx:id="selectedIssueCreationTime" text="-" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                   <Button mnemonicParsing="false" onAction="#goBackFromOpenIssues" text="Back" GridPane.halignment="LEFT" GridPane.valignment="TOP" />
-                  <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
+                  <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" style="-fx-background-color: transparent;" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0">
                            <children>
-                              <Text fx:id="selectedIssueDetails" strokeType="OUTSIDE" strokeWidth="0.0" text="-" wrappingWidth="401.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <Text fx:id="selectedIssueDetails" strokeType="OUTSIDE" strokeWidth="0.0" text="-" wrappingWidth="378.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
                            </children>
                         </AnchorPane>
                      </content>

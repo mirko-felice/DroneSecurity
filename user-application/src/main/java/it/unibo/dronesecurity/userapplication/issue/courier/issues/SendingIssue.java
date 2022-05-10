@@ -1,11 +1,13 @@
 package it.unibo.dronesecurity.userapplication.issue.courier.issues;
 
+import it.unibo.dronesecurity.userapplication.issue.courier.serialization.IssueStringHelper;
+
 import java.time.Instant;
 
 /**
  * Entity representing an issue report that has to be sent and created.
  */
-public class BaseIssue implements Issue {
+public class SendingIssue implements Issue {
 
     private final String subject;
     private final String issueInfo;
@@ -19,10 +21,10 @@ public class BaseIssue implements Issue {
      * @param courierUsername username of the courier who sends the issue
      * @param sendingTime the timestamp of when the issue was sent
      */
-    public BaseIssue(final String subject,
-                     final String issueInfo,
-                     final String courierUsername,
-                     final Instant sendingTime) {
+    public SendingIssue(final String subject,
+                        final String issueInfo,
+                        final String courierUsername,
+                        final Instant sendingTime) {
         this.subject = subject;
         this.issueInfo = issueInfo;
         this.courierUsername = courierUsername;
@@ -60,4 +62,14 @@ public class BaseIssue implements Issue {
     public Instant getReportingDate() {
         return this.sendingTime;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getState() {
+        return IssueStringHelper.STATUS_SENDING;
+    }
+
+
 }
