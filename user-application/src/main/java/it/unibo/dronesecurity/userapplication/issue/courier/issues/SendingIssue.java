@@ -68,7 +68,7 @@ public class SendingIssue implements Issue {
      */
     @Override
     public String getState() {
-        return IssueStringHelper.STATUS_SENDING;
+        return IssueStringHelper.STATUS_OPEN;
     }
 
 

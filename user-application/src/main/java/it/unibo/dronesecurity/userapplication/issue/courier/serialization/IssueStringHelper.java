@@ -50,10 +50,5 @@ public final class IssueStringHelper {
      */
     public static final String STATUS_CLOSED = "closed";
 
-    /**
-     * Status value identifying an issue report that has to be sent.
-     */
-    public static final String STATUS_SENDING = "sending";
-
     private IssueStringHelper() { }
 }

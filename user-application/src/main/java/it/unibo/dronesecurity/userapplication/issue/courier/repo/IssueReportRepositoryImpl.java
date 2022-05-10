@@ -5,6 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.ClosedIssue;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.CreatedIssue;
@@ -46,7 +47,11 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
     }
 
     private Future<Long> getLastID() {
-        return this.database.count(COLLECTION_NAME, new JsonObject());
+        final FindOptions options = new FindOptions();
+        options.setSort(new JsonObject().put(IssueStringHelper.ID, -1));
+        options.setLimit(1);
+        return this.database.findWithOptions(COLLECTION_NAME, new JsonObject(), options)
+                .map(val -> val.get(0).getLong(IssueStringHelper.ID));
     }
 
     @Override
