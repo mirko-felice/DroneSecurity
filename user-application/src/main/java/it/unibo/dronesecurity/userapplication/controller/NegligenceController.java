@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
@@ -77,7 +78,12 @@ public class NegligenceController implements Initializable {
             this.negligenceReportService.takeAction(new NegligenceActionFormImpl(report, this.solution.getText()))
                     .onSuccess(unused -> Platform.runLater(() -> {
                         this.dataController.updateReports();
-                        Notifications.create().title(report.assignedTo()).showInformation();
+                        Notifications.create()
+                                .position(Pos.CENTER)
+                                .owner(this.pane.getScene().getWindow())
+                                .title("INFO")
+                                .text("You have taken action against Courier with username: " + report.getNegligent())
+                                .showInformation();
                         this.solution.clear();
                     }));
         }
