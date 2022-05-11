@@ -82,7 +82,9 @@ public final class AuthenticationController {
     @Contract(" -> new")
     private @NotNull NotLoggedUser userFromFields() {
         final String username = this.usernameField.getText();
-        final String password = this.passwordField.getText();
+        final String password = this.passwordField.isVisible()
+                ? this.passwordField.getText()
+                : this.visiblePasswordField.getText();
         return new NotLoggedUserImpl(username, password);
     }
 
