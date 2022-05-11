@@ -31,11 +31,12 @@ dependencies {
 }
 
 sonarqube.properties {
-    val sonarProperties = Properties()
-    file(".." + File.separator + "sonar.properties").inputStream().use { sonarProperties.load(it) }
-    property("sonar.login", sonarProperties.getProperty("token"))
+    property("sonar.projectKey", "mirko-felice_DroneSecurity")
+    property("sonar.organization", "mirko-felice")
+    property("sonar.host.url", "https://sonarcloud.io")
     property("sonar.sources", sourceSets.main.get().allJava.srcDirs)
     property("sonar.tests", sourceSets.test.get().allJava.srcDirs)
+    property("sonar.python.version", 3.7)
 }
 
 java {
