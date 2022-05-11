@@ -12,7 +12,6 @@ import it.unibo.dronesecurity.userapplication.issue.courier.issues.Issue;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.SendingIssue;
 import it.unibo.dronesecurity.userapplication.utilities.UserHelper;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -171,7 +170,8 @@ public final class MaintainerIssueController implements Initializable {
 
     private void fillIssueFields(final Issue issue) {
         this.selectedIssueSubject.setText(issue.getSubject());
-        this.issueState.setText(issue.getState().substring(0,1).toUpperCase() + issue.getState().substring(1));
+        this.issueState.setText(issue.getState().substring(0, 1).toUpperCase(Locale.ITALY)
+                + issue.getState().substring(1));
         final String creationInstant = issue.getReportingDate().toString();
         final String[] instantComponents = creationInstant.split("T");
         this.selectedIssueCreationDate.setText(instantComponents[0]);

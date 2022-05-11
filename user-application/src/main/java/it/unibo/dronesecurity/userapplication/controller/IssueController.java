@@ -145,7 +145,8 @@ public final class IssueController implements Initializable {
 
     private void fillIssueFields(final Issue issue) {
         this.selectedIssueSubject.setText(issue.getSubject());
-        this.issueState.setText(issue.getState().substring(0,1).toUpperCase() + issue.getState().substring(1));
+        this.issueState.setText(issue.getState().substring(0, 1).toUpperCase(Locale.ITALY)
+                + issue.getState().substring(1));
         final String creationInstant = issue.getReportingDate().toString();
         final String[] instantComponents = creationInstant.split("T");
         this.selectedIssueCreationDate.setText(instantComponents[0]);
