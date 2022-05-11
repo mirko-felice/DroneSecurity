@@ -8,8 +8,8 @@ import it.unibo.dronesecurity.userapplication.negligence.entities.DroneData;
 import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceReport;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -17,7 +17,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import javafx.util.Pair;
 import org.controlsfx.control.MasterDetailPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,35 +36,31 @@ import java.util.function.Consumer;
  */
 public final class FXHelper {
 
-    private static final EventHandler<WindowEvent> CLOSING_HANDLER = event -> {
-        VertxHelper.WEB_CLIENT.close();
-        VertxHelper.VERTX.close();
-        Connection.getInstance().closeConnection();
-        Platform.exit();
-        System.exit(0);
-    };
-
     private FXHelper() { }
 
     /**
-     * Create basic window using parameters.
+     * Initialize a stage using parameters.
      * @param stage stage to initialize
-     * @param modality modality to initialize window
      * @param title title to set on the window
      * @param loader loader to use to load the scene from fxml
      * @return an {@link Optional} indicating if an error happened during the loading of resource file or not
      */
     public static Optional<Stage> initializeWindow(final @NotNull Stage stage,
-                                                   final Modality modality,
                                                    final String title,
                                                    final @NotNull FXMLLoader loader) {
         try {
             stage.setScene(new Scene(loader.load()));
-            stage.initModality(modality);
             stage.setTitle(title);
             stage.setResizable(false);
-            if (modality == Modality.NONE)
-                stage.setOnCloseRequest(CLOSING_HANDLER);
+            if (stage.getModality() == Modality.NONE)
+                stage.setOnCloseRequest(unused -> {
+                    VertxHelper.WEB_CLIENT.close();
+                    VertxHelper.MONGO_CLIENT.close();
+                    VertxHelper.VERTX.close();
+                    Connection.getInstance().closeConnection();
+                    Platform.exit();
+                    System.exit(0);
+                });
             return Optional.of(stage);
         } catch (IOException e) {
             LoggerFactory.getLogger(FXHelper.class).error("Error creating the new window:", e);
@@ -73,7 +69,7 @@ public final class FXHelper {
     }
 
     /**
-     * Create basic window using parameters.
+     * Creates basic window using parameters.
      * @param modality modality to initialize window
      * @param title title to set on the window
      * @param loader loader to use to load the scene from fxml
@@ -82,33 +78,40 @@ public final class FXHelper {
     public static Optional<Stage> initializeWindow(final Modality modality,
                                                    final String title,
                                                    final @NotNull FXMLLoader loader) {
-        return initializeWindow(new Stage(), modality, title, loader);
+        final Stage stage = new Stage();
+        stage.initModality(modality);
+        return initializeWindow(stage, title, loader);
     }
 
     /**
      * Generates a {@link TableView} of {@link NegligenceReport} or subclass.
      * @param detailFile name of the detail fxml file
      * @param masterDetailPane {@link MasterDetailPane} on which setting a detail node
+     * @param id javafx:id to set on the table
      * @param <T> type parameter
      * @return the {@link TableView}
      */
-    public static <T extends NegligenceReport> @Nullable TableView<T> generateTableWithDetails(
+    public static <T extends NegligenceReport> @Nullable Pair<TableView<T>, DetailController> generateTableWithDetails(
             final URL detailFile,
-            final @NotNull MasterDetailPane masterDetailPane) {
+            final @NotNull MasterDetailPane masterDetailPane,
+            final String id) {
         try {
             final FXMLLoader loader = new FXMLLoader(detailFile);
-            masterDetailPane.setDetailNode(loader.load());
+            final Node node = loader.load();
+            node.setId(id + "Detail");
+            masterDetailPane.setDetailNode(node);
             final DetailController controller = loader.getController();
-            return generateTable(controller);
+            return new Pair<>(generateTable(controller, id), controller);
         } catch (IOException e) {
             LoggerFactory.getLogger(FXHelper.class).error("Can NOT load the detail fxml file.", e);
             return null;
         }
     }
 
-    private static <T extends NegligenceReport> @NotNull TableView<T> generateTable(
-            final DetailController controller) {
+    private static <T extends NegligenceReport> @NotNull TableView<T> generateTable(final DetailController controller,
+                                                                                    final String id) {
         final TableView<T> table = new TableView<>();
+        table.setId(id + "Table");
         table.setPlaceholder(new Label("No reports found."));
         table.getSelectionModel().setCellSelectionEnabled(true);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -130,7 +133,7 @@ public final class FXHelper {
         final Consumer<DroneData> dataConsumer = data ->
                 Platform.runLater(() -> controller.updateDetails(data));
         final TableColumn<T, DroneData> dataColumn =
-                initializeColumn("Data", DroneData.class, "getData", dataConsumer);
+                initializeColumn("Drone Data", DroneData.class, "getData", dataConsumer);
 
         table.getColumns().addAll(Arrays.asList(negligentColumn, assignedToColumn, dataColumn));
         return table;

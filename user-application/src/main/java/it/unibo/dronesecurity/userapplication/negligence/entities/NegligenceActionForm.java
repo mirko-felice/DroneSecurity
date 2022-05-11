@@ -9,9 +9,9 @@ public interface NegligenceActionForm {
 
     /**
      * Gets the report to update.
-     * @return the {@link NegligenceReport}
+     * @return the {@link NegligenceReportWithID}
      */
-    NegligenceReport getReport();
+    NegligenceReportWithID getReport();
 
     /**
      * Simple textual representation of assignee solution.

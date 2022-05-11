@@ -8,6 +8,11 @@ import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
 public final class NegligenceConstants {
 
     /**
+     * Key for the ID.
+     */
+    public static final String ID = "ID";
+
+    /**
      * Key for the negligent.
      */
     public static final String NEGLIGENT = "negligent";

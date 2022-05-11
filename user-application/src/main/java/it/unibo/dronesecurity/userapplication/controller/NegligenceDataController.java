@@ -2,9 +2,7 @@ package it.unibo.dronesecurity.userapplication.controller;
 
 import io.vertx.core.Future;
 import it.unibo.dronesecurity.userapplication.auth.entities.LoggedUser;
-import it.unibo.dronesecurity.userapplication.negligence.entities.ClosedNegligenceReport;
-import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceReport;
-import it.unibo.dronesecurity.userapplication.negligence.entities.OpenNegligenceReport;
+import it.unibo.dronesecurity.userapplication.negligence.entities.*;
 import it.unibo.dronesecurity.userapplication.negligence.repo.NegligenceRepository;
 import it.unibo.dronesecurity.userapplication.utilities.FXHelper;
 import it.unibo.dronesecurity.userapplication.utilities.UserHelper;
@@ -17,8 +15,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
+import javafx.util.Pair;
 import org.controlsfx.control.MasterDetailPane;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
 import java.util.List;
@@ -36,12 +36,69 @@ public class NegligenceDataController implements Initializable {
     @FXML private MasterDetailPane closedReportsPane;
     private TableView<OpenNegligenceReport> openReportsTable;
     private TableView<ClosedNegligenceReport> closedReportsTable;
+    private DetailController openController;
+    private DetailController closedController;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+       this.updateReports();
+
+        final URL fileUrl = NegligenceDataController.class.getResource(DETAIL_FILENAME);
+        final Pair<TableView<OpenNegligenceReport>, DetailController> openPair =
+                FXHelper.generateTableWithDetails(fileUrl, this.openReportsPane, "openReports");
+
+        if (openPair != null) {
+            this.openReportsTable = openPair.getKey();
+            this.openController = openPair.getValue();
+            this.openReportsPane.setMasterNode(this.openReportsTable);
+            this.openReportsTable.itemsProperty().addListener(new NegligenceReportListener<>(() ->
+                    this.openReportsTable.getColumns().forEach(col -> col.setResizable(false))));
+        }
+
+        final Pair<TableView<ClosedNegligenceReport>, DetailController> closedPair =
+                FXHelper.generateTableWithDetails(fileUrl, this.closedReportsPane, "closedReports");
+
+        if (closedPair != null) {
+            this.closedReportsTable = closedPair.getKey();
+            this.closedController = closedPair.getValue();
+            this.closedReportsPane.setMasterNode(this.closedReportsTable);
+            this.closedReportsTable.itemsProperty().addListener(new NegligenceReportListener<>(() ->
+                    this.closedReportsTable.getColumns().forEach(col -> col.setResizable(false))));
+        }
+    }
+
+    /**
+     * Sets a {@link javafx.event.EventHandler} on closed reports tab selection changed.
+     * @param tabSelectedConsumer {@link Consumer} to use on tab selection
+     */
+    public void setOnClosedTabSelectionChanged(final Consumer<Boolean> tabSelectedConsumer) {
+        this.closedReportsTab.setOnSelectionChanged(ignored ->
+                tabSelectedConsumer.accept(this.closedReportsTab.isSelected()));
+    }
+
+    /**
+     * Empty the detail nodes.
+     */
+    public void emptyDetails() {
+        this.openController.emptyDetails();
+        this.closedController.emptyDetails();
+    }
+
+    /**
+     * Retrieve the selected {@link OpenNegligenceReport}.
+     * @return a {@link OpenNegligenceReport}
+     */
+    public @Nullable OpenNegligenceReport getSelectedOpenReport() {
+        return this.openReportsTable.getSelectionModel().getSelectedItem();
+    }
+
+    /**
+     * Update showed reports.
+     */
+    public void updateReports() {
         final LoggedUser user = UserHelper.getLoggedUser();
         final NegligenceRepository repository = NegligenceRepository.getInstance();
         final String username = user.getUsername();
@@ -64,32 +121,6 @@ public class NegligenceDataController implements Initializable {
 
         closedReportsFuture.onSuccess(reports -> Platform.runLater(() ->
                 this.closedReportsTable.setItems(FXCollections.observableList(reports))));
-
-        final URL fileUrl = NegligenceDataController.class.getResource(DETAIL_FILENAME);
-        this.openReportsTable =
-                FXHelper.generateTableWithDetails(fileUrl, this.openReportsPane);
-        if (this.openReportsTable != null) {
-            this.openReportsPane.setMasterNode(this.openReportsTable);
-            this.openReportsTable.itemsProperty().addListener(new NegligenceReportListener<>(() ->
-                    this.openReportsTable.getColumns().forEach(col -> col.setResizable(false))));
-        }
-
-        this.closedReportsTable =
-                FXHelper.generateTableWithDetails(fileUrl, this.closedReportsPane);
-        if (this.closedReportsTable != null) {
-            this.closedReportsPane.setMasterNode(this.closedReportsTable);
-            this.closedReportsTable.itemsProperty().addListener(new NegligenceReportListener<>(() ->
-                    this.closedReportsTable.getColumns().forEach(col -> col.setResizable(false))));
-        }
-    }
-
-    /**
-     * Sets a {@link javafx.event.EventHandler} on closed reports tab selection changed.
-     * @param tabSelectedConsumer {@link Consumer} to use on tab selection
-     */
-    public void setOnClosedTabSelectionChanged(final Consumer<Boolean> tabSelectedConsumer) {
-        this.closedReportsTab.setOnSelectionChanged(ignored ->
-                tabSelectedConsumer.accept(this.closedReportsTab.isSelected()));
     }
 
     /**

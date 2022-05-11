@@ -5,13 +5,9 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import it.unibo.dronesecurity.userapplication.negligence.entities.BaseNegligenceReport;
-import it.unibo.dronesecurity.userapplication.negligence.entities.ClosedNegligenceReport;
-import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceReport;
-import it.unibo.dronesecurity.userapplication.negligence.entities.OpenNegligenceReport;
+import it.unibo.dronesecurity.userapplication.negligence.entities.*;
 import it.unibo.dronesecurity.userapplication.negligence.utilities.NegligenceConstants;
 import it.unibo.dronesecurity.userapplication.utilities.DateHelper;
-import it.unibo.dronesecurity.userapplication.negligence.entities.DroneData;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -32,17 +28,21 @@ public final class NegligenceReportDeserializer extends JsonDeserializer<Neglige
         final String assignee = (String) ctx.getAttribute(NegligenceConstants.ASSIGNEE);
         final String maintainer = assignee == null ? root.get(NegligenceConstants.ASSIGNEE).asText() : assignee;
 
-        final DroneData data = new DroneData(root.get(NegligenceConstants.DATA));
+        final DroneData data = new DroneDataImpl(root.get(NegligenceConstants.DATA));
 
-        final BaseNegligenceReport.Builder builder = new BaseNegligenceReport.Builder(negligent, maintainer, data);
+        final NegligenceReport report = NegligenceReportFactory.withoutID(negligent, maintainer, data);
+        if (!root.has(NegligenceConstants.ID))
+            return report;
 
         final boolean isClosed = root.has(NegligenceConstants.CLOSING_INSTANT);
+        final long id = root.get(NegligenceConstants.ID).asLong();
+        final NegligenceReportWithID withID = NegligenceReportFactory.withID(id, report);
         if (isClosed) {
             final Instant closingInstant =
                     DateHelper.toInstant(root.get(NegligenceConstants.CLOSING_INSTANT).asText());
-            return builder.closed(closingInstant).build();
+            return NegligenceReportFactory.closed(withID, closingInstant);
         } else
-            return builder.build();
+            return NegligenceReportFactory.open(withID);
     }
 
 }

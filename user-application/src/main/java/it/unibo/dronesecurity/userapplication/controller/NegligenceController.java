@@ -1,16 +1,20 @@
 package it.unibo.dronesecurity.userapplication.controller;
 
+import it.unibo.dronesecurity.lib.AlertUtils;
 import it.unibo.dronesecurity.userapplication.auth.entities.Maintainer;
 import it.unibo.dronesecurity.userapplication.events.DomainEvents;
 import it.unibo.dronesecurity.userapplication.events.NewNegligence;
 import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceActionFormImpl;
-import it.unibo.dronesecurity.userapplication.negligence.entities.NegligenceReport;
+import it.unibo.dronesecurity.userapplication.negligence.entities.OpenNegligenceReport;
 import it.unibo.dronesecurity.userapplication.negligence.services.MaintainerNegligenceReportService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
+import org.controlsfx.control.Notifications;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +33,7 @@ public class NegligenceController implements Initializable {
     @FXML private GridPane pane;
     @FXML private TextArea solution;
     @FXML private Button takeActionButton;
+    private NegligenceDataController dataController;
 
     /**
      * Build the controller.
@@ -47,8 +52,9 @@ public class NegligenceController implements Initializable {
         try {
             final URL fileUrl = NegligenceController.class.getResource(NEGLIGENCE_DATA_FILENAME);
             final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-            this.pane.add(fxmlLoader.load(),  0, 0, 2, 1);
-            ((NegligenceDataController) fxmlLoader.getController()).setOnClosedTabSelectionChanged(isSelected -> {
+            this.pane.add(fxmlLoader.load(), 0, 0, 2, 1);
+            this.dataController = fxmlLoader.getController();
+            this.dataController.setOnClosedTabSelectionChanged(isSelected -> {
                 this.takeActionButton.setDisable(isSelected);
                 this.solution.setDisable(isSelected);
             });
@@ -63,8 +69,17 @@ public class NegligenceController implements Initializable {
 
     @FXML
     private void takeAction() {
-        final TableView<?> reportsTable = (TableView<?>) this.pane.lookup("#openReportsTable");
-        final NegligenceReport report = (NegligenceReport) reportsTable.getSelectionModel().getSelectedItem();
-        this.negligenceReportService.takeAction(new NegligenceActionFormImpl(report, this.solution.getText()));
+        final OpenNegligenceReport report = this.dataController.getSelectedOpenReport();
+        if (report == null)
+            AlertUtils.showErrorAlert("You have to select a report to take action on.");
+        else {
+            this.dataController.emptyDetails();
+            this.negligenceReportService.takeAction(new NegligenceActionFormImpl(report, this.solution.getText()))
+                    .onSuccess(unused -> Platform.runLater(() -> {
+                        this.dataController.updateReports();
+                        Notifications.create().title(report.assignedTo()).showInformation();
+                        this.solution.clear();
+                    }));
+        }
     }
 }

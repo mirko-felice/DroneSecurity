@@ -1,23 +1,20 @@
 package it.unibo.dronesecurity.userapplication.negligence.entities;
 
-import org.jetbrains.annotations.NotNull;
+import it.unibo.dronesecurity.userapplication.exceptions.ReportEmptyDataException;
 
 import java.time.Instant;
 
 /**
  * Implementation of {@link ClosedNegligenceReport}.
  */
-public class ClosedNegligenceReportImpl extends BaseNegligenceReport implements ClosedNegligenceReport {
+class ClosedNegligenceReportImpl extends NegligenceReportWithIDImpl implements ClosedNegligenceReport {
 
     private final Instant closingInstant;
 
-    /**
-     * Build the report.
-     * @param builder builder containing all base information
-     * @param closingInstant the instant when the report has been closed
-     */
-    ClosedNegligenceReportImpl(final @NotNull Builder builder, final Instant closingInstant) {
-        super(builder);
+    ClosedNegligenceReportImpl(final NegligenceReportWithID report, final Instant closingInstant) {
+        super(report.getId(), report);
+        if (report.getData().isEmpty())
+            throw new ReportEmptyDataException();
         this.closingInstant = closingInstant;
     }
 

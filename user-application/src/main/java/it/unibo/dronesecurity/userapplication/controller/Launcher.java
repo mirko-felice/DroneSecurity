@@ -27,7 +27,7 @@ public final class Launcher extends Application {
         if (!propertiesFile.exists() || AlertUtils.showConfirmationAlert("File properties already found!",
                 "Would you like to reset values?")) {
             final FXMLLoader fxmlLoader = new FXMLLoader(ConnectionController.class.getResource(CONNECTION_FXML));
-            FXHelper.initializeWindow(stage, Modality.NONE, "Connection settings", fxmlLoader).ifPresent(window -> {
+            FXHelper.initializeWindow(stage, "Connection settings", fxmlLoader).ifPresent(window -> {
                 window.setOnHidden(ignored -> this.showLogin());
                 window.show();
             });

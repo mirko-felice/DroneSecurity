@@ -5,7 +5,7 @@ package it.unibo.dronesecurity.userapplication.negligence.entities;
  */
 public class NegligenceActionFormImpl implements NegligenceActionForm {
 
-    private final NegligenceReport report;
+    private final NegligenceReportWithID report;
     private final String solution;
 
     /**
@@ -13,7 +13,7 @@ public class NegligenceActionFormImpl implements NegligenceActionForm {
      * @param report related report
      * @param solution simple solution as text
      */
-    public NegligenceActionFormImpl(final NegligenceReport report, final String solution) {
+    public NegligenceActionFormImpl(final NegligenceReportWithID report, final String solution) {
         this.report = report;
         this.solution = solution;
     }
@@ -22,7 +22,7 @@ public class NegligenceActionFormImpl implements NegligenceActionForm {
      * {@inheritDoc}
      */
     @Override
-    public NegligenceReport getReport() {
+    public NegligenceReportWithID getReport() {
         return this.report;
     }
 

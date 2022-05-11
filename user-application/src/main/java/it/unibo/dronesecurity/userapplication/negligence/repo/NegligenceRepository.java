@@ -24,8 +24,9 @@ public interface NegligenceRepository {
     /**
      * Take action saving the {@link NegligenceActionForm}.
      * @param form form to be saved
+     * @return a {@link Future} to check when action is finished
      */
-    void takeAction(NegligenceActionForm form);
+    Future<Void> takeAction(NegligenceActionForm form);
 
     /**
      * Retrieve all {@link OpenNegligenceReport} owned to a {@link Courier}.

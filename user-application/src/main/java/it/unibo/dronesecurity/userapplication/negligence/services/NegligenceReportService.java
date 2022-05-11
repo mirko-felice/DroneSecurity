@@ -3,6 +3,7 @@ package it.unibo.dronesecurity.userapplication.negligence.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.vertx.core.Future;
 import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.lib.MqttTopicConstants;
 import it.unibo.dronesecurity.userapplication.auth.repo.AuthenticationRepository;
@@ -68,8 +69,8 @@ public class NegligenceReportService implements CourierNegligenceReportService, 
      * {@inheritDoc}
      */
     @Override
-    public void takeAction(final NegligenceActionForm form) {
-        NegligenceRepository.getInstance().takeAction(form);
+    public Future<Void> takeAction(final NegligenceActionForm form) {
+        return NegligenceRepository.getInstance().takeAction(form);
     }
 
     private void onNewNegligence(final @NotNull NewNegligence newNegligence) {

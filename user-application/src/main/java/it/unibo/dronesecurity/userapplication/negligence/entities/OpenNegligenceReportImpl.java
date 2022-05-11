@@ -8,19 +8,15 @@ import java.time.Instant;
 /**
  * Implementation of {@link OpenNegligenceReport}.
  */
-public final class OpenNegligenceReportImpl extends BaseNegligenceReport implements OpenNegligenceReport {
+class OpenNegligenceReportImpl extends NegligenceReportWithIDImpl implements OpenNegligenceReport {
 
-    /**
-     * Build the report.
-     * @param builder builder containing all information needed
-     */
-    OpenNegligenceReportImpl(final @NotNull Builder builder) {
-        super(builder);
+    OpenNegligenceReportImpl(final NegligenceReportWithID report) {
+        super(report.getId(), report);
     }
 
     @Contract("_ -> new")
     @Override
     public @NotNull ClosedNegligenceReport close(final Instant closingInstant) {
-        return new ClosedNegligenceReportImpl(this.generateBaseBuilder(), closingInstant);
+        return new ClosedNegligenceReportImpl(this, closingInstant);
     }
 }

@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
@@ -19,6 +20,8 @@ import java.util.ResourceBundle;
  */
 public class DetailController implements Initializable {
 
+    private static final int CLEARABLE_LABEL_COLUMN_INDEX = 1;
+    private static final String EMPTY_STRING = "";
     @FXML private Label usernameLabel;
     @FXML private Label usernameValueLabel;
     @FXML private Label roleLabel;
@@ -63,5 +66,21 @@ public class DetailController implements Initializable {
         this.accelerometerValueLabel.setText(data.getAccelerometer().toString());
         this.userElements.forEach(n -> n.setVisible(false));
         this.dataElements.forEach(n -> n.setVisible(true));
+    }
+
+    /**
+     * Empty the detail node.
+     */
+    public void emptyDetails() {
+        this.userElements.forEach(n -> {
+            n.setVisible(false);
+            if (GridPane.getColumnIndex(n) == CLEARABLE_LABEL_COLUMN_INDEX)
+                ((Label) n).setText(EMPTY_STRING);
+        });
+        this.dataElements.forEach(n -> {
+            n.setVisible(false);
+            if (GridPane.getColumnIndex(n) == CLEARABLE_LABEL_COLUMN_INDEX)
+                ((Label) n).setText(EMPTY_STRING);
+        });
     }
 }
