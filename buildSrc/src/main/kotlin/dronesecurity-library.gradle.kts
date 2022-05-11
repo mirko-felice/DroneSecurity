@@ -1,5 +1,5 @@
 import com.github.spotbugs.snom.Confidence
-import java.util.Properties
+import com.lordcodes.turtle.shellRun
 
 plugins {
     `java-library`
@@ -30,8 +30,12 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.2.10")
 }
 
+project.version = shellRun {
+    git.gitCommand(listOf("describe", "--tags"))
+}
+
 sonarqube.properties {
-    property("sonar.projectKey", "mirko-felice_DroneSecurity")
+    property("sonar.projectKey", "DroneSecurity")
     property("sonar.organization", "mirko-felice")
     property("sonar.host.url", "https://sonarcloud.io")
     property("sonar.sources", sourceSets.main.get().allJava.srcDirs)
