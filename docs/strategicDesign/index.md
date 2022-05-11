@@ -26,12 +26,13 @@ Nel nostro dominio sono stati individuati quattro Bounded Context:
 Dopo aver determinato i Bounded Context è necessario capire le relazioni tra di essi.
 Per mostrare tali relazioni viene costruita una _Context Map_.
 In questo dominio le associazioni riconosciute sono state le seguenti:
-* _DroneContext [U] -> [D, ACL] NegligenceReportingContext_:
+* _DroneContext [U, OHS] -> [D] NegligenceReportingContext_:
 
   questa relazione indica che il _supplier_ **DroneContext** fornisce al _consumer_ **NegligenceReportingContext** le 
-funzionalità per permettere d'individuare le situazioni critiche. Dato che il modello potrebbe cambiare,
-il consumer necessita di un _AntiCorruptionLayer (ACL)_ per rendere i dati provenienti dal _supplier_ conformi alle sue
-necessità. In questa maniera il consumer non deve cambiare il proprio modello.
+funzionalità per permettere d'individuare le situazioni critiche. 
+Tale _Context_ vuole dedicare un _Open-Host Service (OHS)_ il quale permetta ai consumatori di non doversi adattare 
+alle esigenze di modellazione del fornitore. Verrà quindi sfruttato un _Published Language_, protocollo che si 
+prenda la briga d'interpolare i dati e convertirli in un modello appropriato al consumatore.
 * _DroneContext [U] -> [D, ACL] ShippingContext_:
 
   analogamente il **DroneContext** funziona da _supplier_ verso lo **ShippingContext** per mettere a disposizione
