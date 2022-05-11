@@ -11,11 +11,13 @@ import it.unibo.dronesecurity.userapplication.auth.entities.Role;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.ClosedIssue;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.CreatedIssue;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.Issue;
+import it.unibo.dronesecurity.userapplication.issue.courier.issues.OpenIssue;
 import it.unibo.dronesecurity.userapplication.issue.courier.serialization.IssueStringHelper;
 import it.unibo.dronesecurity.userapplication.utilities.UserHelper;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 //TODO refactor repositories (make an abstract class for mongo initialization)
@@ -58,6 +60,17 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
             newIssue.mergeIn(JsonObject.mapFrom(issue), true);
             this.database.save(COLLECTION_NAME, newIssue);
         });
+    }
+
+    @Override
+    public Future<Boolean> visionOpenIssue(final OpenIssue issue) {
+        final JsonObject query = new JsonObject();
+        query.put(IssueStringHelper.ID, issue.getId());
+        final JsonObject visionedStatus = new JsonObject()
+                .put(IssueStringHelper.STATUS, IssueStringHelper.STATUS_VISIONED);
+        final JsonObject update = new JsonObject().put("$set", visionedStatus);
+
+        return this.database.findOneAndUpdate(COLLECTION_NAME, query, update).map(Objects::nonNull);
     }
 
     @Override

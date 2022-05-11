@@ -34,4 +34,16 @@ public class OpenIssue extends CreatedIssue {
     public String getState() {
         return IssueStringHelper.STATUS_OPEN;
     }
+
+    /**
+     * Transforms this issue in visioned issue when the maintainer starts processing it.
+     * @return the new {@link VisionedIssue} from this OpenIssue
+     */
+    public VisionedIssue visionIssue() {
+        return new VisionedIssue(this.getSubject(),
+                this.getId(),
+                this.getDetails(),
+                this.getCourier(),
+                this.getReportingDate());
+    }
 }

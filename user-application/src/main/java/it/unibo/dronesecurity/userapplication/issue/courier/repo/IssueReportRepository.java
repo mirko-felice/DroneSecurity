@@ -4,6 +4,7 @@ import io.vertx.core.Future;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.ClosedIssue;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.CreatedIssue;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.Issue;
+import it.unibo.dronesecurity.userapplication.issue.courier.issues.OpenIssue;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,6 +20,13 @@ public interface IssueReportRepository {
      * @param issue the issue to add to repository
      */
     void addIssue(Issue issue);
+
+    /**
+     * Updates an existing Open issue and sets it as visioned.
+     * @param issue the issue to be updated
+     * @return whether the operation went successfully or not
+     */
+    Future<Boolean> visionOpenIssue(OpenIssue issue);
 
     /**
      * Gets all open issues of the currently logged user.

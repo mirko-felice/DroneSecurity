@@ -1,16 +1,12 @@
 package it.unibo.dronesecurity.userapplication.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import it.unibo.dronesecurity.lib.Connection;
-import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
-import it.unibo.dronesecurity.lib.MqttTopicConstants;
+import it.unibo.dronesecurity.lib.AlertUtils;
 import it.unibo.dronesecurity.userapplication.issue.courier.IssueReportService;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.ClosedIssue;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.CreatedIssue;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.Issue;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.SendingIssue;
-import it.unibo.dronesecurity.userapplication.utilities.UserHelper;
+import it.unibo.dronesecurity.userapplication.issue.courier.issues.OpenIssue;
+import it.unibo.dronesecurity.userapplication.issue.courier.serialization.IssueStringHelper;
+import it.unibo.dronesecurity.userapplication.utilities.CastHelper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -19,11 +15,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,10 +37,8 @@ public final class MaintainerIssueController implements Initializable {
     @FXML private Label selectedIssueCreationTime;
     @FXML private Label selectedIssueCourier;
     @FXML private Text selectedIssueDetails;
-
-    // New Issue creation nodes
-    @FXML private TextField issueSubject;
-    @FXML private TextArea infoTextArea;
+    @FXML private Button visionIssueButton;
+    @FXML private Button closeIssueButton;
 
     // Open issues list visualization nodes
     @FXML private TableView<CreatedIssue> openIssuesTable;
@@ -62,6 +53,8 @@ public final class MaintainerIssueController implements Initializable {
     private final IssueReportService issueReportService;
     private final Map<Integer, CreatedIssue> openIssues;
     private final Map<Integer, ClosedIssue> closedIssues;
+
+    private CreatedIssue currentlySelectedIssue;
 
     /**
      * Instantiates the issue report controller with its service.
@@ -103,23 +96,24 @@ public final class MaintainerIssueController implements Initializable {
     }
 
     @FXML
-    private void sendIssue() {
-        final String issueInfo = this.infoTextArea.getText();
-        final String subjectText = this.issueSubject.getText();
-        final SendingIssue issue =
-                new SendingIssue(subjectText,
-                        issueInfo,
-                        UserHelper.get().getUsername(),
-                        Instant.now());
-        Platform.runLater(() -> this.issueReportService.addIssueReport(issue));
-        final JsonNode json = new ObjectMapper().createObjectNode()
-                        .put(MqttMessageParameterConstants.ISSUE_REPORT_INFO_PARAMETER, issueInfo);
-        Connection.getInstance().publish(MqttTopicConstants.ISSUE_TOPIC, json);
-        try {
-            ((Stage) this.infoTextArea.getScene().getWindow()).close();
-        } catch (ClassCastException e) {
-            LoggerFactory.getLogger(getClass()).error("Error closing the new window:", e);
-        }
+    private void visionIssue() {
+        final Optional<OpenIssue> currentOpenIssue = CastHelper.safeCast(this.currentlySelectedIssue, OpenIssue.class);
+        currentOpenIssue.ifPresent(openIssue ->
+                this.issueReportService.visionIssue(openIssue).onComplete(res -> {
+                    if (res.result()) {
+                        this.currentlySelectedIssue = openIssue.visionIssue();
+                        this.openIssues.put(openIssue.getId(), this.currentlySelectedIssue);
+
+                        Platform.runLater(() -> {
+                            final TableView.TableViewSelectionModel<CreatedIssue> selectionModel =
+                                    this.openIssuesTable.getSelectionModel();
+
+                            selectionModel.clearSelection();
+                            selectionModel.select(this.currentlySelectedIssue);
+                        });
+                    } else
+                        AlertUtils.showErrorAlert("Error connecting to issue information. Please retry.");
+                }));
     }
 
     @FXML
@@ -145,8 +139,11 @@ public final class MaintainerIssueController implements Initializable {
         openIssuesSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 final CreatedIssue issue = this.openIssues.get(newValue.getId());
+                this.currentlySelectedIssue = issue;
+                this.visionIssueButton.setVisible(IssueStringHelper.STATUS_OPEN.equals(issue.getState()));
+                this.closeIssueButton.setVisible(IssueStringHelper.STATUS_VISIONED.equals(issue.getState()));
 
-                this.fillIssueFields(issue);
+                this.fillIssueFields();
             }
         });
     }
@@ -161,24 +158,28 @@ public final class MaintainerIssueController implements Initializable {
 
         closedIssuesSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                final ClosedIssue issue = this.closedIssues.get(newValue.getId());
+                this.currentlySelectedIssue = this.closedIssues.get(newValue.getId());
+//                final ClosedIssue issue = this.closedIssues.get(newValue.getId());
+//                this.currentlySelectedIssue = issue;
+                this.visionIssueButton.setVisible(false);
+                this.closeIssueButton.setVisible(false);
 
-                this.fillIssueFields(issue);
+                this.fillIssueFields();
             }
         });
     }
 
-    private void fillIssueFields(final Issue issue) {
-        this.selectedIssueSubject.setText(issue.getSubject());
-        this.issueState.setText(issue.getState().substring(0, 1).toUpperCase(Locale.ITALY)
-                + issue.getState().substring(1));
-        final String creationInstant = issue.getReportingDate().toString();
+    private void fillIssueFields() {
+        this.selectedIssueSubject.setText(this.currentlySelectedIssue.getSubject());
+        this.issueState.setText(this.currentlySelectedIssue.getState().substring(0, 1).toUpperCase(Locale.ITALY)
+                + this.currentlySelectedIssue.getState().substring(1));
+        final String creationInstant = this.currentlySelectedIssue.getReportingDate().toString();
         final String[] instantComponents = creationInstant.split("T");
         this.selectedIssueCreationDate.setText(instantComponents[0]);
         this.selectedIssueCreationTime.setText(instantComponents[1]
                 .replace("Z", ""));
-        this.selectedIssueCourier.setText(issue.getCourier());
-        this.selectedIssueDetails.setText(issue.getDetails());
+        this.selectedIssueCourier.setText(this.currentlySelectedIssue.getCourier());
+        this.selectedIssueDetails.setText(this.currentlySelectedIssue.getDetails());
 
         this.issuesPane.setVisible(false);
         this.selectedIssuePane.setVisible(true);

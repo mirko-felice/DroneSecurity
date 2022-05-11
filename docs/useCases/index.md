@@ -14,7 +14,7 @@ Innanzitutto, si può osservare come il **Drone** sia in grado di eseguire un an
 la quale permette di rielaborare i valori grezzi in informazioni preziose. 
 Grazie all'accurata analisi effettuata, i dati possono essere continuamente monitorati dai
 due utenti fisici principali del sistema: **Corrieri** e **Manutentori**.
-Nel caso in cui il **Drone** riveli, tramite i propri sensori, una situazione pericolosa, una
+Nel caso in cui il **Drone** rilevi, tramite i propri sensori, una situazione pericolosa, una
 notifica giungerà al **Corriere** che sta monitorando quel **Drone** in modo tale da poter effettuare
 manovre di correzione di rotta.
 Inoltre, nel caso in cui il **Corriere** non sia riuscito per un qualche motivo a cambiare rotta,
