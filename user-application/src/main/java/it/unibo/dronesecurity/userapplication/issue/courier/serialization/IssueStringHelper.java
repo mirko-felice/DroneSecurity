@@ -26,6 +26,11 @@ public final class IssueStringHelper {
     public static final String COURIER = "courier";
 
     /**
+     * DB courier parameter name for issue.
+     */
+    public static final String ASSIGNEE = "assignedTo";
+
+    /**
      * DB sending instant parameter name for issue.
      */
     public static final String SENDING_INSTANT = "sent";

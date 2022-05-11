@@ -12,6 +12,8 @@ import it.unibo.dronesecurity.userapplication.issue.courier.issues.Issue;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.SendingIssue;
 import it.unibo.dronesecurity.userapplication.utilities.UserHelper;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,10 +29,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 //TODO add issue after creating a new one
+
 /**
  * The controller of the issue creation service.
  */
-public final class IssueController implements Initializable {
+public final class MaintainerIssueController implements Initializable {
 
     @FXML private TabPane issuesPane;
 
@@ -40,6 +43,7 @@ public final class IssueController implements Initializable {
     @FXML private Label issueState;
     @FXML private Label selectedIssueCreationDate;
     @FXML private Label selectedIssueCreationTime;
+    @FXML private Label selectedIssueCourier;
     @FXML private Text selectedIssueDetails;
 
     // New Issue creation nodes
@@ -47,8 +51,14 @@ public final class IssueController implements Initializable {
     @FXML private TextArea infoTextArea;
 
     // Open issues list visualization nodes
-    @FXML private ListView<CreatedIssue> openIssuesListView;
-    @FXML private ListView<CreatedIssue> closedIssuesListView;
+    @FXML private TableView<CreatedIssue> openIssuesTable;
+    @FXML private TableColumn<CreatedIssue, String> openIssuesId;
+    @FXML private TableColumn<CreatedIssue, String> openIssuesSubject;
+    @FXML private TableColumn<CreatedIssue, String> openIssuesCourier;
+    @FXML private TableView<CreatedIssue> closedIssuesTable;
+    @FXML private TableColumn<CreatedIssue, String> closedIssuesId;
+    @FXML private TableColumn<CreatedIssue, String> closedIssuesSubject;
+    @FXML private TableColumn<CreatedIssue, String> closedIssuesCourier;
 
     private final IssueReportService issueReportService;
     private final Map<Integer, CreatedIssue> openIssues;
@@ -57,7 +67,7 @@ public final class IssueController implements Initializable {
     /**
      * Instantiates the issue report controller with its service.
      */
-    public IssueController() {
+    public MaintainerIssueController() {
         this.issueReportService = new IssueReportService();
 
         this.openIssues = new HashMap<>();
@@ -67,27 +77,9 @@ public final class IssueController implements Initializable {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
 
-        final MultipleSelectionModel<CreatedIssue> openIssuesSelectionModel =
-                this.openIssuesListView.getSelectionModel();
-        openIssuesSelectionModel.setSelectionMode(SelectionMode.SINGLE);
-        openIssuesSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                final CreatedIssue issue = this.openIssues.get(newValue.getId());
+        this.initOpenIssuesTable();
 
-                this.fillIssueFields(issue);
-            }
-        });
-
-        final MultipleSelectionModel<CreatedIssue> closedIssuesSelectionModel =
-                this.closedIssuesListView.getSelectionModel();
-        closedIssuesSelectionModel.setSelectionMode(SelectionMode.SINGLE);
-        closedIssuesSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                final ClosedIssue issue = this.closedIssues.get(newValue.getId());
-
-                this.fillIssueFields(issue);
-            }
-        });
+        this.initClosedIssuesTable();
 
         this.issueReportService.getOpenIssueReports().onComplete(res -> {
             if (res.succeeded()) {
@@ -95,7 +87,7 @@ public final class IssueController implements Initializable {
                 final List<Integer> ids = new ArrayList<>(List.copyOf(this.openIssues.keySet()));
                 ids.sort(Integer::compareTo);
                 final List<CreatedIssue> testIds = ids.stream().map(this.openIssues::get).collect(Collectors.toList());
-                this.openIssuesListView.setItems(FXCollections.observableList(testIds));
+                this.openIssuesTable.setItems(FXCollections.observableList(testIds));
             }
         });
 
@@ -106,7 +98,7 @@ public final class IssueController implements Initializable {
                 ids.sort(Integer::compareTo);
                 final List<CreatedIssue> testIds = ids.stream().map(this.closedIssues::get)
                         .collect(Collectors.toList());
-                this.closedIssuesListView.setItems(FXCollections.observableList(testIds));
+                this.closedIssuesTable.setItems(FXCollections.observableList(testIds));
             }
         });
     }
@@ -139,8 +131,42 @@ public final class IssueController implements Initializable {
     }
 
     private void clearSelection() {
-        this.openIssuesListView.getSelectionModel().clearSelection();
-        this.closedIssuesListView.getSelectionModel().clearSelection();
+        this.openIssuesTable.getSelectionModel().clearSelection();
+        this.closedIssuesTable.getSelectionModel().clearSelection();
+    }
+
+    private void initOpenIssuesTable() {
+        final TableView.TableViewSelectionModel<CreatedIssue> openIssuesSelectionModel =
+                this.openIssuesTable.getSelectionModel();
+        openIssuesSelectionModel.setSelectionMode(SelectionMode.SINGLE);
+        this.openIssuesId.setCellValueFactory(val -> new SimpleStringProperty("#" + val.getValue().getId()));
+        this.openIssuesSubject.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getSubject()));
+        this.openIssuesCourier.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getCourier()));
+
+        openIssuesSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                final CreatedIssue issue = this.openIssues.get(newValue.getId());
+
+                this.fillIssueFields(issue);
+            }
+        });
+    }
+
+    private void initClosedIssuesTable() {
+        final MultipleSelectionModel<CreatedIssue> closedIssuesSelectionModel =
+                this.closedIssuesTable.getSelectionModel();
+        closedIssuesSelectionModel.setSelectionMode(SelectionMode.SINGLE);
+        this.closedIssuesId.setCellValueFactory(val -> new SimpleStringProperty("#" + val.getValue().getId()));
+        this.closedIssuesSubject.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getSubject()));
+        this.closedIssuesCourier.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getCourier()));
+
+        closedIssuesSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                final ClosedIssue issue = this.closedIssues.get(newValue.getId());
+
+                this.fillIssueFields(issue);
+            }
+        });
     }
 
     private void fillIssueFields(final Issue issue) {
@@ -151,6 +177,7 @@ public final class IssueController implements Initializable {
         this.selectedIssueCreationDate.setText(instantComponents[0]);
         this.selectedIssueCreationTime.setText(instantComponents[1]
                 .replace("Z", ""));
+        this.selectedIssueCourier.setText(issue.getCourier());
         this.selectedIssueDetails.setText(issue.getDetails());
 
         this.issuesPane.setVisible(false);

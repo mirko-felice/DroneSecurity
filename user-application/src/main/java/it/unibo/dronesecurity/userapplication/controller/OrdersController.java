@@ -3,10 +3,12 @@ package it.unibo.dronesecurity.userapplication.controller;
 import io.vertx.core.json.Json;
 import it.unibo.dronesecurity.lib.AlertUtils;
 import it.unibo.dronesecurity.lib.Connection;
+import it.unibo.dronesecurity.userapplication.auth.entities.Role;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
 import it.unibo.dronesecurity.userapplication.utilities.ClientHelper;
 import it.unibo.dronesecurity.userapplication.utilities.DateHelper;
+import it.unibo.dronesecurity.userapplication.utilities.UserHelper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -33,6 +35,8 @@ import java.util.stream.Collectors;
  */
 public final class OrdersController implements Initializable {
 
+    private static final String COURIER_ISSUE_VIEW_FILE_NAME = "issue.fxml";
+    private static final String MAINTAINER_ISSUE_VIEW_FILE_NAME = "maintainerIssue.fxml";
     private static final String HOST = "http://localhost:";
     private static final int PORT = 80;
     private static final String BASE_URI = HOST + PORT + "/courierShippingService";
@@ -119,7 +123,12 @@ public final class OrdersController implements Initializable {
     private void fillIssue() {
         Platform.runLater(() -> {
             try {
-                final URL fileUrl = getClass().getResource("issue.fxml");
+                String issueFileName = "";
+                if (UserHelper.get().getRole() == Role.COURIER)
+                    issueFileName = COURIER_ISSUE_VIEW_FILE_NAME;
+                else if (UserHelper.get().getRole() == Role.MAINTAINER)
+                    issueFileName = MAINTAINER_ISSUE_VIEW_FILE_NAME;
+                final URL fileUrl = getClass().getResource(issueFileName);
                 final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
                 final Scene scene = new Scene(fxmlLoader.load());
                 final Stage stage = new Stage();

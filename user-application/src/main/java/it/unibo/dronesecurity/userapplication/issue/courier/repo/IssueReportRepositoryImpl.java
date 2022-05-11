@@ -7,6 +7,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
+import it.unibo.dronesecurity.userapplication.auth.entities.Role;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.ClosedIssue;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.CreatedIssue;
 import it.unibo.dronesecurity.userapplication.issue.courier.issues.Issue;
@@ -46,14 +47,6 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
         }
     }
 
-    private Future<Long> getLastID() {
-        final FindOptions options = new FindOptions();
-        options.setSort(new JsonObject().put(IssueStringHelper.ID, -1));
-        options.setLimit(1);
-        return this.database.findWithOptions(COLLECTION_NAME, new JsonObject(), options)
-                .map(val -> val.get(0).getLong(IssueStringHelper.ID));
-    }
-
     @Override
     public void addIssue(final Issue issue) {
         final JsonObject newIssue = new JsonObject();
@@ -69,13 +62,44 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
 
     @Override
     public Future<List<CreatedIssue>> getOpenIssues() {
-        final JsonObject openIssuesQuery = new JsonObject();
-        openIssuesQuery.put(IssueStringHelper.COURIER, UserHelper.get().getUsername());
+        final JsonObject openIssuesQuery = this.initQueryWithUserData();
+
+        return this.getOpenIssueFromQuery(openIssuesQuery);
+    }
+
+    @Override
+    public Future<List<ClosedIssue>> getClosedIssues() {
+        final JsonObject closedIssuesQuery = this.initQueryWithUserData();
+
+        return this.getClosedIssuesFromQuery(closedIssuesQuery);
+    }
+
+    private Future<Long> getLastID() {
+        final FindOptions options = new FindOptions();
+        options.setSort(new JsonObject().put(IssueStringHelper.ID, -1));
+        options.setLimit(1);
+        return this.database.findWithOptions(COLLECTION_NAME, new JsonObject(), options)
+                .map(val -> val.get(0).getLong(IssueStringHelper.ID));
+    }
+
+    private JsonObject initQueryWithUserData() {
+        final JsonObject queryWithUser = new JsonObject();
+        if (UserHelper.get().getRole() == Role.COURIER)
+            queryWithUser.put(IssueStringHelper.COURIER, UserHelper.get().getUsername());
+        else if (UserHelper.get().getRole() == Role.MAINTAINER)
+            queryWithUser.put(IssueStringHelper.COURIER, UserHelper.get().getUsername());
+//TODO            openIssuesQuery.put(IssueStringHelper.ASSIGNEE, UserHelper.get().getUsername());
+
+        return queryWithUser;
+    }
+
+    private Future<List<CreatedIssue>> getOpenIssueFromQuery(final JsonObject query) {
         final JsonObject statusOpenValues = new JsonObject();
         statusOpenValues.put("$in", new JsonArray().add(IssueStringHelper.STATUS_OPEN)
                 .add(IssueStringHelper.STATUS_VISIONED));
-        openIssuesQuery.put(IssueStringHelper.STATUS, statusOpenValues);
-        return this.database.find(COLLECTION_NAME, openIssuesQuery)
+        query.put(IssueStringHelper.STATUS, statusOpenValues);
+
+        return this.database.find(COLLECTION_NAME, query)
                 .transform(issues -> {
                     List<CreatedIssue> result = Collections.emptyList();
                     if (!issues.result().isEmpty())
@@ -87,12 +111,10 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
                 });
     }
 
-    @Override
-    public Future<List<ClosedIssue>> getClosedIssues() {
-        final JsonObject closedIssuesQuery = new JsonObject();
-        closedIssuesQuery.put(IssueStringHelper.COURIER, UserHelper.get().getUsername());
-        closedIssuesQuery.put(IssueStringHelper.STATUS, IssueStringHelper.STATUS_CLOSED);
-        return this.database.find(COLLECTION_NAME, closedIssuesQuery)
+    private Future<List<ClosedIssue>> getClosedIssuesFromQuery(final JsonObject query) {
+        query.put(IssueStringHelper.STATUS, IssueStringHelper.STATUS_CLOSED);
+
+        return this.database.find(COLLECTION_NAME, query)
                 .transform(issues -> {
                     List<ClosedIssue> result = Collections.emptyList();
                     if (!issues.result().isEmpty())
