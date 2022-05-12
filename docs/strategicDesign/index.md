@@ -38,4 +38,3 @@ prenda la briga d'interpolare i dati e convertirli in un modello appropriato al 
   analogamente il **DroneContext** funziona da _supplier_ verso lo **ShippingContext** per mettere a disposizione
 le possibilità di avviare il viaggio di spedizione, di tracciare il drone durante il 
 viaggio, di ricevere la notifica di avvenuta consegna e di richiamare il drone al magazzino.
-// aggiungere il drone service all'applicativo

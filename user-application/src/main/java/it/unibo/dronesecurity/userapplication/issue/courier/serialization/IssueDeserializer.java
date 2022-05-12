@@ -10,8 +10,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 /**
  * Deserialize the {@link Issue}.
@@ -28,9 +26,7 @@ public class IssueDeserializer extends JsonDeserializer<Issue> {
         final String subject = root.get(IssueStringHelper.SUBJECT).asText();
         final String details = root.get(IssueStringHelper.DETAILS).asText();
         final String courierUsername = root.get(IssueStringHelper.COURIER).asText();
-        final ZoneId zoneId = ZoneId.systemDefault();
-        final Instant sendingInstant = LocalDateTime.parse(root.get(IssueStringHelper.SENDING_INSTANT).asText(),
-                DateHelper.FORMATTER).atZone(zoneId).toInstant();
+        final Instant sendingInstant = DateHelper.toInstant(root.get(IssueStringHelper.SENDING_INSTANT).asText());
         final String status = root.get(IssueStringHelper.STATUS).asText();
         if (root.has(IssueStringHelper.ID)) {
             final int id = root.get(IssueStringHelper.ID).asInt();

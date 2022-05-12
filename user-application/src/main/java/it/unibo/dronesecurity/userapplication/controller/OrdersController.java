@@ -3,28 +3,27 @@ package it.unibo.dronesecurity.userapplication.controller;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import it.unibo.dronesecurity.lib.AlertUtils;
-import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.userapplication.auth.entities.Role;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
 import it.unibo.dronesecurity.userapplication.shipping.courier.utilities.OrderConstants;
-import it.unibo.dronesecurity.userapplication.utilities.*;
+import it.unibo.dronesecurity.userapplication.utilities.DateHelper;
+import it.unibo.dronesecurity.userapplication.utilities.FXHelper;
+import it.unibo.dronesecurity.userapplication.utilities.UserHelper;
+import it.unibo.dronesecurity.userapplication.utilities.VertxHelper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -124,22 +123,17 @@ public final class OrdersController implements Initializable {
     @FXML
     private void fillIssue() {
         Platform.runLater(() -> {
-            try {
-                String issueFileName = "";
-                if (UserHelper.get().getRole() == Role.COURIER)
-                    issueFileName = COURIER_ISSUE_VIEW_FILE_NAME;
-                else if (UserHelper.get().getRole() == Role.MAINTAINER)
-                    issueFileName = MAINTAINER_ISSUE_VIEW_FILE_NAME;
-                final URL fileUrl = getClass().getResource(issueFileName);
-                final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-                final Scene scene = new Scene(fxmlLoader.load());
-                final Stage stage = new Stage();
-                stage.setScene(scene);
-                stage.setTitle("Sending Issue...");
+            String issueFileName = "";
+            if (UserHelper.getLoggedUser().getRole() == Role.COURIER)
+                issueFileName = COURIER_ISSUE_VIEW_FILE_NAME;
+            else if (UserHelper.getLoggedUser().getRole() == Role.MAINTAINER)
+                issueFileName = MAINTAINER_ISSUE_VIEW_FILE_NAME;
+            final URL fileUrl = getClass().getResource(issueFileName);
+            final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
+            FXHelper.initializeWindow(Modality.NONE, "Sending Issue...", fxmlLoader).ifPresent(stage -> {
+                stage.setOnCloseRequest(null);
                 stage.show();
-            } catch (IOException e) {
-                LoggerFactory.getLogger(getClass()).error("Error creating the new window:", e);
-            }
+            });
         });
     }
 

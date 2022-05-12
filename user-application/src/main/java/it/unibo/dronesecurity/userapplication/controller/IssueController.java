@@ -118,7 +118,7 @@ public final class IssueController implements Initializable {
         final SendingIssue issue =
                 new SendingIssue(subjectText,
                         issueInfo,
-                        UserHelper.get().getUsername(),
+                        UserHelper.getLoggedUser().getUsername(),
                         Instant.now());
         Platform.runLater(() -> this.issueReportService.addIssueReport(issue));
         final JsonNode json = new ObjectMapper().createObjectNode()

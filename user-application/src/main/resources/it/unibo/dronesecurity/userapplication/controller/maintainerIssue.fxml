@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="400.0" prefWidth="525.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unibo.dronesecurity.userapplication.controller.MaintainerIssueController">
+<AnchorPane prefHeight="400.0" prefWidth="525.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unibo.dronesecurity.userapplication.controller.MaintainerIssueController">
    <children>
       <Label layoutX="204.0" layoutY="14.0" text="Drone Issue Reporting" />
       <AnchorPane layoutX="53.0" layoutY="42.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="308.0" prefWidth="410.0">

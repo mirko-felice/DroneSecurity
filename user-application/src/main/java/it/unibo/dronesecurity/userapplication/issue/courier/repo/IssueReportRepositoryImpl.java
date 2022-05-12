@@ -114,10 +114,10 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
 
     private JsonObject initQueryWithUserData() {
         final JsonObject queryWithUser = new JsonObject();
-        if (UserHelper.get().getRole() == Role.COURIER)
-            queryWithUser.put(IssueStringHelper.COURIER, UserHelper.get().getUsername());
-        else if (UserHelper.get().getRole() == Role.MAINTAINER)
-            queryWithUser.put(IssueStringHelper.COURIER, UserHelper.get().getUsername());
+        if (UserHelper.getLoggedUser().getRole() == Role.COURIER)
+            queryWithUser.put(IssueStringHelper.COURIER, UserHelper.getLoggedUser().getUsername());
+        else if (UserHelper.getLoggedUser().getRole() == Role.MAINTAINER)
+            queryWithUser.put(IssueStringHelper.COURIER, UserHelper.getLoggedUser().getUsername());
 //TODO            openIssuesQuery.put(IssueStringHelper.ASSIGNEE, UserHelper.get().getUsername());
 
         return queryWithUser;

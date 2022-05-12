@@ -29,8 +29,7 @@ public class IssueSerializer extends JsonSerializer<Issue> {
         gen.writeStringField(IssueStringHelper.SUBJECT, value.getSubject());
         gen.writeStringField(IssueStringHelper.DETAILS, value.getDetails());
         gen.writeStringField(IssueStringHelper.COURIER, value.getCourier());
-        gen.writeStringField(IssueStringHelper.SENDING_INSTANT,
-                DateHelper.FORMATTER.format(value.getReportingDate()));
+        gen.writeStringField(IssueStringHelper.SENDING_INSTANT, DateHelper.toString(value.getReportingDate()));
         gen.writeStringField(IssueStringHelper.STATUS, value.getState());
 
         final Optional<ClosedIssue> closedIssue = CastHelper.safeCast(value, ClosedIssue.class);
