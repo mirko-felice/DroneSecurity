@@ -98,7 +98,7 @@
             <Insets bottom="3.0" left="5.0" right="5.0" top="5.0" />
          </padding>
       </AnchorPane>
-      <Button fx:id="newIssueButton" layoutX="403.0" layoutY="361.0" mnemonicParsing="false" text="New Issue" />
+      <Button fx:id="newIssueButton" layoutX="403.0" layoutY="361.0" mnemonicParsing="false" text="New Issue" visible="false"/>
    </children>
    <opaqueInsets>
       <Insets bottom="5.0" left="10.0" right="10.0" top="10.0" />
