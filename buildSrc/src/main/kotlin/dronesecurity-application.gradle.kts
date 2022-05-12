@@ -16,6 +16,7 @@ tasks {
         group = "build"
         description = "Assembles a runnable fat jar archive containing all the needed stuff to be executed as standalone."
         archiveClassifier.set("fat")
+        archiveVersion.set("")
         from(sourceSets.main.get().output)
         dependsOn(configurations.compileClasspath)
         from(configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) })
