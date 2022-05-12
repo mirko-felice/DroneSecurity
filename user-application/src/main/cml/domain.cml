@@ -3,7 +3,7 @@ ContextMap DroneManagementMap {
 	state = TO_BE
 	contains DroneContext, IssueReportingContext, NegligenceReportingContext, ShippingContext
 
-	DroneContext [U] -> [D, ACL] NegligenceReportingContext
+	DroneContext [U, OHS] -> [D] NegligenceReportingContext
 
 	DroneContext [U] -> [D, ACL] ShippingContext
 }
@@ -46,6 +46,21 @@ BoundedContext DroneContext implements Drone {
 			def boolean isOperating();
 		}
 		
+		Service DroneService {
+			@Drone drone;
+			
+			void waitForDeliveryAssignment();
+			private void startDrone(@Path path_);
+			private void stopDrone();
+			
+			private void publishData();
+			private void publishAlert();
+			private void publishCurrentStatus();
+		}
+	}
+	
+	Aggregate UserMonitoring {
+		
 		DomainEvent StatusChanged {
 			String status
 		}
@@ -61,21 +76,6 @@ BoundedContext DroneContext implements Drone {
 		DomainEvent CriticalSituation {
 			String message
 		}
-		
-		Service DroneService {
-			@Drone drone;
-			
-			void waitForDeliveryAssignment();
-			private void startDrone(@Path path_);
-			private void stopDrone();
-			
-			private void publishData();
-			private void publishAlert();
-			private void publishCurrentStatus();
-		}
-	}
-	
-	Aggregate UserMonitoring {
 		
 		Service UserMonitoringService {
 			
@@ -164,6 +164,8 @@ BoundedContext ShippingContext implements Shipping {
 	Aggregate CourierShipping {
 		
 		abstract Entity Order {
+			aggregateRoot
+			
 			String id
 			String product
 			Date placingDate
