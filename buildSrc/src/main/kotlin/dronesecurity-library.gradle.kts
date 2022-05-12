@@ -41,7 +41,7 @@ sonarqube.properties {
     property("sonar.sources", sourceSets.main.get().allJava.srcDirs)
     property("sonar.tests", sourceSets.test.get().allJava.srcDirs)
     property("sonar.python.version", 3.7)
-    property("sonar.projectName", project.name)
+    property("sonar.projectName", "DroneSecurity")
 }
 
 java {
