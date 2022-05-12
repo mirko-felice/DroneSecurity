@@ -8,6 +8,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -88,7 +89,7 @@
                            <children>
                               <Text fx:id="selectedIssueDetails" strokeType="OUTSIDE" strokeWidth="0.0" text="-" wrappingWidth="378.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
                               <Button fx:id="visionIssueButton" mnemonicParsing="false" onAction="#visionIssue" text="Vision" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="20.0" />
-                              <Button fx:id="closeIssueButton" layoutX="324.0" layoutY="184.0" mnemonicParsing="false" text="Close" visible="false" />
+                              <Button fx:id="goToClosingPageButton" layoutX="324.0" layoutY="184.0" mnemonicParsing="false" onAction="#goToClosingPage" text="Close" visible="false" />
                            </children>
                         </AnchorPane>
                      </content>
@@ -102,6 +103,15 @@
                   <Label fx:id="selectedIssueCourier" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                </children>
             </GridPane>
+            <AnchorPane fx:id="closingIssuePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <Label layoutX="6.0" layoutY="40.0" text="Solution" />
+                  <TextArea fx:id="solutionTextArea" layoutX="6.0" layoutY="73.0" prefHeight="179.0" prefWidth="389.0" wrapText="true" />
+                  <Button layoutX="350.0" layoutY="261.0" mnemonicParsing="false" onAction="#closeIssue" text="Close" />
+                  <Label layoutX="166.0" layoutY="6.0" text="Closing Issue" />
+                  <Button layoutX="-1.0" layoutY="2.0" mnemonicParsing="false" onAction="#cancelClosing" text="Cancel" />
+               </children>
+            </AnchorPane>
          </children>
          <padding>
             <Insets bottom="3.0" left="5.0" right="5.0" top="5.0" />

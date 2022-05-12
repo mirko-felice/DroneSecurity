@@ -21,6 +21,11 @@ public final class IssueStringHelper {
     public static final String DETAILS = "details";
 
     /**
+     * DB solution parameter name for issue.
+     */
+    public static final String SOLUTION = "solution";
+
+    /**
      * DB courier parameter name for issue.
      */
     public static final String COURIER = "courier";

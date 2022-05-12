@@ -1,10 +1,7 @@
 package it.unibo.dronesecurity.userapplication.issue.courier.repo;
 
 import io.vertx.core.Future;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.ClosedIssue;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.CreatedIssue;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.Issue;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.OpenIssue;
+import it.unibo.dronesecurity.userapplication.issue.courier.issues.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,11 +19,19 @@ public interface IssueReportRepository {
     void addIssue(Issue issue);
 
     /**
-     * Updates an existing Open issue and sets it as visioned.
+     * Updates an existing {@link OpenIssue} and sets it as visioned.
      * @param issue the issue to be updated
      * @return whether the operation went successfully or not
      */
     Future<Boolean> visionOpenIssue(OpenIssue issue);
+
+    /**
+     * Updates an existing {@link VisionedIssue} and sets it as closed.
+     * @param issue the issue to be updated
+     * @param solution string representing the solution used by the maintainer
+     * @return whether the operation went successfully or not
+     */
+    Future<Boolean> closeVisionedIssue(VisionedIssue issue, String solution);
 
     /**
      * Gets all open issues of the currently logged user.

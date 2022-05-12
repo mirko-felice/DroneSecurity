@@ -2,6 +2,9 @@
 
 Per risultare il più coerenti e integri possibile, si è deciso di disambiguare il più 
 possibile il linguaggio utilizzato nel dominio.
+//TODO Modificare: aggiungere Negligenza, rivedere Monitoraggio, rivedere l'invio dei dati (accelerometro per l'Analisi),
+//aggiunta significato Elaborazione (trasformazione eventuale dei dati grezzi in umano-leggibili), chiarificare Accident Prevention,
+//scomporre situazione/allerta di pericolo/critica, 
 
 Per questo motivo è stata costruita una 
 [_board_](https://miro.com/app/live-embed/uXjVOfQexp8=/?moveToViewport=-1236,-720,1965,959)

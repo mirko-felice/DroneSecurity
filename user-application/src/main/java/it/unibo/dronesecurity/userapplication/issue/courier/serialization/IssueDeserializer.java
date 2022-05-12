@@ -41,8 +41,10 @@ public class IssueDeserializer extends JsonDeserializer<Issue> {
             if (IssueStringHelper.STATUS_VISIONED.equals(status))
                 return new VisionedIssue(subject, id, details, courierUsername, sendingInstant);
 
-            if (IssueStringHelper.STATUS_CLOSED.equals(status))
-                return new ClosedIssue(subject, id, details, courierUsername, sendingInstant);
+            if (IssueStringHelper.STATUS_CLOSED.equals(status)) {
+                final String solution = root.get(IssueStringHelper.SOLUTION).asText();
+                return new ClosedIssue(subject, id, details, courierUsername, sendingInstant, solution);
+            }
         }
 
         return new SendingIssue(subject, details, courierUsername, sendingInstant);

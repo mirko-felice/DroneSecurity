@@ -1,10 +1,7 @@
 package it.unibo.dronesecurity.userapplication.issue.courier;
 
 import io.vertx.core.Future;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.ClosedIssue;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.CreatedIssue;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.Issue;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.OpenIssue;
+import it.unibo.dronesecurity.userapplication.issue.courier.issues.*;
 import it.unibo.dronesecurity.userapplication.issue.courier.repo.IssueReportRepository;
 
 import java.util.List;
@@ -41,11 +38,21 @@ public final class IssueReportService {
     }
 
     /**
-     * Informs the database that an open issue is now visioned by a maintainer.
+     * Informs the database that an {@link OpenIssue} is now visioned by a maintainer.
      * @param issue the issue that is visioned
      * @return whether the update operation has succeeded or not
      */
     public Future<Boolean> visionIssue(final OpenIssue issue) {
         return IssueReportRepository.getInstance().visionOpenIssue(issue);
+    }
+
+    /**
+     * Informs the database that a {@link VisionedIssue} is being closed by a maintainer.
+     * @param issue the issue that is closed
+     * @param solution string representing the solution used by the maintainer
+     * @return whether the update operation has succeeded or not
+     */
+    public Future<Boolean> closeIssue(final VisionedIssue issue, final String solution) {
+        return IssueReportRepository.getInstance().closeVisionedIssue(issue, solution);
     }
 }

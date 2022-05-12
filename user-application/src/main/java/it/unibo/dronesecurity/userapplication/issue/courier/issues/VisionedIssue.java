@@ -34,4 +34,18 @@ public class VisionedIssue extends CreatedIssue {
     public String getState() {
         return IssueStringHelper.STATUS_VISIONED;
     }
+
+    /**
+     * Transforms this issue in closed issue when the maintainer completes his visioning.
+     * @param solution string representing the solution used by the maintainer
+     * @return the new {@link ClosedIssue} from this VisionedIssue
+     */
+    public ClosedIssue closeIssue(final String solution) {
+        return new ClosedIssue(this.getSubject(),
+                this.getId(),
+                this.getDetails(),
+                this.getCourier(),
+                this.getReportingDate(),
+                solution);
+    }
 }

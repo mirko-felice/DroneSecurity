@@ -8,10 +8,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.MongoClient;
 import it.unibo.dronesecurity.userapplication.auth.entities.Role;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.ClosedIssue;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.CreatedIssue;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.Issue;
-import it.unibo.dronesecurity.userapplication.issue.courier.issues.OpenIssue;
+import it.unibo.dronesecurity.userapplication.issue.courier.issues.*;
 import it.unibo.dronesecurity.userapplication.issue.courier.serialization.IssueStringHelper;
 import it.unibo.dronesecurity.userapplication.utilities.UserHelper;
 
@@ -49,6 +46,9 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addIssue(final Issue issue) {
         final JsonObject newIssue = new JsonObject();
@@ -62,17 +62,31 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Future<Boolean> visionOpenIssue(final OpenIssue issue) {
-        final JsonObject query = new JsonObject();
-        query.put(IssueStringHelper.ID, issue.getId());
-        final JsonObject visionedStatus = new JsonObject()
+        final JsonObject newStatus = new JsonObject()
                 .put(IssueStringHelper.STATUS, IssueStringHelper.STATUS_VISIONED);
-        final JsonObject update = new JsonObject().put("$set", visionedStatus);
-
-        return this.database.findOneAndUpdate(COLLECTION_NAME, query, update).map(Objects::nonNull);
+        return this.updateIssue(issue.getId(), newStatus);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Future<Boolean> closeVisionedIssue(final VisionedIssue issue, final String solution) {
+        final JsonObject update = new JsonObject()
+                .put(IssueStringHelper.STATUS, IssueStringHelper.STATUS_CLOSED)
+                .put(IssueStringHelper.SOLUTION, solution);
+
+        return this.updateIssue(issue.getId(), update);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Future<List<CreatedIssue>> getOpenIssues() {
         final JsonObject openIssuesQuery = this.initQueryWithUserData();
@@ -80,6 +94,9 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
         return this.getOpenIssueFromQuery(openIssuesQuery);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Future<List<ClosedIssue>> getClosedIssues() {
         final JsonObject closedIssuesQuery = this.initQueryWithUserData();
@@ -137,5 +154,13 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
 
                     return Future.succeededFuture(result);
                 });
+    }
+
+    private Future<Boolean> updateIssue(final int issueId, final JsonObject updatingValues) {
+        final JsonObject query = new JsonObject();
+        query.put(IssueStringHelper.ID, issueId);
+        final JsonObject update = new JsonObject().put("$set", updatingValues);
+
+        return this.database.findOneAndUpdate(COLLECTION_NAME, query, update).map(Objects::nonNull);
     }
 }
