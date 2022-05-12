@@ -35,13 +35,11 @@ project.version = shellRun {
 }
 
 sonarqube.properties {
-    property("sonar.projectKey", "DroneSecurity")
     property("sonar.organization", "mirko-felice")
     property("sonar.host.url", "https://sonarcloud.io")
     property("sonar.sources", sourceSets.main.get().allJava.srcDirs)
     property("sonar.tests", sourceSets.test.get().allJava.srcDirs)
     property("sonar.python.version", 3.7)
-    property("sonar.projectName", "DroneSecurity")
 }
 
 java {
