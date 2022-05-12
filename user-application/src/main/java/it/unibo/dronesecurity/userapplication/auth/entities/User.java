@@ -11,15 +11,4 @@ public interface User {
      */
     String getUsername();
 
-    /**
-     * Get the user's password.
-     * @return his password
-     */
-    String getPassword();
-
-    /**
-     * Get the user's role.
-     * @return his role
-     */
-    Role getRole();
 }

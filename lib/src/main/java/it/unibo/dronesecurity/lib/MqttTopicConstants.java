@@ -11,14 +11,9 @@ public final class MqttTopicConstants {
     public static final String DATA_TOPIC = "data";
 
     /**
-     * Warning alert topic name.
+     * Current alert level topic name.
      */
-    public static final String WARNING_TOPIC = "warning";
-
-    /**
-     * Critical alert topic name.
-     */
-    public static final String CRITICAL_TOPIC = "critical";
+    public static final String ALERT_LEVEL_TOPIC = "alertLevel";
 
     /**
      * Drone System and User Application synchronization topic name.
@@ -34,6 +29,11 @@ public final class MqttTopicConstants {
      * Issue report related topic name.
      */
     public static final String ISSUE_TOPIC = "issue";
+
+    /**
+     * Negligence reports topic name.
+     */
+    public static final String NEGLIGENCE_REPORTS_TOPIC = "negligenceReports";
 
     private MqttTopicConstants() { }
 }

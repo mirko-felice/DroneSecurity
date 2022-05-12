@@ -1,10 +1,11 @@
 package it.unibo.dronesecurity.userapplication.shipping.courier;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
+import io.vertx.core.Promise;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -18,24 +19,25 @@ import it.unibo.dronesecurity.lib.MqttMessageParameterConstants;
 import it.unibo.dronesecurity.lib.MqttMessageValueConstants;
 import it.unibo.dronesecurity.lib.MqttTopicConstants;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.DeliveringOrder;
-import it.unibo.dronesecurity.userapplication.shipping.courier.entities.Order;
 import it.unibo.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
 import it.unibo.dronesecurity.userapplication.shipping.courier.repo.OrderRepository;
 import it.unibo.dronesecurity.userapplication.utilities.CastHelper;
+import it.unibo.dronesecurity.userapplication.shipping.courier.utilities.OrderConstants;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Represents the Service to perform operations useful to the Courier.
  */
-public final class CourierShippingService {
+public final class CourierShippingService extends AbstractVerticle {
 
-    private static final String OPEN_API_URL = "https://raw.githubusercontent.com/mirko-felice/DroneSecurity/develop/"
+    private static final String OPEN_API_URL = "https://raw.githubusercontent.com/mirko-felice/DroneSecurity/feature/"
+            + "negligence-context/"
             + "user-application/src/main/resources/it/unibo/dronesecurity/userapplication/shipping/courier/"
             + "courierShippingService.json";
     private static final String PERFORM_DELIVERY_OPERATION_ID = "performDelivery";
@@ -46,26 +48,18 @@ public final class CourierShippingService {
     private static final String DEFAULT_KEY = "default";
     private static final String SEP = "/";
     private static final int CLIENT_ERROR_CODE = 400;
-    private final Vertx vertx;
 
-    /**
-     * Build the Service.
-     */
-    public CourierShippingService() {
-        this.vertx = Vertx.vertx();
-    }
-
-    /**
-     * Start listening to HTTP methods.
-     */
-    public void startListening() {
-        final Router globalRouter = Router.router(this.vertx);
-        RouterBuilder.create(this.vertx, OPEN_API_URL)
+    @Override
+    public void start(final @NotNull Promise<Void> startPromise) {
+        final Router globalRouter = Router.router(this.getVertx());
+        RouterBuilder.create(this.getVertx(), OPEN_API_URL)
                 .onSuccess(routerBuilder -> {
                     this.setupOperations(routerBuilder);
 
                     final JsonArray servers = routerBuilder.getOpenAPI().getOpenAPI().getJsonArray("servers");
-                    for (int i = 0; i < servers.size(); i++) {
+                    final int serversCount = servers.size();
+                    final List<Future<?>> futures = new ArrayList<>(serversCount);
+                    for (int i = 0; i < serversCount; i++) {
                         final JsonObject server = servers.getJsonObject(i);
                         final JsonObject variables = server.getJsonObject("variables");
 
@@ -74,10 +68,12 @@ public final class CourierShippingService {
                         final String host = variables.getJsonObject("host").getString(DEFAULT_KEY);
 
                         globalRouter.mountSubRouter(basePath, routerBuilder.createRouter());
-                        this.vertx.createHttpServer().requestHandler(globalRouter).listen(port, host);
+                        futures.add(this.getVertx().createHttpServer().requestHandler(globalRouter).listen(port, host));
                     }
+                    CompositeFuture.all(Arrays.asList(futures.toArray(new Future[0])))
+                            .onSuccess(ignored -> startPromise.complete());
                 })
-                .onFailure(Throwable::printStackTrace);
+                .onFailure(startPromise::fail);
     }
 
     private void setupOperations(final @NotNull RouterBuilder routerBuilder) {
@@ -91,7 +87,8 @@ public final class CourierShippingService {
 
     private void performDelivery(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-        final PlacedOrder order = params.body().getJsonObject().mapTo(PlacedOrder.class);
+        final JsonObject body = params.body().getJsonObject();
+        final PlacedOrder order = body.getJsonObject(OrderConstants.ORDER_KEY).mapTo(PlacedOrder.class);
         if (order == null)
             routingContext.response().setStatusCode(CLIENT_ERROR_CODE).end();
         else {
@@ -99,9 +96,10 @@ public final class CourierShippingService {
             OrderRepository.getInstance().delivering(deliveringOrder);
 
             final JsonNode messageJson = new ObjectMapper().createObjectNode()
-                    .put(MqttMessageParameterConstants.MESSAGE_PARAMETER,
+                    .put(MqttMessageParameterConstants.SYNC_PARAMETER,
                             MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE)
-                    .put(MqttMessageParameterConstants.ORDER_ID_PARAMETER, order.getId());
+                    .put(MqttMessageParameterConstants.ORDER_ID_PARAMETER, order.getId())
+                    .put(MqttMessageParameterConstants.COURIER_PARAMETER, body.getString(OrderConstants.COURIER_KEY));
             final Connection connection = Connection.getInstance();
             connection.publish(MqttTopicConstants.ORDER_TOPIC, messageJson);
 
@@ -111,29 +109,23 @@ public final class CourierShippingService {
     }
 
     private void callback(final @NotNull MqttMessage msg) {
-        try {
-            final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
-            final String orderId = json.get(MqttMessageParameterConstants.ORDER_ID_PARAMETER).asText();
-            final String statusValue = json.get(MqttMessageParameterConstants.STATUS_PARAMETER).asText();
-            final OrderRepository orderRepository = OrderRepository.getInstance();
-            final Optional<DeliveringOrder> optionalOrder =
-                    CastHelper.safeCast(orderRepository.getOrderById(orderId), DeliveringOrder.class);
-            if (optionalOrder.isPresent()) {
-                final Connection connection = Connection.getInstance();
-                if (MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(statusValue))
-                    orderRepository.confirmedDelivery(optionalOrder.get().confirmDelivery());
-                else if (MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE.equals(statusValue))
-                    orderRepository.failedDelivery(optionalOrder.get().failDelivery());
+        final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
+        final String orderId = json.getString(MqttMessageParameterConstants.ORDER_ID_PARAMETER);
+        final String statusValue = json.getString(MqttMessageParameterConstants.STATUS_PARAMETER);
+        final OrderRepository orderRepository = OrderRepository.getInstance();
+        CastHelper.safeCast(orderRepository.getOrderById(orderId), DeliveringOrder.class).ifPresent(order -> {
+            final Connection connection = Connection.getInstance();
+            if (MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(statusValue))
+                orderRepository.confirmedDelivery(order.confirmDelivery());
+            else if (MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE.equals(statusValue))
+                orderRepository.failedDelivery(order.failDelivery());
 
-                // TODO maybe catch else branch that does NOT send this message
-                final JsonNode message = new ObjectMapper().createObjectNode()
-                        .put(MqttMessageParameterConstants.MESSAGE_PARAMETER,
-                                MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);
-                connection.publish(MqttTopicConstants.ORDER_TOPIC, message);
-            }
-        } catch (JsonProcessingException e) {
-            LoggerFactory.getLogger(getClass()).error("Can NOT convert Json to Java Object.", e);
-        }
+            // TODO maybe catch else branch that does NOT send this message
+            final JsonNode message = new ObjectMapper().createObjectNode()
+                    .put(MqttMessageParameterConstants.SYNC_PARAMETER,
+                            MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);
+            connection.publish(MqttTopicConstants.ORDER_TOPIC, message);
+        });
     }
 
     private void rescheduleDelivery(final @NotNull RoutingContext routingContext) {
@@ -143,8 +135,7 @@ public final class CourierShippingService {
     }
 
     private void listOrders(final @NotNull RoutingContext routingContext) {
-        final Future<List<Order>> future = OrderRepository.getInstance().getOrders();
-        future.onSuccess(orders -> routingContext.response()
+        OrderRepository.getInstance().getOrders().onSuccess(orders -> routingContext.response()
                 .putHeader("Content-Type", "application/json")
                 .send(Json.encodePrettily(orders)));
     }

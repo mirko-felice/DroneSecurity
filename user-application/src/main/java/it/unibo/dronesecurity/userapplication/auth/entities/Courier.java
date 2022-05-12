@@ -1,16 +1,27 @@
 package it.unibo.dronesecurity.userapplication.auth.entities;
 
 /**
- * Entity representing the Courier user.
+ * Entity representing the Courier user, extending {@link BaseLoggedUser}.
  */
-public class Courier extends BaseUser {
+public final class Courier extends BaseLoggedUser {
+
+    private final String supervisor;
 
     /**
      * Build the Courier.
      * @param username his username
-     * @param password his password
+     * @param supervisor his supervisor
      */
-    public Courier(final String username, final String password) {
-        super(username, password, Role.COURIER);
+    public Courier(final String username, final String supervisor) {
+        super(username, Role.COURIER);
+        this.supervisor = supervisor;
+    }
+
+    /**
+     * Gets his supervisor as a {@link String}.
+     * @return the maintainer
+     */
+    public String getSupervisor() {
+        return this.supervisor;
     }
 }

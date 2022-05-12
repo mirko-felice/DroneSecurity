@@ -28,10 +28,18 @@
         <exclude name="GenericsNaming"/>
     </rule>
 
+    <rule ref="category/java/codestyle.xml/ClassNamingConventions" >
+        <properties>
+            <!-- Add ACL classes to not raise pmd issue. -->
+            <property name="utilityClassPattern" value="([A-Z][a-zA-Z0-9]+(Utils?|Helper|Constants|Factory))|([A-Z][a-zA-Z0-9]+ACL)" />
+        </properties>
+    </rule>
+    
     <rule ref="category/java/design.xml" >
         <exclude name="LoosePackageCoupling"/>
         <exclude name="LawOfDemeter"/>
         <exclude name="TooManyFields"/>
+        <exclude name="DataClass" />
     </rule>
 
     <rule ref="category/java/documentation.xml" >

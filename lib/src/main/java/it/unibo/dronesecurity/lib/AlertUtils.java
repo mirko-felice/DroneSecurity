@@ -1,5 +1,6 @@
 package it.unibo.dronesecurity.lib;
 
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
@@ -15,11 +16,13 @@ public final class AlertUtils {
      * @param contentMessage the message to show
      */
     public static void showWarningAlert(final String contentMessage) {
-        final Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("WARNING");
-        alert.setHeaderText(null);
-        alert.setContentText(contentMessage);
-        alert.show();
+        Platform.runLater(() -> {
+            final Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("WARNING");
+            alert.setHeaderText(null);
+            alert.setContentText(contentMessage);
+            alert.showAndWait();
+        });
     }
 
     /**
@@ -27,11 +30,13 @@ public final class AlertUtils {
      * @param contentMessage the message to show
      */
     public static void showErrorAlert(final String contentMessage) {
-        final Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("ERROR");
-        alert.setHeaderText(null);
-        alert.setContentText(contentMessage);
-        alert.show();
+        Platform.runLater(() -> {
+            final Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setHeaderText(null);
+            alert.setContentText(contentMessage);
+            alert.showAndWait();
+        });
     }
 
     /**

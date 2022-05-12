@@ -1,7 +1,7 @@
 package it.unibo.dronesecurity.userapplication.shipping.courier.entities;
 
 import it.unibo.dronesecurity.userapplication.utilities.DateHelper;
-import it.unibo.dronesecurity.userapplication.utilities.EmptyProductException;
+import it.unibo.dronesecurity.userapplication.exceptions.EmptyProductException;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -74,7 +74,7 @@ public abstract class AbstractOrder implements Order {
     public String toString() {
         return new StringJoiner(", ", "Order" + "[", "]")
                 .add("id='" + this.id + "'")
-                .add("placingDate=" + DateHelper.FORMATTER.format(this.placingDate))
+                .add("placingDate=" + DateHelper.toString(this.placingDate))
                 .add("product='" + this.product + "'")
                 .add(this.getCurrentState())
                 .toString();

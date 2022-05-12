@@ -36,9 +36,19 @@ public final class MqttMessageParameterConstants {
     public static final String ACCELEROMETER_Z_PARAMETER = "z";
 
     /**
-     * Parameter that contains dangerous situation messages.
+     * Parameter that contains synchronization message.
      */
-    public static final String MESSAGE_PARAMETER = "message";
+    public static final String SYNC_PARAMETER = "sync";
+
+    /**
+     * Parameter that contains current {@link AlertLevel}.
+     */
+    public static final String ALERT_LEVEL_PARAMETER = "level";
+
+    /**
+     * Parameter that contains alert type.
+     */
+    public static final String ALERT_TYPE_PARAMETER = "type";
 
     /**
      * Parameter that contains drone lifecycle updates.
@@ -54,6 +64,16 @@ public final class MqttMessageParameterConstants {
      * Parameter that contains issue report details.
      */
     public static final String ISSUE_REPORT_INFO_PARAMETER = "details";
+
+    /**
+     * Parameter that contains courier leading the order.
+     */
+    public static final String COURIER_PARAMETER = "courier";
+
+    /**
+     * Parameter that contains negligent for a Negligence Report.
+     */
+    public static final String NEGLIGENT_PARAMETER = "negligent";
 
     private MqttMessageParameterConstants() { }
 }

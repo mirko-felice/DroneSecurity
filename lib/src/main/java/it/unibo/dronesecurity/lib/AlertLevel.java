@@ -1,4 +1,4 @@
-package it.unibo.dronesecurity.dronesystem.drone;
+package it.unibo.dronesecurity.lib;
 
 /**
  * Enumeration representing different levels of drone dangerous situations.

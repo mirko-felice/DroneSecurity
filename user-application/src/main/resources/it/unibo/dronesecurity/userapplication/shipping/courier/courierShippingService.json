@@ -13,7 +13,7 @@
           "default": "localhost"
         },
         "port": {
-          "default": "80"
+          "default": "15000"
         },
         "basePath": {
           "default": "courierShippingService"

@@ -9,39 +9,44 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane alignment="CENTER" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane fx:controller="it.unibo.dronesecurity.lib.ConnectionController" alignment="CENTER" prefHeight="400.0"
+          prefWidth="600.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
    <columnConstraints>
-      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" />
-      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="9.0" prefWidth="100.0" />
-      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="61.0" prefWidth="100.0" />
+      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0"/>
+      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="9.0" prefWidth="100.0"/>
+      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="61.0" prefWidth="100.0"/>
    </columnConstraints>
    <rowConstraints>
-      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" percentHeight="2.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+      <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+      <RowConstraints minHeight="10.0" percentHeight="2.0" prefHeight="30.0" vgrow="SOMETIMES"/>
    </rowConstraints>
-   <children>
-      <Button layoutX="256.0" layoutY="40.0" mnemonicParsing="false" onMouseClicked="#chooseCertsFolder" text="Choose Certs Folder" GridPane.rowIndex="1" />
-      <Button fx:id="saveSettingsButton" layoutX="278.0" layoutY="329.0" mnemonicParsing="false" onMouseClicked="#saveSettings" text="Save" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-      <Button layoutX="274.0" layoutY="102.0" mnemonicParsing="false" onMouseClicked="#chooseCertificateFile" text="Choose Certificate File" GridPane.rowIndex="2" />
-      <Button layoutX="274.0" layoutY="188.0" mnemonicParsing="false" onMouseClicked="#choosePrivateKeyFile" text="Choose Private Key File" GridPane.rowIndex="3" />
-      <Button layoutX="282.0" layoutY="264.0" mnemonicParsing="false" onMouseClicked="#chooseCertificateAuthorityFile" text="Choose Root Authority File" GridPane.rowIndex="4" />
-      <TextField fx:id="endpointTextField" layoutX="36.0" layoutY="65.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
-         <GridPane.margin>
-            <Insets right="10.0" />
-         </GridPane.margin></TextField>
-      <Label text="Endpoint" GridPane.rowIndex="5" />
-      <Label fx:id="certificateAuthorityFileLabel" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="4" />
-      <Label fx:id="privateKeyFileLabel" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="3" />
-      <Label fx:id="certificateFileLabel" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2" />
-      <Label fx:id="certsFolderLabel" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" />
-      <Label text="Client Identifier:" />
-      <TextField fx:id="clientIdTextField" GridPane.columnIndex="2" />
-      <ProgressBar fx:id="progressBar" prefWidth="600.0" visible="false" GridPane.columnSpan="3" GridPane.rowIndex="7" />
-   </children>
+   <Button layoutX="256.0" layoutY="40.0" mnemonicParsing="false" onMouseClicked="#chooseCertsFolder"
+           text="Choose Certs Folder" GridPane.rowIndex="1"/>
+   <Button fx:id="saveSettingsButton" layoutX="278.0" layoutY="329.0" mnemonicParsing="false"
+           onMouseClicked="#saveSettings" text="Save" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+   <Button layoutX="274.0" layoutY="102.0" mnemonicParsing="false" onMouseClicked="#chooseCertificateFile"
+           text="Choose Certificate File" GridPane.rowIndex="2"/>
+   <Button layoutX="274.0" layoutY="188.0" mnemonicParsing="false" onMouseClicked="#choosePrivateKeyFile"
+           text="Choose Private Key File" GridPane.rowIndex="3"/>
+   <Button layoutX="282.0" layoutY="264.0" mnemonicParsing="false" onMouseClicked="#chooseCertificateAuthorityFile"
+           text="Choose Root Authority File" GridPane.rowIndex="4"/>
+   <TextField fx:id="endpointTextField" layoutX="36.0" layoutY="65.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
+      <GridPane.margin>
+         <Insets right="10.0"/>
+      </GridPane.margin>
+   </TextField>
+   <Label text="Endpoint" GridPane.rowIndex="5"/>
+   <Label fx:id="certificateAuthorityFileLabel" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="4"/>
+   <Label fx:id="privateKeyFileLabel" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="3"/>
+   <Label fx:id="certificateFileLabel" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2"/>
+   <Label fx:id="certsFolderLabel" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1"/>
+   <Label text="Client Identifier:"/>
+   <TextField fx:id="clientIdTextField" GridPane.columnIndex="2"/>
+   <ProgressBar fx:id="progressBar" prefWidth="600.0" visible="false" GridPane.columnSpan="3" GridPane.rowIndex="7"/>
 </GridPane>

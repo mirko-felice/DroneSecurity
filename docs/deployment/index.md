@@ -2,10 +2,17 @@
 
 Ciascuno degli eseguibili JAR forniti contengono tutto ciò che è necessario per la propria esecuzione.
 
-Come requisiti, è necessario possedere Java versione 11+ e una cartella
-contenente tutti i certificati necessari, creati a partire dalla registrazione in remoto del drone,
-ovvero il certificato che rappresenta l'autorità (in questo caso Amazon),
+I requisiti necessari per avviare e far funzionare correttamente i due applicativi sono differenti a seconda che sia 
+l'applicativo da eseguire sul drone o sul sistema dell'utente.
+
+I requisiti comuni sono:
+
+* Aver installato Java versione 11+.
+* Possedere una cartella contenente tutti i certificati necessari, creati a partire dalla registrazione in remoto del 
+drone, ovvero il certificato che rappresenta l'autorità (in questo caso Amazon),
 il certificato del dispositivo (drone) e la sua chiave privata.
+
+Un requisito aggiuntivo necessario per l'applicativo dell'utente è possedere un serve MongoDB.
 
 Per eseguire correttamente gli applicativi sono possibili due opzioni:
 - Cliccare due volte l'applicativo;

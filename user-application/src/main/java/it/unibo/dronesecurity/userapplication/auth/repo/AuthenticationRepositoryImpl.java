@@ -1,11 +1,13 @@
 package it.unibo.dronesecurity.userapplication.auth.repo;
 
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
-import it.unibo.dronesecurity.userapplication.auth.entities.BaseUser;
+import it.unibo.dronesecurity.userapplication.auth.entities.*;
+import it.unibo.dronesecurity.userapplication.auth.utilities.UserConstants;
 import it.unibo.dronesecurity.userapplication.utilities.PasswordHelper;
+import it.unibo.dronesecurity.userapplication.utilities.VertxHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -15,30 +17,8 @@ import java.security.spec.InvalidKeySpecException;
  */
 public final class AuthenticationRepositoryImpl implements AuthenticationRepository {
 
+    private static final String COLLECTION_NAME = "users";
     private static AuthenticationRepositoryImpl singleton;
-    private final MongoClient database;
-
-    private AuthenticationRepositoryImpl() {
-        final JsonObject config = new JsonObject();
-        config.put("db_name", "drone");
-        this.database = MongoClient.create(Vertx.vertx(), config);
-    }
-
-    @Override
-    public Future<Boolean> authenticate(final BaseUser user) {
-        final JsonObject query = JsonObject.mapFrom(user);
-        query.remove("password");
-        return this.database.findOne("users", query, null)
-                .map(userFound -> {
-                    try {
-                        return userFound != null
-                                && PasswordHelper.validatePassword(user.getPassword(),
-                                userFound.getString("password"));
-                    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-                        return Boolean.FALSE;
-                    }
-                });
-    }
 
     /**
      * Get the Singleton instance.
@@ -50,5 +30,37 @@ public final class AuthenticationRepositoryImpl implements AuthenticationReposit
                 singleton = new AuthenticationRepositoryImpl();
             return singleton;
         }
+    }
+
+    @Override
+    public Future<LoggedUser> authenticate(final @NotNull NotLoggedUser user) {
+        final JsonObject query = new JsonObject().put(UserConstants.USERNAME, user.getUsername());
+        return VertxHelper.MONGO_CLIENT.findOne(COLLECTION_NAME, query, null)
+                .transform(res -> {
+                    try {
+                        if (res.succeeded() && PasswordHelper.validatePassword(user.getPassword(),
+                                res.result().getString(UserConstants.PASSWORD))) {
+                            return Future.succeededFuture(Json.decodeValue(res.result().toBuffer(), LoggedUser.class));
+                        } else
+                            return Future.failedFuture(res.cause());
+                    } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                        return Future.failedFuture(e);
+                    }
+                });
+    }
+
+    @Override
+    public Future<Courier> retrieveCourier(final String username) {
+        return this.retrieveUserFromUsername(username).map(user -> Json.decodeValue(user.toBuffer(), Courier.class));
+    }
+
+    @Override
+    public Future<Maintainer> retrieveMaintainer(final String username) {
+        return this.retrieveUserFromUsername(username).map(user -> Json.decodeValue(user.toBuffer(), Maintainer.class));
+    }
+
+    private Future<JsonObject> retrieveUserFromUsername(final String username) {
+        final JsonObject query = new JsonObject().put(UserConstants.USERNAME, username);
+        return VertxHelper.MONGO_CLIENT.findOne(COLLECTION_NAME, query, null);
     }
 }

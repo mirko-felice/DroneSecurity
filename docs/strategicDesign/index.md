@@ -5,8 +5,8 @@ Questo tipo di studio individua, a partire dai [casi d'uso](../useCases), i dive
 sotto-domini che compongono il dominio principale.
 
 Sono stati quindi trascritti i casi d'uso descritti precedentemente nel file
-[_domain.cml_](user-application/src/main/cml/domain.cml) usufruendo di [Context Mapper](https://contextmapper.org/)
-come framework.
+[_domain.cml_](https://raw.githubusercontent.com/mirko-felice/DroneSecurity/master/user-application/src/main/cml/domain.cml)
+usufruendo di [Context Mapper](https://contextmapper.org/) come framework.
 Si è quindi pensato di suddividere il dominio in tre sotto-domini:
 * **Drone**: sotto-dominio in grado di analizzare i dati ricevuti dai sensori
 e perciò in grado di prevenire incidenti e/o avvisare circa situazioni pericolose.
@@ -26,12 +26,13 @@ Nel nostro dominio sono stati individuati quattro Bounded Context:
 Dopo aver determinato i Bounded Context è necessario capire le relazioni tra di essi.
 Per mostrare tali relazioni viene costruita una _Context Map_.
 In questo dominio le associazioni riconosciute sono state le seguenti:
-* _DroneContext [U] -> [D, ACL] NegligenceReportingContext_:
+* _DroneContext [U, OHS] -> [D] NegligenceReportingContext_:
 
   questa relazione indica che il _supplier_ **DroneContext** fornisce al _consumer_ **NegligenceReportingContext** le 
-funzionalità per permettere d'individuare le situazioni critiche. Dato che il modello potrebbe cambiare,
-il consumer necessita di un _AntiCorruptionLayer (ACL)_ per rendere i dati provenienti dal _supplier_ conformi alle sue
-necessità. In questa maniera il consumer non deve cambiare il proprio modello.
+funzionalità per permettere d'individuare le situazioni critiche. 
+Tale _Context_ vuole dedicare un _Open-Host Service (OHS)_ il quale permetta ai consumatori di non doversi adattare 
+alle esigenze di modellazione del fornitore. Verrà quindi sfruttato un _Published Language_, protocollo che si 
+prenda la briga d'interpolare i dati e convertirli in un modello appropriato al consumatore.
 * _DroneContext [U] -> [D, ACL] ShippingContext_:
 
   analogamente il **DroneContext** funziona da _supplier_ verso lo **ShippingContext** per mettere a disposizione

@@ -20,8 +20,8 @@ public final class OrderSerializer extends JsonSerializer<Order> {
         gen.writeStartObject();
         gen.writeStringField("id", value.getId());
         gen.writeStringField("product", value.getProduct());
-        gen.writeStringField("placingDate", DateHelper.FORMATTER.format(value.getPlacingDate()));
-        gen.writeStringField("estimatedArrival", DateHelper.FORMATTER.format(value.getEstimatedArrival()));
+        gen.writeStringField("placingDate", DateHelper.toString(value.getPlacingDate()));
+        gen.writeStringField("estimatedArrival", DateHelper.toString(value.getEstimatedArrival()));
         gen.writeArrayFieldStart("events");
         gen.writeString(value.getCurrentState());
         gen.writeEndArray();

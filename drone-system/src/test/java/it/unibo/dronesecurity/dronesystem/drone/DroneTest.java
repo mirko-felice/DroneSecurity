@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 class DroneTest {
 
     private static final int SENSOR_DATA_READING_WAITING_TIME = 1;
+    private static final int TERMINATION_WAITING_TIME = SENSOR_DATA_READING_WAITING_TIME + 3;
 
     /**
      * Tests drone lifecycle.
@@ -45,10 +46,10 @@ class DroneTest {
 
             Assertions.assertTrue(drone.getCameraSensorData() > 0.0);
 
-            drone.halt();
+            drone.deactivate();
             Assertions.assertFalse(drone.isOperating());
         }, SENSOR_DATA_READING_WAITING_TIME, TimeUnit.SECONDS);
         executor.shutdown();
-        Assertions.assertTrue(executor.awaitTermination(SENSOR_DATA_READING_WAITING_TIME + 1, TimeUnit.SECONDS));
+        Assertions.assertTrue(executor.awaitTermination(TERMINATION_WAITING_TIME, TimeUnit.SECONDS));
     }
 }
