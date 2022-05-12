@@ -16,7 +16,7 @@ public final class UserHelper {
      * @param loggedUser the user to set logged
      */
     public static void setLoggedUser(final LoggedUser loggedUser) {
-        UserHelper.user = loggedUser;
+        user = loggedUser;
     }
 
     /**
