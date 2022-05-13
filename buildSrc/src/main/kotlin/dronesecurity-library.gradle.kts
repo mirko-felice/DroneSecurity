@@ -1,5 +1,4 @@
 import com.github.spotbugs.snom.Confidence
-import com.lordcodes.turtle.shellRun
 
 plugins {
     `java-library`
@@ -9,7 +8,6 @@ plugins {
     id("de.jjohannes.extra-java-module-info")
     id("org.openjfx.javafxplugin")
     id("com.github.spotbugs")
-    id("org.sonarqube")
 }
 
 val awsIotVersion = "1.8.4"
@@ -28,18 +26,6 @@ dependencies {
     spotbugsPlugins("com.h3xstream.findsecbugs:findsecbugs-plugin:1.10.0")
     spotbugsPlugins("com.mebigfatguy.sb-contrib:sb-contrib:7.4.7")
     implementation("ch.qos.logback:logback-classic:1.2.10")
-}
-
-project.version = shellRun {
-    git.gitCommand(listOf("describe", "--tags"))
-}
-
-sonarqube.properties {
-    property("sonar.organization", "mirko-felice")
-    property("sonar.host.url", "https://sonarcloud.io")
-    property("sonar.sources", sourceSets.main.get().allJava.srcDirs)
-    property("sonar.tests", sourceSets.test.get().allJava.srcDirs)
-    property("sonar.python.version", 3.7)
 }
 
 java {
@@ -64,9 +50,6 @@ javafx {
 }
 
 tasks {
-
-    val sonar = tasks.getByName("sonarqube")
-    sonar.dependsOn(test)
 
     compileJava {
         doFirst {
