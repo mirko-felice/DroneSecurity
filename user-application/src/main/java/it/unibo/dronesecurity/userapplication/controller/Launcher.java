@@ -5,7 +5,9 @@ import it.unibo.dronesecurity.lib.Connection;
 import it.unibo.dronesecurity.lib.ConnectionController;
 import it.unibo.dronesecurity.lib.PropertiesConstants;
 import it.unibo.dronesecurity.userapplication.utilities.FXHelper;
+import it.unibo.dronesecurity.userapplication.utilities.VertxHelper;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -28,6 +30,13 @@ public final class Launcher extends Application {
                 "Would you like to reset values?")) {
             final FXMLLoader fxmlLoader = new FXMLLoader(ConnectionController.class.getResource(CONNECTION_FXML));
             FXHelper.initializeWindow(stage, "Connection settings", fxmlLoader).ifPresent(window -> {
+                window.setOnCloseRequest(unused -> {
+                    VertxHelper.WEB_CLIENT.close();
+                    VertxHelper.MONGO_CLIENT.close();
+                    VertxHelper.VERTX.close();
+                    Platform.exit();
+                    System.exit(0);
+                });
                 window.setOnHidden(ignored -> this.showLogin());
                 window.show();
             });
