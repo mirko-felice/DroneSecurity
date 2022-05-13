@@ -1,3 +1,48 @@
+# [0.3.0](https://github.com/mirko-felice/DroneSecurity/compare/0.2.0...0.3.0) (2022-05-13)
+
+
+### Bug Fixes
+
+* add waiting for script/command termination ([3146441](https://github.com/mirko-felice/DroneSecurity/commit/3146441eb6bb48213b61d40caad6896d5398b3ee))
+* extend termination waiting time to DroneTest ([479a677](https://github.com/mirko-felice/DroneSecurity/commit/479a677d16d68439fabe218d40c0da4a2bf2021c))
+* fix authentication not working when showing password ([a83ce7c](https://github.com/mirko-felice/DroneSecurity/commit/a83ce7c874d6f4cffeba8fa5ff8aea5a24423710))
+* fix crash on connection window closing ([0e09d31](https://github.com/mirko-felice/DroneSecurity/commit/0e09d31f9893baf5aa62aa9a216241d0be597fdc))
+* fix maintainer role ([5d45df2](https://github.com/mirko-felice/DroneSecurity/commit/5d45df2d099c7d211abdf4d914d7dd3a34276444))
+* fix method name in fxml ([389fdbb](https://github.com/mirko-felice/DroneSecurity/commit/389fdbba35eb2d59574727442179ab5bee8727de))
+* fix typo in CI ([83438e9](https://github.com/mirko-felice/DroneSecurity/commit/83438e9ec65732bc7891cffd6ef8642c47f8fdeb))
+* fix username query string ([4769b73](https://github.com/mirko-felice/DroneSecurity/commit/4769b73b83221c5b6dc27977b9516553ff4e2104))
+* re-interrupt thread when blocking deserialization goes wrong ([0a3ee8c](https://github.com/mirko-felice/DroneSecurity/commit/0a3ee8ccfa552947ead6e0984dcad54fd33ecc20))
+* resolve spotbugs issues ([192a866](https://github.com/mirko-felice/DroneSecurity/commit/192a8664039143907042807518ebd7a55da6f81b))
+* solve all merge issues ([acedb9c](https://github.com/mirko-felice/DroneSecurity/commit/acedb9c2fd9a3ac6186199dbdbbf511d7be4cc61))
+* solve missed bugs ([29513c5](https://github.com/mirko-felice/DroneSecurity/commit/29513c5db41b687bfd25faade01deb514bf5c53c))
+* update id assigning algorithm for issue ([7b588a3](https://github.com/mirko-felice/DroneSecurity/commit/7b588a3ca0a5a89421fbda4080420469047521e1))
+
+
+### Features
+
+* add closed issues visualization ([e959d9e](https://github.com/mirko-felice/DroneSecurity/commit/e959d9ee00dc914b52606009a02166fc38c72aa3))
+* add data column in reports visualization ([fd54e99](https://github.com/mirko-felice/DroneSecurity/commit/fd54e99f35d4b9528b36acbed3942126c16e00db))
+* add Issue reports creation ([4ed940a](https://github.com/mirko-felice/DroneSecurity/commit/4ed940a2f728007710b8161960c1e20312cdebde))
+* add maintainer issues visualization ([0f87a04](https://github.com/mirko-felice/DroneSecurity/commit/0f87a048090faa9716e237b8b3d2647dead5f170))
+* add negligence reports gui and controller ([733508f](https://github.com/mirko-felice/DroneSecurity/commit/733508fbae5ddb444ce5473a5439d71d7c430d57))
+* add open issues visualization ([31460b0](https://github.com/mirko-felice/DroneSecurity/commit/31460b085e9ed691c8c2d8bb98308726c5533f9c))
+* add supervisor to Courier ([c3f7755](https://github.com/mirko-felice/DroneSecurity/commit/c3f7755eab9333764eab5b8d008bac22fd493301))
+* add take action on maintainer + major refactoring ([c072e35](https://github.com/mirko-felice/DroneSecurity/commit/c072e3528965f23256a6f9aef13f3362664ebae7))
+* add the possibility for the maintainer to close an issue ([0f666f2](https://github.com/mirko-felice/DroneSecurity/commit/0f666f27967a7772d4dcb75487e1654eaa0ac0f3))
+* add the possibility to vision an issue to maintainer ([dc99d4e](https://github.com/mirko-felice/DroneSecurity/commit/dc99d4e41b25ab078efce91814afdfc4fea3b590))
+* create negligence reporting context in user-application ([4c6d1ec](https://github.com/mirko-felice/DroneSecurity/commit/4c6d1ec90a11ea113e7abaede02537a9953a196a))
+* create negligence reporting in drone-system ([448a959](https://github.com/mirko-felice/DroneSecurity/commit/448a959b185d9c501574cf9b639d73467647a274))
+* split service in courier and maintainer interfaces + refactoring ([4374ddd](https://github.com/mirko-felice/DroneSecurity/commit/4374ddd8277981ecaa4b5d035dee41001e2eb931))
+
+
+### Performance Improvements
+
+* create and execute alerts on javafx thread ([bf8cbe1](https://github.com/mirko-felice/DroneSecurity/commit/bf8cbe1242dff5da3a0ee2e3528c588515abcd09))
+* improve reports table visualization ([f42b3a2](https://github.com/mirko-felice/DroneSecurity/commit/f42b3a2692015c1cfafb5633babc5b07df6ead19))
+* start CourierShippingService only when logged in ([ce42645](https://github.com/mirko-felice/DroneSecurity/commit/ce426457e20f0c911f87345465364580e90484d7))
+* throw exception when trying to close report without providing data ([a126770](https://github.com/mirko-felice/DroneSecurity/commit/a126770085675601cd1eab4b9c83fb7c83be9f94))
+* update aws dependency + remove keep-alive ([4fd3626](https://github.com/mirko-felice/DroneSecurity/commit/4fd3626d2726469584617ee753688b82042f7135))
+
 # [0.2.0](https://github.com/mirko-felice/DroneSecurity/compare/0.1.0...0.2.0) (2022-04-04)
 
 
