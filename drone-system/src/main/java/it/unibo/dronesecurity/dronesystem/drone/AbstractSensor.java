@@ -90,9 +90,11 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
     protected boolean isPythonVersionCompatible() {
         this.executeScript("--version");
 
-        final String[] splitPythonVersion = this.outputStream.toString(StandardCharsets.UTF_8).trim()
-                .split(" ")[1]
-                .split("\\.");
+        String pythonVersion;
+        do {
+            pythonVersion = this.outputStream.toString(StandardCharsets.UTF_8).trim();
+        } while (pythonVersion.isEmpty());
+        final String[] splitPythonVersion = pythonVersion.split(" ")[1].split("\\.");
         this.outputStream.reset();
 
         //Getting major version of python
@@ -122,7 +124,10 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
     protected final boolean isRaspberry() {
         this.executeScript(this.getScriptFile("os_detector"));
 
-        final String nodeName = this.outputStream.toString(StandardCharsets.UTF_8).trim();
+        String nodeName;
+        do {
+            nodeName = this.outputStream.toString(StandardCharsets.UTF_8).trim();
+        } while (nodeName.isEmpty());
         this.outputStream.reset();
 
         return nodeName.toLowerCase(Locale.getDefault()).contains("raspberry");
