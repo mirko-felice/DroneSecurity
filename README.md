@@ -1,4 +1,7 @@
 # DroneSecurity
+
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=DroneSecurity)](https://sonarcloud.io/summary/new_code?id=DroneSecurity)
+
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmirko-felice%2FDroneSecurity.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmirko-felice%2FDroneSecurity?ref=badge_shield)
 
 System able to monitor the drone and manage the security thanks to some particular sensors.
