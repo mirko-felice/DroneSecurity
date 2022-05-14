@@ -2,7 +2,7 @@ plugins {
     id("dronesecurity-application")
 }
 
-val vertxVersion = "4.2.2"
+val vertxVersion = "4.3.0"
 
 dependencies {
     implementation(project(":lib"))
