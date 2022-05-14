@@ -7,6 +7,6 @@
     "@semantic-release/git": "10.0.1"
   },
   "engines": {
-    "node": "16.13"
+    "node": "16.15"
   }
 }
