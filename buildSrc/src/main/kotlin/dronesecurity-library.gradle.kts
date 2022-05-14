@@ -10,7 +10,7 @@ plugins {
     id("com.github.spotbugs")
 }
 
-val awsIotVersion = "1.8.4"
+val awsIotVersion = "1.8.5"
 val javaVersion = properties["java.version"].toString()
 
 repositories {
