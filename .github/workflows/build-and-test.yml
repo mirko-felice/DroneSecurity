@@ -36,7 +36,15 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: Build the project
+      - name: Build on Windows
+        if: matrix.os == 'windows-latest'
+        uses: gradle/gradle-build-action@v2.1.5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          arguments: build
+      - name: Build on Ubuntu
+        if: matrix.os == 'ubuntu-latest'
         uses: gradle/gradle-build-action@v2.1.5
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
