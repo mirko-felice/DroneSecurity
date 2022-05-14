@@ -20,11 +20,17 @@ sonarqube.properties {
     property("sonar.projectKey", rootProject.name)
     property("sonar.projectDescription", "System able to monitor the drone and manage the security thanks to some particular sensors.")
     property("sonar.projectVersion", rootProject.version.toString())
-    property("sonar.login", System.getenv()["SONAR_TOKEN"] ?: "" )
+    property("sonar.login", System.getenv()["SONAR_TOKEN"] ?: file("sonar.properties").inputStream().use {
+        val sonarProperties = java.util.Properties()
+        sonarProperties.load(it)
+        sonarProperties.getProperty("token")
+    })
     property("sonar.scm.provider", "git")
     property("sonar.verbose", "true")
     property("sonar.links.homepage", githubUrl)
     property("sonar.links.ci", "$githubUrl/actions")
     property("sonar.links.scm", githubUrl)
     property("sonar.links.issue", "$githubUrl/issues")
+    val pythonDir = "drone-system/src/main/resources/it/unibo/dronesecurity/dronesystem/drone"
+    property("sonar.sources", listOf(pythonDir))
 }
