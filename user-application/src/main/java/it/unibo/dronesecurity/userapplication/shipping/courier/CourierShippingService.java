@@ -67,7 +67,7 @@ public final class CourierShippingService extends AbstractVerticle {
                         final int port = Integer.parseInt(variables.getJsonObject("port").getString(DEFAULT_KEY));
                         final String host = variables.getJsonObject("host").getString(DEFAULT_KEY);
 
-                        globalRouter.mountSubRouter(basePath, routerBuilder.createRouter());
+                        globalRouter.route(basePath).subRouter(routerBuilder.createRouter());
                         futures.add(this.getVertx().createHttpServer().requestHandler(globalRouter).listen(port, host));
                     }
                     CompositeFuture.all(Arrays.asList(futures.toArray(new Future[0])))
