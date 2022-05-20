@@ -1,0 +1,50 @@
+/*
+ * Copyright (c) 2021-2022, Mirko Felice & Maxim Derevyanchenko. All rights reserved.
+ * Licensed under the MIT license. See LICENSE file in the project root for details.
+ */
+
+package io.github.dronesecurity.userapplication.events;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
+/**
+ * Manager class of all domain events.
+ */
+public final class DomainEvents {
+
+    private static final Map<Class<? extends Event>, List<Consumer<? extends Event>>> ALL_CONSUMERS = new HashMap<>();
+
+    private DomainEvents() {}
+
+    /**
+     * Adds a handler to manage the arrival of an event.
+     * @param clazz {@link Class} of the {@link Event} to register on
+     * @param handler the {@link Consumer} to execute when an event is raised
+     * @param <T> type parameter to constraint consuming only {@link Event} subclasses
+     */
+    public static <T extends Event> void register(final Class<T> clazz, final Consumer<T> handler) {
+        if (!ALL_CONSUMERS.containsKey(clazz))
+            ALL_CONSUMERS.put(clazz, new ArrayList<>());
+        ALL_CONSUMERS.get(clazz).add(handler);
+    }
+
+    /**
+     * Raises the event for the domain.
+     *
+     * @param event the new event
+     * @param <T> type parameter to constraint raising only {@link Event} subclasses
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends Event> void raise(final @NotNull T event) {
+        for (Consumer<? extends Event> cons : ALL_CONSUMERS.get(event.getClass())) {
+            ((Consumer<T>) cons).accept(event);
+        }
+    }
+
+}

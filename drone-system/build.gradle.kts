@@ -11,8 +11,8 @@ dependencies  {
     implementation("org.apache.commons:commons-lang3:$apacheLangVersion")
 }
 
-val mainClassName by extra("$group.dronesecurity.dronesystem.drone.Activation")
-val mainModuleName by extra("$group.dronesecurity.dronesystem")
+val mainClassName by extra("$group.dronesystem.drone.Activation")
+val mainModuleName by extra("$group.dronesystem")
 
 extraJavaModuleInfo {
     module("commons-exec-$apacheExecVersion.jar", "org.apache.commons.exec", apacheExecVersion) {

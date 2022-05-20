@@ -1,7 +1,7 @@
-open module it.unibo.dronesecurity.dronesystem {
-    exports it.unibo.dronesecurity.dronesystem;
+open module io.github.dronesecurity.dronesystem {
+    exports io.github.dronesecurity.dronesystem;
 
-    requires it.unibo.dronesecurity.lib;
+    requires io.github.dronesecurity.lib;
     requires org.apache.commons.exec;
     requires org.apache.commons.lang3;
     requires org.jetbrains.annotations;

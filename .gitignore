@@ -6,7 +6,9 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 
 # IntelliJ Idea
-.idea/
+.idea/*
+!.idea/copyright/
+!.idea/scopes/
 
 # Gradle
 .gradle/

@@ -1,7 +1,7 @@
-open module it.unibo.dronesecurity.userapplication {
-    exports it.unibo.dronesecurity.userapplication;
+open module io.github.dronesecurity.userapplication {
+    exports io.github.dronesecurity.userapplication;
 
-    requires it.unibo.dronesecurity.lib;
+    requires io.github.dronesecurity.lib;
     requires org.jetbrains.annotations;
     requires aws.iot.device.sdk;
     requires aws.crt;

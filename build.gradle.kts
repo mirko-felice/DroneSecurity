@@ -8,6 +8,8 @@ rootProject.version = shellRun {
     git.gitCommand(listOf("describe", "--tags"))
 }
 
+subprojects.forEach { it.version = rootProject.version }
+
 val organization: String by project
 val githubUrl = "https://github.com/$organization/${rootProject.name}"
 
@@ -31,6 +33,6 @@ sonarqube.properties {
     property("sonar.links.ci", "$githubUrl/actions")
     property("sonar.links.scm", githubUrl)
     property("sonar.links.issue", "$githubUrl/issues")
-    val pythonDir = "drone-system/src/main/resources/it/unibo/dronesecurity/dronesystem/drone"
+    val pythonDir = "drone-system/src/main/resources/io/github/dronesecurity/dronesystem/drone"
     property("sonar.sources", listOf(pythonDir))
 }

@@ -14,8 +14,8 @@ dependencies {
     implementation("commons-codec:commons-codec:1.15")
 }
 
-val mainClassName by extra("$group.dronesecurity.userapplication.controller.Launcher")
-val mainModuleName by extra("$group.dronesecurity.userapplication")
+val mainClassName by extra("$group.userapplication.controller.Launcher")
+val mainModuleName by extra("$group.userapplication")
 
 application {
     applicationDefaultJvmArgs = applicationDefaultJvmArgs.plus("--add-opens=javafx.graphics/javafx.scene=org.controlsfx.controls")

@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="DroneSecurityScope" pattern="file[*]:*.java" />
+</component>

@@ -25,12 +25,12 @@
 
     <Match>
         <Bug pattern="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY" />
-        <Class name="it.unibo.dronesecurity.userapplication.shipping.courier.entities.RescheduledOrder" />
+        <Class name="RescheduledOrder" />
     </Match>
 
     <Match>
         <Bug pattern="MS_EXPOSE_REP" />
-        <Class name="it.unibo.dronesecurity.userapplication.issue.courier.repo.IssueReportRepositoryImpl" />
+        <Class name="IssueReportRepositoryImpl" />
     </Match>
 
 </FindBugsFilter>
