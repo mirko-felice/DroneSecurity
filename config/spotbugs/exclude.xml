@@ -25,12 +25,17 @@
 
     <Match>
         <Bug pattern="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY" />
-        <Class name="RescheduledOrder" />
+        <Class name="~.*DeliveringOrder" />
     </Match>
 
     <Match>
         <Bug pattern="MS_EXPOSE_REP" />
-        <Class name="IssueReportRepositoryImpl" />
+        <Class name="~.*IssueReportRepositoryImpl" />
+    </Match>
+
+    <Match>
+        <Bug pattern="PMB_POSSIBLE_MEMORY_BLOAT" />
+        <Class name="~.*DomainEvents" />
     </Match>
 
 </FindBugsFilter>

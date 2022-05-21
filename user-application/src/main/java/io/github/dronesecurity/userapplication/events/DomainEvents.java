@@ -8,9 +8,9 @@ package io.github.dronesecurity.userapplication.events;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -18,9 +18,10 @@ import java.util.function.Consumer;
  */
 public final class DomainEvents {
 
-    private static final Map<Class<? extends Event>, List<Consumer<? extends Event>>> ALL_CONSUMERS = new HashMap<>();
+    private static final Map<Class<? extends Event>, List<Consumer<? extends Event>>> ALL_CONSUMERS =
+            new ConcurrentHashMap<>();
 
-    private DomainEvents() {}
+    private DomainEvents() { }
 
     /**
      * Adds a handler to manage the arrival of an event.
@@ -42,7 +43,7 @@ public final class DomainEvents {
      */
     @SuppressWarnings("unchecked")
     public static <T extends Event> void raise(final @NotNull T event) {
-        for (Consumer<? extends Event> cons : ALL_CONSUMERS.get(event.getClass())) {
+        for (final Consumer<? extends Event> cons : ALL_CONSUMERS.get(event.getClass())) {
             ((Consumer<T>) cons).accept(event);
         }
     }
