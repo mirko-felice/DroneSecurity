@@ -48,7 +48,7 @@ spotbugs {
     excludeFilter.set(file(rootDir.path + properties["spotbugs.excludeFile"].toString()))
 }
 
-javafx {platform
+javafx {
     version = javaVersion
     modules("javafx.controls", "javafx.fxml")
 }
