@@ -13,6 +13,10 @@ plugins {
 val awsIotVersion = "1.8.5"
 val javaVersion = properties["java.version"].toString()
 
+val droneCertFileName = "Drone.cert.pem"
+val privateKeyFileName = "Drone.private.key.pem"
+val rootCAFileName = "root-CA.pem"
+
 repositories {
     mavenCentral()
 }
@@ -51,6 +55,51 @@ javafx {
 
 tasks {
 
+    register("createCertProperties") {
+        doFirst {
+            if (System.getenv("DRONE_CERT").isNotEmpty()) {
+                val certFolderPath = mkdir("cert")
+                certFolderPath.deleteOnExit()
+                val droneCert = file(certFolderPath.path + File.separator + droneCertFileName)
+                val privateKey = file(certFolderPath.path + File.separator + privateKeyFileName)
+                val rootCA = file(certFolderPath.path + File.separator + rootCAFileName)
+                val username = if (certFolderPath.path.contains(File.separator + "user-application" + File.separator)) {
+                    "DroneSecurity: User"
+                } else {
+                    "DroneSecurity: Drone"
+                }
+
+                droneCert.appendText(System.getenv("DRONE_CERT"))
+                privateKey.appendText(System.getenv("PRIVATE_KEY"))
+                rootCA.appendText(System.getenv("ROOT_CA"))
+                val endpoint = System.getenv("ENDPOINT")
+
+                val projectProperties = file(projectDir.path + File.separator + "project.properties")
+                projectProperties.deleteOnExit()
+                projectProperties.appendText("certsFolderPath=" + certFolderPath.path + File.separator)
+                projectProperties.appendText("\ncertificateFile=$droneCertFileName")
+                projectProperties.appendText("\nprivateKeyFile=$privateKeyFileName")
+                projectProperties.appendText("\ncertificateAuthorityFile=$rootCAFileName")
+                projectProperties.appendText("\nendpoint=$endpoint")
+                projectProperties.appendText("\nclientID=$username")
+
+            }
+        }
+    }
+
+    register("clearCerts") {
+        doLast {
+            val certFolderPath = file(projectDir.path + File.separator + "cert")
+
+            file(certFolderPath.path + File.separator + droneCertFileName).delete()
+            file(certFolderPath.path + File.separator + privateKeyFileName).delete()
+            file(certFolderPath.path + File.separator + rootCAFileName).delete()
+
+            file(projectDir.path + File.separator + "project.properties").delete()
+            certFolderPath.delete()
+        }
+    }
+
     compileJava {
         doFirst {
             options.compilerArgs.add("-Xlint:deprecation")
@@ -59,11 +108,13 @@ tasks {
     }
 
     test {
+        dependsOn("createCertProperties")
         useJUnitPlatform()
         testLogging {
             events("passed", "skipped", "failed")
         }
         finalizedBy(jacocoTestReport)
+        finalizedBy("clearCerts")
     }
 
     jacocoTestReport {
