@@ -1,3 +1,10 @@
+## [0.3.2](https://github.com/mirko-felice/DroneSecurity/compare/0.3.1...0.3.2) (2022-05-23)
+
+
+### Bug Fixes
+
+* change artifact path for release ([31d2cdc](https://github.com/mirko-felice/DroneSecurity/commit/31d2cdc148d278f7ed40edeeca2fa84d979c4931))
+
 ## [0.3.1](https://github.com/mirko-felice/DroneSecurity/compare/0.3.0...0.3.1) (2022-05-23)
 
 
