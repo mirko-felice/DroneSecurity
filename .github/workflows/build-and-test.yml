@@ -22,7 +22,7 @@ jobs:
   Build:
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout the repository
@@ -36,24 +36,52 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: Build on Windows
-        if: matrix.os == 'windows-latest'
+      - name: Setup Gradle
         uses: gradle/gradle-build-action@v2.1.5
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        with:
-          arguments: build
-      - name: Build on Ubuntu
+      - name: Build
+        run: ./gradlew build
+      - name: Sonarqube Analyses
         if: matrix.os == 'ubuntu-latest'
-        uses: gradle/gradle-build-action@v2.1.5
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          arguments: build sonarqube
-  Release:
+        run: ./gradlew sonarqube
+  Pre-Release:
     if: github.ref_name == 'master'
     needs: Build
+    strategy:
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3.0.2
+        with:
+          fetch-depth: 0
+      - name: Create Application Jar
+        uses: gradle/gradle-build-action@v2.1.5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          arguments: ${{ runner.os }}FatJar
+      - name: Upload Jar Artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: {{ $runner.os }}Jar
+          path: user-application/build/libs/user-application-{{ $runner.os }}-fat.jar
+          retention-days: 1
+      - name: Create Drone Jar
+        if: matrix.os == 'ubuntu-latest'
+        run: ./gradlew droneFatJar
+      - name: Upload Drone Jar Artifact
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: DroneFatJar
+          path: drone-system/build/libs/drone-system-fat.jar
+  Release:
+    if: github.ref_name == 'master'
+    needs: Pre-Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
@@ -68,8 +96,8 @@ jobs:
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
           git_user_signingkey: true
           git_commit_gpgsign: true
-      - name: Create artifacts
-        run: ./gradlew fatJar
+      - name: Download Jar Artifacts
+        uses: actions/download-artifact@v3.0.0
       - name: Publish Release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}

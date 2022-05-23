@@ -23,3 +23,21 @@ extraJavaModuleInfo {
         exports("org.apache.commons.lang3")
     }
 }
+
+tasks.register<Jar>("DroneFatJar") {
+    group = "build"
+    description = "Assembles a runnable fat jar archive containing all the needed stuff to be executed as standalone."
+    archiveClassifier.set("fat")
+    archiveVersion.set("")
+    from(sourceSets.main.get().output)
+    dependsOn(configurations.compileClasspath)
+    from(configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) })
+    manifest {
+        val mainClass = project.extra["mainClassName"]
+        val lastName = mainClass.toString().substring(mainClass.toString().lastIndexOf("."))
+        val withoutLastName = mainClass.toString().replace(lastName, "")
+        attributes["Main-Class"] = withoutLastName.replaceAfterLast(".", "Starter")
+        attributes["Automatic-Module-Name"] = project.extra["mainModuleName"]
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

@@ -10,7 +10,9 @@
     [ "@semantic-release/github" , {
       "assets": [
         { "path": "drone-system/build/libs/drone-system-fat.jar", "label": "Drone System executable JAR" },
-        { "path": "user-application/build/libs/user-application-fat.jar", "label": "User Application executable JAR" }
+        { "path": "user-application/build/libs/user-application-Windows-fat.jar", "label": "User Application executable JAR for Windows" },
+        { "path": "user-application/build/libs/user-application-macOS-fat.jar", "label": "User Application executable JAR for MacOS" },
+        { "path": "user-application/build/libs/user-application-Linux-fat.jar", "label": "User Application executable JAR for Linux" }
       ]
     }]
     ]

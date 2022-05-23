@@ -33,9 +33,4 @@
         <Class name="~.*IssueReportRepositoryImpl" />
     </Match>
 
-    <Match>
-        <Bug pattern="PMB_POSSIBLE_MEMORY_BLOAT" />
-        <Class name="~.*DomainEvents" />
-    </Match>
-
 </FindBugsFilter>

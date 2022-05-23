@@ -36,6 +36,21 @@ public final class DomainEvents {
     }
 
     /**
+     * Removes a handler previously registered.
+     * @param clazz {@link Class} of the {@link Event} to unregister from
+     * @param handler the {@link Consumer} previously registered
+     * @param <T> type parameter to constraint consuming only {@link Event} subclasses
+     */
+    public static <T extends Event> void unregister(final Class<T> clazz, final Consumer<T> handler) {
+        final List<Consumer<? extends Event>> consumers = ALL_CONSUMERS.get(clazz);
+        if (consumers != null && handler != null) {
+            consumers.remove(handler);
+            if (consumers.isEmpty())
+                ALL_CONSUMERS.remove(clazz);
+        }
+    }
+
+    /**
      * Raises the event for the domain.
      *
      * @param event the new event
