@@ -1,7 +1,6 @@
 package it.unibo.dronesecurity.lib;
 
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Files;
