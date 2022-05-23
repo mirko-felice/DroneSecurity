@@ -86,7 +86,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v3.1.0
         with:
-          name: DroneFatJar
+          name: DroneJar
           path: drone-system/build/libs/drone-system-fat.jar
   Release:
     if: github.ref_name == 'master'

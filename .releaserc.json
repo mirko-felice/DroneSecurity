@@ -9,10 +9,10 @@
     }],
     [ "@semantic-release/github" , {
       "assets": [
-        { "path": "artifacts/drone-system-fat.jar", "label": "Drone System executable JAR" },
-        { "path": "artifacts/user-application-Windows-fat.jar", "label": "User Application executable JAR for Windows" },
-        { "path": "artifacts/user-application-macOS-fat.jar", "label": "User Application executable JAR for MacOS" },
-        { "path": "artifacts/user-application-Linux-fat.jar", "label": "User Application executable JAR for Linux" }
+        { "path": "artifacts/DroneJar/drone-system-fat.jar", "label": "Drone System executable JAR" },
+        { "path": "artifacts/WindowsJar/user-application-Windows-fat.jar", "label": "User Application executable JAR for Windows" },
+        { "path": "artifacts/macOSJar/user-application-macOS-fat.jar", "label": "User Application executable JAR for MacOS" },
+        { "path": "artifacts/LinuxJar/user-application-Linux-fat.jar", "label": "User Application executable JAR for Linux" }
       ]
     }]
     ]
