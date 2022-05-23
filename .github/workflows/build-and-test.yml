@@ -23,6 +23,11 @@ jobs:
           java-version: '11'
       - name: Build
         uses: gradle/gradle-build-action@v2.1.5
+        env:
+          DRONE_CERT: ${{ secrets.DRONE_CERT }}
+          ENDPOINT: ${{ secrets.ENDPOINT }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          ROOT_CA: ${{ secrets.ROOT_CA }}
         with:
           arguments: build
 
