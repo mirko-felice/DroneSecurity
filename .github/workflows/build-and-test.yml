@@ -68,8 +68,8 @@ jobs:
       - name: Upload Jar Artifact
         uses: actions/upload-artifact@v3.1.0
         with:
-          name: {{ $runner.os }}Jar
-          path: user-application/build/libs/user-application-{{ $runner.os }}-fat.jar
+          name: ${{ runner.os }}Jar
+          path: user-application/build/libs/user-application-${{ runner.os }}-fat.jar
           retention-days: 1
       - name: Create Drone Jar
         if: matrix.os == 'ubuntu-latest'
