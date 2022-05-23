@@ -1,3 +1,11 @@
+## [0.3.1](https://github.com/mirko-felice/DroneSecurity/compare/0.3.0...0.3.1) (2022-05-23)
+
+
+### Bug Fixes
+
+* correct yaml syntax ([8f09c4d](https://github.com/mirko-felice/DroneSecurity/commit/8f09c4d30da647629111499615ed4048f35b3aec))
+* solve pmd and spotbugs issues ([7d62e49](https://github.com/mirko-felice/DroneSecurity/commit/7d62e49c7e5de242575f7f0b7cdf512a7afdd40d))
+
 # [0.3.0](https://github.com/mirko-felice/DroneSecurity/compare/0.2.0...0.3.0) (2022-05-13)
 
 
