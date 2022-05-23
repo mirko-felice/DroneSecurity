@@ -83,6 +83,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: ./gradlew droneFatJar
       - name: Upload Drone Jar Artifact
+        if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v3.1.0
         with:
           name: DroneFatJar
@@ -106,6 +107,8 @@ jobs:
           git_commit_gpgsign: true
       - name: Download Jar Artifacts
         uses: actions/download-artifact@v3.0.0
+        with:
+          path: artifacts
       - name: Publish Release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
