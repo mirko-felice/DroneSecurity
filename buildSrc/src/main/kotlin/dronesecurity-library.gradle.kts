@@ -13,10 +13,6 @@ plugins {
 val awsIotVersion = "1.8.5"
 val javaVersion = properties["java.version"].toString()
 
-val droneCertFileName = "Drone.cert.pem"
-val privateKeyFileName = "Drone.private.key.pem"
-val rootCAFileName = "root-CA.pem"
-
 repositories {
     mavenCentral()
 }
@@ -57,9 +53,11 @@ tasks {
 
     register("createCertProperties") {
         doFirst {
-            if (System.getenv("DRONE_CERT").isNotEmpty()) {
-                val certFolderPath = mkdir("cert")
-                certFolderPath.deleteOnExit()
+            if (System.getenv("CI") == "true") {
+                val droneCertFileName = "Drone.cert.pem"
+                val privateKeyFileName = "Drone.private.key.pem"
+                val rootCAFileName = "root-CA.pem"
+                val certFolderPath = mkdir("certs")
                 val droneCert = file(certFolderPath.path + File.separator + droneCertFileName)
                 val privateKey = file(certFolderPath.path + File.separator + privateKeyFileName)
                 val rootCA = file(certFolderPath.path + File.separator + rootCAFileName)
@@ -75,7 +73,6 @@ tasks {
                 val endpoint = System.getenv("ENDPOINT")
 
                 val projectProperties = file(projectDir.path + File.separator + "project.properties")
-                projectProperties.deleteOnExit()
                 projectProperties.appendText("certsFolderPath=" + certFolderPath.path + File.separator)
                 projectProperties.appendText("\ncertificateFile=$droneCertFileName")
                 projectProperties.appendText("\nprivateKeyFile=$privateKeyFileName")
@@ -89,14 +86,12 @@ tasks {
 
     register("clearCerts") {
         doLast {
-            val certFolderPath = file(projectDir.path + File.separator + "cert")
+            if (System.getenv("CI") == "true") {
+                val certFolderPath = file(projectDir.path + File.separator + "cert")
 
-            file(certFolderPath.path + File.separator + droneCertFileName).delete()
-            file(certFolderPath.path + File.separator + privateKeyFileName).delete()
-            file(certFolderPath.path + File.separator + rootCAFileName).delete()
-
-            file(projectDir.path + File.separator + "project.properties").delete()
-            certFolderPath.delete()
+                file(projectDir.path + File.separator + "project.properties").delete()
+                certFolderPath.deleteRecursively()
+            }
         }
     }
 
