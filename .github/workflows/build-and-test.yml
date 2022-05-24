@@ -1,4 +1,4 @@
-name: Build
+name: Build and Test
 
 on:
   push:
@@ -21,9 +21,8 @@ on:
 jobs:
   Build:
     strategy:
-      fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     environment: DRONE
     steps:
@@ -38,65 +37,32 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: Setup Gradle
+      - name: Build on Windows
+        if: matrix.os == 'windows-latest'
         uses: gradle/gradle-build-action@v2.1.5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Build
         env:
           DRONE_CERT: ${{ secrets.DRONE_CERT }}
           ENDPOINT: ${{ secrets.ENDPOINT }}
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           ROOT_CA: ${{ secrets.ROOT_CA }}
-        run: ./gradlew build
-      - name: Sonarqube Analyses
-        if: matrix.os == 'ubuntu-latest'
-        env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonarqube
-  Pre-Release:
-    if: github.ref_name == 'master'
-    needs: Build
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest ]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v3.0.2
         with:
-          fetch-depth: 0
-      - name: Setup JDK
-        uses: actions/setup-java@v3.3.0
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-      - name: Create Application Jar
+          arguments: build
+      - name: Build on Ubuntu
+        if: matrix.os == 'ubuntu-latest'
         uses: gradle/gradle-build-action@v2.1.5
         env:
+          DRONE_CERT: ${{ secrets.DRONE_CERT }}
+          ENDPOINT: ${{ secrets.ENDPOINT }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          ROOT_CA: ${{ secrets.ROOT_CA }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          arguments: ${{ runner.os }}FatJar
-      - name: Upload Jar Artifact
-        uses: actions/upload-artifact@v3.1.0
-        with:
-          name: ${{ runner.os }}Jar
-          path: user-application/build/libs/user-application-${{ runner.os }}-fat.jar
-          retention-days: 1
-      - name: Create Drone Jar
-        if: matrix.os == 'ubuntu-latest'
-        run: ./gradlew droneFatJar
-      - name: Upload Drone Jar Artifact
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v3.1.0
-        with:
-          name: DroneJar
-          path: drone-system/build/libs/drone-system-fat.jar
+          arguments: build sonarqube
   Release:
     if: github.ref_name == 'master'
-    needs: Pre-Release
+    needs: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
@@ -111,11 +77,9 @@ jobs:
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
           git_user_signingkey: true
           git_commit_gpgsign: true
-      - name: Download Jar Artifacts
-        uses: actions/download-artifact@v3.0.0
-        with:
-          path: artifacts
-      - name: Publish Release To Github
+      - name: Create artifacts
+        run: ./gradlew fatJar
+      - name: Publish Release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GIT_COMMITTER_NAME: Mirko Felice
@@ -125,10 +89,3 @@ jobs:
         run: |
           npm install
           npx semantic-release
-      - name: Publish Release To Maven
-        env:
-          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_PRIVATE_KEY }}
-          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.GPG_PASSPHRASE }}
-          ORG_GRADLE_PROJECT_mavenUsername: ${{ secrets.MAVEN_USERNAME }}
-          ORG_GRADLE_PROJECT_mavenPassword: ${{ secrets.MAVEN_PASSWORD }}
-        run: ./gradlew publish
