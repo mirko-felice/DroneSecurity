@@ -60,6 +60,7 @@ publishing {
             from(components["java"])
             version = projectVersion
             pom {
+                groupId = "io.github.mirko-felice.dronesecurity"
                 name.set("${groupId}:${artifactId}")
                 description.set("System able to monitor the drone and manage the security thanks to some particular sensors.")
                 url.set("https://github.com/mirko-felice/DroneSecurity")
@@ -85,13 +86,21 @@ publishing {
                 scm {
                     connection.set("scm:git:git://github.com/mirko-felice/DroneSecurity.git")
                     developerConnection.set("scm:git:ssh://github.com/mirko-felice/DroneSecurity.git")
-                    url.set("http://github.com/mirko-felice/DroneSecurity")
+                    url.set("https://github.com/mirko-felice/DroneSecurity")
                 }
-                repositories {
-                    maven {
-
-                    }
-                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            val releasesUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            val snapshotsUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = uri(if (project.version.toString().startsWith("0")) snapshotsUrl else releasesUrl)
+            credentials {
+                val mavenUsername: String? by project
+                username = mavenUsername
+                val mavenPassword: String? by project
+                password = mavenPassword
             }
         }
     }

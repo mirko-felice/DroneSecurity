@@ -24,4 +24,8 @@ tasks {
         enabled = false
     }
 
+    javadoc {
+        (options as StandardJavadocDocletOptions).linksOffline?.add(
+            JavadocOfflineLink("https://javadoc.io/doc/io.github.dronesecurity.lib/${project.version}", "../lib/build/docs/javadoc"))
+    }
 }
