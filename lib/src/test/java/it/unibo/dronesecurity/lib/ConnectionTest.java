@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021-2022, Mirko Felice & Maxim Derevyanchenko. All rights reserved.
+ * Licensed under the MIT license. See LICENSE file in the project root for details.
+ */
+
 package it.unibo.dronesecurity.lib;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
