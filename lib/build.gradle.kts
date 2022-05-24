@@ -6,6 +6,8 @@ plugins {
 
 tasks {
 
+    val propertiesFile = file(projectDir.path + File.separator + "project.properties")
+
     register("createCertProperties") {
         doFirst {
             if (System.getenv("CI") == true.toString()) {
@@ -34,7 +36,9 @@ tasks {
                 projectProperties.setProperty("certificateAuthorityFile", rootCAFileName)
                 projectProperties.setProperty("endpoint", endpoint)
                 projectProperties.setProperty("clientID", username)
-                projectProperties.store(file(projectDir.path + File.separator + "project.properties").outputStream(), "Connection settings")
+                val outputStream = propertiesFile.outputStream()
+                projectProperties.store(outputStream, "Connection settings")
+                outputStream.close()
             }
         }
     }
@@ -43,8 +47,8 @@ tasks {
         doLast {
             if (System.getenv("CI") == true.toString()) {
                 val certFolderPath = file(projectDir.path + File.separator + "certs")
+                propertiesFile.delete()
 
-                file(projectDir.path + File.separator + "project.properties").delete()
                 certFolderPath.deleteRecursively()
             }
         }

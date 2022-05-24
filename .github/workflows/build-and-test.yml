@@ -8,6 +8,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
+    environment: DRONE
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3.0.2
