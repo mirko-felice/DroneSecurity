@@ -1,3 +1,7 @@
+import org.gradle.internal.impldep.org.apache.http.client.utils.URLEncodedUtils
+import java.net.HttpURLConnection
+import java.net.InetAddress
+
 plugins {
     id("dronesecurity-library")
     application
@@ -25,7 +29,10 @@ tasks {
     }
 
     javadoc {
-        (options as StandardJavadocDocletOptions).linksOffline?.add(
-            JavadocOfflineLink("https://javadoc.io/doc/io.github.dronesecurity.lib/${project.version}", "../lib/build/docs/javadoc"))
+        val libUrl = "https://javadoc.io/doc/io.github.dronesecurity.lib/latest"
+        val connection = uri(libUrl).toURL().openConnection() as HttpURLConnection
+        connection.instanceFollowRedirects = false
+        if (connection.responseCode == 200)
+                (options as StandardJavadocDocletOptions).links?.add(libUrl)
     }
 }
