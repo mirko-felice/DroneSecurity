@@ -25,6 +25,7 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
+    environment: DRONE
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3.0.2
@@ -42,6 +43,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Build
+        env:
+          DRONE_CERT: ${{ secrets.DRONE_CERT }}
+          ENDPOINT: ${{ secrets.ENDPOINT }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          ROOT_CA: ${{ secrets.ROOT_CA }}
         run: ./gradlew build
       - name: Sonarqube Analyses
         if: matrix.os == 'ubuntu-latest'
@@ -120,9 +126,12 @@ jobs:
           npm install
           npx semantic-release
       - name: Publish Release To Maven
+        uses: gradle/gradle-build-action@v2.1.5
         env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_PRIVATE_KEY }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.GPG_PASSPHRASE }}
           ORG_GRADLE_PROJECT_mavenUsername: ${{ secrets.MAVEN_USERNAME }}
           ORG_GRADLE_PROJECT_mavenPassword: ${{ secrets.MAVEN_PASSWORD }}
-        run: ./gradlew publish
+        with:
+          arguments: publish

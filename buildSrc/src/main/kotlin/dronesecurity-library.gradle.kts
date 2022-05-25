@@ -115,10 +115,6 @@ signing {
 
 tasks {
 
-    withType<PublishToMavenRepository>().configureEach {
-        onlyIf { !project.version.toString().startsWith("0") }
-    }
-
     compileJava {
         doFirst {
             options.compilerArgs.add("-Xlint:deprecation")
