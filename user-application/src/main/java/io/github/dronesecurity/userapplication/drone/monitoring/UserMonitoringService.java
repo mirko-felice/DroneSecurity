@@ -40,12 +40,12 @@ public final class UserMonitoringService {
             final JsonObject accelerometerJson =
                     json.getJsonObject(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER);
             final Map<String, Double> accelerometer = new ConcurrentHashMap<>();
-            accelerometer.put(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER,
-                    accelerometerJson.getDouble(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER));
-            accelerometer.put(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER,
-                    accelerometerJson.getDouble(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER));
-            accelerometer.put(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER,
-                    accelerometerJson.getDouble(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER));
+            accelerometer.put(MqttMessageParameterConstants.ROLL,
+                    accelerometerJson.getDouble(MqttMessageParameterConstants.ROLL));
+            accelerometer.put(MqttMessageParameterConstants.PITCH,
+                    accelerometerJson.getDouble(MqttMessageParameterConstants.PITCH));
+            accelerometer.put(MqttMessageParameterConstants.YAW,
+                    accelerometerJson.getDouble(MqttMessageParameterConstants.YAW));
 
             final double camera = json.getDouble(MqttMessageParameterConstants.CAMERA_PARAMETER);
 

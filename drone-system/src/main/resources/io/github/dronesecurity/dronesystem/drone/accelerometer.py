@@ -57,7 +57,7 @@ def read_temp():
     return temp
 
 
-# Read accelerometer configurated range
+# Read accelerometer configured range
 def read_accel_range():
     val = read_byte(0x1c)
     afs_sel = val & RANGE_MASK

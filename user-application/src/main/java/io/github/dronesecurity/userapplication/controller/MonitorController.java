@@ -86,25 +86,25 @@ public final class MonitorController implements Initializable {
                 new SimpleObjectProperty<>(cell.getValue()));
         this.accelerometerPreviousXDataColumn.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER)));
+                        .get(MqttMessageParameterConstants.ROLL)));
         this.accelerometerPreviousYDataColumn.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER)));
+                        .get(MqttMessageParameterConstants.PITCH)));
         this.accelerometerPreviousZDataColumn.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER)));
+                        .get(MqttMessageParameterConstants.YAW)));
         this.cameraPreviousDataColumn.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue()));
 
         this.currentAccelerometerXValue.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER)));
+                        .get(MqttMessageParameterConstants.ROLL)));
         this.currentAccelerometerYValue.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER)));
+                        .get(MqttMessageParameterConstants.PITCH)));
         this.currentAccelerometerZValue.setCellValueFactory(cell ->
                 new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER)));
+                        .get(MqttMessageParameterConstants.YAW)));
 
     }
 

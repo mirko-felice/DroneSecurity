@@ -57,7 +57,6 @@ javafx {
 publishing {
     publications {
         val baseVersion = project.version.toString()
-        println(baseVersion)
         val projectVersion = if (baseVersion.startsWith("0")) baseVersion.substringBefore("-") + "-SNAPSHOT" else baseVersion
         create<MavenPublication>("DroneSecurity") {
             from(components["java"])

@@ -139,7 +139,8 @@ public class DroneService {
                     this.drone.readAllData();
 
                     this.proximitySensorData = this.drone.getProximitySensorData();
-                    this.accelerometerSensorData = this.drone.getAccelerometerSensorData();
+                    this.accelerometerSensorData =
+                            new DataProcessor().processAccelerometer(this.drone.getAccelerometerSensorData());
                     this.cameraSensorData = this.drone.getCameraSensorData();
                     PublishHelper.publishData(
                             this.proximitySensorData,

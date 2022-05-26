@@ -30,11 +30,23 @@ tasks {
         task.archiveVersion.set("")
         task.from(sourceSets.main.get().output)
         task.dependsOn(configurations.compileClasspath)
-        task.from(configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) })
+        task.from(configurations.runtimeClasspath.get().map {
+            if (it.name.contains("crt"))
+                zipTree(it).matching { include { element ->
+                    val osToRemove = when (osName) {
+                        "macOs" -> "windows|linux".toRegex()
+                        "Linux" -> "windows|osx".toRegex()
+                        else -> "linux|osx".toRegex()
+                    }
+                    !element.file.path.contains(osToRemove)
+                } }
+            else
+                zipTree(it)
+        })
         task.manifest {
-            val mainClass = project.extra["mainClassName"]
-            val lastName = mainClass.toString().substring(mainClass.toString().lastIndexOf("."))
-            val withoutLastName = mainClass.toString().replace(lastName, "")
+            val mainClass = project.extra["mainClassName"].toString()
+            val lastName = mainClass.substring(mainClass.lastIndexOf("."))
+            val withoutLastName = mainClass.replace(lastName, "")
             attributes["Main-Class"] = withoutLastName.replaceAfterLast(".", "Starter")
             attributes["Automatic-Module-Name"] = project.extra["mainModuleName"]
         }

@@ -31,7 +31,12 @@ tasks.register<Jar>("DroneFatJar") {
     archiveVersion.set("")
     from(sourceSets.main.get().output)
     dependsOn(configurations.compileClasspath)
-    from(configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) })
+    from(configurations.runtimeClasspath.get().map {
+        if (it.name.contains("crt"))
+            zipTree(it).matching { include { element -> !element.path.contains("windows") && !element.path.contains("osx") } }
+        else
+            zipTree(it)
+    })
     manifest {
         val mainClass = project.extra["mainClassName"]
         val lastName = mainClass.toString().substring(mainClass.toString().lastIndexOf("."))

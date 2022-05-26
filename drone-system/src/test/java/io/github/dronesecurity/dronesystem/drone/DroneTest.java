@@ -43,11 +43,11 @@ class DroneTest {
 
             final Map<String, Double> accelerometerValues = drone.getAccelerometerSensorData();
             Assertions.assertTrue(
-                    accelerometerValues.containsKey(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER));
+                    accelerometerValues.containsKey(MqttMessageParameterConstants.ROLL));
             Assertions.assertTrue(
-                    accelerometerValues.containsKey(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER));
+                    accelerometerValues.containsKey(MqttMessageParameterConstants.PITCH));
             Assertions.assertTrue(
-                    accelerometerValues.containsKey(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER));
+                    accelerometerValues.containsKey(MqttMessageParameterConstants.YAW));
 
             Assertions.assertTrue(drone.getCameraSensorData() > 0.0);
 

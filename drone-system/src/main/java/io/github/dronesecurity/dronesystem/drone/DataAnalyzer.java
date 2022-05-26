@@ -18,9 +18,8 @@ public final class DataAnalyzer {
 
     private static final double PROXIMITY_WARNING_THRESHOLD = 50;
     private static final double PROXIMITY_CRITICAL_THRESHOLD = 30;
-    private static final double ACCELEROMETER_CRITICAL_THRESHOLD = 30;
+    private static final double ACCELEROMETER_CRITICAL_THRESHOLD = 50;
     private static final double ACCELEROMETER_WARNING_THRESHOLD = 30;
-    private static final double PI_IN_DEGREES = Math.toDegrees(Math.PI);
 
     /**
      * Checks if proximity distance is critical or warning giving back an {@link AlertLevel}.
@@ -46,15 +45,15 @@ public final class DataAnalyzer {
      */
     public AlertLevel checkAccelerometerDataAlertLevel(final @NotNull Map<String, Double> accelerometerData) {
         if (!accelerometerData.isEmpty()) {
-            final double x = accelerometerData.get(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER);
-            final double z = accelerometerData.get(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER);
-            final double yaw = Math.toDegrees(Math.atan2(z, x));
+            final double roll = accelerometerData.get(MqttMessageParameterConstants.ROLL);
+            final double pitch = accelerometerData.get(MqttMessageParameterConstants.PITCH);
+            // TODO yaw?
 
-            final boolean isWarning = yaw > ACCELEROMETER_WARNING_THRESHOLD
-                    && yaw < PI_IN_DEGREES - ACCELEROMETER_WARNING_THRESHOLD;
+            final boolean isWarning = Math.abs(roll) > ACCELEROMETER_WARNING_THRESHOLD
+                                    || Math.abs(pitch) > ACCELEROMETER_WARNING_THRESHOLD;
 
-            final boolean isCritical = yaw > ACCELEROMETER_CRITICAL_THRESHOLD
-                    && yaw < PI_IN_DEGREES - ACCELEROMETER_CRITICAL_THRESHOLD;
+            final boolean isCritical = Math.abs(roll) > ACCELEROMETER_CRITICAL_THRESHOLD
+                                    || Math.abs(pitch) > ACCELEROMETER_WARNING_THRESHOLD;
 
             if (isCritical)
                 return AlertLevel.CRITICAL;

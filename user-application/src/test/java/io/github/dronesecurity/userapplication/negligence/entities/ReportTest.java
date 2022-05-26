@@ -82,9 +82,9 @@ final class ReportTest {
         final JsonNode data = mapper.createObjectNode()
                 .put(NegligenceConstants.PROXIMITY, 1)
                 .set(NegligenceConstants.ACCELEROMETER, mapper.createObjectNode()
-                        .put(MqttMessageParameterConstants.ACCELEROMETER_X_PARAMETER, 1)
-                        .put(MqttMessageParameterConstants.ACCELEROMETER_Y_PARAMETER, 1)
-                        .put(MqttMessageParameterConstants.ACCELEROMETER_Z_PARAMETER, 1));
+                        .put(MqttMessageParameterConstants.ROLL, 1)
+                        .put(MqttMessageParameterConstants.PITCH, 1)
+                        .put(MqttMessageParameterConstants.YAW, 1));
         return NegligenceReportFactory.withoutID(NEGLIGENT, ASSIGNEE, new DroneDataImpl(data));
     }
 }

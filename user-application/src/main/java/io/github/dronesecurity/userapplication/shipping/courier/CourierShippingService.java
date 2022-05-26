@@ -67,7 +67,8 @@ public final class CourierShippingService extends AbstractVerticle {
                         final JsonObject server = servers.getJsonObject(i);
                         final JsonObject variables = server.getJsonObject("variables");
 
-                        final String basePath = SEP + variables.getJsonObject("basePath").getString(DEFAULT_KEY);
+                        final String basePath = SEP + variables.getJsonObject("basePath").getString(DEFAULT_KEY)
+                                + SEP + "*";
                         final int port = Integer.parseInt(variables.getJsonObject("port").getString(DEFAULT_KEY));
                         final String host = variables.getJsonObject("host").getString(DEFAULT_KEY);
 

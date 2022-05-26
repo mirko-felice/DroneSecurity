@@ -26,19 +26,19 @@ public final class MqttMessageParameterConstants {
     public static final String CAMERA_PARAMETER = "camera";
 
     /**
-     * Parameter that contains accelerometer X value.
+     * Parameter that contains roll angle.
      */
-    public static final String ACCELEROMETER_X_PARAMETER = "x";
+    public static final String ROLL = "roll";
 
     /**
-     * Parameter that contains accelerometer Y value.
+     * Parameter that contains pitch angle.
      */
-    public static final String ACCELEROMETER_Y_PARAMETER = "y";
+    public static final String PITCH = "pitch";
 
     /**
-     * Parameter that contains accelerometer Z value.
+     * Parameter that contains yaw angle.
      */
-    public static final String ACCELEROMETER_Z_PARAMETER = "z";
+    public static final String YAW = "yaw";
 
     /**
      * Parameter that contains synchronization message.

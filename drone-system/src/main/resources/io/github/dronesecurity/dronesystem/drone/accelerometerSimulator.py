@@ -1,13 +1,12 @@
 import time
 import sys
-import random as rand
 
 # Simulating Data Stream
 while True:
     print("{\"accelerometer\": {"
-          "\n        \"x\": " + str(1) +
+          "\n        \"x\": " + str(0) +
           ",\n        \"y\": " + str(1) +
-          ",\n        \"z\": " + str(1) +
+          ",\n        \"z\": " + str(0) +
           "\n    }"
           "\n}")
     sys.stdout.flush()
