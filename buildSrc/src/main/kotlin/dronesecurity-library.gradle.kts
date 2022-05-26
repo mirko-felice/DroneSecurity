@@ -118,7 +118,9 @@ signing {
 tasks {
 
     withType<PublishToMavenRepository>().configureEach {
-        onlyIf { Pattern.matches("(([0-9])+(\\.?([0-9]))*)+(-SNAPSHOT)?", project.version.toString()) }
+        val baseVersion = project.version.toString()
+        val projectVersion = if (baseVersion.startsWith("0")) baseVersion.substringBefore("-") + "-SNAPSHOT" else baseVersion
+        onlyIf { Pattern.matches("(([0-9])+(\\.?([0-9]))*)+(-SNAPSHOT)?", projectVersion) }
     }
 
     compileJava {
