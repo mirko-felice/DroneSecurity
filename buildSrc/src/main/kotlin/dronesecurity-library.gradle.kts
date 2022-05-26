@@ -1,4 +1,5 @@
 import com.github.spotbugs.snom.Confidence
+import java.util.regex.Pattern
 
 plugins {
     `java-library`
@@ -50,12 +51,14 @@ spotbugs {
 
 javafx {
     version = javaVersion
-    modules("javafx.controls", "javafx.fxml")
+    modules("javafx.controls", "javafx.fxml", "javafx.swing")
 }
 
 publishing {
     publications {
-        val projectVersion = project.version.toString()
+        val baseVersion = project.version.toString()
+        println(baseVersion)
+        val projectVersion = if (baseVersion.startsWith("0")) baseVersion.substringBefore("-") + "-SNAPSHOT" else baseVersion
         create<MavenPublication>("DroneSecurity") {
             from(components["java"])
             version = projectVersion
@@ -90,17 +93,17 @@ publishing {
                 }
             }
         }
-    }
-    repositories {
-        maven {
-            val releasesUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            val snapshotsUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            url = uri(if (project.version.toString().startsWith("0")) snapshotsUrl else releasesUrl)
-            credentials {
-                val mavenUsername: String? by project
-                username = mavenUsername
-                val mavenPassword: String? by project
-                password = mavenPassword
+        repositories {
+            maven {
+                val releasesUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                val snapshotsUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                url = uri(if (projectVersion.endsWith("SNAPSHOT")) snapshotsUrl else releasesUrl)
+                credentials {
+                    val mavenUsername: String? by project
+                    username = mavenUsername
+                    val mavenPassword: String? by project
+                    password = mavenPassword
+                }
             }
         }
     }
@@ -114,6 +117,10 @@ signing {
 }
 
 tasks {
+
+    withType<PublishToMavenRepository>().configureEach {
+        onlyIf { Pattern.matches("(([0-9])+(\\.?([0-9]))*)+(-SNAPSHOT)?", project.version.toString()) }
+    }
 
     compileJava {
         doFirst {
