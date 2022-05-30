@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.lib.AlertUtils;
+import io.github.dronesecurity.userapplication.utilities.AlertUtils;
 import io.github.dronesecurity.userapplication.auth.entities.Role;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.Order;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;

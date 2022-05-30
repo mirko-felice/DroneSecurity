@@ -5,9 +5,8 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.lib.AlertUtils;
+import io.github.dronesecurity.userapplication.utilities.AlertUtils;
 import io.github.dronesecurity.lib.Connection;
-import io.github.dronesecurity.lib.ConnectionController;
 import io.github.dronesecurity.lib.PropertiesConstants;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.VertxHelper;

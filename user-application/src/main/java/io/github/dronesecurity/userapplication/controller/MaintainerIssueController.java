@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.lib.AlertUtils;
+import io.github.dronesecurity.userapplication.utilities.AlertUtils;
 import io.github.dronesecurity.userapplication.issue.courier.IssueReportService;
 import io.github.dronesecurity.userapplication.issue.courier.issues.ClosedIssue;
 import io.github.dronesecurity.userapplication.issue.courier.issues.CreatedIssue;

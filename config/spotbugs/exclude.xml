@@ -33,4 +33,9 @@
         <Class name="~.*IssueReportRepositoryImpl" />
     </Match>
 
+    <Match>
+        <Bug pattern="UNENCRYPTED_SOCKET" />
+        <Class name="~.*Camera" />
+    </Match>
+
 </FindBugsFilter>

@@ -47,7 +47,7 @@ public final class UserMonitoringService {
             accelerometer.put(MqttMessageParameterConstants.YAW,
                     accelerometerJson.getDouble(MqttMessageParameterConstants.YAW));
 
-            final double camera = json.getDouble(MqttMessageParameterConstants.CAMERA_PARAMETER);
+            final long camera = json.getLong(MqttMessageParameterConstants.CAMERA_PARAMETER);
 
             DomainEvents.raise(new DataRead(proximity, accelerometer, camera));
         });

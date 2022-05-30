@@ -30,7 +30,7 @@ public final class NegligenceReport {
     public NegligenceReport(final String negligent,
                             final double proximity,
                             final @NotNull Map<String, Double> accelerometer,
-                            final double camera) {
+                            final Byte[] camera) {
         this.negligent = negligent;
         final ObjectMapper objectMapper = new ObjectMapper();
         this.data = objectMapper.createObjectNode();
@@ -39,7 +39,7 @@ public final class NegligenceReport {
         final ObjectNode accelerometerData = objectMapper.createObjectNode();
         accelerometer.forEach(accelerometerData::put);
         this.data.set(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER, accelerometerData);
-        this.data.put(MqttMessageParameterConstants.CAMERA_PARAMETER, camera);
+        this.data.put(MqttMessageParameterConstants.CAMERA_PARAMETER, camera.length);
     }
 
     /**

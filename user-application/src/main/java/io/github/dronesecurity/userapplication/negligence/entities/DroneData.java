@@ -28,6 +28,8 @@ public interface DroneData {
      */
     Map<String, Double> getAccelerometer();
 
+    //TODO Add Camera to the data.
+
     /**
      * Copy this object.
      * @return a new fresh copy

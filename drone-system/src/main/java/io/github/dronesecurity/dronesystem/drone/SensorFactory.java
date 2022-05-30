@@ -39,8 +39,8 @@ public class SensorFactory {
      *
      * @return The instantiated camera
      */
-    public Sensor<Double> getCamera() {
-        final Sensor<Double> camera = new Camera();
+    public Sensor<Byte[]> getCamera() {
+        final Sensor<Byte[]> camera = new Camera();
         camera.activate();
         return camera;
     }

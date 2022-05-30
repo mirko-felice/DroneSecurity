@@ -34,7 +34,7 @@ class DroneTest {
 
         Assertions.assertEquals(0.0, drone.getProximitySensorData());
         Assertions.assertTrue(drone.getAccelerometerSensorData().isEmpty());
-        Assertions.assertEquals(0.0, drone.getCameraSensorData());
+        Assertions.assertEquals(0, drone.getCameraSensorData().length);
 
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         executor.schedule(() -> {
@@ -49,7 +49,7 @@ class DroneTest {
             Assertions.assertTrue(
                     accelerometerValues.containsKey(MqttMessageParameterConstants.YAW));
 
-            Assertions.assertTrue(drone.getCameraSensorData() > 0.0);
+            Assertions.assertTrue(drone.getCameraSensorData().length > 0);
 
             drone.deactivate();
             Assertions.assertFalse(drone.isOperating());

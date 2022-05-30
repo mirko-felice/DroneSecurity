@@ -6,7 +6,6 @@ plugins {
     checkstyle
     pmd
     jacoco
-    id("de.jjohannes.extra-java-module-info")
     id("org.openjfx.javafxplugin")
     id("com.github.spotbugs")
     `maven-publish`
@@ -47,11 +46,6 @@ pmd {
 spotbugs {
     reportLevel.set(Confidence.MIN_VALUE)
     excludeFilter.set(file(rootDir.path + properties["spotbugs.excludeFile"].toString()))
-}
-
-javafx {
-    version = javaVersion
-    modules("javafx.controls", "javafx.fxml", "javafx.swing")
 }
 
 publishing {
@@ -168,8 +162,4 @@ tasks {
         }
     }
 
-}
-
-extraJavaModuleInfo {
-    failOnMissingModuleInfo.set(false)
 }

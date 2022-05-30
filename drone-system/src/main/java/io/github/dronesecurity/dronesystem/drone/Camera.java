@@ -5,14 +5,35 @@
 
 package io.github.dronesecurity.dronesystem.drone;
 
-import java.nio.charset.StandardCharsets;
+import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Item representing a real camera sensor and observing its values.
  */
-public class Camera extends AbstractSensor<Double> {
+public class Camera extends AbstractSensor<Byte[]> {
 
-    private double distance;
+    private static final int CONNECTION_PORT = 10_000;
+
+    private final Socket socket;
+    private InputStream inputStream;
+    private byte[] image;
+
+    /**
+     * Instantiates the socket for the connection with its camera.
+     */
+    public Camera() {
+        this.image = new byte[] {};
+        this.socket = new Socket();
+    }
 
     /**
      * {@inheritDoc}
@@ -27,18 +48,45 @@ public class Camera extends AbstractSensor<Double> {
      */
     @Override
     public void readData() {
-        if (getOutputStream().size() > 0) {
-            final String[] values = getOutputStream().toString(StandardCharsets.UTF_8).trim().split("\n");
-            this.distance = Double.parseDouble(values[values.length - 1]);
-            getOutputStream().reset();
+        try {
+            if (!this.socket.isConnected())
+                this.connect();
+            if (this.inputStream.available() > 0) {
+                final ByteBuffer buffer = ByteBuffer.wrap(this.inputStream.readNBytes(Integer.BYTES))
+                        .order(ByteOrder.LITTLE_ENDIAN);
+                final int length = buffer.getInt();
+                this.image = this.inputStream.readNBytes(length);
+            }
+        } catch (IOException e) {
+            LoggerFactory.getLogger(getClass()).error("Cannot read data from sensor", e);
         }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Nullable
     @Override
-    public Double getData() {
-        return this.distance;
+    public Byte[] getData() {
+        return ArrayUtils.toObject(this.image);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deactivate() {
+        super.deactivate();
+        try {
+            this.inputStream.close();
+            this.socket.close();
+        } catch (IOException e) {
+            LoggerFactory.getLogger(getClass()).error("Error closing connection", e);
+        }
+    }
+
+    private void connect() throws IOException {
+        this.socket.connect(new InetSocketAddress("localhost", CONNECTION_PORT));
+        this.inputStream = this.socket.getInputStream();
     }
 }

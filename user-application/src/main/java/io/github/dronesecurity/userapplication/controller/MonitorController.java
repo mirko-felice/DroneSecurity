@@ -49,13 +49,13 @@ public final class MonitorController implements Initializable {
 
     @FXML private TableView<Double> proximityPreviousData;
     @FXML private TableView<Map<String, Double>> accelerometerPreviousData;
-    @FXML private TableView<Double> cameraPreviousData;
+    @FXML private TableView<Long> cameraPreviousData;
 
     @FXML private TableColumn<Double, Double> proximityPreviousDataColumn;
     @FXML private TableColumn<Map<String, Double>, Double> accelerometerPreviousXDataColumn;
     @FXML private TableColumn<Map<String, Double>, Double> accelerometerPreviousYDataColumn;
     @FXML private TableColumn<Map<String, Double>, Double> accelerometerPreviousZDataColumn;
-    @FXML private TableColumn<Double, Double> cameraPreviousDataColumn;
+    @FXML private TableColumn<Long, Long> cameraPreviousDataColumn;
 
     @FXML private TableColumn<Map<String, Double>, Double> currentAccelerometerXValue;
     @FXML private TableColumn<Map<String, Double>, Double> currentAccelerometerYValue;
@@ -118,7 +118,7 @@ public final class MonitorController implements Initializable {
                 this.accelerometerPreviousData.getItems().add(0, accelerometerValues.get(0));
 
             if (!this.cameraCurrentData.getText().isEmpty())
-                this.cameraPreviousData.getItems().add(0, Double.valueOf(this.cameraCurrentData.getText()));
+                this.cameraPreviousData.getItems().add(0, Long.valueOf(this.cameraCurrentData.getText()));
 
             this.proximityCurrentData.setText(String.valueOf(dataRead.getProximity()));
 

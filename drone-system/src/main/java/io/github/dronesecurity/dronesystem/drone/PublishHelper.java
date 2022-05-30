@@ -27,14 +27,14 @@ public final class PublishHelper {
      */
     public static void publishData(final Double proximitySensorData,
                                    final @NotNull Map<String, Double> accelerometerSensorData,
-                                   final Double cameraSensorData) {
+                                   final Byte[] cameraSensorData) {
         final ObjectMapper mapper = new ObjectMapper();
         final ObjectNode mapJson = mapper.createObjectNode();
         mapJson.put(MqttMessageParameterConstants.PROXIMITY_PARAMETER, proximitySensorData);
         final ObjectNode accelerometerValues = mapper.createObjectNode();
         accelerometerSensorData.forEach(accelerometerValues::put);
         mapJson.set(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER, accelerometerValues);
-        mapJson.put(MqttMessageParameterConstants.CAMERA_PARAMETER, cameraSensorData);
+        mapJson.put(MqttMessageParameterConstants.CAMERA_PARAMETER, cameraSensorData.length);
 
         Connection.getInstance().publish(MqttTopicConstants.DATA_TOPIC, mapJson);
     }

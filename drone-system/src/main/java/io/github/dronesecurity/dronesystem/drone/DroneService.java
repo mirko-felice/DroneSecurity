@@ -45,7 +45,7 @@ public class DroneService {
     // Connection
     private Double proximitySensorData;
     private Map<String, Double> accelerometerSensorData;
-    private Double cameraSensorData;
+    private Byte[] cameraSensorData;
 
     private String currentOrderId;
     private String currentCourier;

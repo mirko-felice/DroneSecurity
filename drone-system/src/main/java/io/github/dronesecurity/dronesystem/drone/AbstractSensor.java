@@ -38,7 +38,7 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
 
     private static final int COMPATIBLE_PYTHON_MAJOR_VERSION = 3;
     private static final int COMPATIBLE_PYTHON_MINOR_VERSION = 7;
-    private static final int SUCCESSFUL_TERMINATION_CODE = 1;
+    private static final int[] SUCCESSFUL_TERMINATION_CODES = {1, 143};
     private static final String SCRIPT_EXTENSION = ".py";
     private static final String CMD = System.getProperty("os.name").toLowerCase(Locale.getDefault()).contains("win")
                                                                                                         ? "python "
@@ -73,7 +73,7 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
      */
     @Override
     public void deactivate() {
-        this.executor.setExitValue(SUCCESSFUL_TERMINATION_CODE);
+        this.executor.setExitValues(SUCCESSFUL_TERMINATION_CODES);
         this.executor.getWatchdog().destroyProcess();
         this.setOn(false);
     }
@@ -156,7 +156,7 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
         try {
             this.executor.execute(cmdLine);
         } catch (IOException e) {
-            LoggerFactory.getLogger(getClass()).error("Can NOT execute script.", e);
+            LoggerFactory.getLogger(getClass()).error("Can NOT execute script (" + pythonArgument + ").", e);
         }
     }
 

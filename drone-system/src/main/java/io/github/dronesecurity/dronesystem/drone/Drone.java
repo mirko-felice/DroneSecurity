@@ -16,7 +16,7 @@ public class Drone {
     private static final SensorFactory SENSOR_FACTORY = new SensorFactory();
     private final Sensor<Double> proximity;
     private final Sensor<Map<String, Double>> accelerometer;
-    private final Sensor<Double> camera;
+    private final Sensor<Byte[]> camera;
     private boolean isMoving;
 
     /**
@@ -60,7 +60,7 @@ public class Drone {
      *
      * @return The data read by the camera of the drone
     */
-    public Double getCameraSensorData() {
+    public Byte[] getCameraSensorData() {
         return this.camera.getData();
     }
 

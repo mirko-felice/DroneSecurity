@@ -1,6 +1,4 @@
-import org.gradle.internal.impldep.org.apache.http.client.utils.URLEncodedUtils
 import java.net.HttpURLConnection
-import java.net.InetAddress
 
 plugins {
     id("dronesecurity-library")

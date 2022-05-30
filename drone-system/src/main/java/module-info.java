@@ -1,5 +1,5 @@
 open module io.github.dronesecurity.dronesystem {
-    exports io.github.dronesecurity.dronesystem;
+    exports io.github.dronesecurity.dronesystem.drone;
 
     requires io.github.dronesecurity.lib;
     requires org.apache.commons.exec;

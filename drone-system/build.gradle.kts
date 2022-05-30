@@ -1,5 +1,6 @@
 plugins {
     id("dronesecurity-application")
+    id("de.jjohannes.extra-java-module-info")
 }
 
 val apacheExecVersion = "1.3"
@@ -19,9 +20,7 @@ extraJavaModuleInfo {
         exports("org.apache.commons.exec")
     }
 
-    module("commons-lang3-$apacheLangVersion.jar", "org.apache.commons.lang3", apacheLangVersion) {
-        exports("org.apache.commons.lang3")
-    }
+    failOnMissingModuleInfo.set(false)
 }
 
 tasks.register<Jar>("DroneFatJar") {
@@ -38,10 +37,7 @@ tasks.register<Jar>("DroneFatJar") {
             zipTree(it)
     })
     manifest {
-        val mainClass = project.extra["mainClassName"]
-        val lastName = mainClass.toString().substring(mainClass.toString().lastIndexOf("."))
-        val withoutLastName = mainClass.toString().replace(lastName, "")
-        attributes["Main-Class"] = withoutLastName.replaceAfterLast(".", "Starter")
+        attributes["Main-Class"] = project.extra["mainClassName"]
         attributes["Automatic-Module-Name"] = project.extra["mainModuleName"]
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

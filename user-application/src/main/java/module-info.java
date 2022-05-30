@@ -1,6 +1,9 @@
 open module io.github.dronesecurity.userapplication {
     exports io.github.dronesecurity.userapplication;
 
+    requires javafx.fxml;
+    requires javafx.graphics;
+
     requires io.github.dronesecurity.lib;
     requires org.jetbrains.annotations;
     requires aws.iot.device.sdk;

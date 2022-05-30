@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.lib.AlertUtils;
+import io.github.dronesecurity.userapplication.utilities.AlertUtils;
 import io.github.dronesecurity.userapplication.auth.entities.Maintainer;
 import io.github.dronesecurity.userapplication.events.NewNegligence;
 import io.github.dronesecurity.userapplication.negligence.entities.NegligenceActionFormImpl;

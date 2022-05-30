@@ -3,8 +3,11 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.lib;
+package io.github.dronesecurity.userapplication.controller;
 
+import io.github.dronesecurity.userapplication.utilities.AlertUtils;
+import io.github.dronesecurity.lib.Connection;
+import io.github.dronesecurity.lib.PropertiesConstants;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

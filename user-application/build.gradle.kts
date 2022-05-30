@@ -3,6 +3,7 @@ plugins {
 }
 
 val vertxVersion = "4.3.0"
+val javaVersion = properties["java.version"].toString()
 
 dependencies {
     implementation(project(":lib"))
@@ -19,6 +20,11 @@ val mainModuleName by extra("$group.userapplication")
 
 application {
     applicationDefaultJvmArgs = applicationDefaultJvmArgs.plus("--add-opens=javafx.graphics/javafx.scene=org.controlsfx.controls")
+}
+
+javafx {
+    version = javaVersion
+    modules("javafx.controls", "javafx.fxml", "javafx.swing")
 }
 
 tasks {
