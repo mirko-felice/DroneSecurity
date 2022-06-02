@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.utilities.AlertUtils;
+import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.lib.PropertiesConstants;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
@@ -30,7 +30,7 @@ public final class Launcher extends Application {
     @Override
     public void start(final @NotNull Stage stage) {
         final File propertiesFile = new File(PropertiesConstants.PROPERTIES_FILENAME);
-        if (!propertiesFile.exists() || AlertUtils.showConfirmationAlert("File properties already found!",
+        if (!propertiesFile.exists() || DialogUtils.showConfirmationDialog("File properties already found!",
                 "Would you like to reset values?")) {
             final FXMLLoader fxmlLoader = new FXMLLoader(ConnectionController.class.getResource(CONNECTION_FXML));
             FXHelper.initializeWindow(stage, "Connection settings", fxmlLoader).ifPresent(window -> {

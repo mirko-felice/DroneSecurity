@@ -6,11 +6,11 @@
 package io.github.dronesecurity.userapplication.utilities;
 
 import io.github.dronesecurity.lib.Connection;
+import io.github.dronesecurity.userapplication.auth.AuthenticationService;
 import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
-import io.github.dronesecurity.userapplication.auth.repo.AuthenticationRepository;
 import io.github.dronesecurity.userapplication.controller.DetailController;
-import io.github.dronesecurity.userapplication.negligence.entities.DroneData;
-import io.github.dronesecurity.userapplication.negligence.entities.NegligenceReport;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.DroneData;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceReport;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Optional;
@@ -125,13 +124,13 @@ public final class FXHelper {
                 Platform.runLater(() -> controller.updateDetails(loggedUser));
 
         final Consumer<String> courierConsumer = value ->
-                AuthenticationRepository.getInstance().retrieveCourier(value).onSuccess(userConsumer::accept);
+                AuthenticationService.getInstance().retrieveCourier(value).onSuccess(userConsumer::accept);
 
         final TableColumn<T, String> negligentColumn =
                 initializeColumn("Negligent", String.class, "getNegligent", courierConsumer);
 
         final Consumer<String> maintainerConsumer = value ->
-                AuthenticationRepository.getInstance().retrieveMaintainer(value).onSuccess(userConsumer::accept);
+                AuthenticationService.getInstance().retrieveMaintainer(value).onSuccess(userConsumer::accept);
         final TableColumn<T, String> assignedToColumn =
                 initializeColumn("Assigned To", String.class, "assignedTo", maintainerConsumer);
 
@@ -153,8 +152,7 @@ public final class FXHelper {
         column.setCellFactory(ignored -> new NegligenceReportCell<>(mouseClickedListener));
         column.setCellValueFactory(cell -> {
             try {
-                final Method[] methods = NegligenceReport.class.getMethods();
-                final S object = type.cast(Arrays.stream(methods)
+                final S object = type.cast(Arrays.stream(NegligenceReport.class.getMethods())
                         .filter(m -> m.getName().equals(methodName))
                         .findFirst()
                         .orElseThrow()

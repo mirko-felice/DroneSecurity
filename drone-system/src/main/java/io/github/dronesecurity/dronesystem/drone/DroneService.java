@@ -159,7 +159,6 @@ public class DroneService {
     private void analyzeData() {
         this.analyzeProximity();
         this.analyzeAccelerometer();
-        this.analyzeCamera();
     }
 
     private void analyzeProximity() {
@@ -186,10 +185,6 @@ public class DroneService {
                 this.reportNegligence();
             }
         }
-    }
-
-    private void analyzeCamera() {
-        // TODO analyze camera
     }
 
     private void reportNegligence() {

@@ -20,4 +20,5 @@ open module io.github.dronesecurity.userapplication {
     requires org.controlsfx.controls;
     requires org.slf4j;
     requires org.apache.commons.codec;
+    requires org.apache.commons.text;
 }

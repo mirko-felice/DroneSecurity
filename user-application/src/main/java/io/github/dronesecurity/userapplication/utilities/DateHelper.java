@@ -7,9 +7,7 @@ package io.github.dronesecurity.userapplication.utilities;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -41,5 +39,14 @@ public final class DateHelper {
      */
     public static @NotNull String toString(final Instant instant) {
         return FORMATTER.format(instant);
+    }
+
+    /**
+     * Parse local date to {@link Instant}.
+     * @param localDate the {@link LocalDate} to parse
+     * @return the {@link Instant}
+     */
+    public static Instant fromLocalDate(final @NotNull LocalDate localDate) {
+        return localDate.atTime(LocalTime.MIDNIGHT).toInstant(ZoneOffset.UTC);
     }
 }

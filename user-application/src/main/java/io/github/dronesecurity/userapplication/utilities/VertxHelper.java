@@ -14,8 +14,8 @@ import io.vertx.ext.web.client.WebClient;
  * Helper class containing Vert.x constants that should be instantiated once.
  */
 public final class VertxHelper {
-    // TODO aggiungere 'DB' alla fine di drone
-    private static final JsonObject CONFIG = new JsonObject().put("db_name", "drone");
+
+    private static final JsonObject CONFIG = new JsonObject().put("db_name", "drone_db");
 
     /**
      * {@link Vertx} instance.

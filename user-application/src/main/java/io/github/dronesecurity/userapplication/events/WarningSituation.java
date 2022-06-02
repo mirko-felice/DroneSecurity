@@ -30,4 +30,12 @@ public class WarningSituation implements Event {
     public AlertType getType() {
         return this.type;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "Warning because of " + this.type.toString();
+    }
 }

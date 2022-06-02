@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-// TODO probably Client will be linked
 /**
  * Represents the entity that the Client can create.
  */
@@ -54,14 +53,21 @@ public interface Order {
     String getCurrentState();
 
     /**
+     * Gets the client name.
+     * @return the client name
+     */
+    String getClient();
+
+    /**
      * Place an Order to be delivered today.
      *
      * @param product the product to be delivered
+     * @param client the client who placed the order
      * @return the {@link Order} to deliver today
      */
-    @Contract("_ -> new")
-    static @NotNull PlacedOrder placeToday(final String product) {
+    @Contract("_, _ -> new")
+    static @NotNull PlacedOrder placeToday(final String product, final String client) {
         final Instant now = Instant.now();
-        return new PlacedOrder(String.valueOf(0), product,  now, now.plus(1, ChronoUnit.DAYS));
+        return new PlacedOrder(String.valueOf(0), product, client, now, now.plus(1, ChronoUnit.DAYS));
     }
 }

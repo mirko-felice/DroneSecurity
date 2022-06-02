@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.*;
+import io.github.dronesecurity.userapplication.shipping.courier.utilities.OrderConstants;
 import io.github.dronesecurity.userapplication.utilities.DateHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,27 +30,32 @@ public final class OrderDeserializer extends JsonDeserializer<Order> {
             throws IOException {
         final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
         final ObjectNode root = mapper.readTree(parser);
-        if (root.has("events")) {
-            final JsonNode events = root.get("events");
-            final String currentState = events.get(events.size() - 1).asText();
-            final String id = root.get("id").asText();
-            final String product = root.get("product").asText();
-            final Instant placingDate = DateHelper.toInstant(root.get("placingDate").asText());
-            final Instant estimatedArrival = DateHelper.toInstant(root.get("estimatedArrival").asText());
-            if (currentState.contains("place"))
-                return new PlacedOrder(id, product, placingDate, estimatedArrival);
-            else if (currentState.contains("fail"))
-                return new FailedOrder(id, product, placingDate, estimatedArrival);
-            else if (currentState.contains("delivered"))
-                return new DeliveredOrder(id, product, placingDate, estimatedArrival);
-            else if (currentState.contains("delivering"))
-                return new DeliveringOrder(id, product, placingDate, estimatedArrival);
-            else if (currentState.contains("reschedule")) {
-                // TODO da modificare
-                final Instant newEstimatedArrival = mapper.readValue(currentState, Instant.class);
-                return new RescheduledOrder(id, product, placingDate, estimatedArrival, newEstimatedArrival);
-            }
+        if (!root.has(OrderConstants.EVENTS))
+            return null;
+        final JsonNode events = root.get(OrderConstants.EVENTS);
+        final String currentState = events.get(events.size() - 1).asText();
+        final String id = root.get(OrderConstants.ID).asText();
+        final String product = root.get(OrderConstants.PRODUCT).asText();
+        final String client = root.get(OrderConstants.CLIENT).asText();
+        final Instant placingDate = DateHelper.toInstant(root.get(OrderConstants.PLACING_DATE).asText());
+        final Instant estimatedArrival = DateHelper.toInstant(root.get(OrderConstants.ESTIMATED_ARRIVAL).asText());
+        switch (currentState) {
+            case OrderConstants.PLACED_ORDER_STATE:
+                return new PlacedOrder(id, product, client, placingDate, estimatedArrival);
+            case OrderConstants.FAILED_ORDER_STATE:
+                return new FailedOrder(id, product, client, placingDate, estimatedArrival);
+            case OrderConstants.DELIVERED_ORDER_STATE:
+                return new DeliveredOrder(id, product, client, placingDate, estimatedArrival);
+            case OrderConstants.DELIVERING_ORDER_STATE:
+                return new DeliveringOrder(id, product, client, placingDate, estimatedArrival);
+            case OrderConstants.RESCHEDULED_ORDER_STATE:
+                final Instant newEstimatedArrival = DateHelper.toInstant(
+                        root.get(OrderConstants.NEW_ESTIMATED_ARRIVAL).asText()
+                );
+                return new RescheduledOrder(id, product, client, placingDate, estimatedArrival,
+                        newEstimatedArrival);
+            default:
+                return null;
         }
-        return null;
     }
 }

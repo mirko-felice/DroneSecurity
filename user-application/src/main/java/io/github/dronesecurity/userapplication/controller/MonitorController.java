@@ -5,26 +5,23 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import io.github.dronesecurity.lib.MqttMessageValueConstants;
-import io.github.dronesecurity.lib.MqttTopicConstants;
 import io.github.dronesecurity.userapplication.drone.monitoring.UserMonitoringService;
 import io.github.dronesecurity.userapplication.events.*;
-import io.github.dronesecurity.userapplication.negligence.services.CourierNegligenceReportService;
+import io.github.dronesecurity.userapplication.reporting.negligence.services.CourierNegligenceReportService;
+import io.github.dronesecurity.userapplication.shipping.courier.utilities.ServiceHelper;
+import io.github.dronesecurity.userapplication.utilities.DialogUtils;
+import io.vertx.core.json.JsonObject;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
+import org.controlsfx.control.ToggleSwitch;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.Map;
@@ -34,15 +31,13 @@ import java.util.ResourceBundle;
  * Controller dedicated to monitoring delivery.
  */
 public final class MonitorController implements Initializable {
-
-    private static final String STATUS_STRING = "Status: ";
-    private static final String STARTING_STRING = "starting";
+    private static final String START_DRONE = "Start";
+    private static final String STOP_DRONE = "Stop";
 
     private final UserMonitoringService monitoringService;
     private final CourierNegligenceReportService negligenceReportService;
+    private final String orderId;
 
-    @FXML private Label statusLabel;
-    @FXML private Button recallButton;
     @FXML private Label proximityCurrentData;
     @FXML private TableView<Map<String, Double>> accelerometerCurrentData;
     @FXML private Label cameraCurrentData;
@@ -61,17 +56,28 @@ public final class MonitorController implements Initializable {
     @FXML private TableColumn<Map<String, Double>, Double> currentAccelerometerYValue;
     @FXML private TableColumn<Map<String, Double>, Double> currentAccelerometerZValue;
 
+    // Controls
+    @FXML private Accordion accordion;
+    @FXML private TitledPane controlsPane;
+    @FXML private ToggleSwitch switchMode;
+    @FXML private Button startAndStopButton;
+    @FXML private Label deliveryStatusLabel;
+    @FXML private Label currentSituationLabel;
+    @FXML private Button recallButton;
+
     /**
      * Build the Controller to interact with services.
+     * @param orderId order identifier to monitoring
      */
-    public MonitorController() {
+    public MonitorController(final String orderId) {
+        this.orderId = orderId;
         this.monitoringService = new UserMonitoringService();
         this.negligenceReportService = CourierNegligenceReportService.getInstance();
     }
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        this.statusLabel.setText(STATUS_STRING + STARTING_STRING);
+        this.accordion.setExpandedPane(this.controlsPane);
         this.recallButton.setDisable(true);
 
         this.negligenceReportService.subscribeToNegligenceReports(this::onNewNegligence);
@@ -106,6 +112,7 @@ public final class MonitorController implements Initializable {
                 new SimpleObjectProperty<>(cell.getValue()
                         .get(MqttMessageParameterConstants.YAW)));
 
+        // TODO add listener to selected property to startDrone if newValue else stopDrone
     }
 
     private void onDataRead(final DataRead dataRead) {
@@ -130,38 +137,72 @@ public final class MonitorController implements Initializable {
     }
 
     private void onWarning(final WarningSituation warningSituation) {
-        Platform.runLater(() -> LoggerFactory.getLogger(getClass()).info(warningSituation.getType().toString()));
+        Platform.runLater(() -> {
+            this.currentSituationLabel.setText(warningSituation.getType().toString());
+            this.currentSituationLabel.setStyle("-fx-text-fill: orange;");
+        });
     }
 
     private void onCritical(final CriticalSituation criticalSituation) {
-        Platform.runLater(() -> LoggerFactory.getLogger(getClass()).info(criticalSituation.getType().toString()));
+        Platform.runLater(() -> {
+            this.currentSituationLabel.setText(criticalSituation.getType().toString());
+            this.currentSituationLabel.setStyle("-fx-text-fill: red;");
+        });
     }
 
     private void onStatusChanged(final StatusChanged statusEvent) {
         Platform.runLater(() -> {
-            this.statusLabel.setText(STATUS_STRING + statusEvent.getStatus());
-            if (MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(statusEvent.getStatus())
-                    || MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE.equals(statusEvent.getStatus()))
-                this.recallButton.setDisable(false);
+            this.deliveryStatusLabel.setText(statusEvent.getStatus());
+            switch (statusEvent.getStatus()) {
+                case MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE:
+                case MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE:
+                    final JsonObject body = new JsonObject();
+                    body.put(ServiceHelper.ORDER_ID_KEY, this.orderId);
+                    body.put(ServiceHelper.STATE_KEY, statusEvent.getStatus()); // TODO
+                    this.recallButton.setDisable(false);
+                    ServiceHelper.postJson(ServiceHelper.Operation.SAVE_DELIVERY, body).onSuccess(res -> {
+                        // TODO
+                    });
+                    break;
+                case MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE:
+                    DialogUtils.showInfoDialog("Drone successfully returned.", () ->
+                            ((Stage) this.accordion.getScene().getWindow()).close());
+                    break;
+                default:
+            }
         });
     }
 
     private void onNewNegligence(final @NotNull NewNegligence newNegligence) {
-        // TODO do something with the negligence report visually
-        LoggerFactory.getLogger(this.getClass()).debug("{}", newNegligence);
+        Platform.runLater(() -> DialogUtils.showInfoNotification("INFO",
+                "You have committed a negligence. Maintainer " + newNegligence.getReport().assignedTo()
+                        + " will take care of this. Go to the 'reports' window to show information about it.",
+                this.switchMode.getScene().getWindow()));
     }
 
     private void backOnStandardSituation(final @NotNull StandardSituation standardSituation) {
-        // TODO do something when standard situation comes back
-        LoggerFactory.getLogger(this.getClass()).debug("{}", standardSituation);
+        Platform.runLater(() -> {
+            this.currentSituationLabel.setText(standardSituation.toString());
+            this.currentSituationLabel.setStyle("-fx-text-fill: black;");
+        });
     }
 
     @FXML
     private void recallDrone() {
-        final JsonNode recallMessage = new ObjectMapper().createObjectNode()
-                .put(MqttMessageParameterConstants.SYNC_PARAMETER,
-                        MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);
-        Connection.getInstance().publish(MqttTopicConstants.ORDER_TOPIC, recallMessage);
+        // TODO check
+        ServiceHelper.postJson(ServiceHelper.Operation.CALL_BACK,
+                new JsonObject().put(ServiceHelper.ORDER_ID_KEY, this.orderId));
         this.recallButton.setDisable(true);
+    }
+
+    @FXML
+    private void startOrStop() {
+        if (START_DRONE.equals(this.startAndStopButton.getText())) {
+            // TODO startDrone
+            this.startAndStopButton.setText(STOP_DRONE);
+        } else if (STOP_DRONE.equals(this.startAndStopButton.getText())) {
+            // TODO stopDrone
+            this.startAndStopButton.setText(START_DRONE);
+        }
     }
 }

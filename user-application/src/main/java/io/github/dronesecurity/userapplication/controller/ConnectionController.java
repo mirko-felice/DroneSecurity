@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.utilities.AlertUtils;
+import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.lib.PropertiesConstants;
 import javafx.application.Platform;
@@ -138,16 +138,16 @@ public final class ConnectionController implements Initializable {
                     if (t == null && !result)
                         ((Stage) this.saveSettingsButton.getScene().getWindow()).close();
                     else if (t != null)
-                        AlertUtils.showErrorAlert("Wrong endpoint!");
+                        DialogUtils.showErrorDialog("Wrong endpoint!");
                     this.progressBar.setVisible(false);
                 }));
             } else {
-                AlertUtils.showWarningAlert("Fill connection settings!");
+                DialogUtils.showWarningDialog("Fill connection settings!");
             }
         } catch (CrtRuntimeException e) {
-            AlertUtils.showErrorAlert("One or more certificates are not valid!");
+            DialogUtils.showErrorDialog("One or more certificates are not valid!");
         } catch (IllegalArgumentException e) {
-            AlertUtils.showErrorAlert(e.getMessage());
+            DialogUtils.showErrorDialog(e.getMessage());
         }
     }
 
@@ -155,7 +155,7 @@ public final class ConnectionController implements Initializable {
         final boolean isClientIDValid = this.clientIdTextField.getText() != null
                 && !this.clientIdTextField.getText().isEmpty();
         if (!isClientIDValid)
-            AlertUtils.showErrorAlert("Client Identifier must NOT be empty!");
+            DialogUtils.showErrorDialog("Client Identifier must NOT be empty!");
         if (this.areFieldsFilled())
             return false;
         final String certsFolderPlusSep = this.certsFolder.getPath() + SEP;
@@ -166,11 +166,11 @@ public final class ConnectionController implements Initializable {
         final boolean isCertificateAuthorityFileInRightFolder = this.certificateAuthorityFile.getPath()
                 .equals(certsFolderPlusSep + this.certificateAuthorityFile.getName());
         if (!isCertificateFileInRightFolder)
-            AlertUtils.showErrorAlert("Certificate File is NOT in the right folder!");
+            DialogUtils.showErrorDialog("Certificate File is NOT in the right folder!");
         if (!isPrivateKeyFileInRightFolder)
-            AlertUtils.showErrorAlert("Private Key File is NOT in the right folder!");
+            DialogUtils.showErrorDialog("Private Key File is NOT in the right folder!");
         if (!isCertificateAuthorityFileInRightFolder)
-            AlertUtils.showErrorAlert("Certificate Authority File is NOT in the right folder!");
+            DialogUtils.showErrorDialog("Certificate Authority File is NOT in the right folder!");
         return isCertificateFileInRightFolder
                 && isPrivateKeyFileInRightFolder
                 && isCertificateAuthorityFileInRightFolder

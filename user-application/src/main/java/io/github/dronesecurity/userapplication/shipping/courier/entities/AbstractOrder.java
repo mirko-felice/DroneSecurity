@@ -5,6 +5,8 @@
 
 package io.github.dronesecurity.userapplication.shipping.courier.entities;
 
+import io.github.dronesecurity.userapplication.exceptions.EmptyClientException;
+import io.github.dronesecurity.userapplication.exceptions.OrderDateException;
 import io.github.dronesecurity.userapplication.utilities.DateHelper;
 import io.github.dronesecurity.userapplication.exceptions.EmptyProductException;
 
@@ -19,6 +21,7 @@ public abstract class AbstractOrder implements Order {
 
     private final String id;
     private final String product;
+    private final String client;
     private final Instant placingDate;
     private final Instant estimatedArrival;
 
@@ -26,18 +29,26 @@ public abstract class AbstractOrder implements Order {
      * Build a generic Order.
      * @param id the order identifier
      * @param product the ordered product
+     * @param client the client who placed the order
      * @param placingDate the date in which the order has been placed
      * @param estimatedArrival the date in which the order should arrive
      */
-    protected AbstractOrder(final String id, final String product, final Instant placingDate,
+    protected AbstractOrder(final String id, final String product, final String client,  final Instant placingDate,
                             final Instant estimatedArrival) {
         if (product == null || product.isEmpty())
             throw new EmptyProductException();
 
-        this.id = id; // TODO think about new id generation (should get last id)
+        if (client == null || client.isEmpty())
+            throw new EmptyClientException();
+
+        if (estimatedArrival.isBefore(placingDate))
+            throw new OrderDateException();
+
+        this.id = id;
         this.product = product;
+        this.client = client;
         this.placingDate = placingDate;
-        this.estimatedArrival = estimatedArrival; // TODO check estimated is after placing
+        this.estimatedArrival = estimatedArrival;
     }
 
     /**
@@ -54,6 +65,14 @@ public abstract class AbstractOrder implements Order {
     @Override
     public String getProduct() {
         return this.product;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getClient() {
+        return this.client;
     }
 
     /**

@@ -30,7 +30,7 @@
 
     <Match>
         <Bug pattern="MS_EXPOSE_REP" />
-        <Class name="~.*IssueReportRepositoryImpl" />
+        <Package name="~.*\.issue.*" />
     </Match>
 
     <Match>

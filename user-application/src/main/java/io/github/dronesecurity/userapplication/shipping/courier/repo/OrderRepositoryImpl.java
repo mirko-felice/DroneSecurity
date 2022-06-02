@@ -6,6 +6,8 @@
 package io.github.dronesecurity.userapplication.shipping.courier.repo;
 
 import io.github.dronesecurity.userapplication.shipping.courier.entities.*;
+import io.github.dronesecurity.userapplication.shipping.courier.utilities.OrderConstants;
+import io.github.dronesecurity.userapplication.utilities.DateHelper;
 import io.github.dronesecurity.userapplication.utilities.VertxHelper;
 import io.vertx.core.Future;
 import io.vertx.core.json.Json;
@@ -29,9 +31,11 @@ import java.util.stream.Collectors;
 public final class OrderRepositoryImpl implements OrderRepository {
 
     private static final String COLLECTION_NAME = "orders";
-    private static final int FAKE_PRODUCTS_MAX_VALUE = 10;
+    private static final int FAKE_SIZE = 10;
     private static final String[] FAKE_PRODUCTS = {
             "HDD", "SSD", "MOUSE", "KEYBOARD", "HEADSET", "MONITOR", "WEBCAM", "CONTROLLER", "USB", "HDMI" };
+    private static final String[] FAKE_CLIENTS = {
+            "John", "James", "Robert", "Mary", "Jennifer", "Patricia", "David", "William", "Micheal", "Anthony" };
     private static OrderRepositoryImpl singleton;
     private final SecureRandom randomGenerator = new SecureRandom();
 
@@ -90,34 +94,42 @@ public final class OrderRepositoryImpl implements OrderRepository {
         this.updateOrderEvents(order);
     }
 
-    private void updateOrderEvents(final @NotNull Order order) {
-        final JsonObject query = new JsonObject();
-        query.put("id", order.getId());
-        final JsonObject update = new JsonObject();
-        final JsonObject what = new JsonObject();
-        what.put("events", order.getCurrentState());
-        update.put("$push", what);
-        VertxHelper.MONGO_CLIENT.updateCollection(COLLECTION_NAME, query, update);
+    @Override
+    public void rescheduled(final RescheduledOrder order) {
+        this.updateOrderEvents(order);
     }
 
-    // TODO delete it when using real orders
+    private void updateOrderEvents(final @NotNull Order order) {
+        final JsonObject query = new JsonObject();
+        query.put(OrderConstants.ID, order.getId());
+        final JsonObject update = new JsonObject();
+        final JsonObject what = new JsonObject();
+        what.put(OrderConstants.EVENTS, order.getCurrentState());
+        update.put("$push", what);
+        if (order instanceof RescheduledOrder)
+            update.put(OrderConstants.NEW_ESTIMATED_ARRIVAL,
+                    DateHelper.toString(((RescheduledOrder) order).getNewEstimatedArrival()));
+        VertxHelper.MONGO_CLIENT.findOneAndUpdate(COLLECTION_NAME, query, update);
+    }
+
     private @NotNull List<Order> generateFakeOrders() {
         final List<Order> orders = new ArrayList<>();
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        for (int i = 0; i <= FAKE_PRODUCTS_MAX_VALUE; i++) {
+        for (int i = 0; i <= FAKE_SIZE; i++) {
             final int j = i;
             executor.schedule(() -> {
-                final String product = FAKE_PRODUCTS[this.randomGenerator.nextInt(FAKE_PRODUCTS_MAX_VALUE)];
-                orders.add(this.generateOrder(j, product));
+                final String product = FAKE_PRODUCTS[this.randomGenerator.nextInt(FAKE_SIZE)];
+                final String client = FAKE_CLIENTS[this.randomGenerator.nextInt(FAKE_SIZE)];
+                orders.add(this.generateOrder(j, product, client));
             }, 1, TimeUnit.MILLISECONDS);
         }
         executor.shutdown();
         return orders;
     }
 
-    @Contract("_, _ -> new")
-    private @NotNull Order generateOrder(final int i, final String product) {
+    @Contract("_, _, _ -> new")
+    private @NotNull Order generateOrder(final int i, final String product, final String client) {
         final Instant now = Instant.now();
-        return new PlacedOrder(String.valueOf(i), product, now, now.plus(1, ChronoUnit.DAYS));
+        return new PlacedOrder(String.valueOf(i), product, client, now, now.plus(1, ChronoUnit.DAYS));
     }
 }

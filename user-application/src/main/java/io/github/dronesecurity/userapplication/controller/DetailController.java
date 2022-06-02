@@ -6,7 +6,7 @@
 package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
-import io.github.dronesecurity.userapplication.negligence.entities.DroneData;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.DroneData;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -36,6 +36,8 @@ public class DetailController implements Initializable {
     @FXML private Label proximityValueLabel;
     @FXML private Label accelerometerLabel;
     @FXML private Label accelerometerValueLabel;
+    @FXML private Label cameraLabel;
+    @FXML private Label cameraValueLabel;
     private List<Node> userElements;
     private List<Node> dataElements;
 
@@ -48,7 +50,8 @@ public class DetailController implements Initializable {
                 Arrays.asList(this.usernameLabel, this.usernameValueLabel, this.roleLabel, this.roleValueLabel));
         this.dataElements = new ArrayList<>(
                 Arrays.asList(this.proximityLabel, this.proximityValueLabel,
-                        this.accelerometerLabel, this.accelerometerValueLabel));
+                        this.accelerometerLabel, this.accelerometerValueLabel,
+                        this.cameraLabel, this.cameraValueLabel));
     }
 
     /**
@@ -69,6 +72,7 @@ public class DetailController implements Initializable {
     public void updateDetails(final @NotNull DroneData data) {
         this.proximityValueLabel.setText(String.valueOf(data.getProximity()));
         this.accelerometerValueLabel.setText(data.getAccelerometer().toString());
+        this.cameraValueLabel.setText(String.valueOf(data.getCamera()));
         this.userElements.forEach(n -> n.setVisible(false));
         this.dataElements.forEach(n -> n.setVisible(true));
     }

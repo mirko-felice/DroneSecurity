@@ -5,12 +5,12 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.utilities.AlertUtils;
+import io.github.dronesecurity.userapplication.auth.AuthenticationService;
+import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.auth.entities.NotLoggedUser;
 import io.github.dronesecurity.userapplication.auth.entities.NotLoggedUserImpl;
 import io.github.dronesecurity.userapplication.auth.entities.Role;
 import io.github.dronesecurity.userapplication.auth.entities.User;
-import io.github.dronesecurity.userapplication.auth.repo.AuthenticationRepository;
 import io.github.dronesecurity.userapplication.shipping.courier.CourierShippingService;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.UserHelper;
@@ -67,13 +67,13 @@ public final class AuthenticationController {
         this.progressBar.setVisible(true);
         this.loginButton.setDisable(true);
         final NotLoggedUser notLoggedUser = this.userFromFields();
-        AuthenticationRepository.getInstance().authenticate(notLoggedUser)
+        AuthenticationService.getInstance().authenticate(notLoggedUser)
                 .onSuccess(loggedUser -> {
                     UserHelper.setLoggedUser(loggedUser);
                     this.showNextWindow(loggedUser.getRole());
                 })
                 .onFailure(e -> {
-                    AlertUtils.showErrorAlert("Username and/or passwords and/or role are wrong!");
+                    DialogUtils.showErrorDialog("Username and/or passwords and/or role are wrong!");
                     this.activeLogin();
                 });
     }

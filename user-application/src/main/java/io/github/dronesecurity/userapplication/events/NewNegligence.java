@@ -6,7 +6,7 @@
 package io.github.dronesecurity.userapplication.events;
 
 import io.github.dronesecurity.userapplication.auth.entities.Courier;
-import io.github.dronesecurity.userapplication.negligence.entities.NegligenceReport;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceReport;
 import org.jetbrains.annotations.NotNull;
 
 /**

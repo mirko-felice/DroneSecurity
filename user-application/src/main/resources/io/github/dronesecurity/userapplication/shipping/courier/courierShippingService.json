@@ -57,7 +57,15 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Order"
+                "type": "object",
+                "properties": {
+                  "order": {
+                    "$ref": "#/components/schemas/Order"
+                  },
+                  "newEstimatedArrival": {
+                    "$ref": "#/components/schemas/OrderDate"
+                  }
+                }
               }
             }
           }
@@ -93,6 +101,62 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/saveDelivery" : {
+      "post": {
+        "operationId": "saveDelivery",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "orderId": {
+                    "type": "string",
+                    "required": true
+                  },
+                  "state": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully save the delivery status"
+          }
+        }
+      }
+    },
+    "/callBack": {
+      "post": {
+        "operationId": "callBack",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "orderId": {
+                    "type": "string",
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully called back drone."
           }
         }
       }

@@ -5,6 +5,7 @@
 
 package io.github.dronesecurity.userapplication.shipping.courier.entities;
 
+import io.github.dronesecurity.userapplication.shipping.courier.utilities.OrderConstants;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,12 +20,13 @@ public class PlacedOrder extends AbstractOrder {
      * Build the placed Order.
      * @param id the order identifier
      * @param product the ordered product
+     * @param client the client who placed the order
      * @param placingDate the date in which the order has been placed
      * @param estimatedArrival the date in which the order should arrive
      */
-    public PlacedOrder(final String id, final String product, final Instant placingDate,
+    public PlacedOrder(final String id, final String product, final String client, final Instant placingDate,
                        final Instant estimatedArrival) {
-        super(id, product, placingDate, estimatedArrival);
+        super(id, product, client, placingDate, estimatedArrival);
     }
 
     /**
@@ -33,7 +35,7 @@ public class PlacedOrder extends AbstractOrder {
     @Contract(pure = true)
     @Override
     public @NotNull String getCurrentState() {
-        return "Order is placed.";
+        return OrderConstants.PLACED_ORDER_STATE;
     }
 
     /**
@@ -42,6 +44,7 @@ public class PlacedOrder extends AbstractOrder {
      */
     @Contract(" -> new")
     public @NotNull DeliveringOrder deliver() {
-        return new DeliveringOrder(this.getId(), this.getProduct(), this.getPlacingDate(), this.getEstimatedArrival());
+        return new DeliveringOrder(this.getId(), this.getProduct(), this.getClient(), this.getPlacingDate(),
+                this.getEstimatedArrival());
     }
 }

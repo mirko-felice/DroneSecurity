@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.exceptions;
 
-import io.github.dronesecurity.userapplication.negligence.entities.NegligenceReport;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceReport;
 
 /**
  * Exception thrown if {@link NegligenceReport} is building without providing data.

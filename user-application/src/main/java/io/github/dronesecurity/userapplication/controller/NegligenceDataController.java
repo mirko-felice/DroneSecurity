@@ -6,10 +6,11 @@
 package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
-import io.github.dronesecurity.userapplication.negligence.entities.ClosedNegligenceReport;
-import io.github.dronesecurity.userapplication.negligence.entities.NegligenceReport;
-import io.github.dronesecurity.userapplication.negligence.entities.OpenNegligenceReport;
-import io.github.dronesecurity.userapplication.negligence.repo.NegligenceRepository;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.ClosedNegligenceReport;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceReport;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.OpenNegligenceReport;
+import io.github.dronesecurity.userapplication.reporting.negligence.services.CourierNegligenceReportService;
+import io.github.dronesecurity.userapplication.reporting.negligence.services.MaintainerNegligenceReportService;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.UserHelper;
 import io.vertx.core.Future;
@@ -107,18 +108,21 @@ public class NegligenceDataController implements Initializable {
      */
     public void updateReports() {
         final LoggedUser user = UserHelper.getLoggedUser();
-        final NegligenceRepository repository = NegligenceRepository.getInstance();
         final String username = user.getUsername();
         final Future<List<OpenNegligenceReport>> openReportsFuture;
         final Future<List<ClosedNegligenceReport>> closedReportsFuture;
         switch (user.getRole()) {
             case COURIER:
-                openReportsFuture = repository.retrieveOpenReportsForCourier(username);
-                closedReportsFuture = repository.retrieveClosedReportsForCourier(username);
+                final CourierNegligenceReportService courierService =
+                        CourierNegligenceReportService.getInstance();
+                openReportsFuture = courierService.retrieveOpenReportsForCourier(username);
+                closedReportsFuture = courierService.retrieveClosedReportsForCourier(username);
                 break;
             case MAINTAINER:
-                openReportsFuture = repository.retrieveOpenReportsForMaintainer(username);
-                closedReportsFuture = repository.retrieveClosedReportsForMaintainer(username);
+                final MaintainerNegligenceReportService maintainerService =
+                        MaintainerNegligenceReportService.getInstance();
+                openReportsFuture = maintainerService.retrieveOpenReportsForMaintainer(username);
+                closedReportsFuture = maintainerService.retrieveClosedReportsForMaintainer(username);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + user.getRole());

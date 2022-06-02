@@ -5,6 +5,8 @@
 
 package io.github.dronesecurity.userapplication.shipping.courier;
 
+import io.github.dronesecurity.userapplication.exceptions.EmptyClientException;
+import io.github.dronesecurity.userapplication.exceptions.EmptyProductException;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.*;
 import io.github.dronesecurity.userapplication.utilities.CastHelper;
 import org.jetbrains.annotations.NotNull;
@@ -23,32 +25,39 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 final class OrderTest {
 
-    private static final String EMPTY_PRODUCT = "";
-    private static final String BASIC_PRODUCT = "basic";
+    private static final String EMPTY_STRING = "";
+    private static final String SIMPLE_PRODUCT = "example";
+    private static final String SIMPLE_CLIENT = "John";
     private static final int HOURS_OF_DAY = 24;
     private static final int MILLIS_CREATION_DELAY = 1000;
     private Order order;
 
     @BeforeEach
     void setup() {
-        this.order = Order.placeToday(BASIC_PRODUCT);
+        this.order = Order.placeToday(SIMPLE_PRODUCT, SIMPLE_CLIENT);
     }
 
     @Test
     void testValidation() {
-        assertThrows(IllegalArgumentException.class,
-                () -> Order.placeToday(null),
-                "Passing null as product should throw IllegalArgumentException");
-        assertThrows(IllegalArgumentException.class,
-                () -> Order.placeToday(EMPTY_PRODUCT),
-                "Passing empty string as product should throw IllegalArgumentException");
+        assertThrows(EmptyProductException.class,
+                () -> Order.placeToday(null, SIMPLE_CLIENT),
+                "Passing null as product should throw EmptyProductException");
+        assertThrows(EmptyClientException.class,
+                () -> Order.placeToday(SIMPLE_PRODUCT, null),
+                "Passing null as client should throw EmptyClientException");
+        assertThrows(EmptyProductException.class,
+                () -> Order.placeToday(EMPTY_STRING, SIMPLE_CLIENT),
+                "Passing empty string as product should throw EmptyProductException");
+        assertThrows(EmptyClientException.class,
+                () -> Order.placeToday(SIMPLE_PRODUCT, EMPTY_STRING),
+                "Passing empty string as client should throw EmptyClientException");
     }
 
     @Test
     void testOrdersEquality() throws InterruptedException {
         assertEquals(this.order, this.order, "Entity should be equal to itself.");
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        executor.schedule(() -> assertNotEquals(this.order, Order.placeToday(BASIC_PRODUCT),
+        executor.schedule(() -> assertNotEquals(this.order, Order.placeToday(SIMPLE_PRODUCT, SIMPLE_CLIENT),
                 "Entity must be unique even if build in the same way."),
                 MILLIS_CREATION_DELAY, TimeUnit.MILLISECONDS);
         executor.shutdown();

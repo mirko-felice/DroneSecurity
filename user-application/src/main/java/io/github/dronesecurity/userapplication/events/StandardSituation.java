@@ -15,6 +15,6 @@ public class StandardSituation implements Event {
      */
     @Override
     public String toString() {
-        return "Alert is no more occurring, situation comes back to a standard form.";
+        return "No current warnings";
     }
 }

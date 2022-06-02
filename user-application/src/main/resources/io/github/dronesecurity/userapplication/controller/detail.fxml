@@ -21,4 +21,6 @@
     <Label fx:id="proximityValueLabel" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
     <Label fx:id="accelerometerLabel" text="Accelerometer:" visible="false" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
     <Label fx:id="accelerometerValueLabel" visible="false" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+    <Label fx:id="cameraLabel" text="Camera: " visible="false" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+    <Label fx:id="cameraValueLabel" visible="false" GridPane.rowIndex="2" GridPane.columnIndex="1" />
 </GridPane>

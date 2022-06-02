@@ -31,14 +31,19 @@ public final class MqttMessageValueConstants {
     public static final String RETURN_ACKNOWLEDGEMENT_MESSAGE = "returning";
 
     /**
+     * Drone returned lifecycle message text.
+     */
+    public static final String RETURNED_ACKNOWLEDGEMENT_MESSAGE = "returned";
+
+    /**
      * Perform delivery message text.
      */
     public static final String PERFORM_DELIVERY_MESSAGE = "perform delivery";
 
     /**
-     * Drone callback message text.
+     * Drone call back message text.
      */
-    public static final String DRONE_CALLBACK_MESSAGE = "callback";
+    public static final String DRONE_CALLBACK_MESSAGE = "callBack";
 
     private MqttMessageValueConstants() { }
 }

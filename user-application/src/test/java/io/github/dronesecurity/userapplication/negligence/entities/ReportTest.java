@@ -9,7 +9,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import io.github.dronesecurity.userapplication.exceptions.ReportEmptyDataException;
-import io.github.dronesecurity.userapplication.negligence.utilities.NegligenceConstants;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.*;
+import io.github.dronesecurity.userapplication.reporting.negligence.utilities.NegligenceConstants;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ final class ReportTest {
         assertTrue(emptyData.isEmpty(), "Drone data should be empty.");
         assertNull(emptyData.getProximity(), "Report should have empty proximity value.");
         assertTrue(emptyData.getAccelerometer().isEmpty(), "Report should have empty accelerometer data.");
+        assertNull(emptyData.getCamera(), "Report should have empty camera data.");
     }
 
     @Test
@@ -40,6 +42,7 @@ final class ReportTest {
         assertFalse(withData.getData().isEmpty(), "Drone data should not be empty");
         assertNotNull(withData.getData().getProximity(), "Proximity should not be NULL.");
         assertFalse(withData.getData().getAccelerometer().isEmpty(), "Accelerometer data should not be empty.");
+        assertNotNull(withData.getData().getCamera(), "Camera data should not be NULL.");
         assertNotEquals(withData.getData(), withData.getData().deepCopy(),
                 "Data copy should be different of original.");
     }
@@ -81,6 +84,7 @@ final class ReportTest {
         final ObjectMapper mapper = new ObjectMapper();
         final JsonNode data = mapper.createObjectNode()
                 .put(NegligenceConstants.PROXIMITY, 1)
+                .put(NegligenceConstants.CAMERA, 1)
                 .set(NegligenceConstants.ACCELEROMETER, mapper.createObjectNode()
                         .put(MqttMessageParameterConstants.ROLL, 1)
                         .put(MqttMessageParameterConstants.PITCH, 1)

@@ -5,11 +5,8 @@
 
 package io.github.dronesecurity.userapplication.shipping.courier.repo;
 
-import io.github.dronesecurity.userapplication.shipping.courier.entities.DeliveredOrder;
-import io.github.dronesecurity.userapplication.shipping.courier.entities.DeliveringOrder;
+import io.github.dronesecurity.userapplication.shipping.courier.entities.*;
 import io.vertx.core.Future;
-import io.github.dronesecurity.userapplication.shipping.courier.entities.FailedOrder;
-import io.github.dronesecurity.userapplication.shipping.courier.entities.Order;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,6 +47,12 @@ public interface OrderRepository {
      * @param order the order to save
      */
     void failedDelivery(FailedOrder order);
+
+    /**
+     * Save the rescheduled order.
+     * @param order the order to save
+     */
+    void rescheduled(RescheduledOrder order);
 
     /**
      * Get the instance of this repository.

@@ -5,13 +5,13 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.utilities.AlertUtils;
-import io.github.dronesecurity.userapplication.issue.courier.IssueReportService;
-import io.github.dronesecurity.userapplication.issue.courier.issues.ClosedIssue;
-import io.github.dronesecurity.userapplication.issue.courier.issues.CreatedIssue;
-import io.github.dronesecurity.userapplication.issue.courier.issues.OpenIssue;
-import io.github.dronesecurity.userapplication.issue.courier.issues.VisionedIssue;
-import io.github.dronesecurity.userapplication.issue.courier.serialization.IssueStringHelper;
+import io.github.dronesecurity.userapplication.reporting.issue.services.MaintainerIssueReportService;
+import io.github.dronesecurity.userapplication.utilities.DialogUtils;
+import io.github.dronesecurity.userapplication.reporting.issue.entities.ClosedIssue;
+import io.github.dronesecurity.userapplication.reporting.issue.entities.CreatedIssue;
+import io.github.dronesecurity.userapplication.reporting.issue.entities.OpenIssue;
+import io.github.dronesecurity.userapplication.reporting.issue.entities.VisionedIssue;
+import io.github.dronesecurity.userapplication.reporting.issue.serialization.IssueStringHelper;
 import io.github.dronesecurity.userapplication.utilities.CastHelper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -27,7 +27,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//TODO add issue after creating a new one
+//TODO add issue after creating a new one (create event)
 
 /**
  * The controller of the issue creation service.
@@ -61,7 +61,7 @@ public final class MaintainerIssueController implements Initializable {
     @FXML private AnchorPane closingIssuePane;
     @FXML private TextArea solutionTextArea;
 
-    private final IssueReportService issueReportService;
+    private final MaintainerIssueReportService issueReportService;
     private final Map<Integer, CreatedIssue> openIssues;
     private final Map<Integer, ClosedIssue> closedIssues;
 
@@ -71,7 +71,7 @@ public final class MaintainerIssueController implements Initializable {
      * Instantiates the issue report controller with its service.
      */
     public MaintainerIssueController() {
-        this.issueReportService = new IssueReportService();
+        this.issueReportService = MaintainerIssueReportService.getInstance();
 
         this.openIssues = new HashMap<>();
         this.closedIssues = new HashMap<>();
@@ -151,7 +151,7 @@ public final class MaintainerIssueController implements Initializable {
                             selectionModel.select(this.currentlySelectedIssue);
                         });
                     } else
-                        AlertUtils.showErrorAlert("Error connecting to issue information. Please retry.");
+                        DialogUtils.showErrorDialog("Error connecting to issue information. Please retry.");
                 }));
     }
 

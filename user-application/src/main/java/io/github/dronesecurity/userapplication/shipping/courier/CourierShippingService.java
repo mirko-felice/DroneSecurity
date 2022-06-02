@@ -5,17 +5,14 @@
 
 package io.github.dronesecurity.userapplication.shipping.courier;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.dronesecurity.lib.Connection;
-import io.github.dronesecurity.lib.MqttMessageParameterConstants;
-import io.github.dronesecurity.lib.MqttMessageValueConstants;
-import io.github.dronesecurity.lib.MqttTopicConstants;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.DeliveringOrder;
+import io.github.dronesecurity.userapplication.shipping.courier.entities.FailedOrder;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
+import io.github.dronesecurity.userapplication.shipping.courier.entities.RescheduledOrder;
 import io.github.dronesecurity.userapplication.shipping.courier.repo.OrderRepository;
-import io.github.dronesecurity.userapplication.shipping.courier.utilities.OrderConstants;
+import io.github.dronesecurity.userapplication.shipping.courier.utilities.ServiceHelper;
 import io.github.dronesecurity.userapplication.utilities.CastHelper;
+import io.github.dronesecurity.userapplication.utilities.DateHelper;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
@@ -29,9 +26,8 @@ import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.validation.RequestParameters;
 import io.vertx.ext.web.validation.ValidationHandler;
 import org.jetbrains.annotations.NotNull;
-import software.amazon.awssdk.crt.mqtt.MqttMessage;
 
-import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -41,17 +37,15 @@ import java.util.List;
  */
 public final class CourierShippingService extends AbstractVerticle {
 
-    private static final String OPEN_API_URL = "https://raw.githubusercontent.com/mirko-felice/DroneSecurity/master/"
+    private static final String OPEN_API_URL = "https://raw.githubusercontent.com/mirko-felice/DroneSecurity/develop/"
             + "user-application/src/main/resources/io/github/dronesecurity/userapplication/shipping/courier/"
             + "courierShippingService.json";
-    private static final String PERFORM_DELIVERY_OPERATION_ID = "performDelivery";
-    private static final String RESCHEDULE_DELIVERY_OPERATION_ID = "rescheduleDelivery";
-    private static final String LIST_ORDERS_OPERATION_ID = "listOrders";
     private static final String CORRECT_RESPONSE_TO_PERFORM_DELIVERY = "Delivery is performing...";
     private static final String CORRECT_RESPONSE_TO_RESCHEDULE_DELIVERY = "Order rescheduled.";
     private static final String DEFAULT_KEY = "default";
     private static final String SEP = "/";
     private static final int CLIENT_ERROR_CODE = 400;
+    private static final OrderRepository REPOSITORY = OrderRepository.getInstance();
 
     @Override
     public void start(final @NotNull Promise<Void> startPromise) {
@@ -82,65 +76,71 @@ public final class CourierShippingService extends AbstractVerticle {
     }
 
     private void setupOperations(final @NotNull RouterBuilder routerBuilder) {
-        routerBuilder.operation(PERFORM_DELIVERY_OPERATION_ID)
+        routerBuilder.operation(ServiceHelper.Operation.PERFORM_DELIVERY.toString())
                 .handler(this::performDelivery);
-        routerBuilder.operation(RESCHEDULE_DELIVERY_OPERATION_ID)
+        routerBuilder.operation(ServiceHelper.Operation.RESCHEDULE_DELIVERY.toString())
                 .handler(this::rescheduleDelivery);
-        routerBuilder.operation(LIST_ORDERS_OPERATION_ID)
+        routerBuilder.operation(ServiceHelper.Operation.LIST_ORDERS.toString())
                 .handler(this::listOrders);
+        routerBuilder.operation(ServiceHelper.Operation.CALL_BACK.toString())
+                .handler(this::callBack);
+        routerBuilder.operation(ServiceHelper.Operation.SAVE_DELIVERY.toString())
+                .handler(this::saveDelivery);
     }
 
     private void performDelivery(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         final JsonObject body = params.body().getJsonObject();
-        final PlacedOrder order = body.getJsonObject(OrderConstants.ORDER_KEY).mapTo(PlacedOrder.class);
+        final PlacedOrder order = body.getJsonObject(ServiceHelper.ORDER_KEY).mapTo(PlacedOrder.class);
         if (order == null)
             routingContext.response().setStatusCode(CLIENT_ERROR_CODE).end();
         else {
             final DeliveringOrder deliveringOrder = order.deliver();
-            OrderRepository.getInstance().delivering(deliveringOrder);
+            REPOSITORY.delivering(deliveringOrder);
 
-            final JsonNode messageJson = new ObjectMapper().createObjectNode()
-                    .put(MqttMessageParameterConstants.SYNC_PARAMETER,
-                            MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE)
-                    .put(MqttMessageParameterConstants.ORDER_ID_PARAMETER, order.getId())
-                    .put(MqttMessageParameterConstants.COURIER_PARAMETER, body.getString(OrderConstants.COURIER_KEY));
-            final Connection connection = Connection.getInstance();
-            connection.publish(MqttTopicConstants.ORDER_TOPIC, messageJson);
-
-            connection.subscribe(MqttTopicConstants.LIFECYCLE_TOPIC, this::callback);
+            ServiceHelper.sendPerformDeliveryMessage(order.getId(), body.getString(ServiceHelper.COURIER_KEY));
             routingContext.response().end(CORRECT_RESPONSE_TO_PERFORM_DELIVERY);
         }
     }
 
-    private void callback(final @NotNull MqttMessage msg) {
-        final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
-        final String orderId = json.getString(MqttMessageParameterConstants.ORDER_ID_PARAMETER);
-        final String statusValue = json.getString(MqttMessageParameterConstants.STATUS_PARAMETER);
-        final OrderRepository orderRepository = OrderRepository.getInstance();
-        CastHelper.safeCast(orderRepository.getOrderById(orderId), DeliveringOrder.class).ifPresent(order -> {
-            final Connection connection = Connection.getInstance();
-            if (MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(statusValue))
-                orderRepository.confirmedDelivery(order.confirmDelivery());
-            else if (MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE.equals(statusValue))
-                orderRepository.failedDelivery(order.failDelivery());
+    private void saveDelivery(final @NotNull RoutingContext routingContext) {
+        final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
+        final JsonObject body = params.body().getJsonObject();
+        CastHelper.safeCast(REPOSITORY.getOrderById(body.getString(ServiceHelper.ORDER_ID_KEY)), DeliveringOrder.class)
+                .ifPresent(order -> {
+                    final String status = body.getString(ServiceHelper.STATE_KEY);
+                    if (ServiceHelper.DELIVERY_SUCCESSFUL.equals(status))
+                        REPOSITORY.confirmedDelivery(order.confirmDelivery());
+                    else if (ServiceHelper.DELIVERY_FAILED.equals(status))
+                        REPOSITORY.failedDelivery(order.failDelivery());
+                });
+    }
 
-            // TODO maybe catch else branch that does NOT send this message
-            final JsonNode message = new ObjectMapper().createObjectNode()
-                    .put(MqttMessageParameterConstants.SYNC_PARAMETER,
-                            MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);
-            connection.publish(MqttTopicConstants.ORDER_TOPIC, message);
-        });
+    private void callBack(final @NotNull RoutingContext routingContext) {
+        final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
+        final JsonObject body = params.body().getJsonObject();
+        final long droneId = body.getLong("droneId");
+
+        ServiceHelper.sendCallBackMessage(droneId);
     }
 
     private void rescheduleDelivery(final @NotNull RoutingContext routingContext) {
-        routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-        // TODO refactor because needed NEW Date and order ID
-        routingContext.response().end(CORRECT_RESPONSE_TO_RESCHEDULE_DELIVERY);
+        final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
+        final JsonObject body = params.body().getJsonObject();
+        final FailedOrder order = body.getJsonObject(ServiceHelper.ORDER_KEY).mapTo(FailedOrder.class);
+        if (order == null)
+            routingContext.response().setStatusCode(CLIENT_ERROR_CODE).end();
+        else {
+            final Instant newEstimatedArrival =
+                    DateHelper.toInstant(body.getString(ServiceHelper.NEW_ESTIMATED_ARRIVAL_KEY));
+            final RescheduledOrder rescheduledOrder = order.rescheduleDelivery(newEstimatedArrival);
+            REPOSITORY.rescheduled(rescheduledOrder);
+            routingContext.response().end(CORRECT_RESPONSE_TO_RESCHEDULE_DELIVERY);
+        }
     }
 
     private void listOrders(final @NotNull RoutingContext routingContext) {
-        OrderRepository.getInstance().getOrders().onSuccess(orders -> routingContext.response()
+        REPOSITORY.getOrders().onSuccess(orders -> routingContext.response()
                 .putHeader("Content-Type", "application/json")
                 .send(Json.encodePrettily(orders)));
     }

@@ -9,6 +9,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.Order;
+import io.github.dronesecurity.userapplication.shipping.courier.entities.RescheduledOrder;
+import io.github.dronesecurity.userapplication.shipping.courier.utilities.OrderConstants;
 import io.github.dronesecurity.userapplication.utilities.DateHelper;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,11 +25,15 @@ public final class OrderSerializer extends JsonSerializer<Order> {
     public void serialize(final @NotNull Order value, final @NotNull JsonGenerator gen,
                           final SerializerProvider serializers) throws IOException {
         gen.writeStartObject();
-        gen.writeStringField("id", value.getId());
-        gen.writeStringField("product", value.getProduct());
-        gen.writeStringField("placingDate", DateHelper.toString(value.getPlacingDate()));
-        gen.writeStringField("estimatedArrival", DateHelper.toString(value.getEstimatedArrival()));
-        gen.writeArrayFieldStart("events");
+        gen.writeStringField(OrderConstants.ID, value.getId());
+        gen.writeStringField(OrderConstants.PRODUCT, value.getProduct());
+        gen.writeStringField(OrderConstants.CLIENT, value.getClient());
+        gen.writeStringField(OrderConstants.PLACING_DATE, DateHelper.toString(value.getPlacingDate()));
+        gen.writeStringField(OrderConstants.ESTIMATED_ARRIVAL, DateHelper.toString(value.getEstimatedArrival()));
+        if (value instanceof RescheduledOrder)
+            gen.writeStringField(OrderConstants.NEW_ESTIMATED_ARRIVAL,
+                    DateHelper.toString(((RescheduledOrder) value).getNewEstimatedArrival()));
+        gen.writeArrayFieldStart(OrderConstants.EVENTS);
         gen.writeString(value.getCurrentState());
         gen.writeEndArray();
         gen.writeEndObject();
