@@ -9,11 +9,9 @@ import io.github.dronesecurity.userapplication.auth.entities.Role;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.FailedOrder;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.Order;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
+import io.github.dronesecurity.userapplication.shipping.courier.utilities.OrderConstants;
 import io.github.dronesecurity.userapplication.shipping.courier.utilities.ServiceHelper;
-import io.github.dronesecurity.userapplication.utilities.DialogUtils;
-import io.github.dronesecurity.userapplication.utilities.DateHelper;
-import io.github.dronesecurity.userapplication.utilities.FXHelper;
-import io.github.dronesecurity.userapplication.utilities.UserHelper;
+import io.github.dronesecurity.userapplication.utilities.*;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import javafx.application.Platform;
@@ -45,13 +43,13 @@ public final class OrdersController implements Initializable {
     private static final String NEGLIGENCE_DATA_FILENAME = "negligenceData.fxml";
     private static final String COURIER_ISSUE_VIEW_FILE_NAME = "courierIssues.fxml";
     private static final String MAINTAINER_ISSUE_VIEW_FILE_NAME = "maintainerIssues.fxml";
-    private static final Runnable NOT_SELECTED_RUNNABLE = () ->
-            DialogUtils.showWarningDialog("You MUST first select an order.");
     @FXML private TableView<Order> table;
     @FXML private TableColumn<Order, String> orderDateColumn;
     @FXML private TableColumn<Order, String> productColumn;
     @FXML private TableColumn<Order, String> stateColumn;
     @FXML private Button showReportsButton;
+    @FXML private Button performDeliveryButton;
+    @FXML private Button rescheduleDeliveryButton;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -66,43 +64,43 @@ public final class OrdersController implements Initializable {
                                 .collect(Collectors.toList());
                         this.table.setItems(FXCollections.observableList(orders));
                     });
+        this.table.setOnMouseClicked(ignored -> this.getSelectedOrder().ifPresent(order -> {
+            if (OrderConstants.PLACED_ORDER_STATE.equals(order.getCurrentState())) {
+                this.performDeliveryButton.setDisable(false);
+                this.rescheduleDeliveryButton.setDisable(true);
+            } else if (OrderConstants.FAILED_ORDER_STATE.equals(order.getCurrentState())) {
+                this.performDeliveryButton.setDisable(true);
+                this.rescheduleDeliveryButton.setDisable(false);
+            }
+        }));
     }
 
     @FXML
     private void performDelivery() {
-        final Optional<Order> selectedOrder = this.getSelectedOrder();
-        selectedOrder.ifPresentOrElse(order -> {
-            if (order instanceof PlacedOrder) {
-                final JsonObject body = new JsonObject()
-                        .put(ServiceHelper.ORDER_KEY, order)
-                        .put(ServiceHelper.COURIER_KEY, UserHelper.getLoggedUser().getUsername());
-                ServiceHelper.postJson(ServiceHelper.Operation.PERFORM_DELIVERY, body)
-                        .onSuccess(h -> Platform.runLater(() -> {
-                            final URL fileUrl = getClass().getResource(MONITORING_FILENAME);
-                            final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-                            fxmlLoader.setController(new MonitorController(order.getId()));
-                            FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Monitoring...", fxmlLoader)
-                                    .ifPresent(Stage::show);
-                        }));
-            } else
-                DialogUtils.showErrorDialog("You can NOT deliver an order that isn't placed.");
-        }, NOT_SELECTED_RUNNABLE);
+        this.getSelectedOrder().flatMap(o -> CastHelper.safeCast(o, PlacedOrder.class)).ifPresent(order -> {
+            final JsonObject body = new JsonObject()
+                    .put(ServiceHelper.ORDER_KEY, order)
+                    .put(ServiceHelper.COURIER_KEY, UserHelper.getLoggedUser().getUsername());
+            ServiceHelper.postJson(ServiceHelper.Operation.PERFORM_DELIVERY, body)
+                    .onSuccess(h -> Platform.runLater(() -> {
+                        final URL fileUrl = getClass().getResource(MONITORING_FILENAME);
+                        final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
+                        fxmlLoader.setController(new MonitorController(order.getId()));
+                        FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Monitoring...", fxmlLoader)
+                                .ifPresent(Stage::show);
+                    }));
+        });
     }
 
     @FXML
     private void rescheduleDelivery() {
-        final Optional<Order> selectedOrder = this.getSelectedOrder();
-        selectedOrder.ifPresentOrElse(order -> {
-            if (order instanceof FailedOrder) {
-               this.createDatePickerDialog().showAndWait().ifPresent(newEstimatedArrival -> {
+        this.getSelectedOrder().flatMap(o -> CastHelper.safeCast(o, FailedOrder.class)).ifPresent(order ->
+                this.createDatePickerDialog().showAndWait().ifPresent(newEstimatedArrival -> {
                     final JsonObject body = new JsonObject()
                             .put(ServiceHelper.ORDER_KEY, order)
                             .put(ServiceHelper.NEW_ESTIMATED_ARRIVAL_KEY, newEstimatedArrival);
-                   ServiceHelper.postJson(ServiceHelper.Operation.RESCHEDULE_DELIVERY, body);
-                });
-            } else
-                DialogUtils.showErrorDialog("You can NOT reschedule an order that isn't failed.");
-        }, NOT_SELECTED_RUNNABLE);
+                    ServiceHelper.postJson(ServiceHelper.Operation.RESCHEDULE_DELIVERY, body);
+                }));
     }
 
     @FXML

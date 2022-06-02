@@ -123,7 +123,7 @@ public final class ServiceHelper {
      */
     public static Future<HttpResponse<Buffer>> postJson(final @NotNull Operation operation,
                                                         final @NotNull JsonObject json) {
-        return VertxHelper.WEB_CLIENT.get(PORT, HOST, BASE_URI + operation)
+        return VertxHelper.WEB_CLIENT.post(PORT, HOST, BASE_URI + operation)
                 .putHeader("Content-Type", "application/json")
                 .sendBuffer(json.toBuffer());
     }

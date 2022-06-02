@@ -153,22 +153,21 @@ public final class MonitorController implements Initializable {
     private void onStatusChanged(final StatusChanged statusEvent) {
         Platform.runLater(() -> {
             this.deliveryStatusLabel.setText(statusEvent.getStatus());
-            switch (statusEvent.getStatus()) {
-                case MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE:
-                case MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE:
-                    final JsonObject body = new JsonObject();
-                    body.put(ServiceHelper.ORDER_ID_KEY, this.orderId);
-                    body.put(ServiceHelper.STATE_KEY, statusEvent.getStatus()); // TODO
-                    this.recallButton.setDisable(false);
-                    ServiceHelper.postJson(ServiceHelper.Operation.SAVE_DELIVERY, body).onSuccess(res -> {
-                        // TODO
-                    });
-                    break;
-                case MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE:
-                    DialogUtils.showInfoDialog("Drone successfully returned.", () ->
-                            ((Stage) this.accordion.getScene().getWindow()).close());
-                    break;
-                default:
+            if (MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE.equals(statusEvent.getStatus())) {
+                this.deliveryStatusLabel.setStyle("-fx-text-fill: cyan;");
+                DialogUtils.showInfoDialog("Drone successfully returned.", () ->
+                        ((Stage) this.accordion.getScene().getWindow()).close());
+            } else {
+                if (MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(statusEvent.getStatus()))
+                    this.deliveryStatusLabel.setStyle("-fx-text-fill: green;");
+                else if (MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE.equals(statusEvent.getStatus())) {
+                    this.deliveryStatusLabel.setStyle("-fx-text-fill: red;");
+                }
+                final JsonObject body = new JsonObject();
+                body.put(ServiceHelper.ORDER_ID_KEY, this.orderId);
+                body.put(ServiceHelper.STATE_KEY, statusEvent.getStatus());
+                this.recallButton.setDisable(false);
+                ServiceHelper.postJson(ServiceHelper.Operation.SAVE_DELIVERY, body);
             }
         });
     }
@@ -189,7 +188,6 @@ public final class MonitorController implements Initializable {
 
     @FXML
     private void recallDrone() {
-        // TODO check
         ServiceHelper.postJson(ServiceHelper.Operation.CALL_BACK,
                 new JsonObject().put(ServiceHelper.ORDER_ID_KEY, this.orderId));
         this.recallButton.setDisable(true);

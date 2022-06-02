@@ -106,20 +106,20 @@ public final class CourierShippingService extends AbstractVerticle {
     private void saveDelivery(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         final JsonObject body = params.body().getJsonObject();
-        CastHelper.safeCast(REPOSITORY.getOrderById(body.getString(ServiceHelper.ORDER_ID_KEY)), DeliveringOrder.class)
-                .ifPresent(order -> {
+        REPOSITORY.getOrderById(body.getString(ServiceHelper.ORDER_ID_KEY))
+                .onSuccess(o -> CastHelper.safeCast(o, DeliveringOrder.class).ifPresent(order -> {
                     final String status = body.getString(ServiceHelper.STATE_KEY);
                     if (ServiceHelper.DELIVERY_SUCCESSFUL.equals(status))
                         REPOSITORY.confirmedDelivery(order.confirmDelivery());
                     else if (ServiceHelper.DELIVERY_FAILED.equals(status))
                         REPOSITORY.failedDelivery(order.failDelivery());
-                });
+                }));
     }
 
     private void callBack(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         final JsonObject body = params.body().getJsonObject();
-        final long droneId = body.getLong("droneId");
+        final long droneId = Long.parseLong(body.getString("orderId"));
 
         ServiceHelper.sendCallBackMessage(droneId);
     }
