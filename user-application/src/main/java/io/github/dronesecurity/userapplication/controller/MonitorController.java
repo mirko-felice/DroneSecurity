@@ -155,8 +155,8 @@ public final class MonitorController implements Initializable {
             this.deliveryStatusLabel.setText(statusEvent.getStatus());
             if (MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE.equals(statusEvent.getStatus())) {
                 this.deliveryStatusLabel.setStyle("-fx-text-fill: cyan;");
-                DialogUtils.showInfoDialog("Drone successfully returned.", () ->
-                        ((Stage) this.accordion.getScene().getWindow()).close());
+                DialogUtils.showInfoDialog("Drone successfully returned.",
+                        ((Stage) this.accordion.getScene().getWindow())::close);
             } else {
                 if (MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(statusEvent.getStatus()))
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: green;");
