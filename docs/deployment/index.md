@@ -12,22 +12,25 @@ I requisiti comuni sono:
 drone, ovvero il certificato che rappresenta l'autorità (in questo caso Amazon),
 il certificato del dispositivo (drone) e la sua chiave privata.
 
-Un requisito aggiuntivo necessario per l'applicativo dell'utente è possedere un serve MongoDB.
+Un requisito aggiuntivo necessario per l'applicativo dell'utente è possedere un server MongoDB.
 
-Per eseguire correttamente gli applicativi sono possibili due opzioni:
-- Cliccare due volte l'applicativo;
-- Oppure, si può comunque eseguire da riga di comando digitando il comando `java -jar `
-seguito dal nome del JAR.
+Un requisito aggiuntivo necessario per l'applicativo del drone è aver installato Python versione 3.7 o maggiore.
 
-Inizialmente dovranno essere salvate le impostazioni della connessione, per cui verrà aperta un'interfaccia
-grafica la quale creerà un file per memorizzare le impostazioni. Se il dispositivo su cui
-eseguire l'applicativo `drone-system` non offre un'interfaccia grafica è necessario generare il file a priori
-e in seguito copiarlo nella stessa cartella nella quale verrà posto l'eseguibile.
+Entrambi gli applicativi devono essere lanciati da linea di comando, a meno che sulla macchina sia stata impostata 
+correttamente la variabile d'ambiente che sia indirizzata al percorso dell'eseguibile della Java Virtual Machine.
 
-Solo se si vuole modificare il file, nel caso di `drone-system` è necessario aggiungere il parametro 
-`generate-properties` a seguito del comando per lanciare l'applicativo, come riportato di seguito ->
+Per eseguire correttamente l'applicativo sul drone è necessario dapprima configurare le proprietà utili alla 
+connessione del servizio cloud.
+Per questo motivo è necessario eseguire il comando `java -jar drone-system-fat.jar` da linea di comando per permettere
+all'applicativo di chiedere all'utente alcune informazioni indispensabili.
+Dall'esecuzione successiva non sarà più necessario richiedere altre informazioni in quanto le informazioni vengono 
+salvate su un file nella cartella corrente in cui viene lanciato l'applicativo, a meno che l'utente non voglia 
+modificare la configurazione. In tal caso è necessario riavviare l'applicativo da riga di comando, aggiungendo come 
+parametro `generate-properties`.
 
-`java -jar drone-system-fat.jar generate-properties`.
+Per quanto riguarda l'applicativo utente è predisposta un'interfaccia grafica tramite la quale memorizzare la 
+configurazione della connessione. Se si vorrà modificare alcuni parametri, l'applicativo permetterà di modificarli 
+ponendo la domanda all'avvio del programma.
 
 Poiché non è possibile controllare che il _Client Identifier_ sia univoco, è opportuno prestare attenzione a
-non inserire il medesimo nei due applicativi, altrimenti il comportamento del sistema diventa imprevedibile.
+non inserire il medesimo nei due applicativi, altrimenti il comportamento del sistema in toto diventa imprevedibile.
