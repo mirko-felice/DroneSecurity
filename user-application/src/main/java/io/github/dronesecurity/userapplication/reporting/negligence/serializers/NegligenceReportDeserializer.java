@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.*;
 import io.github.dronesecurity.userapplication.reporting.negligence.utilities.NegligenceConstants;
-import io.github.dronesecurity.userapplication.utilities.DateHelper;
+import io.github.dronesecurity.lib.DateHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

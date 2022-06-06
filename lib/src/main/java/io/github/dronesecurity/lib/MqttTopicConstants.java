@@ -40,5 +40,10 @@ public final class MqttTopicConstants {
      */
     public static final String NEGLIGENCE_REPORTS_TOPIC = "negligenceReports";
 
+    /**
+     * Drone's Camera performance data topic.
+     */
+    public static final String PERFORMANCE_CAMERA = "cameraPerformance";
+
     private MqttTopicConstants() { }
 }

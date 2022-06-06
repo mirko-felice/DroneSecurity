@@ -38,7 +38,7 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
 
     private static final int COMPATIBLE_PYTHON_MAJOR_VERSION = 3;
     private static final int COMPATIBLE_PYTHON_MINOR_VERSION = 7;
-    private static final int[] SUCCESSFUL_TERMINATION_CODES = {1, 143};
+    private static final int[] SUCCESSFUL_TERMINATION_CODES = {0, 1, 143};
     private static final String SCRIPT_EXTENSION = ".py";
     private static final String CMD = System.getProperty("os.name").toLowerCase(Locale.getDefault()).contains("win")
                                                                                                         ? "python "
@@ -192,5 +192,4 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
         }
         return null;
     }
-
 }

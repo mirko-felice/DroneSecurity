@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.dronesecurity.userapplication.reporting.issue.entities.*;
-import io.github.dronesecurity.userapplication.utilities.DateHelper;
+import io.github.dronesecurity.lib.DateHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

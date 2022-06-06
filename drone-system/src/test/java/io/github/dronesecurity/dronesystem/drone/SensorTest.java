@@ -31,6 +31,7 @@ class SensorTest {
     void sensorCreationTest(final Class<Sensor<?>> sensorType) {
         final Sensor<?> sensor = this.initSensor(sensorType);
         Assertions.assertInstanceOf(sensorType, sensor);
+        sensor.activate();
         Assertions.assertTrue(sensor.isOn());
     }
 
@@ -43,6 +44,7 @@ class SensorTest {
     @ValueSource(classes = {ProximitySensor.class, Accelerometer.class, Camera.class})
     void sensorDeactivationTest(final Class<Sensor<?>> sensorType) {
         final Sensor<?> sensor = this.initSensor(sensorType);
+        sensor.activate();
         Assertions.assertTrue(sensor.isOn());
         final ScheduledExecutorService execService = Executors.newSingleThreadScheduledExecutor();
         execService.schedule(() -> {

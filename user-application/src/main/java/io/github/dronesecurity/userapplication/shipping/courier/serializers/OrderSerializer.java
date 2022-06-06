@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.Order;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.RescheduledOrder;
 import io.github.dronesecurity.userapplication.shipping.courier.utilities.OrderConstants;
-import io.github.dronesecurity.userapplication.utilities.DateHelper;
+import io.github.dronesecurity.lib.DateHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

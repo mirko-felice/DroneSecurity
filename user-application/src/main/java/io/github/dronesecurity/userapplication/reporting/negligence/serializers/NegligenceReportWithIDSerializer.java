@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import io.github.dronesecurity.userapplication.reporting.negligence.utilities.NegligenceConstants;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.ClosedNegligenceReport;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceReportWithID;
-import io.github.dronesecurity.userapplication.utilities.DateHelper;
+import io.github.dronesecurity.lib.DateHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

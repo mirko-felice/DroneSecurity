@@ -7,7 +7,7 @@ package io.github.dronesecurity.userapplication.shipping.courier.entities;
 
 import io.github.dronesecurity.userapplication.exceptions.EmptyClientException;
 import io.github.dronesecurity.userapplication.exceptions.OrderDateException;
-import io.github.dronesecurity.userapplication.utilities.DateHelper;
+import io.github.dronesecurity.lib.DateHelper;
 import io.github.dronesecurity.userapplication.exceptions.EmptyProductException;
 
 import java.time.Instant;

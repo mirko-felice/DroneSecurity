@@ -12,7 +12,7 @@ import io.github.dronesecurity.userapplication.shipping.courier.entities.Resched
 import io.github.dronesecurity.userapplication.shipping.courier.repo.OrderRepository;
 import io.github.dronesecurity.userapplication.shipping.courier.utilities.ServiceHelper;
 import io.github.dronesecurity.userapplication.utilities.CastHelper;
-import io.github.dronesecurity.userapplication.utilities.DateHelper;
+import io.github.dronesecurity.lib.DateHelper;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;

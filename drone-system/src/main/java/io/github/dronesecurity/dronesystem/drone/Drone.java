@@ -68,6 +68,24 @@ public class Drone {
      * Activates the Drone, making it operative.
      */
     public void activate() {
+        this.proceed();
+        this.accelerometer.activate();
+        this.camera.activate();
+        this.proximity.activate();
+    }
+
+    /**
+     * Deactivates the Drone, making it inoperative.
+     */
+    public void deactivate() {
+        this.halt();
+        this.proximity.deactivate();
+        this.accelerometer.deactivate();
+        this.camera.deactivate();
+    }
+
+    // Makes the Drone proceed with its delivery.
+    private void proceed() {
         this.isMoving = true;
     }
 
@@ -76,16 +94,6 @@ public class Drone {
      */
     public void halt() {
         this.isMoving = false;
-    }
-
-    /**
-     * Deactivates the Drone, making it inoperative.
-     */
-    public void deactivate() {
-        this.isMoving = false;
-        this.proximity.deactivate();
-        this.accelerometer.deactivate();
-        this.camera.deactivate();
     }
 
     /**

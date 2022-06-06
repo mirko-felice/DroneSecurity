@@ -26,6 +26,10 @@ tasks {
         enabled = false
     }
 
+    jar {
+        enabled = false
+    }
+
     javadoc {
         val libUrl = "https://javadoc.io/doc/io.github.dronesecurity.lib/latest"
         val connection = uri(libUrl).toURL().openConnection() as HttpURLConnection

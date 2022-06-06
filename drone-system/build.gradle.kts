@@ -14,6 +14,7 @@ dependencies  {
 
 val mainClassName by extra("$group.dronesystem.drone.Activation")
 val mainModuleName by extra("$group.dronesystem")
+val performanceMainClass by extra("$group.dronesystem.performance.PerformanceEvaluator")
 
 extraJavaModuleInfo {
     module("commons-exec-$apacheExecVersion.jar", "org.apache.commons.exec", apacheExecVersion) {
@@ -23,22 +24,53 @@ extraJavaModuleInfo {
     failOnMissingModuleInfo.set(false)
 }
 
-tasks.register<Jar>("DroneFatJar") {
-    group = "build"
-    description = "Assembles a runnable fat jar archive containing all the needed stuff to be executed as standalone."
-    archiveClassifier.set("fat")
-    archiveVersion.set("")
-    from(sourceSets.main.get().output)
-    dependsOn(configurations.compileClasspath)
-    from(configurations.runtimeClasspath.get().map {
-        if (it.name.contains("crt"))
-            zipTree(it).matching { include { element -> !element.path.contains("windows") && !element.path.contains("osx") } }
-        else
-            zipTree(it)
-    })
-    manifest {
-        attributes["Main-Class"] = project.extra["mainClassName"]
-        attributes["Automatic-Module-Name"] = project.extra["mainModuleName"]
+tasks {
+    register<Jar>("DroneFatJar") {
+        group = "build"
+        description = "Assembles a runnable fat jar archive containing all the needed stuff to be executed as standalone."
+        archiveClassifier.set("fat")
+        archiveVersion.set("")
+        from(sourceSets.main.get().output)
+        dependsOn(configurations.compileClasspath)
+        from(configurations.runtimeClasspath.get().map {
+            if (it.name.contains("crt"))
+                zipTree(it).matching { include { element -> !element.path.contains("windows") && !element.path.contains("osx") } }
+            else
+                zipTree(it)
+        })
+        manifest {
+            attributes["Main-Class"] = project.extra["mainClassName"]
+            attributes["Automatic-Module-Name"] = project.extra["mainModuleName"]
+        }
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    register<Jar>("PerformanceFatJar") {
+        archiveClassifier.set("performance-fat")
+        archiveVersion.set("")
+
+        doLast {
+            copy {
+                val sep = File.separator
+                moduleName
+                val performanceScriptsDirPath = sourceSets.main.get().output.resourcesDir?.path + sep + mainModuleName.replace(".", sep) + sep + "performance" + sep + "drone"
+                from(performanceScriptsDirPath)
+                into(performanceScriptsDirPath + sep + ".." + sep + ".." + sep + "drone")
+            }
+        }
+
+        from(sourceSets.main.get().output)
+        dependsOn(configurations.compileClasspath)
+        from(configurations.runtimeClasspath.get().map {
+            if (it.name.contains("crt"))
+                zipTree(it).matching { include { element -> !element.path.contains("windows") && !element.path.contains("osx") } }
+            else
+                zipTree(it)
+        })
+        manifest {
+            attributes["Main-Class"] = project.extra["performanceMainClass"]
+            attributes["Automatic-Module-Name"] = project.extra["mainModuleName"]
+        }
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
 }

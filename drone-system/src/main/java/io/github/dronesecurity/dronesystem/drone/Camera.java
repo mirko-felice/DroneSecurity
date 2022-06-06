@@ -23,7 +23,7 @@ public class Camera extends AbstractSensor<Byte[]> {
 
     private static final int CONNECTION_PORT = 10_000;
 
-    private final Socket socket;
+    private Socket socket;
     private InputStream inputStream;
     private byte[] image;
 
@@ -48,17 +48,23 @@ public class Camera extends AbstractSensor<Byte[]> {
      */
     @Override
     public void readData() {
-        try {
-            if (!this.socket.isConnected())
-                this.connect();
-            if (this.inputStream.available() > 0) {
-                final ByteBuffer buffer = ByteBuffer.wrap(this.inputStream.readNBytes(Integer.BYTES))
-                        .order(ByteOrder.LITTLE_ENDIAN);
-                final int length = buffer.getInt();
-                this.image = this.inputStream.readNBytes(length);
+        if (this.socket.isConnected()) {
+            try {
+                if (this.inputStream.available() > 0) {
+                    final ByteBuffer buffer = ByteBuffer.wrap(this.inputStream.readNBytes(Integer.BYTES))
+                            .order(ByteOrder.LITTLE_ENDIAN);
+                    final int length = buffer.getInt();
+                    this.image = this.inputStream.readNBytes(length);
+                }
+            } catch (IOException e) {
+                LoggerFactory.getLogger(getClass()).error("Cannot read data from sensor", e);
             }
-        } catch (IOException e) {
-            LoggerFactory.getLogger(getClass()).error("Cannot read data from sensor", e);
+        } else {
+            try {
+                this.connect();
+            } catch (IOException e) {
+                this.socket = new Socket();
+            }
         }
     }
 

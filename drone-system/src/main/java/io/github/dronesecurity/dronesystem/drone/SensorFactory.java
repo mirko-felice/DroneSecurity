@@ -18,9 +18,7 @@ public class SensorFactory {
      * @return The instantiated accelerometer
      */
     public Sensor<Map<String, Double>> getAccelerometer() {
-        final Sensor<Map<String, Double>> accelerometer = new Accelerometer();
-        accelerometer.activate();
-        return accelerometer;
+        return new Accelerometer();
     }
 
     /**
@@ -29,9 +27,7 @@ public class SensorFactory {
      * @return The instantiated proximity sensor
      */
     public Sensor<Double> getProximitySensor() {
-        final Sensor<Double> proximitySensor = new ProximitySensor();
-        proximitySensor.activate();
-        return proximitySensor;
+        return new ProximitySensor();
     }
 
     /**
@@ -40,8 +36,6 @@ public class SensorFactory {
      * @return The instantiated camera
      */
     public Sensor<Byte[]> getCamera() {
-        final Sensor<Byte[]> camera = new Camera();
-        camera.activate();
-        return camera;
+        return new Camera();
     }
 }

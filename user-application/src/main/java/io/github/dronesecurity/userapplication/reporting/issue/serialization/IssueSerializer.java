@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import io.github.dronesecurity.userapplication.reporting.issue.entities.ClosedIssue;
 import io.github.dronesecurity.userapplication.reporting.issue.entities.Issue;
 import io.github.dronesecurity.userapplication.utilities.CastHelper;
-import io.github.dronesecurity.userapplication.utilities.DateHelper;
+import io.github.dronesecurity.lib.DateHelper;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
