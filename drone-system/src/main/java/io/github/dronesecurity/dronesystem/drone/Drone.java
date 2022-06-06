@@ -6,6 +6,8 @@
 package io.github.dronesecurity.dronesystem.drone;
 
 
+import io.github.dronesecurity.lib.DrivingMode;
+
 import java.util.Map;
 
 /**
@@ -18,6 +20,7 @@ public class Drone {
     private final Sensor<Map<String, Double>> accelerometer;
     private final Sensor<Byte[]> camera;
     private boolean isMoving;
+    private DrivingMode drivingMode;
 
     /**
      * Constructs drone's sensors.
@@ -26,6 +29,7 @@ public class Drone {
         this.proximity = SENSOR_FACTORY.getProximitySensor();
         this.accelerometer = SENSOR_FACTORY.getAccelerometer();
         this.camera = SENSOR_FACTORY.getCamera();
+        this.drivingMode = DrivingMode.AUTOMATIC;
     }
 
     /**
@@ -84,16 +88,20 @@ public class Drone {
         this.camera.deactivate();
     }
 
-    // Makes the Drone proceed with its delivery.
-    private void proceed() {
-        this.isMoving = true;
+    /**
+     * Makes the Drone proceed with its delivery.
+     */
+    public void proceed() {
+        if (this.drivingMode == DrivingMode.AUTOMATIC)
+            this.isMoving = true;
     }
 
     /**
      * Halts the Drone.
      */
     public void halt() {
-        this.isMoving = false;
+        if (this.drivingMode == DrivingMode.AUTOMATIC)
+            this.isMoving = false;
     }
 
     /**
@@ -102,5 +110,13 @@ public class Drone {
      */
     public boolean isOperating() {
         return this.isMoving;
+    }
+
+    /**
+     * Changes the current driving mode into the new.
+     * @param newDrivingMode {@link DrivingMode} to apply
+     */
+    public void changeMode(final DrivingMode newDrivingMode) {
+        this.drivingMode = newDrivingMode;
     }
 }

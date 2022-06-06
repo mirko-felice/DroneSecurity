@@ -45,5 +45,25 @@ public final class MqttMessageValueConstants {
      */
     public static final String DRONE_CALLBACK_MESSAGE = "callBack";
 
+    /**
+     * Drone automatic mode message text.
+     */
+    public static final String AUTOMATIC_MODE_MESSAGE = DrivingMode.AUTOMATIC.toString();
+
+    /**
+     * Drone manual mode message text.
+     */
+    public static final String MANUAL_MODE_MESSAGE = DrivingMode.MANUAL.toString();
+
+    /**
+     * Drone proceeding message text.
+     */
+    public static final String PROCEED_MESSAGE = "proceed";
+
+    /**
+     * Drone halting message text.
+     */
+    public static final String HALT_MESSAGE = "halt";
+
     private MqttMessageValueConstants() { }
 }

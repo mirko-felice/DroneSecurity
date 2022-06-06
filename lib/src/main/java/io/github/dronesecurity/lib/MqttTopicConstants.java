@@ -45,5 +45,10 @@ public final class MqttTopicConstants {
      */
     public static final String PERFORMANCE_CAMERA = "cameraPerformance";
 
+    /**
+     * Drone controlling topic name.
+     */
+    public static final String CONTROL_TOPIC = "control";
+
     private MqttTopicConstants() { }
 }

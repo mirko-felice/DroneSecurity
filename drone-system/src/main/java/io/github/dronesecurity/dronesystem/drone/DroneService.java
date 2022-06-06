@@ -14,6 +14,7 @@ import io.github.dronesecurity.lib.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.crt.mqtt.MqttMessage;
 
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
@@ -83,6 +84,7 @@ public class DroneService {
                     this.currentOrderId = json.get(MqttMessageParameterConstants.ORDER_ID_PARAMETER).asText();
                     this.currentCourier = json.get(MqttMessageParameterConstants.COURIER_PARAMETER).asText();
                     new Thread(this::startDrone).start();
+                    Connection.getInstance().subscribe(MqttTopicConstants.CONTROL_TOPIC, this::control);
                 }
             } catch (JsonProcessingException e) {
                 LoggerFactory.getLogger(getClass()).error("Can NOT read json correctly.", e);
@@ -194,5 +196,27 @@ public class DroneService {
                 this.accelerometerSensorData,
                 this.cameraSensorData);
         this.droneReportService.reportsNegligence(report);
+    }
+
+    private void control(final @NotNull MqttMessage message) {
+        try {
+            final JsonNode json = new ObjectMapper().readTree(new String(message.getPayload(), StandardCharsets.UTF_8));
+            if (json.has(MqttMessageParameterConstants.MODE_PARAMETER)) {
+                final String mode = json.get(MqttMessageParameterConstants.MODE_PARAMETER).asText();
+                if (MqttMessageValueConstants.AUTOMATIC_MODE_MESSAGE.equals(mode))
+                    this.drone.changeMode(DrivingMode.AUTOMATIC);
+                else if (MqttMessageValueConstants.MANUAL_MODE_MESSAGE.equals(mode))
+                    this.drone.changeMode(DrivingMode.MANUAL);
+            } else if (json.has(MqttMessageParameterConstants.MOVE_PARAMETER)) {
+                final String move = json.get(MqttMessageParameterConstants.MOVE_PARAMETER).asText();
+                if (MqttMessageValueConstants.PROCEED_MESSAGE.equals(move))
+                    this.drone.proceed();
+                else if (MqttMessageValueConstants.HALT_MESSAGE.equals(move)) {
+                    this.drone.halt();
+                }
+            }
+        } catch (JsonProcessingException e) {
+            LoggerFactory.getLogger(getClass()).error("Can NOT read json correctly.", e);
+        }
     }
 }

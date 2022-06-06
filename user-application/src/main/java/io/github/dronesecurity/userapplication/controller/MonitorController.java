@@ -5,6 +5,7 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
+import io.github.dronesecurity.lib.DrivingMode;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import io.github.dronesecurity.lib.MqttMessageValueConstants;
 import io.github.dronesecurity.userapplication.drone.monitoring.UserMonitoringService;
@@ -31,8 +32,6 @@ import java.util.ResourceBundle;
  * Controller dedicated to monitoring delivery.
  */
 public final class MonitorController implements Initializable {
-    private static final String START_DRONE = "Start";
-    private static final String STOP_DRONE = "Stop";
 
     private final UserMonitoringService monitoringService;
     private final CourierNegligenceReportService negligenceReportService;
@@ -60,7 +59,8 @@ public final class MonitorController implements Initializable {
     @FXML private Accordion accordion;
     @FXML private TitledPane controlsPane;
     @FXML private ToggleSwitch switchMode;
-    @FXML private Button startAndStopButton;
+    @FXML private Button proceedButton;
+    @FXML private Button haltButton;
     @FXML private Label deliveryStatusLabel;
     @FXML private Label currentSituationLabel;
     @FXML private Button recallButton;
@@ -79,6 +79,7 @@ public final class MonitorController implements Initializable {
     public void initialize(final URL location, final ResourceBundle resources) {
         this.accordion.setExpandedPane(this.controlsPane);
         this.recallButton.setDisable(true);
+        this.proceedButton.setDisable(true);
 
         this.negligenceReportService.subscribeToNegligenceReports(this::onNewNegligence);
 
@@ -112,7 +113,14 @@ public final class MonitorController implements Initializable {
                 new SimpleObjectProperty<>(cell.getValue()
                         .get(MqttMessageParameterConstants.YAW)));
 
-        // TODO add listener to selected property to startDrone if newValue else stopDrone
+        this.switchMode.selectedProperty().addListener((ignored, unused, isAutomatic) -> {
+            if (isAutomatic)
+                this.monitoringService.changeMode(DrivingMode.AUTOMATIC);
+            else
+                this.monitoringService.changeMode(DrivingMode.MANUAL);
+            this.proceedButton.setDisable(!isAutomatic);
+            this.haltButton.setDisable(!isAutomatic);
+        });
     }
 
     private void onDataRead(final DataRead dataRead) {
@@ -194,13 +202,16 @@ public final class MonitorController implements Initializable {
     }
 
     @FXML
-    private void startOrStop() {
-        if (START_DRONE.equals(this.startAndStopButton.getText())) {
-            // TODO startDrone
-            this.startAndStopButton.setText(STOP_DRONE);
-        } else if (STOP_DRONE.equals(this.startAndStopButton.getText())) {
-            // TODO stopDrone
-            this.startAndStopButton.setText(START_DRONE);
-        }
+    private void proceed() {
+        this.monitoringService.proceed();
+        this.proceedButton.setDisable(true);
+        this.haltButton.setDisable(false);
+    }
+
+    @FXML
+    private void halt() {
+        this.monitoringService.halt();
+        this.haltButton.setDisable(true);
+        this.proceedButton.setDisable(false);
     }
 }

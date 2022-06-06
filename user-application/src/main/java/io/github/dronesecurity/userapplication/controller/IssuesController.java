@@ -147,7 +147,7 @@ public class IssuesController implements Initializable {
     private void visionIssue() {
         CastHelper.safeCast(this.currentlySelectedIssue, OpenIssue.class).ifPresent(openIssue ->
                 this.issueReportService.visionIssue(openIssue).onComplete(res -> {
-                    if (res.result()) {
+                    if (Boolean.TRUE.equals(res.result())) {
                         Platform.runLater(() -> {
                             this.refreshOpenIssues();
                             final TableView.TableViewSelectionModel<CreatedIssue> selectionModel =
@@ -166,7 +166,7 @@ public class IssuesController implements Initializable {
         CastHelper.safeCast(this.currentlySelectedIssue, VisionedIssue.class).ifPresent(visionedIssue ->
                 this.issueReportService.closeIssue(visionedIssue, this.solutionTextArea.getText())
                         .onSuccess(succeeded -> {
-                            if (succeeded) {
+                            if (Boolean.TRUE.equals(succeeded)) {
                                 Platform.runLater(() -> {
                                     final ClosedIssue closedIssue =
                                             visionedIssue.closeIssue(this.solutionTextArea.getText());

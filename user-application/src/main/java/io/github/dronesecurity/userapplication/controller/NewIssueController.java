@@ -38,7 +38,7 @@ public class NewIssueController {
                             courier.getSupervisor(),
                             Instant.now());
             CourierIssueReportService.getInstance().addIssueReport(issue).onSuccess(ignored ->
-                    Platform.runLater(() -> ((Stage) this.infoTextArea.getScene().getWindow()).close()));
+                    Platform.runLater(((Stage) this.infoTextArea.getScene().getWindow())::close));
         });
     }
 }

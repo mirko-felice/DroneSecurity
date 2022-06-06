@@ -90,5 +90,15 @@ public final class MqttMessageParameterConstants {
      */
     public static final String INDEX = "index";
 
+    /**
+     * Parameter that contains new guide mode for the drone.
+     */
+    public static final String MODE_PARAMETER = "mode";
+
+    /**
+     * Parameter that contains the move parameter for the drone.
+     */
+    public static final String MOVE_PARAMETER = "move";
+
     private MqttMessageParameterConstants() { }
 }
