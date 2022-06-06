@@ -25,5 +25,4 @@
     <PasswordField fx:id="passwordField" GridPane.columnIndex="3" GridPane.rowIndex="1" />
     <Glyph fx:id="showPasswordGlyph" fontFamily="FontAwesome" icon="EYE" onMouseClicked="#showPassword" prefWidth="30.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
     <Button fx:id="loginButton" onKeyPressed="#keyPressed" onMouseClicked="#login" text="Login" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-   <ProgressBar fx:id="progressBar" prefWidth="600.0" visible="false" GridPane.columnSpan="5" GridPane.rowIndex="3" />
 </GridPane>

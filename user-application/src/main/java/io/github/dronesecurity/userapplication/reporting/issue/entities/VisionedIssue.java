@@ -6,7 +6,6 @@
 package io.github.dronesecurity.userapplication.reporting.issue.entities;
 
 import io.github.dronesecurity.userapplication.reporting.issue.serialization.IssueStringHelper;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 
@@ -22,14 +21,16 @@ public class VisionedIssue extends CreatedIssue {
      * @param id              the id of the created issue
      * @param issueInfo       the information regarding the issue report
      * @param courierUsername username of the courier who sends the issue
+     * @param assigneeUsername username of the maintainer assigned to the issue
      * @param sendingTime     the timestamp of when the issue was sent
      */
     public VisionedIssue(final String subject,
-                            @NotNull final int id,
-                            final String issueInfo,
-                            final String courierUsername,
-                            final Instant sendingTime) {
-        super(subject, id, issueInfo, courierUsername, sendingTime);
+                         final int id,
+                         final String issueInfo,
+                         final String courierUsername,
+                         final String assigneeUsername,
+                         final Instant sendingTime) {
+        super(subject, id, issueInfo, courierUsername, assigneeUsername, sendingTime);
     }
 
     /**
@@ -50,6 +51,7 @@ public class VisionedIssue extends CreatedIssue {
                 this.getId(),
                 this.getDetails(),
                 this.getCourier(),
+                this.assignedTo(),
                 this.getReportingDate(),
                 solution);
     }

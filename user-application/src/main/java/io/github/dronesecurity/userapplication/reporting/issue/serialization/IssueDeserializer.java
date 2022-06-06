@@ -9,8 +9,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.dronesecurity.userapplication.reporting.issue.entities.*;
 import io.github.dronesecurity.lib.DateHelper;
+import io.github.dronesecurity.userapplication.reporting.issue.entities.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -31,23 +31,25 @@ public class IssueDeserializer extends JsonDeserializer<Issue> {
         final String subject = root.get(IssueStringHelper.SUBJECT).asText();
         final String details = root.get(IssueStringHelper.DETAILS).asText();
         final String courierUsername = root.get(IssueStringHelper.COURIER).asText();
+        final String assigneeUsername = root.get(IssueStringHelper.ASSIGNEE).asText();
         final Instant sendingInstant = DateHelper.toInstant(root.get(IssueStringHelper.SENDING_INSTANT).asText());
         final String status = root.get(IssueStringHelper.STATUS).asText();
         if (root.has(IssueStringHelper.ID)) {
             final int id = root.get(IssueStringHelper.ID).asInt();
 
             if (IssueStringHelper.STATUS_OPEN.equals(status))
-                return new OpenIssue(subject, id, details, courierUsername, sendingInstant);
+                return new OpenIssue(subject, id, details, courierUsername, assigneeUsername, sendingInstant);
 
             if (IssueStringHelper.STATUS_VISIONED.equals(status))
-                return new VisionedIssue(subject, id, details, courierUsername, sendingInstant);
+                return new VisionedIssue(subject, id, details, courierUsername, assigneeUsername, sendingInstant);
 
             if (IssueStringHelper.STATUS_CLOSED.equals(status)) {
                 final String solution = root.get(IssueStringHelper.SOLUTION).asText();
-                return new ClosedIssue(subject, id, details, courierUsername, sendingInstant, solution);
+                return new ClosedIssue(subject, id, details, courierUsername, assigneeUsername, sendingInstant,
+                        solution);
             }
         }
 
-        return new SendingIssue(subject, details, courierUsername, sendingInstant);
+        return new SendingIssue(subject, details, courierUsername, assigneeUsername, sendingInstant);
     }
 }

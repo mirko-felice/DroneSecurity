@@ -7,9 +7,11 @@ package io.github.dronesecurity.userapplication.reporting.issue.services;
 
 import io.github.dronesecurity.userapplication.reporting.issue.entities.ClosedIssue;
 import io.github.dronesecurity.userapplication.reporting.issue.entities.CreatedIssue;
+import io.github.dronesecurity.userapplication.reporting.issue.entities.OpenIssue;
 import io.vertx.core.Future;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Service dedicated to issue reporting.
@@ -27,4 +29,10 @@ public interface DataIssueReportService {
      * @return the future of the list of closed issues
      */
     Future<List<ClosedIssue>> getClosedIssueReports();
+
+    /**
+     * Subscribes to new issues created by any courier.
+     * @param consumer consumes the {@link OpenIssue}
+     */
+    void subscribeToNewIssue(Consumer<OpenIssue> consumer);
 }

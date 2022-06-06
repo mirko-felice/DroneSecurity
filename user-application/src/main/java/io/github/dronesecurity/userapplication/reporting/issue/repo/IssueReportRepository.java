@@ -7,6 +7,7 @@ package io.github.dronesecurity.userapplication.reporting.issue.repo;
 
 import io.github.dronesecurity.userapplication.reporting.issue.entities.*;
 import io.vertx.core.Future;
+import io.vertx.core.json.JsonObject;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,9 +21,9 @@ public interface IssueReportRepository {
     /**
      * Add new open issue.
      * @param issue the issue to add to repository
-     * @return the {@link Future} detecting when the insertion is completed
-     * */
-    Future<Void> addIssue(Issue issue);
+     * @return the {@link Future} containing the insertion object
+     */
+    Future<JsonObject> addIssue(Issue issue);
 
     /**
      * Updates an existing {@link OpenIssue} and sets it as visioned.

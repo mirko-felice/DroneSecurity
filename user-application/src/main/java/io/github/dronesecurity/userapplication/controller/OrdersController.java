@@ -6,7 +6,6 @@
 package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.lib.DateHelper;
-import io.github.dronesecurity.userapplication.auth.entities.Role;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.FailedOrder;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.Order;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
@@ -41,14 +40,10 @@ import java.util.stream.Collectors;
 public final class OrdersController implements Initializable {
 
     private static final String MONITORING_FILENAME = "monitoring.fxml";
-    private static final String NEGLIGENCE_DATA_FILENAME = "negligenceData.fxml";
-    private static final String COURIER_ISSUE_VIEW_FILE_NAME = "courierIssues.fxml";
-    private static final String MAINTAINER_ISSUE_VIEW_FILE_NAME = "maintainerIssues.fxml";
     @FXML private TableView<Order> table;
     @FXML private TableColumn<Order, String> orderDateColumn;
     @FXML private TableColumn<Order, String> productColumn;
     @FXML private TableColumn<Order, String> stateColumn;
-    @FXML private Button showReportsButton;
     @FXML private Button performDeliveryButton;
     @FXML private Button rescheduleDeliveryButton;
 
@@ -81,7 +76,7 @@ public final class OrdersController implements Initializable {
         this.getSelectedOrder().flatMap(o -> CastHelper.safeCast(o, PlacedOrder.class)).ifPresent(order -> {
             final JsonObject body = new JsonObject()
                     .put(ServiceHelper.ORDER_KEY, order)
-                    .put(ServiceHelper.COURIER_KEY, UserHelper.getLoggedUser().getUsername());
+                    .put(ServiceHelper.COURIER_KEY, UserHelper.logged().getUsername());
             ServiceHelper.postJson(ServiceHelper.Operation.PERFORM_DELIVERY, body)
                     .onSuccess(h -> Platform.runLater(() -> {
                         final URL fileUrl = getClass().getResource(MONITORING_FILENAME);
@@ -102,35 +97,6 @@ public final class OrdersController implements Initializable {
                             .put(ServiceHelper.NEW_ESTIMATED_ARRIVAL_KEY, newEstimatedArrival);
                     ServiceHelper.postJson(ServiceHelper.Operation.RESCHEDULE_DELIVERY, body);
                 }));
-    }
-
-    @FXML
-    private void showReports() {
-        final URL fileUrl = getClass().getResource(NEGLIGENCE_DATA_FILENAME);
-        final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-        FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Reports", fxmlLoader).ifPresent(stage -> {
-            stage.initOwner(this.showReportsButton.getScene().getWindow());
-            stage.showAndWait();
-        });
-    }
-
-    @FXML
-    private void showIssues() {
-        Platform.runLater(() -> {
-            final String issueFileName;
-            if (UserHelper.getLoggedUser().getRole() == Role.COURIER)
-                issueFileName = COURIER_ISSUE_VIEW_FILE_NAME;
-            else if (UserHelper.getLoggedUser().getRole() == Role.MAINTAINER)
-                issueFileName = MAINTAINER_ISSUE_VIEW_FILE_NAME;
-            else
-                issueFileName = "";
-            final URL fileUrl = getClass().getResource(issueFileName);
-            final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-            FXHelper.initializeWindow(Modality.NONE, "Issues", fxmlLoader).ifPresent(stage -> {
-                stage.setOnCloseRequest(null);
-                stage.show();
-            });
-        });
     }
 
     private Optional<Order> getSelectedOrder() {

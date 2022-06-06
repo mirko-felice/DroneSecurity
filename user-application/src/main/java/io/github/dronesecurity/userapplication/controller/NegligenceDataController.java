@@ -107,7 +107,7 @@ public class NegligenceDataController implements Initializable {
      * Update showed reports.
      */
     public void updateReports() {
-        final LoggedUser user = UserHelper.getLoggedUser();
+        final LoggedUser user = UserHelper.logged();
         final String username = user.getUsername();
         final Future<List<OpenNegligenceReport>> openReportsFuture;
         final Future<List<ClosedNegligenceReport>> closedReportsFuture;

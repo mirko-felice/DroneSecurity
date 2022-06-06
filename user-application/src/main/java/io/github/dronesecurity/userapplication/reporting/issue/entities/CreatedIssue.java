@@ -22,14 +22,16 @@ public abstract class CreatedIssue extends SendingIssue {
      * @param id the id of the created issue
      * @param issueInfo the information regarding the issue report
      * @param courierUsername username of the courier who sends the issue
+     * @param assigneeUsername username of the maintainer assigned to the issue
      * @param sendingTime the timestamp of when the issue was sent
      */
     protected CreatedIssue(final String subject,
                        final int id,
                        final String issueInfo,
                        final String courierUsername,
+                       final String assigneeUsername,
                        final Instant sendingTime) {
-        super(subject, issueInfo, courierUsername, sendingTime);
+        super(subject, issueInfo, courierUsername, assigneeUsername, sendingTime);
         this.id = id;
     }
 

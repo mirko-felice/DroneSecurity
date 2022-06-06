@@ -39,6 +39,12 @@ public interface Issue {
     String getCourier();
 
     /**
+     * Gets the {@link io.github.dronesecurity.userapplication.auth.entities.Maintainer} assigned to the issue.
+     * @return the {@link io.github.dronesecurity.userapplication.auth.entities.Maintainer} username
+     */
+    String assignedTo();
+
+    /**
      * Gets the timestamp of when the report was sent.
      * @return the creation timestamp
      */

@@ -17,8 +17,6 @@
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
     </rowConstraints>
     <TableView fx:id="table" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="250.0" GridPane.columnSpan="2147483647">
@@ -34,8 +32,6 @@
          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
       </GridPane.margin>
     </TableView>
-    <Button fx:id="performDeliveryButton" mnemonicParsing="false" onMouseClicked="#performDelivery" text="Perform Delivery" disable="true" GridPane.rowIndex="2" />
-    <Button fx:id="rescheduleDeliveryButton" mnemonicParsing="false" onMouseClicked="#rescheduleDelivery" text="Reschedule Delivery" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-    <Button fx:id="showReportsButton" mnemonicParsing="false" onMouseClicked="#showReports" text="Show Reports" GridPane.rowIndex="4" />
-    <Button mnemonicParsing="false" onAction="#showIssues" text="Show issues" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+    <Button fx:id="performDeliveryButton" disable="true" mnemonicParsing="false" onMouseClicked="#performDelivery" text="Perform Delivery" GridPane.rowIndex="2" />
+    <Button fx:id="rescheduleDeliveryButton" disable="true" mnemonicParsing="false" onMouseClicked="#rescheduleDelivery" text="Reschedule Delivery" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 </GridPane>

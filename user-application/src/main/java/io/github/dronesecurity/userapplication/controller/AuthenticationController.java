@@ -6,21 +6,17 @@
 package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.userapplication.auth.AuthenticationService;
-import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.auth.entities.NotLoggedUser;
 import io.github.dronesecurity.userapplication.auth.entities.NotLoggedUserImpl;
-import io.github.dronesecurity.userapplication.auth.entities.Role;
 import io.github.dronesecurity.userapplication.auth.entities.User;
-import io.github.dronesecurity.userapplication.shipping.courier.CourierShippingService;
+import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.UserHelper;
-import io.github.dronesecurity.userapplication.utilities.VertxHelper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -30,7 +26,6 @@ import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.glyphfont.Glyph;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 
@@ -39,15 +34,12 @@ import java.net.URL;
  */
 public final class AuthenticationController {
 
-    private static final String COURIER_FXML = "orders.fxml";
-    private static final String NEGLIGENCE_FXML = "negligence.fxml";
-    private static final String UNEXPECTED_VALUE = "Unexpected value: ";
+    private static final String USER_FXML = "user.fxml";
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
     @FXML private TextField visiblePasswordField;
     @FXML private Glyph showPasswordGlyph;
     @FXML private Button loginButton;
-    @FXML private ProgressBar progressBar;
     private boolean isPasswordShown;
 
     @FXML
@@ -64,18 +56,19 @@ public final class AuthenticationController {
 
     @FXML
     private void login() {
-        this.progressBar.setVisible(true);
-        this.loginButton.setDisable(true);
         final NotLoggedUser notLoggedUser = this.userFromFields();
         AuthenticationService.getInstance().authenticate(notLoggedUser)
                 .onSuccess(loggedUser -> {
-                    UserHelper.setLoggedUser(loggedUser);
-                    this.showNextWindow(loggedUser.getRole());
+                    UserHelper.loggedIn(loggedUser);
+                    Platform.runLater(() -> {
+                        ((Stage) this.loginButton.getScene().getWindow()).close();
+                        final URL fileUrl = getClass().getResource(USER_FXML);
+                        final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
+                        FXHelper.initializeWindow(Modality.NONE, "User", fxmlLoader).ifPresent(Stage::show);
+                    });
                 })
-                .onFailure(e -> {
-                    DialogUtils.showErrorDialog("Username and/or passwords and/or role are wrong!");
-                    this.activeLogin();
-                });
+                .onFailure(e ->
+                        DialogUtils.showErrorDialog("Username and/or passwords and/or role are wrong!"));
     }
 
     @FXML
@@ -93,38 +86,4 @@ public final class AuthenticationController {
         return new NotLoggedUserImpl(username, password);
     }
 
-    private void showNextWindow(final @NotNull Role role) {
-        switch (role) {
-            case COURIER:
-                VertxHelper.VERTX.deployVerticle(CourierShippingService.class.getName()).onComplete(res -> {
-                    if (res.succeeded())
-                        this.show(COURIER_FXML, "Orders");
-                    else
-                        LoggerFactory.getLogger(getClass()).error("Error creating the service:",
-                                res.cause());
-                    this.activeLogin();
-                });
-                break;
-            case MAINTAINER:
-                this.show(NEGLIGENCE_FXML, "Maintainer");
-                this.activeLogin();
-                break;
-            default:
-                throw new IllegalStateException(UNEXPECTED_VALUE + role);
-        }
-    }
-
-    private void show(final String fxml, final String title) {
-        Platform.runLater(() -> {
-            ((Stage) this.loginButton.getScene().getWindow()).close();
-            final URL fileUrl = getClass().getResource(fxml);
-            final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-            FXHelper.initializeWindow(Modality.NONE, title, fxmlLoader).ifPresent(Stage::show);
-        });
-    }
-
-    private void activeLogin() {
-        this.progressBar.setVisible(false);
-        this.loginButton.setDisable(false);
-    }
 }

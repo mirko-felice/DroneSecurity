@@ -8,10 +8,10 @@ package io.github.dronesecurity.userapplication.reporting.issue.serialization;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import io.github.dronesecurity.lib.DateHelper;
 import io.github.dronesecurity.userapplication.reporting.issue.entities.ClosedIssue;
 import io.github.dronesecurity.userapplication.reporting.issue.entities.Issue;
 import io.github.dronesecurity.userapplication.utilities.CastHelper;
-import io.github.dronesecurity.lib.DateHelper;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +34,7 @@ public class IssueSerializer extends JsonSerializer<Issue> {
         gen.writeStringField(IssueStringHelper.SUBJECT, value.getSubject());
         gen.writeStringField(IssueStringHelper.DETAILS, value.getDetails());
         gen.writeStringField(IssueStringHelper.COURIER, value.getCourier());
+        gen.writeStringField(IssueStringHelper.ASSIGNEE, value.assignedTo());
         gen.writeStringField(IssueStringHelper.SENDING_INSTANT, DateHelper.toString(value.getReportingDate()));
         gen.writeStringField(IssueStringHelper.STATUS, value.getState());
 

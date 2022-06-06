@@ -5,6 +5,7 @@
 
 package io.github.dronesecurity.userapplication.reporting.issue.repo;
 
+import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
 import io.github.dronesecurity.userapplication.auth.entities.Role;
 import io.github.dronesecurity.userapplication.reporting.issue.entities.*;
 import io.github.dronesecurity.userapplication.reporting.issue.serialization.IssueStringHelper;
@@ -15,6 +16,7 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
  */
 public final class IssueReportRepositoryImpl implements IssueReportRepository {
 
+    private static final String MONGO_ID = "_id";
     private static final String COLLECTION_NAME = "issueReports";
     private static IssueReportRepository singleton;
 
@@ -47,7 +50,7 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
      * {@inheritDoc}
      */
     @Override
-    public Future<Void> addIssue(final Issue issue) {
+    public Future<JsonObject> addIssue(final Issue issue) {
         final JsonObject newIssue = new JsonObject();
         return this.getLastID().transform(id -> {
             if (id.succeeded())
@@ -55,7 +58,8 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
             else
                 newIssue.put(IssueStringHelper.ID, 1);
             newIssue.mergeIn(JsonObject.mapFrom(issue), true);
-            return VertxHelper.MONGO_CLIENT.save(COLLECTION_NAME, newIssue).mapEmpty();
+            return VertxHelper.MONGO_CLIENT.save(COLLECTION_NAME, newIssue)
+                    .map(mongoId -> newIssue.put(MONGO_ID, mongoId));
         });
     }
 
@@ -63,7 +67,7 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
      * {@inheritDoc}
      */
     @Override
-    public Future<Boolean> visionOpenIssue(final OpenIssue issue) {
+    public Future<Boolean> visionOpenIssue(final @NotNull OpenIssue issue) {
         final JsonObject newStatus = new JsonObject()
                 .put(IssueStringHelper.STATUS, IssueStringHelper.STATUS_VISIONED);
         return this.updateIssue(issue.getId(), newStatus);
@@ -73,7 +77,7 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
      * {@inheritDoc}
      */
     @Override
-    public Future<Boolean> closeVisionedIssue(final VisionedIssue issue, final String solution) {
+    public Future<Boolean> closeVisionedIssue(final @NotNull VisionedIssue issue, final String solution) {
         final JsonObject update = new JsonObject()
                 .put(IssueStringHelper.STATUS, IssueStringHelper.STATUS_CLOSED)
                 .put(IssueStringHelper.SOLUTION, solution);
@@ -109,18 +113,18 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
                 .map(val -> val.get(0).getLong(IssueStringHelper.ID));
     }
 
-    private JsonObject initQueryWithUserData() {
+    private @NotNull JsonObject initQueryWithUserData() {
         final JsonObject queryWithUser = new JsonObject();
-        if (UserHelper.getLoggedUser().getRole() == Role.COURIER)
-            queryWithUser.put(IssueStringHelper.COURIER, UserHelper.getLoggedUser().getUsername());
-        else if (UserHelper.getLoggedUser().getRole() == Role.MAINTAINER)
-            queryWithUser.put(IssueStringHelper.COURIER, UserHelper.getLoggedUser().getUsername());
-//TODO            openIssuesQuery.put(IssueStringHelper.ASSIGNEE, UserHelper.get().getUsername());
+        final LoggedUser loggedUser = UserHelper.logged();
+        if (loggedUser.getRole() == Role.COURIER)
+            queryWithUser.put(IssueStringHelper.COURIER, loggedUser.getUsername());
+        else if (loggedUser.getRole() == Role.MAINTAINER)
+            queryWithUser.put(IssueStringHelper.ASSIGNEE, loggedUser.getUsername());
 
         return queryWithUser;
     }
 
-    private Future<List<CreatedIssue>> getOpenIssueFromQuery(final JsonObject query) {
+    private Future<List<CreatedIssue>> getOpenIssueFromQuery(final @NotNull JsonObject query) {
         final JsonObject statusOpenValues = new JsonObject();
         statusOpenValues.put("$in", new JsonArray().add(IssueStringHelper.STATUS_OPEN)
                 .add(IssueStringHelper.STATUS_VISIONED));
@@ -138,7 +142,7 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
                 });
     }
 
-    private Future<List<ClosedIssue>> getClosedIssuesFromQuery(final JsonObject query) {
+    private Future<List<ClosedIssue>> getClosedIssuesFromQuery(final @NotNull JsonObject query) {
         query.put(IssueStringHelper.STATUS, IssueStringHelper.STATUS_CLOSED);
 
         return VertxHelper.MONGO_CLIENT.find(COLLECTION_NAME, query)

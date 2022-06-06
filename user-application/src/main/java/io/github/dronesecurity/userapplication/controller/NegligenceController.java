@@ -30,7 +30,7 @@ import java.util.ResourceBundle;
  */
 public class NegligenceController implements Initializable {
 
-    private static final String NEGLIGENCE_DATA_FILENAME = "negligenceData.fxml";
+    private static final String NEGLIGENCE_DATA_FXML = "negligenceData.fxml";
     private final MaintainerNegligenceReportService negligenceReportService;
     @FXML private GridPane pane;
     @FXML private TextArea solution;
@@ -51,7 +51,7 @@ public class NegligenceController implements Initializable {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         try {
-            final URL fileUrl = NegligenceController.class.getResource(NEGLIGENCE_DATA_FILENAME);
+            final URL fileUrl = NegligenceController.class.getResource(NEGLIGENCE_DATA_FXML);
             final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
             this.pane.add(fxmlLoader.load(), 0, 0, 2, 1);
             this.dataController = fxmlLoader.getController();
