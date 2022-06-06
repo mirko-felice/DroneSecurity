@@ -114,7 +114,7 @@ public final class MonitorController implements Initializable {
                         .get(MqttMessageParameterConstants.YAW)));
 
         this.switchMode.selectedProperty().addListener((ignored, unused, isAutomatic) -> {
-            if (isAutomatic)
+            if (Boolean.TRUE.equals(isAutomatic))
                 this.monitoringService.changeMode(DrivingMode.AUTOMATIC);
             else
                 this.monitoringService.changeMode(DrivingMode.MANUAL);

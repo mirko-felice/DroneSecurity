@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class DroneService {
 
+    private static final String JSON_ERROR_MESSAGE = "Can NOT read json correctly.";
     private static final long TRAVELING_TIME = 5000;
     private static final long CLIENT_WAITING_TIME = 1000;
     private static final long ANALIZER_SLEEP_DURATION = 500;
@@ -87,7 +88,7 @@ public class DroneService {
                     Connection.getInstance().subscribe(MqttTopicConstants.CONTROL_TOPIC, this::control);
                 }
             } catch (JsonProcessingException e) {
-                LoggerFactory.getLogger(getClass()).error("Can NOT read json correctly.", e);
+                LoggerFactory.getLogger(getClass()).error(JSON_ERROR_MESSAGE, e);
             }
         });
     }
@@ -127,7 +128,7 @@ public class DroneService {
                     this.executor.schedule(this::stopDrone, TRAVELING_TIME, TimeUnit.MILLISECONDS);
                 }
             } catch (JsonProcessingException e) {
-                LoggerFactory.getLogger(getClass()).error("Can NOT read json correctly.", e);
+                LoggerFactory.getLogger(getClass()).error(JSON_ERROR_MESSAGE, e);
             }
         });
     }
@@ -216,7 +217,7 @@ public class DroneService {
                 }
             }
         } catch (JsonProcessingException e) {
-            LoggerFactory.getLogger(getClass()).error("Can NOT read json correctly.", e);
+            LoggerFactory.getLogger(getClass()).error(JSON_ERROR_MESSAGE, e);
         }
     }
 }
