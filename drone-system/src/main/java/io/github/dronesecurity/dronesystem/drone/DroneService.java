@@ -77,7 +77,7 @@ public class DroneService {
      */
     public void waitForDeliveryAssignment() {
         this.dataMonitoringAgent.start();
-        Connection.getInstance().subscribe(MqttTopicConstants.ORDER_TOPIC, msg -> {
+        Connection.getInstance().subscribe(MqttTopicConstants.ORDER_TOPIC + this.drone.getId(), msg -> {
             try {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
                 if (MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE
@@ -88,7 +88,7 @@ public class DroneService {
                     final Connection connection = Connection.getInstance();
                     connection.subscribe(MqttTopicConstants.CONTROL_TOPIC + this.currentOrderId,
                             this::control);
-                    connection.unsubscribe(MqttTopicConstants.ORDER_TOPIC);
+                    connection.unsubscribe(MqttTopicConstants.ORDER_TOPIC + this.drone.getId());
                 }
             } catch (JsonProcessingException e) {
                 LoggerFactory.getLogger(getClass()).error(JSON_ERROR_MESSAGE, e);

@@ -46,6 +46,11 @@ public final class ServiceHelper {
     public static final String STATE_KEY = "state";
 
     /**
+     * Key to get the drone identifier.
+     */
+    public static final String DRONE_ID_KEY = "droneId";
+
+    /**
      * Key to get the new estimated arrival.
      */
     public static final String NEW_ESTIMATED_ARRIVAL_KEY = "newEstimatedArrival";
@@ -130,15 +135,16 @@ public final class ServiceHelper {
 
     /**
      * Sends the message to perform the delivery on AWS.
+     * @param droneId drone identifier to send message to
      * @param orderId order identifier to track
      * @param courier courier username to track
      */
-    public static void sendPerformDeliveryMessage(final String orderId, final String courier) {
+    public static void sendPerformDeliveryMessage(final String droneId, final String orderId, final String courier) {
         final JsonNode messageJson = new ObjectMapper().createObjectNode()
                 .put(MqttMessageParameterConstants.SYNC_PARAMETER, MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE)
                 .put(MqttMessageParameterConstants.ORDER_ID_PARAMETER, orderId)
                 .put(MqttMessageParameterConstants.COURIER_PARAMETER, courier);
-        Connection.getInstance().publish(MqttTopicConstants.ORDER_TOPIC, messageJson);
+        Connection.getInstance().publish(MqttTopicConstants.ORDER_TOPIC + droneId, messageJson);
     }
 
     /**

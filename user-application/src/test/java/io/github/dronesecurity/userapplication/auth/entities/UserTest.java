@@ -8,6 +8,7 @@ package io.github.dronesecurity.userapplication.auth.entities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +36,7 @@ final class UserTest {
         final User notLoggedUser = new NotLoggedUserImpl(username, "password");
         assertEquals(this.baseUser, notLoggedUser, SHOULD_BE_EQUALS);
 
-        final User courier = new Courier(username, "supervisor");
+        final User courier = new Courier(username, "supervisor", new ArrayList<>());
         assertEquals(courier, this.baseUser, SHOULD_BE_EQUALS);
 
         assertEquals(courier, notLoggedUser, SHOULD_BE_EQUALS);
@@ -52,7 +53,7 @@ final class UserTest {
         final User notLoggedUser = new NotLoggedUserImpl("differentUsername", "password");
         assertNotEquals(notLoggedUser, this.baseUser, SHOULD_NOT_BE_EQUALS);
 
-        final User courier = new Courier("courier", "supervisor");
+        final User courier = new Courier("courier", "supervisor", new ArrayList<>());
         assertNotEquals(courier, this.baseUser, SHOULD_NOT_BE_EQUALS);
 
         assertNotEquals(courier, notLoggedUser, SHOULD_NOT_BE_EQUALS);

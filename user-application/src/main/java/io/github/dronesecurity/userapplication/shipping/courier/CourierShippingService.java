@@ -98,7 +98,10 @@ public final class CourierShippingService extends AbstractVerticle {
             final DeliveringOrder deliveringOrder = order.deliver();
             REPOSITORY.delivering(deliveringOrder);
 
-            ServiceHelper.sendPerformDeliveryMessage(order.getId(), body.getString(ServiceHelper.COURIER_KEY));
+            ServiceHelper.sendPerformDeliveryMessage(
+                    body.getString(ServiceHelper.DRONE_ID_KEY),
+                    order.getId(),
+                    body.getString(ServiceHelper.COURIER_KEY));
             routingContext.response().end(CORRECT_RESPONSE_TO_PERFORM_DELIVERY);
         }
     }

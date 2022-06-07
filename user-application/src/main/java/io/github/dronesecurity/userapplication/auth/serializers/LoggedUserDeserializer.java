@@ -6,6 +6,7 @@
 package io.github.dronesecurity.userapplication.auth.serializers;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,9 +42,16 @@ public class LoggedUserDeserializer extends JsonDeserializer<LoggedUser> {
                 final List<String> couriers = Arrays.asList((String[]) ctx.getAttribute(UserConstants.COURIERS));
                 return new Maintainer(username, couriers);
             case COURIER:
-                return new Courier(username, root.get(UserConstants.SUPERVISOR).asText());
+                final List<String> drones =
+                        mapper.readValue(root.get(UserConstants.DRONES).toString(), new ListTypeReference());
+                return new Courier(username, root.get(UserConstants.SUPERVISOR).asText(), drones);
             default:
                 throw new IllegalStateException("Unexpected value: " + role);
         }
     }
+
+    /**
+     * {@link TypeReference} to deserialize into a {@code List<String>}.
+     */
+    private static class ListTypeReference extends TypeReference<List<String>> { }
 }

@@ -112,6 +112,14 @@ public final class Connection {
     }
 
     /**
+     * Gets the client identifier.
+     * @return the client identifier
+     */
+    public String getIdentifier() {
+        return this.clientID;
+    }
+
+    /**
      * Closes established connection.
      */
     public void closeConnection() {

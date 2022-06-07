@@ -6,6 +6,7 @@
 package io.github.dronesecurity.dronesystem.drone;
 
 
+import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.lib.DrivingMode;
 
 import java.util.Map;
@@ -21,15 +22,25 @@ public class Drone {
     private final Sensor<Byte[]> camera;
     private boolean isMoving;
     private DrivingMode drivingMode;
+    private final String id;
 
     /**
      * Constructs drone's sensors.
      */
     public Drone() {
+        this.id = Connection.getInstance().getIdentifier();
         this.proximity = SENSOR_FACTORY.getProximitySensor();
         this.accelerometer = SENSOR_FACTORY.getAccelerometer();
         this.camera = SENSOR_FACTORY.getCamera();
         this.drivingMode = DrivingMode.AUTOMATIC;
+    }
+
+    /**
+     * Gets the drone identifier.
+     * @return the drone identifier
+     */
+    public String getId() {
+        return this.id;
     }
 
     /**

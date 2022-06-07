@@ -35,5 +35,10 @@ public final class UserConstants {
      */
     public static final String COURIERS = "couriers";
 
+    /**
+     * Key for the drone identifiers.
+     */
+    public static final String DRONES = "drones";
+
     private UserConstants() { }
 }

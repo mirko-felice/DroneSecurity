@@ -6,6 +6,7 @@
 package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.lib.DateHelper;
+import io.github.dronesecurity.userapplication.auth.entities.Courier;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.FailedOrder;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.Order;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
@@ -79,19 +80,21 @@ public final class OrdersController implements Initializable {
 
     @FXML
     private void performDelivery() {
-        this.getSelectedOrder().flatMap(o -> CastHelper.safeCast(o, PlacedOrder.class)).ifPresent(order -> {
-            final JsonObject body = new JsonObject()
-                    .put(ServiceHelper.ORDER_KEY, order)
-                    .put(ServiceHelper.COURIER_KEY, UserHelper.logged().getUsername());
-            ServiceHelper.postJson(ServiceHelper.Operation.PERFORM_DELIVERY, body)
-                    .onSuccess(h -> Platform.runLater(() -> {
-                        final URL fileUrl = getClass().getResource(MONITORING_FXML);
-                        final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-                        fxmlLoader.setController(new MonitorController(order.getId()));
-                        FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Monitoring...", fxmlLoader)
-                                .ifPresent(Stage::show);
-                    }));
-        });
+        this.getSelectedOrder().flatMap(o -> CastHelper.safeCast(o, PlacedOrder.class)).ifPresent(order ->
+            this.createDronePickerDialog().showAndWait().ifPresent(droneId -> {
+                final JsonObject body = new JsonObject()
+                        .put(ServiceHelper.ORDER_KEY, order)
+                        .put(ServiceHelper.COURIER_KEY, UserHelper.logged().getUsername())
+                        .put(ServiceHelper.DRONE_ID_KEY, droneId);
+                ServiceHelper.postJson(ServiceHelper.Operation.PERFORM_DELIVERY, body)
+                        .onSuccess(h -> Platform.runLater(() -> {
+                            final URL fileUrl = getClass().getResource(MONITORING_FXML);
+                            final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
+                            fxmlLoader.setController(new MonitorController(order.getId()));
+                            FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Monitoring...", fxmlLoader)
+                                    .ifPresent(Stage::show);
+                        }));
+            }));
     }
 
     @FXML
@@ -128,6 +131,23 @@ public final class OrdersController implements Initializable {
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == ButtonType.OK)
                 return DateHelper.fromLocalDate(datePicker.getValue());
+            else
+                return null;
+        });
+        return dialog;
+    }
+
+    private @NotNull Dialog<String> createDronePickerDialog() {
+        final Dialog<String> dialog = DialogUtils.createCustomDialog("Drone Selection",
+                "Choose the Drone to use for delivery", ButtonType.OK, ButtonType.CANCEL);
+
+        final List<String> drones = ((Courier) UserHelper.logged()).getDrones();
+        final ChoiceBox<String> choiceBox = new ChoiceBox<>(FXCollections.observableList(drones));
+        dialog.getDialogPane().setContent(choiceBox);
+
+        dialog.setResultConverter(button -> {
+            if (button == ButtonType.OK)
+                return choiceBox.getValue();
             else
                 return null;
         });
