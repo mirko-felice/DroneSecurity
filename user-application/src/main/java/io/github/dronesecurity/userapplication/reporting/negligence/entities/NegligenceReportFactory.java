@@ -26,13 +26,17 @@ public final class NegligenceReportFactory {
      * @param assignee the {@link Maintainer} assigned to the
      *                 report
      * @param data the {@link DroneData} associated to the report
+     * @param orderId the order identifier related to the negligence
+     * @param negligenceInstant {@link Instant} when the negligence has happened
      * @return a new {@link NegligenceReport}
      */
-    @Contract(value = "_, _, _ -> new", pure = true)
+    @Contract(value = "_, _, _, _, _ -> new", pure = true)
     public static @NotNull NegligenceReport withoutID(final String negligent,
                                                       final String assignee,
-                                                      final DroneData data) {
-        return new NegligenceReportImpl(negligent, assignee, data);
+                                                      final DroneData data,
+                                                      final String orderId,
+                                                      final Instant negligenceInstant) {
+        return new NegligenceReportImpl(negligent, assignee, data, orderId, negligenceInstant);
     }
 
     /**

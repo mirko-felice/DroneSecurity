@@ -6,6 +6,7 @@
 package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.lib.DateHelper;
+import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
 import io.github.dronesecurity.userapplication.auth.entities.Role;
 import io.github.dronesecurity.userapplication.reporting.issue.entities.*;
 import io.github.dronesecurity.userapplication.reporting.issue.serialization.IssueStringHelper;
@@ -25,7 +26,9 @@ import javafx.stage.Modality;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -76,11 +79,12 @@ public class IssuesController implements Initializable {
      * Instantiates the issue report controller with its service.
      */
     public IssuesController() {
-        this.role = UserHelper.logged().getRole();
+        final LoggedUser loggedUser = UserHelper.logged();
+        this.role = loggedUser.getRole();
         this.issueReportService = MaintainerIssueReportService.getInstance();
 
         if (this.role == Role.MAINTAINER)
-            this.issueReportService.subscribeToNewIssue(issue ->
+            this.issueReportService.subscribeToNewIssue(loggedUser.getUsername(), issue ->
                 Platform.runLater(() -> {
                     this.refreshOpenIssues();
                     DialogUtils.showInfoNotification("INFO", "You have received a new issue!",

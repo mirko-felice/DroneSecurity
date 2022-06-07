@@ -39,13 +39,15 @@ import java.util.stream.Collectors;
  */
 public final class OrdersController implements Initializable {
 
-    private static final String MONITORING_FILENAME = "monitoring.fxml";
+    private static final String MONITORING_FXML = "monitoring.fxml";
+    private static final String DATA_FXML = "data.fxml";
     @FXML private TableView<Order> table;
     @FXML private TableColumn<Order, String> orderDateColumn;
     @FXML private TableColumn<Order, String> productColumn;
     @FXML private TableColumn<Order, String> stateColumn;
     @FXML private Button performDeliveryButton;
     @FXML private Button rescheduleDeliveryButton;
+    @FXML private Button showDataHistoryButton;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -64,9 +66,13 @@ public final class OrdersController implements Initializable {
             if (OrderConstants.PLACED_ORDER_STATE.equals(order.getCurrentState())) {
                 this.performDeliveryButton.setDisable(false);
                 this.rescheduleDeliveryButton.setDisable(true);
+                this.showDataHistoryButton.setDisable(true);
             } else if (OrderConstants.FAILED_ORDER_STATE.equals(order.getCurrentState())) {
                 this.performDeliveryButton.setDisable(true);
                 this.rescheduleDeliveryButton.setDisable(false);
+                this.showDataHistoryButton.setDisable(false);
+            } else if (OrderConstants.DELIVERED_ORDER_STATE.equals(order.getCurrentState())) {
+                this.showDataHistoryButton.setDisable(false);
             }
         }));
     }
@@ -79,7 +85,7 @@ public final class OrdersController implements Initializable {
                     .put(ServiceHelper.COURIER_KEY, UserHelper.logged().getUsername());
             ServiceHelper.postJson(ServiceHelper.Operation.PERFORM_DELIVERY, body)
                     .onSuccess(h -> Platform.runLater(() -> {
-                        final URL fileUrl = getClass().getResource(MONITORING_FILENAME);
+                        final URL fileUrl = getClass().getResource(MONITORING_FXML);
                         final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
                         fxmlLoader.setController(new MonitorController(order.getId()));
                         FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Monitoring...", fxmlLoader)
@@ -97,6 +103,15 @@ public final class OrdersController implements Initializable {
                             .put(ServiceHelper.NEW_ESTIMATED_ARRIVAL_KEY, newEstimatedArrival);
                     ServiceHelper.postJson(ServiceHelper.Operation.RESCHEDULE_DELIVERY, body);
                 }));
+    }
+
+    @FXML
+    private void showDataHistory() {
+        this.getSelectedOrder().ifPresent(order -> {
+            final FXMLLoader loader = new FXMLLoader(OrdersController.class.getResource(DATA_FXML));
+            loader.setController(new DataController(order.getId()));
+            FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Data History", loader).ifPresent(Stage::show);
+        });
     }
 
     private Optional<Order> getSelectedOrder() {

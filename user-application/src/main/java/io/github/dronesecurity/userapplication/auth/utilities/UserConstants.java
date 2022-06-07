@@ -30,5 +30,10 @@ public final class UserConstants {
      */
     public static final String ROLE = "role";
 
+    /**
+     * Key for the couriers.
+     */
+    public static final String COURIERS = "couriers";
+
     private UserConstants() { }
 }

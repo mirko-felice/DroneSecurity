@@ -10,10 +10,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.lib.MqttTopicConstants;
-import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
 import io.github.dronesecurity.userapplication.reporting.issue.entities.*;
 import io.github.dronesecurity.userapplication.reporting.issue.repo.IssueReportRepository;
-import io.github.dronesecurity.userapplication.utilities.UserHelper;
 import io.vertx.core.Future;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +65,7 @@ public final class IssueReportService implements CourierIssueReportService, Main
         return REPOSITORY.addIssue(issue).onSuccess(newIssue -> {
             try {
                 final JsonNode json = new ObjectMapper().readTree(newIssue.toString());
-                Connection.getInstance().publish(MqttTopicConstants.ISSUE_TOPIC, json);
+                Connection.getInstance().publish(MqttTopicConstants.ISSUE_TOPIC + issue.assignedTo(), json);
             } catch (JsonProcessingException e) {
                 LoggerFactory.getLogger(this.getClass()).warn("Can not deserialize correctly the issue.", e);
             }
@@ -94,14 +92,12 @@ public final class IssueReportService implements CourierIssueReportService, Main
      * {@inheritDoc}
      */
     @Override
-    public void subscribeToNewIssue(final Consumer<OpenIssue> consumer) {
-        Connection.getInstance().subscribe(MqttTopicConstants.ISSUE_TOPIC, mqttMessage -> {
+    public void subscribeToNewIssue(final String maintainerUsername, final Consumer<OpenIssue> consumer) {
+        Connection.getInstance().subscribe(MqttTopicConstants.ISSUE_TOPIC + maintainerUsername, mqttMessage -> {
             try {
                 final OpenIssue issue = new ObjectMapper()
                         .readValue(new String(mqttMessage.getPayload(), StandardCharsets.UTF_8), OpenIssue.class);
-                final LoggedUser loggedUser = UserHelper.logged();
-                if (issue.assignedTo().equals(loggedUser.getUsername()))
-                    consumer.accept(issue);
+                consumer.accept(issue);
             } catch (JsonProcessingException e) {
                 LoggerFactory.getLogger(this.getClass()).warn("Can not deserialize issue.", e);
             }

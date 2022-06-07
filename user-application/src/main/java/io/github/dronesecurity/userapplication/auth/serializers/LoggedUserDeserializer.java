@@ -18,6 +18,8 @@ import io.github.dronesecurity.userapplication.auth.entities.Role;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Deserialize Json into {@link LoggedUser}.
@@ -28,7 +30,7 @@ public class LoggedUserDeserializer extends JsonDeserializer<LoggedUser> {
      * {@inheritDoc}
      */
     @Override
-    public LoggedUser deserialize(final @NotNull JsonParser parser, final DeserializationContext ctxt)
+    public LoggedUser deserialize(final @NotNull JsonParser parser, final @NotNull DeserializationContext ctx)
             throws IOException {
         final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
         final ObjectNode root = mapper.readTree(parser);
@@ -36,7 +38,8 @@ public class LoggedUserDeserializer extends JsonDeserializer<LoggedUser> {
         final String username = root.get(UserConstants.USERNAME).asText();
         switch (role) {
             case MAINTAINER:
-                return new Maintainer(username);
+                final List<String> couriers = Arrays.asList((String[]) ctx.getAttribute(UserConstants.COURIERS));
+                return new Maintainer(username, couriers);
             case COURIER:
                 return new Courier(username, root.get(UserConstants.SUPERVISOR).asText());
             default:

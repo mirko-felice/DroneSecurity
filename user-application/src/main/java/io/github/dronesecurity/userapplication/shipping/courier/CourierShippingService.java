@@ -119,9 +119,9 @@ public final class CourierShippingService extends AbstractVerticle {
     private void callBack(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         final JsonObject body = params.body().getJsonObject();
-        final long droneId = Long.parseLong(body.getString("orderId"));
+        final String orderId = body.getString(ServiceHelper.ORDER_ID_KEY);
 
-        ServiceHelper.sendCallBackMessage(droneId);
+        ServiceHelper.sendCallBackMessage(orderId);
     }
 
     private void rescheduleDelivery(final @NotNull RoutingContext routingContext) {

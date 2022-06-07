@@ -35,7 +35,12 @@ public final class NegligenceReportDeserializer extends JsonDeserializer<Neglige
 
         final DroneData data = new DroneDataImpl(root.get(NegligenceConstants.DATA));
 
-        final NegligenceReport report = NegligenceReportFactory.withoutID(negligent, maintainer, data);
+        final String orderId = root.get(NegligenceConstants.ORDER_ID).asText();
+        final Instant negligenceInstant =
+                DateHelper.toInstant(root.get(NegligenceConstants.NEGLIGENCE_INSTANT).asText());
+
+        final NegligenceReport report =
+                NegligenceReportFactory.withoutID(negligent, maintainer, data, orderId, negligenceInstant);
         if (!root.has(NegligenceConstants.ID))
             return report;
 

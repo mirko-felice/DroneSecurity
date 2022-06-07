@@ -48,6 +48,16 @@ public final class NegligenceConstants {
     public static final String CAMERA = MqttMessageParameterConstants.CAMERA_PARAMETER;
 
     /**
+     * Key for the order identifier.
+     */
+    public static final String ORDER_ID = MqttMessageParameterConstants.ORDER_ID_PARAMETER;
+
+    /**
+     * Key for the instant when the negligence has happened.
+     */
+    public static final String NEGLIGENCE_INSTANT = "negligenceInstant";
+
+    /**
      * Key for the closing instant.
      */
     public static final String CLOSING_INSTANT = "closingInstant";

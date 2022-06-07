@@ -10,11 +10,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.dronesecurity.lib.*;
+import io.github.dronesecurity.userapplication.drone.monitoring.entities.DroneData;
+import io.github.dronesecurity.userapplication.drone.monitoring.entities.DroneDataImpl;
+import io.github.dronesecurity.userapplication.drone.monitoring.repo.DataRepository;
 import io.github.dronesecurity.userapplication.events.*;
+import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -24,6 +30,18 @@ import java.util.function.Consumer;
  */
 public final class UserMonitoringService {
 
+    private static final String JSON_ERROR_MESSAGE = "Can NOT read json correctly.";
+    private final String orderId;
+
+    /**
+     * Build the service.
+     * @param orderId {@link io.github.dronesecurity.userapplication.shipping.courier.entities.Order} identifier to
+     *                                                                                              monitor
+     */
+    public UserMonitoringService(final String orderId) {
+        this.orderId = orderId;
+    }
+
     /**
      * Subscribes to the reading topic.
      *
@@ -31,7 +49,7 @@ public final class UserMonitoringService {
      */
     public void subscribeToDataRead(final Consumer<DataRead> consumer) {
         DomainEvents.register(DataRead.class, consumer);
-        Connection.getInstance().subscribe(MqttTopicConstants.DATA_TOPIC, msg -> {
+        Connection.getInstance().subscribe(MqttTopicConstants.DATA_TOPIC + this.orderId, msg -> {
             final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
             final double proximity = json.getDouble(MqttMessageParameterConstants.PROXIMITY_PARAMETER);
 
@@ -48,6 +66,9 @@ public final class UserMonitoringService {
             final long camera = json.getLong(MqttMessageParameterConstants.CAMERA_PARAMETER);
 
             DomainEvents.raise(new DataRead(proximity, accelerometer, camera));
+
+            DataRepository.getInstance().save(
+                    new DroneDataImpl(proximity, accelerometer, camera, Instant.now(), this.orderId));
         });
     }
 
@@ -58,7 +79,7 @@ public final class UserMonitoringService {
      */
     public void subscribeToWarningSituation(final Consumer<WarningSituation> consumer) {
         DomainEvents.register(WarningSituation.class, consumer);
-        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC, msg -> {
+        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC + this.orderId, msg -> {
             final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
             if (json.getString(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER)
                     .equals(AlertLevel.WARNING.toString()))
@@ -74,7 +95,7 @@ public final class UserMonitoringService {
      */
     public void subscribeToCriticalSituation(final Consumer<CriticalSituation> consumer) {
         DomainEvents.register(CriticalSituation.class, consumer);
-        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC, msg -> {
+        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC + this.orderId, msg -> {
             final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
             if (json.getString(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER)
                     .equals(AlertLevel.CRITICAL.toString()))
@@ -90,7 +111,7 @@ public final class UserMonitoringService {
      */
     public void subscribeToStandardSituation(final Consumer<StandardSituation> consumer) {
         DomainEvents.register(StandardSituation.class, consumer);
-        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC, msg -> {
+        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC + this.orderId, msg -> {
             final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
             if (json.getString(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER)
                     .equals(AlertLevel.NONE.toString()))
@@ -104,13 +125,13 @@ public final class UserMonitoringService {
      */
     public void subscribeToOrderStatusChange(final Consumer<StatusChanged> consumer) {
         DomainEvents.register(StatusChanged.class, consumer);
-        Connection.getInstance().subscribe(MqttTopicConstants.LIFECYCLE_TOPIC, msg -> {
+        Connection.getInstance().subscribe(MqttTopicConstants.LIFECYCLE_TOPIC + this.orderId, msg -> {
             try {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
                 final String status = json.get(MqttMessageParameterConstants.STATUS_PARAMETER).asText();
                 DomainEvents.raise(new StatusChanged(status));
             } catch (JsonProcessingException e) {
-                LoggerFactory.getLogger(getClass()).error("Can NOT read json correctly.", e);
+                LoggerFactory.getLogger(getClass()).error(JSON_ERROR_MESSAGE, e);
             }
         });
     }
@@ -125,7 +146,7 @@ public final class UserMonitoringService {
                 ? MqttMessageValueConstants.AUTOMATIC_MODE_MESSAGE
                 : MqttMessageValueConstants.MANUAL_MODE_MESSAGE;
         jsonNode.put(MqttMessageParameterConstants.MODE_PARAMETER, modeMessage);
-        Connection.getInstance().publish(MqttTopicConstants.CONTROL_TOPIC, jsonNode);
+        Connection.getInstance().publish(MqttTopicConstants.CONTROL_TOPIC + this.orderId, jsonNode);
     }
 
     /**
@@ -134,7 +155,7 @@ public final class UserMonitoringService {
     public void proceed() {
         final ObjectNode jsonNode = new ObjectMapper().createObjectNode();
         jsonNode.put(MqttMessageParameterConstants.MOVE_PARAMETER, MqttMessageValueConstants.PROCEED_MESSAGE);
-        Connection.getInstance().publish(MqttTopicConstants.CONTROL_TOPIC, jsonNode);
+        Connection.getInstance().publish(MqttTopicConstants.CONTROL_TOPIC + this.orderId, jsonNode);
     }
 
     /**
@@ -143,6 +164,14 @@ public final class UserMonitoringService {
     public void halt() {
         final ObjectNode jsonNode = new ObjectMapper().createObjectNode();
         jsonNode.put(MqttMessageParameterConstants.MOVE_PARAMETER, MqttMessageValueConstants.HALT_MESSAGE);
-        Connection.getInstance().publish(MqttTopicConstants.CONTROL_TOPIC, jsonNode);
+        Connection.getInstance().publish(MqttTopicConstants.CONTROL_TOPIC + this.orderId, jsonNode);
+    }
+
+    /**
+     * Retrieves data history related to the order monitoring.
+     * @return the {@link Future} containing the {@link List} of {@link DroneData}
+     */
+    public Future<List<DroneData>> retrieveDataHistory() {
+        return DataRepository.getInstance().retrieveDataHistory(this.orderId);
     }
 }

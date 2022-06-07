@@ -21,6 +21,6 @@ public final class DroneReportService {
      */
     public void reportsNegligence(final NegligenceReport report) {
         final JsonNode json = new ObjectMapper().convertValue(report, JsonNode.class);
-        Connection.getInstance().publish(MqttTopicConstants.NEGLIGENCE_REPORTS_TOPIC, json);
+        Connection.getInstance().publish(MqttTopicConstants.NEGLIGENCE_REPORTS_TOPIC + report.getNegligent(), json);
     }
 }

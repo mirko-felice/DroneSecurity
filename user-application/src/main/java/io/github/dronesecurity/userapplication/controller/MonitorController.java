@@ -71,7 +71,7 @@ public final class MonitorController implements Initializable {
      */
     public MonitorController(final String orderId) {
         this.orderId = orderId;
-        this.monitoringService = new UserMonitoringService();
+        this.monitoringService = new UserMonitoringService(orderId);
         this.negligenceReportService = CourierNegligenceReportService.getInstance();
     }
 
@@ -81,7 +81,7 @@ public final class MonitorController implements Initializable {
         this.recallButton.setDisable(true);
         this.proceedButton.setDisable(true);
 
-        this.negligenceReportService.subscribeToNegligenceReports(this::onNewNegligence);
+        this.negligenceReportService.subscribeToNewNegligence(this::onNewNegligence);
 
         this.monitoringService.subscribeToDataRead(this::onDataRead);
         this.monitoringService.subscribeToWarningSituation(this::onWarning);
@@ -183,7 +183,7 @@ public final class MonitorController implements Initializable {
     private void onNewNegligence(final @NotNull NewNegligence newNegligence) {
         Platform.runLater(() -> DialogUtils.showInfoNotification("INFO",
                 "You have committed a negligence. Maintainer " + newNegligence.getReport().assignedTo()
-                        + " will take care of this. Go to the 'reports' window to show information about it.",
+                        + " will take care of this. Go to the 'reports' window to show more information about it.",
                 this.switchMode.getScene().getWindow()));
     }
 

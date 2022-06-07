@@ -32,6 +32,7 @@ public final class Connection {
 
     private static Connection singleton;
     private final EventLoopGroup eventLoopGroup;
+    private final ClientBootstrap clientBootstrap;
     private final Properties properties;
     private MqttClientConnection clientConnection;
     private String certsFolderPath;
@@ -43,6 +44,7 @@ public final class Connection {
 
     private Connection() {
         this.eventLoopGroup = new EventLoopGroup(1);
+        this.clientBootstrap = new ClientBootstrap(this.eventLoopGroup, new HostResolver(this.eventLoopGroup));
         this.properties = new Properties();
         try {
             this.readProperties();
@@ -102,10 +104,19 @@ public final class Connection {
     }
 
     /**
+     * Unsubscribes from a topic.
+     * @param topic topic to unsubscribe from
+     */
+    public void unsubscribe(final String topic) {
+        this.clientConnection.unsubscribe(topic);
+    }
+
+    /**
      * Closes established connection.
      */
     public void closeConnection() {
         this.eventLoopGroup.close();
+        this.clientBootstrap.close();
         this.clientConnection.disconnect();
         this.clientConnection.close();
     }
@@ -127,16 +138,18 @@ public final class Connection {
     }
 
     private void buildConnection() {
-        this.clientConnection = AwsIotMqttConnectionBuilder
-                .newMtlsBuilderFromPath(this.certsFolderPath + this.certificateFile,
-                        this.certsFolderPath + this.privateKeyFile)
-                .withCertificateAuthorityFromPath(
-                        System.getProperty("os.name").contains("win") ? "" : this.certsFolderPath,
-                        this.certsFolderPath + this.certificateAuthorityFile)
-                .withBootstrap(new ClientBootstrap(this.eventLoopGroup, new HostResolver(this.eventLoopGroup)))
-                .withClientId(this.clientID)
-                .withEndpoint(this.endpoint)
-                .withCleanSession(true)
-                .build();
+        try (AwsIotMqttConnectionBuilder builder = AwsIotMqttConnectionBuilder.newMtlsBuilderFromPath(
+                this.certsFolderPath + this.certificateFile,
+                this.certsFolderPath + this.privateKeyFile)) {
+            this.clientConnection = builder
+                    .withCertificateAuthorityFromPath(
+                            System.getProperty("os.name").contains("win") ? "" : this.certsFolderPath,
+                            this.certsFolderPath + this.certificateAuthorityFile)
+                    .withBootstrap(this.clientBootstrap)
+                    .withClientId(this.clientID)
+                    .withEndpoint(this.endpoint)
+                    .withCleanSession(true)
+                    .build();
+        }
     }
 }

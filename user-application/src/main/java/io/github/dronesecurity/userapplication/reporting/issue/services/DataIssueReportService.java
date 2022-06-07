@@ -32,7 +32,9 @@ public interface DataIssueReportService {
 
     /**
      * Subscribes to new issues created by any courier.
+     * @param maintainerUsername {@link io.github.dronesecurity.userapplication.auth.entities.Maintainer} username to
+     *                                                                                                   track issue on
      * @param consumer consumes the {@link OpenIssue}
      */
-    void subscribeToNewIssue(Consumer<OpenIssue> consumer);
+    void subscribeToNewIssue(String maintainerUsername, Consumer<OpenIssue> consumer);
 }

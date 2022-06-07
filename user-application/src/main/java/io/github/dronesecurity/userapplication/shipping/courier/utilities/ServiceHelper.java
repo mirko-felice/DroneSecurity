@@ -143,13 +143,12 @@ public final class ServiceHelper {
 
     /**
      * Sends the message to call back the drone on AWS.
-     * @param droneId drone identifier to track
+     * @param orderId drone identifier to track
      */
-    public static void sendCallBackMessage(final long droneId) {
+    public static void sendCallBackMessage(final String orderId) {
         final JsonNode recallMessage = new ObjectMapper().createObjectNode()
                 .put(MqttMessageParameterConstants.SYNC_PARAMETER,
-                        MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE)
-                .put("droneId", droneId);
-        Connection.getInstance().publish(MqttTopicConstants.ORDER_TOPIC, recallMessage);
+                        MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);
+        Connection.getInstance().publish(MqttTopicConstants.ORDER_TOPIC + orderId, recallMessage);
     }
 }

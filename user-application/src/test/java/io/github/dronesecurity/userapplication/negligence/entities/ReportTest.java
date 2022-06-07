@@ -26,6 +26,7 @@ final class ReportTest {
 
     private static final String NEGLIGENT = "courier";
     private static final String ASSIGNEE = "maintainer";
+    private static final String ORDER_ID = "123";
 
     @Test
     void testEmptyData() {
@@ -77,7 +78,7 @@ final class ReportTest {
 
     @Contract(" -> new")
     private @NotNull NegligenceReport generateReportWithoutData() {
-        return NegligenceReportFactory.withoutID(NEGLIGENT, ASSIGNEE, new DroneDataImpl());
+        return NegligenceReportFactory.withoutID(NEGLIGENT, ASSIGNEE, new DroneDataImpl(), ORDER_ID, Instant.now());
     }
 
     private @NotNull NegligenceReport generateReportWithData() {
@@ -89,6 +90,6 @@ final class ReportTest {
                         .put(MqttMessageParameterConstants.ROLL, 1)
                         .put(MqttMessageParameterConstants.PITCH, 1)
                         .put(MqttMessageParameterConstants.YAW, 1));
-        return NegligenceReportFactory.withoutID(NEGLIGENT, ASSIGNEE, new DroneDataImpl(data));
+        return NegligenceReportFactory.withoutID(NEGLIGENT, ASSIGNEE, new DroneDataImpl(data), ORDER_ID, Instant.now());
     }
 }

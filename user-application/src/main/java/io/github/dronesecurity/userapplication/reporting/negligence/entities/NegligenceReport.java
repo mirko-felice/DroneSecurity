@@ -11,6 +11,8 @@ import io.github.dronesecurity.userapplication.auth.entities.Courier;
 import io.github.dronesecurity.userapplication.auth.entities.Maintainer;
 import io.github.dronesecurity.userapplication.reporting.negligence.serializers.NegligenceReportDeserializer;
 
+import java.time.Instant;
+
 /**
  * Represents the report used to record the commitment of a negligence by a {@link Courier}.
  */
@@ -34,5 +36,17 @@ public interface NegligenceReport {
      * @return the assignee
      */
     String assignedTo();
+
+    /**
+     * Gets the order identifier related to the negligence.
+     * @return the order identifier
+     */
+    String getOrderId();
+
+    /**
+     * Gets the {@link Instant} when negligence has happened.
+     * @return the negligence instant
+     */
+    Instant getNegligenceInstant();
 
 }

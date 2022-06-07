@@ -85,7 +85,10 @@ public class DroneService {
                     this.currentOrderId = json.get(MqttMessageParameterConstants.ORDER_ID_PARAMETER).asText();
                     this.currentCourier = json.get(MqttMessageParameterConstants.COURIER_PARAMETER).asText();
                     new Thread(this::startDrone).start();
-                    Connection.getInstance().subscribe(MqttTopicConstants.CONTROL_TOPIC, this::control);
+                    final Connection connection = Connection.getInstance();
+                    connection.subscribe(MqttTopicConstants.CONTROL_TOPIC + this.currentOrderId,
+                            this::control);
+                    connection.unsubscribe(MqttTopicConstants.ORDER_TOPIC);
                 }
             } catch (JsonProcessingException e) {
                 LoggerFactory.getLogger(getClass()).error(JSON_ERROR_MESSAGE, e);
@@ -118,7 +121,7 @@ public class DroneService {
                         this.currentOrderId);
         }, TRAVELING_TIME + CLIENT_WAITING_TIME, TimeUnit.MILLISECONDS);
 
-        Connection.getInstance().subscribe(MqttTopicConstants.ORDER_TOPIC, msg -> {
+        Connection.getInstance().subscribe(MqttTopicConstants.ORDER_TOPIC + this.currentOrderId, msg -> {
             try {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
                 if (MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE
@@ -146,6 +149,7 @@ public class DroneService {
                             new DataProcessor().processAccelerometer(this.drone.getAccelerometerSensorData());
                     this.cameraSensorData = this.drone.getCameraSensorData();
                     PublishHelper.publishData(
+                            this.currentOrderId,
                             this.proximitySensorData,
                             this.accelerometerSensorData,
                             this.cameraSensorData);
@@ -169,7 +173,8 @@ public class DroneService {
         this.currentProximityAlertLevel = this.dataAnalyzer
                 .checkProximitySensorDataAlertLevel(this.proximitySensorData);
         if (this.currentProximityAlertLevel != previous) {
-            PublishHelper.publishCurrentAlertLevel(this.currentProximityAlertLevel, AlertType.DISTANCE);
+            PublishHelper.publishCurrentAlertLevel(this.currentOrderId, this.currentProximityAlertLevel,
+                    AlertType.DISTANCE);
             if (this.currentProximityAlertLevel == AlertLevel.CRITICAL) {
                 this.drone.halt();
                 this.reportNegligence();
@@ -182,7 +187,8 @@ public class DroneService {
         this.currentAccelerometerAlertLevel = this.dataAnalyzer
                 .checkAccelerometerDataAlertLevel(this.accelerometerSensorData);
         if (this.currentAccelerometerAlertLevel != previous) {
-            PublishHelper.publishCurrentAlertLevel(this.currentAccelerometerAlertLevel, AlertType.ANGLE);
+            PublishHelper.publishCurrentAlertLevel(this.currentOrderId, this.currentAccelerometerAlertLevel,
+                    AlertType.ANGLE);
             if (this.currentAccelerometerAlertLevel == AlertLevel.CRITICAL) {
                 this.drone.halt();
                 this.reportNegligence();
@@ -195,7 +201,8 @@ public class DroneService {
                 this.currentCourier,
                 this.proximitySensorData,
                 this.accelerometerSensorData,
-                this.cameraSensorData);
+                this.cameraSensorData,
+                this.currentOrderId);
         this.droneReportService.reportsNegligence(report);
     }
 

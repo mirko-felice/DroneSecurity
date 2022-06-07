@@ -19,6 +19,7 @@ import io.github.dronesecurity.userapplication.reporting.negligence.entities.Neg
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.OpenNegligenceReport;
 import io.github.dronesecurity.userapplication.reporting.negligence.repo.NegligenceRepository;
 import io.github.dronesecurity.userapplication.reporting.negligence.utilities.NegligenceConstants;
+import io.github.dronesecurity.userapplication.utilities.UserHelper;
 import io.vertx.core.Future;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
@@ -54,29 +55,19 @@ public final class NegligenceReportService
      * {@inheritDoc}
      */
     @Override
-    public void subscribeToNegligenceReports(final @NotNull Consumer<NewNegligence> consumer) {
+    public void subscribeToNewNegligence(final @NotNull Consumer<NewNegligence> consumer) {
         DomainEvents.register(NewNegligence.class, this::onNewNegligence);
         DomainEvents.register(NewNegligence.class, consumer);
-        Connection.getInstance().subscribe(MqttTopicConstants.NEGLIGENCE_REPORTS_TOPIC, msg -> {
-            try {
-                final ObjectMapper mapper = new ObjectMapper();
-                final JsonNode json = mapper.readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
-                AuthenticationService.getInstance().retrieveCourier(json.get(NegligenceConstants.NEGLIGENT).asText())
-                        .onSuccess(courier -> {
-                            try {
-                                final NegligenceReport report = mapper.reader()
-                                        .forType(NegligenceReport.class)
-                                        .withAttribute(NegligenceConstants.ASSIGNEE, courier.getSupervisor())
-                                        .readValue(json.toString());
-                                DomainEvents.raise(new NewNegligence(report));
-                            } catch (JsonProcessingException e) {
-                                LoggerFactory.getLogger(this.getClass()).error("Can NOT convert negligence report.", e);
-                            }
-                        });
-            } catch (JsonProcessingException e) {
-                LoggerFactory.getLogger(this.getClass()).error("Can NOT convert negligence report.", e);
-            }
-        });
+        this.subscribeToNewNegligence(UserHelper.logged().getUsername());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void subscribeToCourierNegligence(final String courier, final Consumer<NewNegligence> consumer) {
+        DomainEvents.register(NewNegligence.class, consumer);
+        this.subscribeToNewNegligence(courier);
     }
 
     /**
@@ -121,5 +112,28 @@ public final class NegligenceReportService
 
     private void onNewNegligence(final @NotNull NewNegligence newNegligence) {
         REPOSITORY.createReport(newNegligence.getReport());
+    }
+
+    private void subscribeToNewNegligence(final String username) {
+        Connection.getInstance().subscribe(MqttTopicConstants.NEGLIGENCE_REPORTS_TOPIC + username, msg -> {
+            try {
+                final ObjectMapper mapper = new ObjectMapper();
+                final JsonNode json = mapper.readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
+                AuthenticationService.getInstance().retrieveCourier(json.get(NegligenceConstants.NEGLIGENT).asText())
+                        .onSuccess(courier -> {
+                            try {
+                                final NegligenceReport report = mapper.reader()
+                                        .forType(NegligenceReport.class)
+                                        .withAttribute(NegligenceConstants.ASSIGNEE, courier.getSupervisor())
+                                        .readValue(json.toString());
+                                DomainEvents.raise(new NewNegligence(report));
+                            } catch (JsonProcessingException e) {
+                                LoggerFactory.getLogger(this.getClass()).error("Can NOT convert negligence report.", e);
+                            }
+                        });
+            } catch (JsonProcessingException e) {
+                LoggerFactory.getLogger(this.getClass()).error("Can NOT convert negligence report.", e);
+            }
+        });
     }
 }

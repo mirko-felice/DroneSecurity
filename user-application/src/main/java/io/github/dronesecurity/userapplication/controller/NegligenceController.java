@@ -10,7 +10,9 @@ import io.github.dronesecurity.userapplication.events.NewNegligence;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceActionFormImpl;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.OpenNegligenceReport;
 import io.github.dronesecurity.userapplication.reporting.negligence.services.MaintainerNegligenceReportService;
+import io.github.dronesecurity.userapplication.utilities.CastHelper;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
+import io.github.dronesecurity.userapplication.utilities.UserHelper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -42,7 +44,9 @@ public class NegligenceController implements Initializable {
      */
     public NegligenceController() {
         this.negligenceReportService = MaintainerNegligenceReportService.getInstance();
-        this.negligenceReportService.subscribeToNegligenceReports(this::onNewNegligence);
+        CastHelper.safeCast(UserHelper.logged(), Maintainer.class).ifPresent(maintainer -> maintainer.getCouriers()
+                .forEach(courier ->
+                        this.negligenceReportService.subscribeToCourierNegligence(courier, this::onNewNegligence)));
     }
 
     /**
@@ -65,7 +69,10 @@ public class NegligenceController implements Initializable {
     }
 
     private void onNewNegligence(final @NotNull NewNegligence newNegligence) {
-        LoggerFactory.getLogger(this.getClass()).debug("{}", newNegligence);
+        Platform.runLater(() -> DialogUtils.showInfoNotification("INFO",
+                "New negligence committed by " + newNegligence.getReport().getNegligent()
+                        + ". Please take care of this. Go to the 'reports' window to show more information about it.",
+                this.pane.getScene().getWindow()));
     }
 
     @FXML

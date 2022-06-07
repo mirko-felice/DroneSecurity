@@ -8,6 +8,8 @@ package io.github.dronesecurity.userapplication.auth.entities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -38,7 +40,7 @@ final class UserTest {
 
         assertEquals(courier, notLoggedUser, SHOULD_BE_EQUALS);
 
-        final User maintainer = new Maintainer(username);
+        final User maintainer = new Maintainer(username, List.of(username));
         assertEquals(maintainer, this.baseUser, SHOULD_BE_EQUALS);
 
         assertEquals(maintainer, notLoggedUser, SHOULD_BE_EQUALS);
@@ -55,7 +57,7 @@ final class UserTest {
 
         assertNotEquals(courier, notLoggedUser, SHOULD_NOT_BE_EQUALS);
 
-        final User maintainer = new Maintainer("maintainer");
+        final User maintainer = new Maintainer("maintainer", List.of(courier.getUsername()));
         assertNotEquals(maintainer, this.baseUser, SHOULD_NOT_BE_EQUALS);
 
         assertNotEquals(maintainer, notLoggedUser, SHOULD_NOT_BE_EQUALS);
