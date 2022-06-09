@@ -73,6 +73,7 @@ def read_scaled_val(adr):
 
 with smbus2.SMBus(1) as bus:
     # Read sensor data indefinitely
+    i = 0
     while True:
         bus.write_byte_data(SENSOR_ADDRESS, POWER_MGMT_1, 0)
 
@@ -85,7 +86,10 @@ with smbus2.SMBus(1) as bus:
               ",\n        \"y\": " + str(accelY) +
               ",\n        \"z\": " + str(accelZ) +
               "\n    }"
-              "\n}")
-        sys.stdout.flush()
+              "\n\"timestamp\": " + str(int(time.time() * 1000)) +
+              ",\n\"index\": " + str(i) +
+              "\n}", flush=True)
 
-        time.sleep(0.5)
+        i = i + 1
+
+        time.sleep(0.03)

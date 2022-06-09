@@ -7,9 +7,14 @@ package io.github.dronesecurity.dronesystem.performance;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.dronesecurity.dronesystem.performance.drone.sensordata.AccelerometerData;
+import io.github.dronesecurity.dronesystem.performance.drone.sensordata.CameraData;
 import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import io.github.dronesecurity.lib.MqttTopicConstants;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 /**
  * Publisher that helps to build correctly the messages and send them to respective topics.
@@ -20,15 +25,34 @@ public final class PerformancePublishHelper {
 
     /**
      * Builds and publishes data read by the camera to its topic.
-     * @param frame The bytearray representing the frame read by the camera
-     * @param timestamp Timestamp of the moment the frame was read
+     * @param cameraData data of the
+     *                   {@link io.github.dronesecurity.dronesystem.performance.drone.CameraTimed} to be sent
+     * @param accelerometerPerformanceData data of the
+     *                          {@link io.github.dronesecurity.dronesystem.performance.drone.AccelerometerTimed} to be
+     *                          sent
      */
-    public static void publishCamera(final Byte[] frame, final long timestamp) {
+    public static void publishData(final @NotNull CameraData cameraData,
+                                   final @NotNull AccelerometerData accelerometerPerformanceData) {
 
-        final ObjectNode cameraData = new ObjectMapper().createObjectNode();
-        cameraData.put(MqttMessageParameterConstants.CAMERA_PARAMETER, frame.length);
-        cameraData.put(MqttMessageParameterConstants.TIMESTAMP, timestamp);
+        final ObjectNode cameraJson = new ObjectMapper().createObjectNode();
+        cameraJson.put(MqttMessageParameterConstants.IMAGE_SIZE, cameraData.getImage().length);
+        cameraJson.put(MqttMessageParameterConstants.TIMESTAMP, cameraData.getTimestamp());
 
-        Connection.getInstance().publish(MqttTopicConstants.PERFORMANCE_CAMERA, cameraData);
+        final ObjectNode accelerometerJson = new ObjectMapper().createObjectNode();
+        final Map<String, Double> accelerometerData = accelerometerPerformanceData.getData();
+        accelerometerJson.put(MqttMessageParameterConstants.PITCH,
+                accelerometerData.get(MqttMessageParameterConstants.PITCH));
+        accelerometerJson.put(MqttMessageParameterConstants.ROLL,
+                accelerometerData.get(MqttMessageParameterConstants.ROLL));
+        accelerometerJson.put(MqttMessageParameterConstants.YAW,
+                accelerometerData.get(MqttMessageParameterConstants.YAW));
+        accelerometerJson.put(MqttMessageParameterConstants.TIMESTAMP, accelerometerPerformanceData.getTimestamp());
+
+        final ObjectNode completeData = new ObjectMapper().createObjectNode();
+        completeData.set(MqttMessageParameterConstants.CAMERA_PARAMETER, cameraJson);
+        completeData.set(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER, accelerometerJson);
+
+        Connection.getInstance().publish(MqttTopicConstants.PERFORMANCE_TOPIC, completeData);
     }
+
 }

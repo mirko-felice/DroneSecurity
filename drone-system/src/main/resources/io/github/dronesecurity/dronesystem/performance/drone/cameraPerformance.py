@@ -6,7 +6,7 @@ import picamera
 
 # Creates a Server socket to localhost:10000 and awaits the connection
 server_socket = socket.socket()
-server_socket.bind(('0.0.0.0', 10000))
+server_socket.bind(('0.0.0.0', 10001))
 server_socket.listen(0)
 
 # Make a file-like object out of the connection
@@ -29,8 +29,7 @@ try:
               "\n}", flush=True)
 
         i = i + 1
-        if i >= 100:
-            i = 0
+
         # Rewind the stream and send the image data over the wire
         stream.seek(0)
         connection.write(stream.read())

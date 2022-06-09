@@ -37,6 +37,7 @@ public class Accelerometer extends AbstractSensor<Map<String, Double>> {
     public void readData() {
         if (getOutputStream().size() > 0) {
             final String orig = getOutputStream().toString(StandardCharsets.UTF_8).trim();
+
             final int index = orig.lastIndexOf("\"accelerometer") - 1;
 
             final String jsonValues = orig.substring(index);

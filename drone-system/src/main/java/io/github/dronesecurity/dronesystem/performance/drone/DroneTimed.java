@@ -6,6 +6,8 @@
 package io.github.dronesecurity.dronesystem.performance.drone;
 
 import io.github.dronesecurity.dronesystem.drone.Drone;
+import io.github.dronesecurity.dronesystem.performance.drone.sensordata.AccelerometerData;
+import io.github.dronesecurity.dronesystem.performance.drone.sensordata.CameraData;
 
 /**
  * Class representing a {@link Drone} specifically build to evaluate its performance.
@@ -13,13 +15,14 @@ import io.github.dronesecurity.dronesystem.drone.Drone;
 public class DroneTimed extends Drone {
 
     private final CameraTimed camera;
+    private final AccelerometerTimed accelerometer;
 
     /**
      * Builds the drone.
      */
     public DroneTimed() {
         this.camera = new CameraTimed();
-        this.camera.activate();
+        this.accelerometer = new AccelerometerTimed();
     }
 
     /**
@@ -28,14 +31,7 @@ public class DroneTimed extends Drone {
     @Override
     public void readAllData() {
         this.camera.readData();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Byte[] getCameraSensorData() {
-        return this.camera.getData();
+        this.accelerometer.readData();
     }
 
     /**
@@ -43,7 +39,8 @@ public class DroneTimed extends Drone {
      */
     @Override
     public void activate() {
-        // Overrides original activation method to avoid activating unwanted sensors.
+        this.camera.activate();
+        this.accelerometer.activate();
     }
 
     /**
@@ -52,21 +49,30 @@ public class DroneTimed extends Drone {
     @Override
     public void deactivate() {
         this.camera.deactivate();
+        this.accelerometer.deactivate();
     }
 
     /**
-     * Gets the timestamp of the last frame read by the drone's camera.
-     * @return the timestamp of the last frame
+     * Gets all performance data of the last camera reading.
+     * @return {@link CameraData} containing all the data of the performance evaluation of the camera
      */
-    public long getCameraReadingTimestamp() {
-        return this.camera.getReadingTimestamp();
+    public CameraData getCameraPerformanceData() {
+
+        Byte[] imageBytes = this.camera.getData();
+        if (imageBytes == null)
+            imageBytes = new Byte[] {};
+        return new CameraData(this.camera.getReadingIndex(),
+                this.camera.getReadingTimestamp(),
+                imageBytes);
     }
 
     /**
-     * Gets the index of the last frame read by the drone's camera.
-     * @return the index of the last frame
+     * Gets all performance data of the last accelerometer reading.
+     * @return {@link AccelerometerData} containing all the data of the performance evaluation of the accelerometer
      */
-    public int getCameraReadingIndex() {
-        return this.camera.getReadingIndex();
+    public AccelerometerData getAccelerometerPerformanceData() {
+        return new AccelerometerData(this.accelerometer.getReadingIndex(),
+                this.accelerometer.getReadingTimestamp(),
+                this.accelerometer.getData());
     }
 }

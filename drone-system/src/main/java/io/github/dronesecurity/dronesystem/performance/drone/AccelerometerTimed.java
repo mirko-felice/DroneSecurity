@@ -8,16 +8,16 @@ package io.github.dronesecurity.dronesystem.performance.drone;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.dronesecurity.dronesystem.drone.Camera;
+import io.github.dronesecurity.dronesystem.drone.Accelerometer;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 
 /**
- * Class representing a {@link Camera} sensor that evaluates its script performance.
+ * Class representing an {@link Accelerometer} sensor that evaluates its script performance.
  */
-public class CameraTimed extends Camera {
+public class AccelerometerTimed extends Accelerometer {
 
     private long timestamp;
     private int index;
@@ -27,8 +27,8 @@ public class CameraTimed extends Camera {
      */
     @Override
     public void readData() {
-        super.readData();
         this.readMetadata();
+        super.readData();
     }
 
     /**
@@ -36,8 +36,9 @@ public class CameraTimed extends Camera {
      */
     @Override
     protected String getScriptName() {
-        return "cameraPerformance";
+        return "accelerometerPerformanceSimulator";
     }
+
 
     /**
      * Gets the timestamp of the last frame read by this camera.
@@ -66,7 +67,6 @@ public class CameraTimed extends Camera {
             } catch (JsonProcessingException e) {
                 LoggerFactory.getLogger(getClass()).error("Can NOT read json correctly.", e);
             }
-            getOutputStream().reset();
         }
     }
 }
