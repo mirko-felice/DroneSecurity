@@ -98,6 +98,7 @@ public class DroneService {
         try {
             this.latch.await();
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             LoggerFactory.getLogger(getClass()).error("Thread interrupted", e);
         }
     }
