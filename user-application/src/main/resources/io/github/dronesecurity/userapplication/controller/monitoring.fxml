@@ -14,24 +14,24 @@
 <?import javafx.scene.text.Font?>
 <?import org.controlsfx.control.ToggleSwitch?>
 
-<SplitPane dividerPositions="0.5" orientation="VERTICAL" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<SplitPane dividerPositions="0.5" orientation="VERTICAL" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <SplitPane dividerPositions="0.2387" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="500.0" prefWidth="700.0">
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-            <SplitPane dividerPositions="0.33" layoutX="111.0" layoutY="-54.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                    <Label layoutX="85.0" layoutY="44.0" text="Proximity: " AnchorPane.topAnchor="28.0" />
+            <SplitPane dividerPositions="0.26" layoutX="111.0" layoutY="-54.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="114.0">
+                    <Label layoutX="61.0" layoutY="28.0" text="Proximity: " AnchorPane.topAnchor="28.0" />
                     <Label fx:id="proximityCurrentData" alignment="CENTER" layoutX="99.0" layoutY="75.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="71.0" />
                 </AnchorPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                    <SplitPane dividerPositions="0.5" layoutX="124.0" layoutY="-49.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <SplitPane dividerPositions="0.63" layoutX="124.0" layoutY="-49.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                            <Label layoutX="65.0" layoutY="6.0" text="Last measurements" AnchorPane.topAnchor="6.0" />
-                            <Label layoutX="72.0" layoutY="28.0" text="Accelerometer: " AnchorPane.topAnchor="28.0" />
-                            <TableView fx:id="accelerometerCurrentData" editable="true" layoutX="13.0" layoutY="56.0" prefHeight="50.0" prefWidth="201.0" AnchorPane.topAnchor="56.0">
+                            <Label layoutX="110.0" layoutY="6.0" text="Last measurements" AnchorPane.topAnchor="6.0" />
+                            <Label layoutX="119.0" layoutY="29.0" text="Accelerometer: " AnchorPane.topAnchor="29.0" />
+                            <TableView fx:id="accelerometerCurrentData" layoutX="10.0" layoutY="56.0" prefHeight="50.0" AnchorPane.topAnchor="56.0">
                                 <columns>
-                                    <TableColumn fx:id="currentAccelerometerXValue" prefWidth="67.0" style="-fx-alignment: CENTER;" text="X" />
-                                    <TableColumn fx:id="currentAccelerometerYValue" prefWidth="67.0" style="-fx-alignment: CENTER;" text="Y" />
-                                    <TableColumn fx:id="currentAccelerometerZValue" prefWidth="67.0" style="-fx-alignment: CENTER;" text="Z" />
+                                    <TableColumn fx:id="currentAccelerometerXValue" editable="false" prefWidth="100.0" sortable="false" style="-fx-alignment: CENTER;" text="Roll" />
+                                    <TableColumn fx:id="currentAccelerometerYValue" editable="false" prefWidth="100.0" sortable="false" style="-fx-alignment: CENTER;" text="Pitch" />
+                                    <TableColumn fx:id="currentAccelerometerZValue" editable="false" prefWidth="100.0" sortable="false" style="-fx-alignment: CENTER;" text="Yaw" />
                                 </columns>
                                 <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -39,7 +39,7 @@
                             </TableView>
                         </AnchorPane>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                            <Label layoutX="90.0" layoutY="43.0" text="Camera: " AnchorPane.topAnchor="28.0" />
+                            <Label layoutX="70.0" layoutY="27.0" text="Camera: " AnchorPane.topAnchor="27.0" />
                             <Label fx:id="cameraCurrentData" alignment="CENTER" layoutX="100.0" layoutY="69.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="71.0" />
                         </AnchorPane>
                     </SplitPane>
@@ -47,7 +47,7 @@
             </SplitPane>
         </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-            <SplitPane dividerPositions="0.33" layoutX="209.0" layoutY="156.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <SplitPane dividerPositions="0.26" layoutX="209.0" layoutY="156.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                     <TableView fx:id="proximityPreviousData" layoutX="13.0" layoutY="30.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="29.0">
                         <columns>
@@ -59,14 +59,14 @@
                     </TableView>
                 </AnchorPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                    <SplitPane dividerPositions="0.5" layoutX="130.0" layoutY="49.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <SplitPane dividerPositions="0.63" layoutX="130.0" layoutY="49.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                            <Label layoutX="50.0" layoutY="6.0" text="Previous measurements" AnchorPane.topAnchor="0.0" />
+                            <Label layoutX="81.0" layoutY="6.0" text="Previous measurements" AnchorPane.topAnchor="6.0" />
                             <TableView fx:id="accelerometerPreviousData" layoutX="13.0" layoutY="29.0" prefHeight="365.0" prefWidth="200.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="29.0">
                                 <columns>
-                                    <TableColumn fx:id="accelerometerPreviousXDataColumn" prefWidth="67.0" style="-fx-alignment: CENTER;" text="X" />
-                                    <TableColumn fx:id="accelerometerPreviousYDataColumn" prefWidth="67.0" style="-fx-alignment: CENTER;" text="Y" />
-                                    <TableColumn fx:id="accelerometerPreviousZDataColumn" prefWidth="67.0" style="-fx-alignment: CENTER;" text="Z" />
+                                    <TableColumn fx:id="accelerometerPreviousXDataColumn" editable="false" prefWidth="67.0" sortable="false" style="-fx-alignment: CENTER;" text="Roll" />
+                                    <TableColumn fx:id="accelerometerPreviousYDataColumn" editable="false" prefWidth="67.0" sortable="false" style="-fx-alignment: CENTER;" text="Pitch" />
+                                    <TableColumn fx:id="accelerometerPreviousZDataColumn" editable="false" prefWidth="67.0" sortable="false" style="-fx-alignment: CENTER;" text="Yaw" />
                                 </columns>
                                 <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -108,13 +108,13 @@
                   <font>
                      <Font size="14.0" />
                   </font></Label>
-                  <Button fx:id="recallButton" mnemonicParsing="false" onMouseClicked="#recallDrone" text="Recall" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-                  <ToggleSwitch fx:id="switchMode" selected="true" GridPane.columnIndex="4" />
+                  <Button fx:id="recallButton" disable="true" mnemonicParsing="false" onMouseClicked="#recallDrone" text="Recall" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                  <ToggleSwitch fx:id="switchMode" disable="true" selected="true" GridPane.columnIndex="4" />
                <Label text="Automatic Mode" GridPane.columnIndex="3">
                   <font>
                      <Font size="13.0" />
                   </font></Label>
-               <Button fx:id="haltButton" mnemonicParsing="false" onMouseClicked="#halt" text="Halt" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+               <Button fx:id="haltButton" disable="true" mnemonicParsing="false" onMouseClicked="#halt" text="Halt" GridPane.columnIndex="3" GridPane.rowIndex="2" />
                <Label text="Current Situation:" GridPane.rowIndex="2">
                   <font>
                      <Font size="14.0" />
@@ -127,7 +127,7 @@
                   <font>
                      <Font size="14.0" />
                   </font></Label>
-               <Button fx:id="proceedButton" mnemonicParsing="false" onMouseClicked="#proceed" text="Proceed" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+               <Button fx:id="proceedButton" disable="true" mnemonicParsing="false" onMouseClicked="#proceed" text="Proceed" GridPane.columnIndex="3" GridPane.rowIndex="1" />
               </GridPane>
           </TitledPane>
       </panes>

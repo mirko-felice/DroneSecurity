@@ -58,7 +58,6 @@ public class UserController implements Initializable {
                 this.showOrdersButton.setVisible(false);
                 break;
             default:
-
         }
     }
 

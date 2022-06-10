@@ -5,14 +5,14 @@
 
 package io.github.dronesecurity.userapplication.shipping.courier;
 
+import io.github.dronesecurity.lib.DateHelper;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.DeliveringOrder;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.FailedOrder;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.PlacedOrder;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.RescheduledOrder;
 import io.github.dronesecurity.userapplication.shipping.courier.repo.OrderRepository;
+import io.github.dronesecurity.userapplication.shipping.courier.utilities.OrderConstants;
 import io.github.dronesecurity.userapplication.shipping.courier.utilities.ServiceHelper;
-import io.github.dronesecurity.userapplication.utilities.CastHelper;
-import io.github.dronesecurity.lib.DateHelper;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
@@ -95,9 +95,6 @@ public final class CourierShippingService extends AbstractVerticle {
         if (order == null)
             routingContext.response().setStatusCode(CLIENT_ERROR_CODE).end();
         else {
-            final DeliveringOrder deliveringOrder = order.deliver();
-            REPOSITORY.delivering(deliveringOrder);
-
             ServiceHelper.sendPerformDeliveryMessage(
                     body.getString(ServiceHelper.DRONE_ID_KEY),
                     order.getId(),
@@ -110,13 +107,26 @@ public final class CourierShippingService extends AbstractVerticle {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         final JsonObject body = params.body().getJsonObject();
         REPOSITORY.getOrderById(body.getString(ServiceHelper.ORDER_ID_KEY))
-                .onSuccess(o -> CastHelper.safeCast(o, DeliveringOrder.class).ifPresent(order -> {
+                .onSuccess(order -> {
                     final String status = body.getString(ServiceHelper.STATE_KEY);
-                    if (ServiceHelper.DELIVERY_SUCCESSFUL.equals(status))
-                        REPOSITORY.confirmedDelivery(order.confirmDelivery());
-                    else if (ServiceHelper.DELIVERY_FAILED.equals(status))
-                        REPOSITORY.failedDelivery(order.failDelivery());
-                }));
+                    final Future<Void> future;
+                    if (OrderConstants.PLACED_ORDER_STATE.equals(order.getCurrentState())
+                            && ServiceHelper.DELIVERING.equals(status))
+                        future = REPOSITORY.delivering(((PlacedOrder) order).deliver());
+                    else if (OrderConstants.DELIVERING_ORDER_STATE.equals(order.getCurrentState())) {
+                        if (ServiceHelper.DELIVERY_SUCCESSFUL.equals(status))
+                            future = REPOSITORY.confirmedDelivery(((DeliveringOrder) order).confirmDelivery());
+                        else if (ServiceHelper.DELIVERY_FAILED.equals(status))
+                            future = REPOSITORY.failedDelivery(((DeliveringOrder) order).failDelivery());
+                        else
+                            future = Future.failedFuture(
+                                    "Order is delivering but new status is not 'succeeded' or 'failed'.");
+                    } else
+                        future =
+                                Future.failedFuture(
+                                        "Order is delivering but new status is not 'succeeded' or 'failed'.");
+                    future.onSuccess(ignored -> routingContext.response().end());
+                });
     }
 
     private void callBack(final @NotNull RoutingContext routingContext) {
@@ -137,8 +147,8 @@ public final class CourierShippingService extends AbstractVerticle {
             final Instant newEstimatedArrival =
                     DateHelper.toInstant(body.getString(ServiceHelper.NEW_ESTIMATED_ARRIVAL_KEY));
             final RescheduledOrder rescheduledOrder = order.rescheduleDelivery(newEstimatedArrival);
-            REPOSITORY.rescheduled(rescheduledOrder);
-            routingContext.response().end(CORRECT_RESPONSE_TO_RESCHEDULE_DELIVERY);
+            REPOSITORY.rescheduled(rescheduledOrder).onSuccess(ignored ->
+                    routingContext.response().end(CORRECT_RESPONSE_TO_RESCHEDULE_DELIVERY));
         }
     }
 

@@ -56,12 +56,15 @@ public final class UserMonitoringService {
             final JsonObject accelerometerJson =
                     json.getJsonObject(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER);
             final Map<String, Double> accelerometer = new ConcurrentHashMap<>();
-            accelerometer.put(MqttMessageParameterConstants.ROLL,
-                    accelerometerJson.getDouble(MqttMessageParameterConstants.ROLL));
-            accelerometer.put(MqttMessageParameterConstants.PITCH,
-                    accelerometerJson.getDouble(MqttMessageParameterConstants.PITCH));
-            accelerometer.put(MqttMessageParameterConstants.YAW,
-                    accelerometerJson.getDouble(MqttMessageParameterConstants.YAW));
+            // TODO refactor strings
+            if (!accelerometerJson.isEmpty()) {
+                accelerometer.put(MqttMessageParameterConstants.ROLL,
+                        accelerometerJson.getDouble(MqttMessageParameterConstants.ROLL));
+                accelerometer.put(MqttMessageParameterConstants.PITCH,
+                        accelerometerJson.getDouble(MqttMessageParameterConstants.PITCH));
+                accelerometer.put(MqttMessageParameterConstants.YAW,
+                        accelerometerJson.getDouble(MqttMessageParameterConstants.YAW));
+            }
 
             final long camera = json.getLong(MqttMessageParameterConstants.CAMERA_PARAMETER);
 
@@ -136,6 +139,7 @@ public final class UserMonitoringService {
         });
     }
 
+    // TODO negligence reports non si vede la solution
     /**
      * Change the drone driving mode.
      * @param drivingMode {@link DrivingMode} to set

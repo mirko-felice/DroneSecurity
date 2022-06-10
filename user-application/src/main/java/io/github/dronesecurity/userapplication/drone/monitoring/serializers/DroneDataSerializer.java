@@ -32,6 +32,7 @@ public class DroneDataSerializer extends JsonSerializer<DroneData> {
         gen.writeObjectField(DataConstants.ACCELEROMETER, value.getAccelerometer());
         gen.writeNumberField(DataConstants.CAMERA, value.getCamera());
         gen.writeStringField(DataConstants.DETECTION_INSTANT, DateHelper.toString(value.getDetectionInstant()));
+        gen.writeStringField(DataConstants.ORDER_ID, value.getOrderId());
         gen.writeEndObject();
         gen.flush();
     }

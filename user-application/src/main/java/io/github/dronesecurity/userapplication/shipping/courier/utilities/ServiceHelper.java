@@ -56,6 +56,11 @@ public final class ServiceHelper {
     public static final String NEW_ESTIMATED_ARRIVAL_KEY = "newEstimatedArrival";
 
     /**
+     * Represents the delivering of the order.
+     */
+    public static final String DELIVERING = MqttMessageValueConstants.DELIVERING_MESSAGE;
+
+    /**
      * Represents the success of the delivery.
      */
     public static final String DELIVERY_SUCCESSFUL = MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE;

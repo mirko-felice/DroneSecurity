@@ -64,7 +64,7 @@ public final class AuthenticationController {
                         ((Stage) this.loginButton.getScene().getWindow()).close();
                         final URL fileUrl = getClass().getResource(USER_FXML);
                         final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-                        FXHelper.initializeWindow(Modality.NONE, "User", fxmlLoader).ifPresent(Stage::show);
+                        FXHelper.initializeWindow(Modality.NONE, "User Menu", fxmlLoader).ifPresent(Stage::show);
                     });
                 })
                 .onFailure(e ->

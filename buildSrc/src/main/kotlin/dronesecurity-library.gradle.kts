@@ -113,7 +113,11 @@ tasks {
 
     withType<PublishToMavenRepository>().configureEach {
         val baseVersion = project.version.toString()
-        val projectVersion = if (baseVersion.startsWith("0")) baseVersion.substringBefore("-") + "-SNAPSHOT" else baseVersion
+        val projectVersion =
+            if (baseVersion.startsWith("0") || baseVersion.contains("-"))
+                baseVersion.substringBefore("-") + "-SNAPSHOT"
+            else
+                baseVersion
         onlyIf { Pattern.matches("(([0-9])+(\\.?([0-9]))*)+(-SNAPSHOT)?", projectVersion) }
     }
 

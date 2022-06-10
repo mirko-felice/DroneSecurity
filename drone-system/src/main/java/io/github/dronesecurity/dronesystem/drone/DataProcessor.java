@@ -24,19 +24,20 @@ public class DataProcessor {
     public @NotNull Map<String, Double> processAccelerometer(
             final @NotNull Map<String, Double> accelerometerData) {
         final Map<String, Double> angles = new ConcurrentHashMap<>();
-        final double x = accelerometerData.get("x");
-        final double y = accelerometerData.get("y");
-        final double z = accelerometerData.get("z");
+        if (!accelerometerData.isEmpty()) {
+            final double x = accelerometerData.get("x");
+            final double y = accelerometerData.get("y");
+            final double z = accelerometerData.get("z");
 
-        final double roll = Math.toDegrees(Math.atan2(y, z));
-        angles.put(MqttMessageParameterConstants.ROLL, roll);
+            final double roll = Math.toDegrees(Math.atan2(y, z));
+            angles.put(MqttMessageParameterConstants.ROLL, roll);
 
-        final double pitch = Math.toDegrees(Math.atan2(-x, Math.sqrt(y * y + z * z)));
-        angles.put(MqttMessageParameterConstants.PITCH, pitch);
+            final double pitch = Math.toDegrees(Math.atan2(-x, Math.sqrt(y * y + z * z)));
+            angles.put(MqttMessageParameterConstants.PITCH, pitch);
 
-        final double yaw = Math.toDegrees(Math.atan2(x, y));
-        angles.put(MqttMessageParameterConstants.YAW, yaw);
-
+            final double yaw = Math.toDegrees(Math.atan2(x, y));
+            angles.put(MqttMessageParameterConstants.YAW, yaw);
+        }
         return angles;
     }
 }

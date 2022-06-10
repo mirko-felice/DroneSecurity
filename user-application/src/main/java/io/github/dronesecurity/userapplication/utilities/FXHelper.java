@@ -191,4 +191,54 @@ public final class FXHelper {
             });
         }
     }
+
+    /**
+     * Cell showing proximity value.
+     * @param <T> type parameter of the table using this cell
+     */
+    public static class ProximityCell<T> extends TextFieldTableCell<T, Double> {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void updateItem(final Double value, final boolean empty) {
+            super.updateItem(value, empty);
+            if (!empty)
+                setText(value + " cm");
+        }
+    }
+
+    /**
+     * Cell showing one of the accelerometer angle.
+     * @param <T> type parameter of the table using this cell
+     */
+    public static class AngleCell<T> extends TextFieldTableCell<T, Double> {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void updateItem(final Double value, final boolean empty) {
+            super.updateItem(value, empty);
+            if (!empty && value == null)
+                setText("Not available.");
+            else if (value != null)
+                setText(value + " \u00B0");
+        }
+    }
+
+    /**
+     * Cell showing camera value.
+     * @param <T> type parameter of the table using this cell
+     */
+    public static class CameraCell<T> extends TextFieldTableCell<T, Long> {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void updateItem(final Long value, final boolean empty) {
+            super.updateItem(value, empty);
+            if (!empty)
+                setText(value + " bytes");
+        }
+    }
 }

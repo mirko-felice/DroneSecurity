@@ -5,6 +5,8 @@
 
 package io.github.dronesecurity.userapplication.drone.monitoring.utilities;
 
+import io.github.dronesecurity.lib.MqttMessageParameterConstants;
+
 /**
  * Data related strings.
  */
@@ -34,6 +36,21 @@ public final class DataConstants {
      * Key for the order identifier.
      */
     public static final String ORDER_ID = "orderId";
+
+    /**
+     * Key for the roll angle.
+     */
+    public static final String ROLL = MqttMessageParameterConstants.ROLL;
+
+    /**
+     * Key for the pitch angle.
+     */
+    public static final String PITCH = MqttMessageParameterConstants.PITCH;
+
+    /**
+     * Key for the yaw angle.
+     */
+    public static final String YAW = MqttMessageParameterConstants.YAW;
 
     private DataConstants() { }
 }

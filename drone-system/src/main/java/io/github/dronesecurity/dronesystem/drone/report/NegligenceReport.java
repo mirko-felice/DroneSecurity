@@ -7,6 +7,7 @@ package io.github.dronesecurity.dronesystem.drone.report;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.dronesecurity.lib.DateHelper;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import org.jetbrains.annotations.NotNull;
 
@@ -74,10 +75,10 @@ public final class NegligenceReport {
     }
 
     /**
-     * Gets the {@link Instant} when negligence has happened.
-     * @return the negligence instant
+     * Gets the {@link Instant} textual representation when negligence has happened.
+     * @return the negligence instant string
      */
-    public Instant getNegligenceInstant() {
-        return this.negligenceInstant;
+    public @NotNull String getNegligenceInstant() {
+        return DateHelper.toString(this.negligenceInstant);
     }
 }

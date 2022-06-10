@@ -21,7 +21,7 @@ import java.nio.ByteOrder;
  */
 public class Camera extends AbstractSensor<Byte[]> {
 
-    private static final int CONNECTION_PORT = 10_001;
+    private static final int CONNECTION_PORT = 10_000;
 
     private Socket socket;
     private InputStream inputStream;

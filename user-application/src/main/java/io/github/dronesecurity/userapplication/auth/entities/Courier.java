@@ -7,6 +7,7 @@ package io.github.dronesecurity.userapplication.auth.entities;
 
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public final class Courier extends BaseLoggedUser {
     public Courier(final String username, final String supervisor, final Collection<String> drones) {
         super(username, Role.COURIER);
         this.supervisor = supervisor;
-        this.drones = List.copyOf(drones);
+        this.drones = new ArrayList<>(drones);
     }
 
     /**
@@ -44,5 +45,21 @@ public final class Courier extends BaseLoggedUser {
      */
     public @Unmodifiable List<String> getDrones() {
         return List.copyOf(this.drones);
+    }
+
+    /**
+     * Removes a drone only temporarily (not in Database).
+     * @param droneId drone identifier to remove
+     */
+    public void removeDrone(final String droneId) {
+        this.drones.remove(droneId);
+    }
+
+    /**
+     * Adds a drone only temporarily (not in Database).
+     * @param droneId drone identifier to add
+     */
+    public void addDrone(final String droneId) {
+        this.drones.add(droneId);
     }
 }

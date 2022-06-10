@@ -16,10 +16,10 @@ import java.util.Locale;
  */
 public final class DateHelper {
 
-    private static final String ORDER_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    private static final String ORDER_DATE_FORMAT = "MMMM dd yyyy HH:mm:ss";
     private static final ZoneId ZONE_ID = ZoneId.systemDefault();
     private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern(ORDER_DATE_FORMAT, Locale.ITALY).withZone(ZONE_ID);
+            DateTimeFormatter.ofPattern(ORDER_DATE_FORMAT, Locale.ENGLISH).withZone(ZONE_ID);
 
     private DateHelper() { }
 

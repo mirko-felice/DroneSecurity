@@ -22,11 +22,14 @@
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
     </rowConstraints>
-    <TableView fx:id="table" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="250.0" GridPane.columnSpan="2147483647">
+    <TableView fx:id="table" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="250.0" prefWidth="735.0" GridPane.columnSpan="2147483647">
         <columns>
-            <TableColumn fx:id="orderDateColumn" editable="false" prefWidth="166.0" resizable="false" sortable="false" text="Order Date" />
-            <TableColumn fx:id="productColumn" editable="false" prefWidth="166.0" resizable="false" sortable="false" text="Product" />
-            <TableColumn fx:id="stateColumn" editable="false" prefWidth="166.0" resizable="false" sortable="false" text="State" />
+         <TableColumn fx:id="orderIdColumn" editable="false" prefWidth="50.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="ID" />
+            <TableColumn fx:id="orderDateColumn" editable="false" prefWidth="170.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Order Date" />
+            <TableColumn fx:id="productColumn" editable="false" prefWidth="90.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Product" />
+            <TableColumn fx:id="stateColumn" editable="false" prefWidth="140.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="State" />
+         <TableColumn fx:id="estimatedArrivalColumn" editable="false" prefWidth="170.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Estimated Arrival" />
+         <TableColumn fx:id="clientColumn" editable="false" prefWidth="100.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Client" />
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -38,4 +41,7 @@
     <Button fx:id="performDeliveryButton" disable="true" mnemonicParsing="false" onMouseClicked="#performDelivery" text="Perform Delivery" GridPane.rowIndex="2" />
     <Button fx:id="rescheduleDeliveryButton" disable="true" mnemonicParsing="false" onMouseClicked="#rescheduleDelivery" text="Reschedule Delivery" GridPane.columnIndex="2" GridPane.rowIndex="2" />
    <Button fx:id="showDataHistoryButton" disable="true" mnemonicParsing="false" onMouseClicked="#showDataHistory" text="Show Data History" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
 </GridPane>

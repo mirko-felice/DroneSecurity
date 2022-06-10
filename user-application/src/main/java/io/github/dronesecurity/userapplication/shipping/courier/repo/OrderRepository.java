@@ -33,26 +33,30 @@ public interface OrderRepository {
     /**
      * Save the delivering order.
      * @param order the order to save
+     * @return {@link Future} indicating when the operation is completed
      */
-    void delivering(DeliveringOrder order);
+    Future<Void> delivering(DeliveringOrder order);
 
     /**
      * Save the delivered order.
      * @param order the order to save
+     * @return {@link Future} indicating when the operation is completed
      */
-    void confirmedDelivery(DeliveredOrder order);
+    Future<Void> confirmedDelivery(DeliveredOrder order);
 
     /**
      * Save the failed order.
      * @param order the order to save
+     * @return {@link Future} indicating when the operation is completed
      */
-    void failedDelivery(FailedOrder order);
+    Future<Void> failedDelivery(FailedOrder order);
 
     /**
      * Save the rescheduled order.
      * @param order the order to save
+     * @return {@link Future} indicating when the operation is completed
      */
-    void rescheduled(RescheduledOrder order);
+    Future<Void> rescheduled(RescheduledOrder order);
 
     /**
      * Get the instance of this repository.

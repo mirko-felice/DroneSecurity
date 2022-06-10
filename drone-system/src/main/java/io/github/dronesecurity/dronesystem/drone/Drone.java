@@ -111,8 +111,7 @@ public class Drone {
      * Halts the Drone.
      */
     public void halt() {
-        if (this.drivingMode == DrivingMode.AUTOMATIC)
-            this.isMoving = false;
+        this.isMoving = false;
     }
 
     /**

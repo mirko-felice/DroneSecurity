@@ -74,32 +74,34 @@ public final class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public Future<Order> getOrderById(final String orderId) {
-        return VertxHelper.MONGO_CLIENT.findOne(COLLECTION_NAME, new JsonObject().put("id", orderId), null)
+        return VertxHelper.MONGO_CLIENT.findOne(COLLECTION_NAME,
+                        new JsonObject().put(OrderConstants.ID, orderId),
+                        null)
                 .map(o -> Json.decodeValue(o.toString(), Order.class))
                 .otherwiseEmpty();
     }
 
     @Override
-    public void delivering(final @NotNull DeliveringOrder order) {
-        this.updateOrderEvents(order);
+    public Future<Void> delivering(final @NotNull DeliveringOrder order) {
+        return this.updateOrderEvents(order);
     }
 
     @Override
-    public void confirmedDelivery(final DeliveredOrder order) {
-        this.updateOrderEvents(order);
+    public Future<Void> confirmedDelivery(final DeliveredOrder order) {
+        return this.updateOrderEvents(order);
     }
 
     @Override
-    public void failedDelivery(final FailedOrder order) {
-        this.updateOrderEvents(order);
+    public Future<Void> failedDelivery(final FailedOrder order) {
+        return this.updateOrderEvents(order);
     }
 
     @Override
-    public void rescheduled(final RescheduledOrder order) {
-        this.updateOrderEvents(order);
+    public Future<Void> rescheduled(final RescheduledOrder order) {
+        return this.updateOrderEvents(order);
     }
 
-    private void updateOrderEvents(final @NotNull Order order) {
+    private Future<Void> updateOrderEvents(final @NotNull Order order) {
         final JsonObject query = new JsonObject();
         query.put(OrderConstants.ID, order.getId());
         final JsonObject update = new JsonObject();
@@ -109,13 +111,13 @@ public final class OrderRepositoryImpl implements OrderRepository {
         if (order instanceof RescheduledOrder)
             update.put(OrderConstants.NEW_ESTIMATED_ARRIVAL,
                     DateHelper.toString(((RescheduledOrder) order).getNewEstimatedArrival()));
-        VertxHelper.MONGO_CLIENT.findOneAndUpdate(COLLECTION_NAME, query, update);
+        return VertxHelper.MONGO_CLIENT.findOneAndUpdate(COLLECTION_NAME, query, update).mapEmpty();
     }
 
     private @NotNull List<Order> generateFakeOrders() {
         final List<Order> orders = new ArrayList<>();
         final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-        for (int i = 0; i <= FAKE_SIZE; i++) {
+        for (int i = 1; i <= FAKE_SIZE; i++) {
             final int j = i;
             executor.schedule(() -> {
                 final String product = FAKE_PRODUCTS[this.randomGenerator.nextInt(FAKE_SIZE)];

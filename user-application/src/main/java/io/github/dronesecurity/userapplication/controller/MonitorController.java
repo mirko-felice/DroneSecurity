@@ -13,6 +13,7 @@ import io.github.dronesecurity.userapplication.events.*;
 import io.github.dronesecurity.userapplication.reporting.negligence.services.CourierNegligenceReportService;
 import io.github.dronesecurity.userapplication.shipping.courier.utilities.ServiceHelper;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
+import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.vertx.core.json.JsonObject;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -78,10 +79,12 @@ public final class MonitorController implements Initializable {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         this.accordion.setExpandedPane(this.controlsPane);
-        this.recallButton.setDisable(true);
-        this.proceedButton.setDisable(true);
 
-        this.negligenceReportService.subscribeToNewNegligence(this::onNewNegligence);
+        this.negligenceReportService.subscribeToNewNegligence(newNegligence ->
+                Platform.runLater(() -> DialogUtils.showInfoNotification("INFO",
+                        "You have committed a negligence. Maintainer " + newNegligence.getReport().assignedTo()
+                        + " will take care of this. Go to the 'reports' window to show more information about it.",
+                        this.switchMode.getScene().getWindow())));
 
         this.monitoringService.subscribeToDataRead(this::onDataRead);
         this.monitoringService.subscribeToWarningSituation(this::onWarning);
@@ -89,58 +92,79 @@ public final class MonitorController implements Initializable {
         this.monitoringService.subscribeToOrderStatusChange(this::onStatusChanged);
         this.monitoringService.subscribeToStandardSituation(this::backOnStandardSituation);
 
-        this.proximityPreviousDataColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()));
+        this.proximityPreviousDataColumn.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue()));
+        this.proximityPreviousDataColumn.setCellFactory(ignored -> new FXHelper.ProximityCell<>());
+        this.proximityPreviousDataColumn.setReorderable(false);
+
         this.accelerometerPreviousXDataColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.ROLL)));
+                new SimpleObjectProperty<>(cell.getValue().get(MqttMessageParameterConstants.ROLL)));
+        this.accelerometerPreviousXDataColumn.setCellFactory(ignored -> new FXHelper.AngleCell<>());
+        this.accelerometerPreviousXDataColumn.setReorderable(false);
+
         this.accelerometerPreviousYDataColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.PITCH)));
+                new SimpleObjectProperty<>(cell.getValue().get(MqttMessageParameterConstants.PITCH)));
+        this.accelerometerPreviousYDataColumn.setCellFactory(ignored -> new FXHelper.AngleCell<>());
+        this.accelerometerPreviousYDataColumn.setReorderable(false);
+
         this.accelerometerPreviousZDataColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.YAW)));
-        this.cameraPreviousDataColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()));
+                new SimpleObjectProperty<>(cell.getValue().get(MqttMessageParameterConstants.YAW)));
+        this.accelerometerPreviousZDataColumn.setCellFactory(ignored -> new FXHelper.AngleCell<>());
+        this.accelerometerPreviousZDataColumn.setReorderable(false);
+
+        this.cameraPreviousDataColumn.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue()));
+        this.cameraPreviousDataColumn.setCellFactory(ignored -> new FXHelper.CameraCell<>());
+        this.cameraPreviousDataColumn.setReorderable(false);
 
         this.currentAccelerometerXValue.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.ROLL)));
+                new SimpleObjectProperty<>(cell.getValue().get(MqttMessageParameterConstants.ROLL)));
+        this.currentAccelerometerXValue.setCellFactory(ignored -> new FXHelper.AngleCell<>());
+        this.currentAccelerometerXValue.setReorderable(false);
+
         this.currentAccelerometerYValue.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.PITCH)));
+                new SimpleObjectProperty<>(cell.getValue().get(MqttMessageParameterConstants.PITCH)));
+        this.currentAccelerometerYValue.setCellFactory(ignored -> new FXHelper.AngleCell<>());
+        this.currentAccelerometerYValue.setReorderable(false);
+
         this.currentAccelerometerZValue.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(cell.getValue()
-                        .get(MqttMessageParameterConstants.YAW)));
+                new SimpleObjectProperty<>(cell.getValue().get(MqttMessageParameterConstants.YAW)));
+        this.currentAccelerometerZValue.setCellFactory(ignored -> new FXHelper.AngleCell<>());
+        this.currentAccelerometerZValue.setReorderable(false);
 
         this.switchMode.selectedProperty().addListener((ignored, unused, isAutomatic) -> {
             if (Boolean.TRUE.equals(isAutomatic))
                 this.monitoringService.changeMode(DrivingMode.AUTOMATIC);
             else
                 this.monitoringService.changeMode(DrivingMode.MANUAL);
-            this.proceedButton.setDisable(!isAutomatic);
-            this.haltButton.setDisable(!isAutomatic);
+            this.proceedButton.setDisable(!isAutomatic
+                   || MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(this.deliveryStatusLabel.getText())
+                   || MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE.equals(this.deliveryStatusLabel.getText()));
+            this.haltButton.setDisable(true);
+            this.recallButton.setDisable(!isAutomatic
+                   || !MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(this.deliveryStatusLabel.getText())
+                   && !MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE.equals(this.deliveryStatusLabel.getText()));
         });
     }
 
     private void onDataRead(final DataRead dataRead) {
         Platform.runLater(() -> {
             if (!this.proximityCurrentData.getText().isEmpty())
-                this.proximityPreviousData.getItems().add(0, Double.valueOf(this.proximityCurrentData.getText()));
+                this.proximityPreviousData.getItems().add(0,
+                        Double.valueOf(this.proximityCurrentData.getText().split(" ")[0]));
 
             final ObservableList<Map<String, Double>> accelerometerValues = this.accelerometerCurrentData.getItems();
             if (!accelerometerValues.isEmpty())
                 this.accelerometerPreviousData.getItems().add(0, accelerometerValues.get(0));
 
             if (!this.cameraCurrentData.getText().isEmpty())
-                this.cameraPreviousData.getItems().add(0, Long.valueOf(this.cameraCurrentData.getText()));
+                this.cameraPreviousData.getItems().add(0,
+                        Long.valueOf(this.cameraCurrentData.getText().split(" ")[0]));
 
-            this.proximityCurrentData.setText(String.valueOf(dataRead.getProximity()));
+            this.proximityCurrentData.setText(dataRead.getProximity() + " cm");
 
             accelerometerValues.clear();
             accelerometerValues.add(dataRead.getAccelerometerData());
 
-            this.cameraCurrentData.setText(String.valueOf(dataRead.getCameraData()));
+            this.cameraCurrentData.setText(dataRead.getCameraData() + " bytes");
         });
     }
 
@@ -161,30 +185,39 @@ public final class MonitorController implements Initializable {
     private void onStatusChanged(final StatusChanged statusEvent) {
         Platform.runLater(() -> {
             this.deliveryStatusLabel.setText(statusEvent.getStatus());
-            if (MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE.equals(statusEvent.getStatus())) {
-                this.deliveryStatusLabel.setStyle("-fx-text-fill: cyan;");
-                DialogUtils.showInfoDialog("Drone successfully returned.",
-                        ((Stage) this.accordion.getScene().getWindow())::close);
-            } else {
-                if (MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(statusEvent.getStatus()))
+            switch (statusEvent.getStatus()) {
+                case MqttMessageValueConstants.DELIVERING_MESSAGE:
+                    this.haltButton.setDisable(false);
+                    this.switchMode.setDisable(false);
+                    this.sendSaveDeliveryMessage(statusEvent.getStatus());
+                    break;
+                case MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: green;");
-                else if (MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE.equals(statusEvent.getStatus())) {
+                    this.proceedButton.setDisable(true);
+                    this.haltButton.setDisable(true);
+                    this.recallButton.setDisable(false);
+                    this.sendSaveDeliveryMessage(statusEvent.getStatus());
+                    break;
+                case MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: red;");
-                }
-                final JsonObject body = new JsonObject();
-                body.put(ServiceHelper.ORDER_ID_KEY, this.orderId);
-                body.put(ServiceHelper.STATE_KEY, statusEvent.getStatus());
-                this.recallButton.setDisable(false);
-                ServiceHelper.postJson(ServiceHelper.Operation.SAVE_DELIVERY, body);
+                    this.proceedButton.setDisable(true);
+                    this.haltButton.setDisable(true);
+                    this.recallButton.setDisable(false);
+                    this.sendSaveDeliveryMessage(statusEvent.getStatus());
+                    break;
+                case MqttMessageValueConstants.RETURN_ACKNOWLEDGEMENT_MESSAGE:
+                    this.deliveryStatusLabel.setStyle("-fx-text-fill: black;");
+                    this.proceedButton.setDisable(true);
+                    this.haltButton.setDisable(false);
+                    break;
+                case MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE:
+                    this.deliveryStatusLabel.setStyle("-fx-text-fill: cyan;");
+                    DialogUtils.showInfoDialog("Drone successfully returned.",
+                            ((Stage) this.accordion.getScene().getWindow())::close);
+                    break;
+                default:
             }
         });
-    }
-
-    private void onNewNegligence(final @NotNull NewNegligence newNegligence) {
-        Platform.runLater(() -> DialogUtils.showInfoNotification("INFO",
-                "You have committed a negligence. Maintainer " + newNegligence.getReport().assignedTo()
-                        + " will take care of this. Go to the 'reports' window to show more information about it.",
-                this.switchMode.getScene().getWindow()));
     }
 
     private void backOnStandardSituation(final @NotNull StandardSituation standardSituation) {
@@ -213,5 +246,13 @@ public final class MonitorController implements Initializable {
         this.monitoringService.halt();
         this.haltButton.setDisable(true);
         this.proceedButton.setDisable(false);
+    }
+
+    private void sendSaveDeliveryMessage(final String status) {
+        final JsonObject body = new JsonObject();
+        body.put(ServiceHelper.ORDER_ID_KEY, this.orderId);
+        body.put(ServiceHelper.STATE_KEY, status);
+        ServiceHelper.postJson(ServiceHelper.Operation.SAVE_DELIVERY, body)
+                .onSuccess(ignored -> DomainEvents.raise(new OrdersUpdate()));
     }
 }

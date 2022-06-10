@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  */
 public final class DataRepositoryImpl implements DataRepository {
 
-    private static final String COLLECION_NAME = "drone_data";
+    private static final String COLLECION_NAME = "droneData";
     private static DataRepository singleton;
 
     private DataRepositoryImpl() { }
