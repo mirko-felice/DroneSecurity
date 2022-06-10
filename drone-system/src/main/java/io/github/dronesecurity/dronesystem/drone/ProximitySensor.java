@@ -5,6 +5,12 @@
 
 package io.github.dronesecurity.dronesystem.drone;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.dronesecurity.lib.MqttMessageParameterConstants;
+import org.slf4j.LoggerFactory;
+
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -28,8 +34,13 @@ public class ProximitySensor extends AbstractSensor<Double> {
     @Override
     public void readData() {
         if (getOutputStream().size() > 0) {
-            final String[] values = getOutputStream().toString(StandardCharsets.UTF_8).trim().split("\n");
-            this.distance = Double.parseDouble(values[values.length - 1]);
+            final String orig = getOutputStream().toString(StandardCharsets.UTF_8).trim();
+            try {
+                final JsonNode proximityData = new ObjectMapper().readTree(orig);
+                this.distance = proximityData.get(MqttMessageParameterConstants.PROXIMITY_PARAMETER).asDouble();
+            } catch (JsonProcessingException e) {
+                LoggerFactory.getLogger(getClass()).error("Can NOT read json correctly.", e);
+            }
             getOutputStream().reset();
         }
     }

@@ -52,12 +52,8 @@ while True:
 
             # Computing distance
             distance = 0.034 * elapsed / 2.0
-            if elapsed > 38000:
-                print("Out of range")
-            else:
-                print("" + str(distance) + "")
-        else:
-            print("Timeout")
+            if elapsed < 38000:
+                print("{\"proximity\": " + str(distance) +
+                      "\n}", flush=True)
 
-    sys.stdout.flush()
     time.sleep(1)

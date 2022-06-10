@@ -81,21 +81,6 @@ public final class MqttMessageParameterConstants {
     public static final String NEGLIGENT_PARAMETER = "negligent";
 
     /**
-     * Parameter that contains image size of the last frame.
-     */
-    public static final String IMAGE_SIZE = "imageSize";
-
-    /**
-     * Parameter that contains timestamp of a data message.
-     */
-    public static final String TIMESTAMP = "timestamp";
-
-    /**
-     * Parameter that contains index of a data message.
-     */
-    public static final String INDEX = "index";
-
-    /**
      * Parameter that contains new guide mode for the drone.
      */
     public static final String MODE_PARAMETER = "mode";

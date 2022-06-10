@@ -8,16 +8,16 @@ package io.github.dronesecurity.dronesystem.performance.drone;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.dronesecurity.dronesystem.drone.Accelerometer;
+import io.github.dronesecurity.dronesystem.drone.ProximitySensor;
 import io.github.dronesecurity.dronesystem.performance.PerformanceStringConstants;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 
 /**
- * Class representing an {@link Accelerometer} sensor that evaluates its script performance.
+ * Class representing a {@link ProximitySensor} that evaluates its script performance.
  */
-public class AccelerometerTimed extends Accelerometer {
+public class ProximityTimed extends ProximitySensor {
 
     private long timestamp;
     private int index;
@@ -36,20 +36,20 @@ public class AccelerometerTimed extends Accelerometer {
      */
     @Override
     protected String getScriptName() {
-        return "accelerometerPerformanceSimulator";
+        return "proximityPerformanceSimulator";
     }
 
     /**
-     * Gets the timestamp of the last values read by this accelerometer.
-     * @return the timestamp of the last data reading
+     * Gets the timestamp of the last value read by this proximity sensor.
+     * @return the timestamp of the last reading
      */
     public long getReadingTimestamp() {
         return this.timestamp;
     }
 
     /**
-     * Gets the index of the last values read by this accelerometer.
-     * @return the index of the last data reading
+     * Gets the index of the last value read by this proximity sensor.
+     * @return the index of the last reading
      */
     public int getReadingIndex() {
         return this.index;

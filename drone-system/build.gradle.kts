@@ -49,10 +49,10 @@ tasks {
         archiveClassifier.set("performance-fat")
         archiveVersion.set("")
 
-        doLast {
+        dependsOn(processResources)
+        doFirst {
             copy {
                 val sep = File.separator
-                moduleName
                 val performanceScriptsDirPath = sourceSets.main.get().output.resourcesDir?.path + sep + mainModuleName.replace(".", sep) + sep + "performance" + sep + "drone"
                 from(performanceScriptsDirPath)
                 into(performanceScriptsDirPath + sep + ".." + sep + ".." + sep + "drone")

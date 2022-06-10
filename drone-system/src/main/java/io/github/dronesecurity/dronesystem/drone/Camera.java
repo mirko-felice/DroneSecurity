@@ -6,7 +6,6 @@
 package io.github.dronesecurity.dronesystem.drone;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -71,10 +70,12 @@ public class Camera extends AbstractSensor<Byte[]> {
     /**
      * {@inheritDoc}
      */
-    @Nullable
     @Override
     public Byte[] getData() {
-        return ArrayUtils.toObject(this.image);
+        final Byte[] objectImage = ArrayUtils.toObject(this.image);
+        if (objectImage == null)
+            return new Byte[] {};
+        return objectImage;
     }
 
     /**

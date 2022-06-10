@@ -36,7 +36,12 @@ public final class PerformanceEvaluator {
     private static final String ACCELEROMENTER_PERFORMANCE_READER_FILE_NAME =
             RESULT_FOLDER + SEP + "accelerometer_reader.txt";
     private static final String ACCELEROMENTER_DATA_PROCESSING_FILE_NAME =
-            RESULT_FOLDER + SEP + "accelerometer_processing.txt";
+            RESULT_FOLDER + SEP + "accelerometer_processing.txt";;
+    private static final String PROXIMITY_PERFORMANCE_SUBSCRIBER_FILE_NAME =
+            RESULT_FOLDER + SEP + "proximity_subscriber.txt";
+    private static final String PROXIMITY_PERFORMANCE_READER_FILE_NAME =
+            RESULT_FOLDER + SEP + "proximity_reader.txt";
+
 
     private PerformanceEvaluator() { }
 
@@ -54,21 +59,28 @@ public final class PerformanceEvaluator {
         } catch (IOException e) {
             logger.error("Couldn't create result folder correctly.", e);
         }
+
         final File cameraSubscriberOutputFile = new File(CAMERA_PERFORMANCE_SUBSCRIBER_FILE_NAME);
         final File cameraReaderOutputFile = new File(CAMERA_PERFORMANCE_READER_FILE_NAME);
         final File accelerometerSubscriberOutputFile = new File(ACCELEROMENTER_PERFORMANCE_SUBSCRIBER_FILE_NAME);
         final File accelerometerReaderOutputFile = new File(ACCELEROMENTER_PERFORMANCE_READER_FILE_NAME);
         final File accelerometerProcessingOutputFile = new File(ACCELEROMENTER_DATA_PROCESSING_FILE_NAME);
+        final File proximitySubscriberOutputFile = new File(PROXIMITY_PERFORMANCE_SUBSCRIBER_FILE_NAME);
+        final File proximityReaderOutputFile = new File(PROXIMITY_PERFORMANCE_READER_FILE_NAME);
+
         try {
             final DroneServiceSimulator service =
                     new DroneServiceSimulator(cameraReaderOutputFile,
                             accelerometerReaderOutputFile,
-                            accelerometerProcessingOutputFile);
+                            accelerometerProcessingOutputFile,
+                            proximityReaderOutputFile);
+
             final PerformanceSubscriber subscriber =
                     new PerformanceSubscriber(cameraSubscriberOutputFile,
-                            accelerometerSubscriberOutputFile);
+                            accelerometerSubscriberOutputFile,
+                            proximitySubscriberOutputFile);
             service.startDrone();
-            subscriber.subscribeToCameraPerformance();
+            subscriber.subscribeToDronePerformance();
             final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
             executor.schedule(() -> {
                 service.stopDrone();

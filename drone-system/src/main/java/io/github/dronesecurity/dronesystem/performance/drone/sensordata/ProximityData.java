@@ -6,29 +6,30 @@
 package io.github.dronesecurity.dronesystem.performance.drone.sensordata;
 
 /**
- * POJO class for camera performance data.
+ * POJO class for proximity sensor performance data.
  */
-public class CameraData extends PerformanceData {
+public class ProximityData extends PerformanceData {
 
-    private final int imageSize;
+    private final double proximity;
 
     /**
-     * Builds camera performance data structure.
+     * Builds performance data structure.
+     *
      * @param index The index of this data reading related to the data flow
      * @param timestamp The timestamp of when the data were read, represented as the difference,
      *                  measured in milliseconds, between the current time and midnight, January 1, 1970 UTC
-     * @param imageSize The size of the image read from the camera
+     * @param proximity The data read from the proximity sensor
      */
-    public CameraData(final int index, final long timestamp, final int imageSize) {
+    public ProximityData(final int index, final long timestamp, final double proximity) {
         super(index, timestamp);
-        this.imageSize = imageSize;
+        this.proximity = proximity;
     }
 
     /**
-     * Gets the size of the image read by the camera.
-     * @return The size of the image
+     * Gets the data read by the proximity sensor.
+     * @return The proximity from the nearest obstacle
      */
-    public int getImageSize() {
-        return this.imageSize;
+    public double getData() {
+        return this.proximity;
     }
 }

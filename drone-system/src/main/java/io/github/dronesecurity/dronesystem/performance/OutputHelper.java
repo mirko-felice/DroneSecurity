@@ -7,6 +7,7 @@ package io.github.dronesecurity.dronesystem.performance;
 
 import io.github.dronesecurity.dronesystem.performance.drone.sensordata.AccelerometerData;
 import io.github.dronesecurity.dronesystem.performance.drone.sensordata.CameraData;
+import io.github.dronesecurity.dronesystem.performance.drone.sensordata.ProximityData;
 import io.github.dronesecurity.lib.DateHelper;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +23,7 @@ public final class OutputHelper {
 
     private static final String TIMESTAMP_REPRESENTATION = "Delay - ";
     private static final String TIMEUNIT = " ms";
+    private static final String PACKET_NUMBER_TEXT = "Metadata for packet #";
 
     private OutputHelper() { }
 
@@ -45,25 +47,9 @@ public final class OutputHelper {
      */
     public static void printCameraPerformance(final @NotNull PrintWriter cameraWriter,
                                               final @NotNull CameraData cameraData) {
-        cameraWriter.println("Metadata for packet #" + cameraData.getIndex() + ":");
-        cameraWriter.println("Image size - " + cameraData.getImage().length);
+        cameraWriter.println(PACKET_NUMBER_TEXT + cameraData.getIndex() + ":");
+        cameraWriter.println("Image size - " + cameraData.getImageSize());
         final long delay = System.currentTimeMillis() - cameraData.getTimestamp();
-        cameraWriter.println(TIMESTAMP_REPRESENTATION + delay + TIMEUNIT);
-        cameraWriter.println();
-    }
-
-    /**
-     * Prints the image size and the delay calculated of the camera data before they were received by the subscriber.
-     * @param cameraWriter The writer on which the data will be printed
-     * @param imageSize The size of the image received
-     * @param timestamp Timestamp received by the subscriber.
-     *                  Will be converted to delay before printing
-     */
-    public static void printCameraPerformanceBySubscriber(final @NotNull PrintWriter cameraWriter,
-                                                          final int imageSize,
-                                                          final long timestamp) {
-        cameraWriter.println("Image size - " + imageSize);
-        final long delay = System.currentTimeMillis() - timestamp;
         cameraWriter.println(TIMESTAMP_REPRESENTATION + delay + TIMEUNIT);
         cameraWriter.println();
     }
@@ -75,7 +61,7 @@ public final class OutputHelper {
      */
     public static void printAccelerometerPerformance(final @NotNull PrintWriter accelerometerWriter,
                                                      final @NotNull AccelerometerData accelerometerPerformanceData) {
-        accelerometerWriter.println("Metadata for packet #" + accelerometerPerformanceData.getIndex() + ":");
+        accelerometerWriter.println(PACKET_NUMBER_TEXT + accelerometerPerformanceData.getIndex() + ":");
 
         final Map<String, Double> accelerometerData = accelerometerPerformanceData.getData();
         accelerometerWriter.println("X - " + accelerometerData.get("x"));
@@ -95,7 +81,7 @@ public final class OutputHelper {
      */
     public static void printAccelerometerDataProcessing(final @NotNull PrintWriter accelerometerWriter,
                                                         final @NotNull AccelerometerData accelerometerPerformanceData) {
-        accelerometerWriter.println("Metadata for packet #" + accelerometerPerformanceData.getIndex() + ":");
+        accelerometerWriter.println(PACKET_NUMBER_TEXT + accelerometerPerformanceData.getIndex() + ":");
 
         final Map<String, Double> accelerometerData = accelerometerPerformanceData.getData();
         accelerometerWriter.println("Pitch - " + accelerometerData.get(MqttMessageParameterConstants.PITCH));
@@ -108,21 +94,16 @@ public final class OutputHelper {
     }
 
     /**
-     * Prints the human-readable accelerometer data in degrees and the delay calculated of the accelerometer data
-     * before they were received by the subscriber.
-     * @param accelerometerWriter The writer on which the data will be printed
-     * @param accelerometerData Accelerometer data processed in degrees to be printed
-     * @param timestamp The timestamp of the reading moment of this data structure.
-     *                  Will be converted to delay before printing
+     * Prints {@link ProximityData} on a specific writer, transforming its timestamp to delay in ms.
+     * @param proximityWriter The writer on which {@link ProximityData} will be printed
+     * @param proximityPerformanceData Proximity data to visualize
      */
-    public static void printAccelerometerPerformanceBySubscriber(final @NotNull PrintWriter accelerometerWriter,
-                                                                 final @NotNull Map<String, Double> accelerometerData,
-                                                                 final long timestamp) {
-        accelerometerWriter.println("Pitch - " + accelerometerData.get(MqttMessageParameterConstants.PITCH));
-        accelerometerWriter.println("Roll - " + accelerometerData.get(MqttMessageParameterConstants.ROLL));
-        accelerometerWriter.println("Yaw - " + accelerometerData.get(MqttMessageParameterConstants.YAW));
-        final long delay = System.currentTimeMillis() - timestamp;
-        accelerometerWriter.println(TIMESTAMP_REPRESENTATION + delay + TIMEUNIT);
-        accelerometerWriter.println();
+    public static void printProximityPerformance(final @NotNull PrintWriter proximityWriter,
+                                                     final @NotNull ProximityData proximityPerformanceData) {
+        proximityWriter.println(PACKET_NUMBER_TEXT + proximityPerformanceData.getIndex() + ":");
+        proximityWriter.println("Distance - " + proximityPerformanceData.getData() + " cm");
+        final long delay = System.currentTimeMillis() - proximityPerformanceData.getTimestamp();
+        proximityWriter.println(TIMESTAMP_REPRESENTATION + delay + TIMEUNIT);
+        proximityWriter.println();
     }
 }

@@ -7,6 +7,9 @@ package io.github.dronesecurity.dronesystem.performance;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.dronesecurity.dronesystem.performance.drone.sensordata.AccelerometerData;
+import io.github.dronesecurity.dronesystem.performance.drone.sensordata.CameraData;
+import io.github.dronesecurity.dronesystem.performance.drone.sensordata.ProximityData;
 import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import io.github.dronesecurity.lib.MqttTopicConstants;
@@ -28,26 +31,32 @@ public class PerformanceSubscriber {
 
     private final PrintWriter cameraWriter;
     private final PrintWriter accelerometerWriter;
+    private final PrintWriter proximityWriter;
 
     /**
      *
      * @param cameraOutputFile The file on which write tracked camera performance details
      * @param accelerometerOutputFile The file on which write tracked accelerometer performance details
+     * @param proximityOutputFile The file on which write tracked proximity sensor performance details
      * @throws IOException If the specified file does not exist
      */
-    public PerformanceSubscriber(final File cameraOutputFile, final File accelerometerOutputFile) throws IOException {
+    public PerformanceSubscriber(final File cameraOutputFile,
+                                 final File accelerometerOutputFile,
+                                 final File proximityOutputFile) throws IOException {
         this.cameraWriter = new PrintWriter(cameraOutputFile, StandardCharsets.UTF_8);
         this.accelerometerWriter = new PrintWriter(accelerometerOutputFile, StandardCharsets.UTF_8);
+        this.proximityWriter = new PrintWriter(proximityOutputFile, StandardCharsets.UTF_8);
     }
 
     /**
      * Subscribes to the topic that shares data read by the camera installed on the drone.
      */
-    public void subscribeToCameraPerformance() {
+    public void subscribeToDronePerformance() {
         OutputHelper.printIntro(this.cameraWriter, "Camera performance (Subscriber)");
-        OutputHelper.printIntro(this.accelerometerWriter, "AccelerometerPerformance (Subscriber)");
+        OutputHelper.printIntro(this.accelerometerWriter, "Accelerometer Performance (Subscriber)");
+        OutputHelper.printIntro(this.proximityWriter, "Proximity sensor Performance (Subscriber)");
 
-        Connection.getInstance().subscribe(MqttTopicConstants.PERFORMANCE_TOPIC, this::cameraPerformanceHandler);
+        Connection.getInstance().subscribe(MqttTopicConstants.PERFORMANCE_TOPIC, this::dronePerformanceHandler);
     }
 
     /**
@@ -56,21 +65,25 @@ public class PerformanceSubscriber {
     public void stop() {
         this.cameraWriter.flush();
         this.accelerometerWriter.flush();
+        this.proximityWriter.flush();
 
         this.cameraWriter.close();
-        this.accelerometerWriter.flush();
+        this.accelerometerWriter.close();
+        this.proximityWriter.close();
     }
 
-    private void cameraPerformanceHandler(final @NotNull MqttMessage message) {
+    private void dronePerformanceHandler(final @NotNull MqttMessage message) {
         try {
             final JsonNode messageJson = new ObjectMapper()
                     .readTree(new String(message.getPayload(), StandardCharsets.UTF_8));
 
             final JsonNode cameraJson = messageJson.get(MqttMessageParameterConstants.CAMERA_PARAMETER);
-            final int imageSize = cameraJson.get(MqttMessageParameterConstants.IMAGE_SIZE).asInt();
+            final int imageSize = cameraJson.get(PerformanceStringConstants.IMAGE_SIZE).asInt();
             if (imageSize > 0) {
-                final long cameraDataTimestamp = cameraJson.get(MqttMessageParameterConstants.TIMESTAMP).asLong();
-                OutputHelper.printCameraPerformanceBySubscriber(this.cameraWriter, imageSize, cameraDataTimestamp);
+                final long cameraDataTimestamp = cameraJson.get(PerformanceStringConstants.TIMESTAMP).asLong();
+                final int cameraDataIndex = cameraJson.get(PerformanceStringConstants.INDEX).asInt();
+                OutputHelper.printCameraPerformance(this.cameraWriter,
+                        new CameraData(cameraDataIndex, cameraDataTimestamp, imageSize));
             }
 
             final JsonNode accelerometerJson = messageJson.get(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER);
@@ -82,11 +95,21 @@ public class PerformanceSubscriber {
             accelerometerData.put(MqttMessageParameterConstants.YAW,
                     accelerometerJson.get(MqttMessageParameterConstants.YAW).asDouble());
             final long accelerometerDataTimestamp =
-                    accelerometerJson.get(MqttMessageParameterConstants.TIMESTAMP).asLong();
+                    accelerometerJson.get(PerformanceStringConstants.TIMESTAMP).asLong();
+            final int accelerometerDataIndex =
+                    accelerometerJson.get(PerformanceStringConstants.INDEX).asInt();
 
-            OutputHelper.printAccelerometerPerformanceBySubscriber(this.accelerometerWriter,
-                    accelerometerData,
-                    accelerometerDataTimestamp);
+            OutputHelper.printAccelerometerPerformance(this.accelerometerWriter,
+                    new AccelerometerData(accelerometerDataIndex, accelerometerDataTimestamp, accelerometerData));
+
+            final JsonNode proximityJson = messageJson.get(MqttMessageParameterConstants.PROXIMITY_PARAMETER);
+            final double distance = proximityJson.get(PerformanceStringConstants.DISTANCE_PARAMETER).asDouble();
+            final long proximitySensorTimestamp = proximityJson.get(PerformanceStringConstants.TIMESTAMP).asLong();
+            final int proximitySensorIndex = proximityJson.get(PerformanceStringConstants.INDEX).asInt();
+
+            OutputHelper.printProximityPerformance(this.proximityWriter,
+                    new ProximityData(proximitySensorIndex, proximitySensorTimestamp, distance));
+
         } catch (IOException e) {
             LoggerFactory.getLogger(getClass()).error("Invalid message received.", e);
         }

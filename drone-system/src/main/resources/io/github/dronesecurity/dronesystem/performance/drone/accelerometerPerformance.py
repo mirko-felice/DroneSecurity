@@ -92,4 +92,4 @@ with smbus2.SMBus(1) as bus:
 
         i = i + 1
 
-        time.sleep(0.03)
+        time.sleep(0.028)

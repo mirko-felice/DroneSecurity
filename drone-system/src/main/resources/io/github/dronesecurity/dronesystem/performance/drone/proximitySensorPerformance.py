@@ -37,6 +37,7 @@ wp.pinMode(pin_trigger, wp.OUTPUT)
 wp.digitalWrite(pin_trigger, wp.LOW)
 time.sleep(0.5)
 
+i = 0
 while True:
     # Sensor activation
     wp.digitalWrite(pin_trigger, wp.HIGH)
@@ -52,12 +53,11 @@ while True:
 
             # Computing distance
             distance = 0.034 * elapsed / 2.0
-            if elapsed > 38000:
-                print("Out of range")
-            else:
-                print("" + str(distance) + "")
-        else:
-            print("Timeout")
+            if elapsed < 38000:
+                print("{\"proximity\": " + str(distance) +
+                      ",\n\"timestamp\": " + str(int(time.time() * 1000)) +
+                      ",\n\"index\": " + str(i) +
+                      "\n}", flush=True)
+                i = i + 1
 
-    sys.stdout.flush()
-    time.sleep(1)
+    time.sleep(0.028)

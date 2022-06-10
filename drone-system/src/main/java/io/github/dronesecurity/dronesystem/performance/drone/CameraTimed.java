@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.dronesecurity.dronesystem.drone.Camera;
-import io.github.dronesecurity.lib.MqttMessageParameterConstants;
+import io.github.dronesecurity.dronesystem.performance.PerformanceStringConstants;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
@@ -61,8 +61,8 @@ public class CameraTimed extends Camera {
 
             try {
                 final JsonNode metadata = new ObjectMapper().readTree(orig);
-                this.timestamp = metadata.get(MqttMessageParameterConstants.TIMESTAMP).asLong();
-                this.index = metadata.get(MqttMessageParameterConstants.INDEX).asInt();
+                this.timestamp = metadata.get(PerformanceStringConstants.TIMESTAMP).asLong();
+                this.index = metadata.get(PerformanceStringConstants.INDEX).asInt();
             } catch (JsonProcessingException e) {
                 LoggerFactory.getLogger(getClass()).error("Can NOT read json correctly.", e);
             }
