@@ -86,11 +86,12 @@ public final class MonitorController implements Initializable {
                         + " will take care of this. Go to the 'reports' window to show more information about it.",
                         this.switchMode.getScene().getWindow())));
 
+        DomainEvents.register(CriticalSituation.class, this::onCritical);
+        DomainEvents.register(WarningSituation.class, this::onWarning);
+        DomainEvents.register(StandardSituation.class, this::backOnStandardSituation);
+
         this.monitoringService.subscribeToDataRead(this::onDataRead);
-        this.monitoringService.subscribeToWarningSituation(this::onWarning);
-        this.monitoringService.subscribeToCriticalSituation(this::onCritical);
         this.monitoringService.subscribeToOrderStatusChange(this::onStatusChanged);
-        this.monitoringService.subscribeToStandardSituation(this::backOnStandardSituation);
 
         this.proximityPreviousDataColumn.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue()));
         this.proximityPreviousDataColumn.setCellFactory(ignored -> new FXHelper.ProximityCell<>());

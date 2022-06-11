@@ -34,12 +34,29 @@ public final class UserMonitoringService {
     private final String orderId;
 
     /**
-     * Build the service.
+     * Build the service, automatically subscribed to alert topic.
      * @param orderId {@link io.github.dronesecurity.userapplication.shipping.courier.entities.Order} identifier to
      *                                                                                              monitor
      */
     public UserMonitoringService(final String orderId) {
         this.orderId = orderId;
+        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC + this.orderId, msg -> {
+            final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
+            final String alertLevel = json.getString(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER);
+            final String alertType = json.getString(MqttMessageParameterConstants.ALERT_TYPE_PARAMETER);
+            switch (AlertLevel.valueOf(alertLevel)) {
+                case CRITICAL:
+                    DomainEvents.raise(new CriticalSituation(alertType));
+                    break;
+                case WARNING:
+                    DomainEvents.raise(new WarningSituation(alertType));
+                    break;
+                case NONE:
+                    DomainEvents.raise(new StandardSituation());
+                    break;
+                default:
+            }
+        });
     }
 
     /**
@@ -75,52 +92,6 @@ public final class UserMonitoringService {
         });
     }
 
-    /**
-     * Subscribes to the warning situations.
-     *
-     * @param consumer {@link Consumer} to execute when a {@link WarningSituation} is raised
-     */
-    public void subscribeToWarningSituation(final Consumer<WarningSituation> consumer) {
-        DomainEvents.register(WarningSituation.class, consumer);
-        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC + this.orderId, msg -> {
-            final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
-            if (json.getString(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER)
-                    .equals(AlertLevel.WARNING.toString()))
-                DomainEvents.raise(
-                        new WarningSituation(json.getString(MqttMessageParameterConstants.ALERT_TYPE_PARAMETER)));
-        });
-    }
-
-    /**
-     * Subscribes to the critical situations.
-     *
-     * @param consumer {@link Consumer} to execute when a {@link CriticalSituation} is raised
-     */
-    public void subscribeToCriticalSituation(final Consumer<CriticalSituation> consumer) {
-        DomainEvents.register(CriticalSituation.class, consumer);
-        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC + this.orderId, msg -> {
-            final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
-            if (json.getString(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER)
-                    .equals(AlertLevel.CRITICAL.toString()))
-                DomainEvents.raise(
-                        new CriticalSituation(json.getString(MqttMessageParameterConstants.ALERT_TYPE_PARAMETER)));
-        });
-    }
-
-    /**
-     * Subscribes to the standard situations.
-     *
-     * @param consumer {@link Consumer} to execute when a {@link StandardSituation} is raised
-     */
-    public void subscribeToStandardSituation(final Consumer<StandardSituation> consumer) {
-        DomainEvents.register(StandardSituation.class, consumer);
-        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC + this.orderId, msg -> {
-            final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
-            if (json.getString(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER)
-                    .equals(AlertLevel.NONE.toString()))
-                DomainEvents.raise(new StandardSituation());
-        });
-    }
     /**
      * Subscribes to drone status topic.
      *
