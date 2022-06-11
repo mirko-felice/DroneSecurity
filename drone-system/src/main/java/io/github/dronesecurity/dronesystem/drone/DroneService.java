@@ -104,10 +104,10 @@ public class DroneService {
     }
 
     private void stopDrone() {
-        PublishHelper.publishCurrentStatus(this.currentOrderId,
-                MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE);
         this.drone.deactivate();
         this.dataExecutor.shutdownNow();
+        PublishHelper.publishCurrentStatus(this.currentOrderId,
+                MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE);
         Connection.getInstance().closeConnection();
     }
 
@@ -123,7 +123,8 @@ public class DroneService {
                 if (MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE
                         .equals(json.get(MqttMessageParameterConstants.SYNC_PARAMETER).asText())) {
                     PublishHelper.publishCurrentStatus(this.currentOrderId,
-                            MqttMessageValueConstants.RETURN_ACKNOWLEDGEMENT_MESSAGE);
+                            MqttMessageValueConstants.RETURNING_ACKNOWLEDGEMENT_MESSAGE);
+                    this.drone.proceed();
                     this.travelSimulation(this.returnExecutor, this::stopDrone);
                 }
             } catch (JsonProcessingException e) {
@@ -139,6 +140,7 @@ public class DroneService {
         else
             PublishHelper.publishCurrentStatus(this.currentOrderId,
                     MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE);
+        this.drone.halt();
     }
 
     private void travelSimulation(final @NotNull ScheduledExecutorService executor, final Runnable runnable) {
@@ -181,8 +183,10 @@ public class DroneService {
                     this.accelerometerSensorData,
                     this.cameraSensorData);
 
-            this.analyzeProximity();
-            this.analyzeAccelerometer();
+            if (this.drone.isOperating()) {
+                this.analyzeProximity();
+                this.analyzeAccelerometer();
+            }
         }, 0, ANALIZER_SLEEP_DURATION, TimeUnit.MILLISECONDS);
     }
 

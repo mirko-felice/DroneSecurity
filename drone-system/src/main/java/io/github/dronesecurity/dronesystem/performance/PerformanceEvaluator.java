@@ -36,7 +36,7 @@ public final class PerformanceEvaluator {
     private static final String ACCELEROMENTER_PERFORMANCE_READER_FILE_NAME =
             RESULT_FOLDER + SEP + "accelerometer_reader.txt";
     private static final String ACCELEROMENTER_DATA_PROCESSING_FILE_NAME =
-            RESULT_FOLDER + SEP + "accelerometer_processing.txt";;
+            RESULT_FOLDER + SEP + "accelerometer_processing.txt";
     private static final String PROXIMITY_PERFORMANCE_SUBSCRIBER_FILE_NAME =
             RESULT_FOLDER + SEP + "proximity_subscriber.txt";
     private static final String PROXIMITY_PERFORMANCE_READER_FILE_NAME =

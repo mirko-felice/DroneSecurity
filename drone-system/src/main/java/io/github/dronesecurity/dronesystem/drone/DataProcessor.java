@@ -8,6 +8,8 @@ package io.github.dronesecurity.dronesystem.drone;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,14 +32,18 @@ public class DataProcessor {
             final double z = accelerometerData.get("z");
 
             final double roll = Math.toDegrees(Math.atan2(y, z));
-            angles.put(MqttMessageParameterConstants.ROLL, roll);
+            angles.put(MqttMessageParameterConstants.ROLL, this.limitDecimals(roll));
 
             final double pitch = Math.toDegrees(Math.atan2(-x, Math.sqrt(y * y + z * z)));
-            angles.put(MqttMessageParameterConstants.PITCH, pitch);
+            angles.put(MqttMessageParameterConstants.PITCH, this.limitDecimals(pitch));
 
             final double yaw = Math.toDegrees(Math.atan2(x, y));
-            angles.put(MqttMessageParameterConstants.YAW, yaw);
+            angles.put(MqttMessageParameterConstants.YAW, this.limitDecimals(yaw));
         }
         return angles;
+    }
+
+    private double limitDecimals(final double value) {
+        return BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_EVEN).doubleValue();
     }
 }

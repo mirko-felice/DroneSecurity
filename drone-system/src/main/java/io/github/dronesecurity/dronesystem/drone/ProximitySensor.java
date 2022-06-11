@@ -33,7 +33,7 @@ public class ProximitySensor extends AbstractSensor<Double> {
      */
     @Override
     public void readData() {
-        if (getOutputStream().size() > 0) {
+        if (this.isOn() && getOutputStream().size() > 0) {
             final String orig = getOutputStream().toString(StandardCharsets.UTF_8).trim();
             try {
                 final JsonNode proximityData = new ObjectMapper().readTree(orig);

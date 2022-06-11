@@ -43,7 +43,7 @@ public final class Connection {
     private String clientID;
 
     private Connection() {
-        this.eventLoopGroup = new EventLoopGroup(1);
+        this.eventLoopGroup = new EventLoopGroup(2);
         this.clientBootstrap = new ClientBootstrap(this.eventLoopGroup, new HostResolver(this.eventLoopGroup));
         this.properties = new Properties();
         try {

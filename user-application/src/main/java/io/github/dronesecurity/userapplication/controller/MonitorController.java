@@ -5,9 +5,7 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.lib.DrivingMode;
-import io.github.dronesecurity.lib.MqttMessageParameterConstants;
-import io.github.dronesecurity.lib.MqttMessageValueConstants;
+import io.github.dronesecurity.lib.*;
 import io.github.dronesecurity.userapplication.drone.monitoring.UserMonitoringService;
 import io.github.dronesecurity.userapplication.events.*;
 import io.github.dronesecurity.userapplication.reporting.negligence.services.CourierNegligenceReportService;
@@ -28,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 /**
  * Controller dedicated to monitoring delivery.
@@ -37,6 +36,12 @@ public final class MonitorController implements Initializable {
     private final UserMonitoringService monitoringService;
     private final CourierNegligenceReportService negligenceReportService;
     private final String orderId;
+
+    private final Consumer<CriticalSituation> criticalSituationHandler;
+    private final Consumer<WarningSituation> warningSituationHandler;
+    private final Consumer<StandardSituation> standardSituationHandler;
+    private final Consumer<DataRead> dataReadHandler;
+    private final Consumer<StatusChanged> statusChangedHandler;
 
     @FXML private Label proximityCurrentData;
     @FXML private TableView<Map<String, Double>> accelerometerCurrentData;
@@ -74,6 +79,12 @@ public final class MonitorController implements Initializable {
         this.orderId = orderId;
         this.monitoringService = new UserMonitoringService(orderId);
         this.negligenceReportService = CourierNegligenceReportService.getInstance();
+
+        this.criticalSituationHandler = this::onCritical;
+        this.warningSituationHandler = this::onWarning;
+        this.standardSituationHandler = this::backOnStandardSituation;
+        this.dataReadHandler = this::onDataRead;
+        this.statusChangedHandler = this::onStatusChanged;
     }
 
     @Override
@@ -81,17 +92,25 @@ public final class MonitorController implements Initializable {
         this.accordion.setExpandedPane(this.controlsPane);
 
         this.negligenceReportService.subscribeToNewNegligence(newNegligence ->
-                Platform.runLater(() -> DialogUtils.showInfoNotification("INFO",
-                        "You have committed a negligence. Maintainer " + newNegligence.getReport().assignedTo()
-                        + " will take care of this. Go to the 'reports' window to show more information about it.",
-                        this.switchMode.getScene().getWindow())));
+                Platform.runLater(() -> {
+                    this.haltButton.setDisable(true);
+                    this.proceedButton.setDisable(false);
+                    DialogUtils.showInfoNotification("INFO",
+                              "You have committed a negligence. The drone has been halted for security purpose."
+                            + "\nMaintainer " + newNegligence.getReport().assignedTo()
+                            + " will take care of this. Go to the 'reports' window to show more information about it.",
+                            this.switchMode.getScene().getWindow());
+                }));
 
-        DomainEvents.register(CriticalSituation.class, this::onCritical);
-        DomainEvents.register(WarningSituation.class, this::onWarning);
-        DomainEvents.register(StandardSituation.class, this::backOnStandardSituation);
+        DomainEvents.register(CriticalSituation.class, this.criticalSituationHandler);
+        DomainEvents.register(WarningSituation.class, this.warningSituationHandler);
+        DomainEvents.register(StandardSituation.class, this.standardSituationHandler);
+        DomainEvents.register(DataRead.class, this.dataReadHandler);
+        DomainEvents.register(StatusChanged.class, this.statusChangedHandler);
 
-        this.monitoringService.subscribeToDataRead(this::onDataRead);
-        this.monitoringService.subscribeToOrderStatusChange(this::onStatusChanged);
+        this.monitoringService.subscribeToDataRead();
+        this.monitoringService.subscribeToOrderStatusChange();
+        this.monitoringService.subscribeToAlerts();
 
         this.proximityPreviousDataColumn.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue()));
         this.proximityPreviousDataColumn.setCellFactory(ignored -> new FXHelper.ProximityCell<>());
@@ -206,15 +225,22 @@ public final class MonitorController implements Initializable {
                     this.recallButton.setDisable(false);
                     this.sendSaveDeliveryMessage(statusEvent.getStatus());
                     break;
-                case MqttMessageValueConstants.RETURN_ACKNOWLEDGEMENT_MESSAGE:
+                case MqttMessageValueConstants.RETURNING_ACKNOWLEDGEMENT_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: black;");
                     this.proceedButton.setDisable(true);
                     this.haltButton.setDisable(false);
                     break;
                 case MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: cyan;");
-                    DialogUtils.showInfoDialog("Drone successfully returned.",
-                            ((Stage) this.accordion.getScene().getWindow())::close);
+                    DialogUtils.showInfoDialog("Drone successfully returned.", () -> {
+                                DomainEvents.unregister(CriticalSituation.class, this.criticalSituationHandler);
+                                DomainEvents.unregister(WarningSituation.class, this.warningSituationHandler);
+                                DomainEvents.unregister(StandardSituation.class, this.standardSituationHandler);
+                                DomainEvents.unregister(DataRead.class, this.dataReadHandler);
+                                DomainEvents.unregister(StatusChanged.class, this.statusChangedHandler);
+
+                                ((Stage) this.accordion.getScene().getWindow()).close();
+                            });
                     break;
                 default:
             }

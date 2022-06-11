@@ -23,7 +23,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 /**
  * Service that monitors drone data channels.
@@ -40,32 +39,12 @@ public final class UserMonitoringService {
      */
     public UserMonitoringService(final String orderId) {
         this.orderId = orderId;
-        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC + this.orderId, msg -> {
-            final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
-            final String alertLevel = json.getString(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER);
-            final String alertType = json.getString(MqttMessageParameterConstants.ALERT_TYPE_PARAMETER);
-            switch (AlertLevel.valueOf(alertLevel)) {
-                case CRITICAL:
-                    DomainEvents.raise(new CriticalSituation(alertType));
-                    break;
-                case WARNING:
-                    DomainEvents.raise(new WarningSituation(alertType));
-                    break;
-                case NONE:
-                    DomainEvents.raise(new StandardSituation());
-                    break;
-                default:
-            }
-        });
     }
 
     /**
      * Subscribes to the reading topic.
-     *
-     * @param consumer {@link Consumer} to execute when a {@link DataRead} is raised
      */
-    public void subscribeToDataRead(final Consumer<DataRead> consumer) {
-        DomainEvents.register(DataRead.class, consumer);
+    public void subscribeToDataRead() {
         Connection.getInstance().subscribe(MqttTopicConstants.DATA_TOPIC + this.orderId, msg -> {
             final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
             final double proximity = json.getDouble(MqttMessageParameterConstants.PROXIMITY_PARAMETER);
@@ -94,11 +73,8 @@ public final class UserMonitoringService {
 
     /**
      * Subscribes to drone status topic.
-     *
-     * @param consumer {@link Consumer} to execute when a {@link StatusChanged} is raised
      */
-    public void subscribeToOrderStatusChange(final Consumer<StatusChanged> consumer) {
-        DomainEvents.register(StatusChanged.class, consumer);
+    public void subscribeToOrderStatusChange() {
         Connection.getInstance().subscribe(MqttTopicConstants.LIFECYCLE_TOPIC + this.orderId, msg -> {
             try {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
@@ -106,6 +82,29 @@ public final class UserMonitoringService {
                 DomainEvents.raise(new StatusChanged(status));
             } catch (JsonProcessingException e) {
                 LoggerFactory.getLogger(getClass()).error(JSON_ERROR_MESSAGE, e);
+            }
+        });
+    }
+
+    /**
+     * Subscribes to drone alerts' topic.
+     */
+    public void subscribeToAlerts() {
+        Connection.getInstance().subscribe(MqttTopicConstants.ALERT_LEVEL_TOPIC + this.orderId, msg -> {
+            final JsonObject json = new JsonObject(new String(msg.getPayload(), StandardCharsets.UTF_8));
+            final String alertLevel = json.getString(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER);
+            final String alertType = json.getString(MqttMessageParameterConstants.ALERT_TYPE_PARAMETER);
+            switch (AlertLevel.valueOf(alertLevel)) {
+                case CRITICAL:
+                    DomainEvents.raise(new CriticalSituation(alertType));
+                    break;
+                case WARNING:
+                    DomainEvents.raise(new WarningSituation(alertType));
+                    break;
+                case NONE:
+                    DomainEvents.raise(new StandardSituation());
+                    break;
+                default:
             }
         });
     }

@@ -28,7 +28,7 @@ public final class MqttMessageValueConstants {
     /**
      * Drone returning lifecycle message text.
      */
-    public static final String RETURN_ACKNOWLEDGEMENT_MESSAGE = "returning";
+    public static final String RETURNING_ACKNOWLEDGEMENT_MESSAGE = "returning";
 
     /**
      * Drone returned lifecycle message text.

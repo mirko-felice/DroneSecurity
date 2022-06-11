@@ -61,11 +61,10 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
      */
     @Override
     public void activate() {
-        new Thread(() -> {
-            if (this.isPythonVersionCompatible())
-                this.executeScript(this.getScriptFile(this.getScriptName()));
-        }).start();
-        this.setOn(true);
+        if (this.isPythonVersionCompatible()) {
+            this.setOn(true);
+            new Thread(() -> this.executeScript(this.getScriptFile(this.getScriptName()))).start();
+        }
     }
 
     /**
@@ -75,6 +74,11 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
     public void deactivate() {
         this.executor.setExitValues(SUCCESSFUL_TERMINATION_CODES);
         this.executor.getWatchdog().destroyProcess();
+        try {
+            this.outputStream.close();
+        } catch (IOException e) {
+            LoggerFactory.getLogger(getClass()).error("Failed to close output stream.", e);
+        }
         this.setOn(false);
     }
 
