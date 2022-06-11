@@ -35,7 +35,7 @@ public final class MonitorController implements Initializable {
 
     private final UserMonitoringService monitoringService;
     private final CourierNegligenceReportService negligenceReportService;
-    private final String orderId;
+    private final long orderId;
 
     private final Consumer<CriticalSituation> criticalSituationHandler;
     private final Consumer<WarningSituation> warningSituationHandler;
@@ -75,7 +75,7 @@ public final class MonitorController implements Initializable {
      * Build the Controller to interact with services.
      * @param orderId order identifier to monitoring
      */
-    public MonitorController(final String orderId) {
+    public MonitorController(final long orderId) {
         this.orderId = orderId;
         this.monitoringService = new UserMonitoringService(orderId);
         this.negligenceReportService = CourierNegligenceReportService.getInstance();
@@ -190,14 +190,14 @@ public final class MonitorController implements Initializable {
 
     private void onWarning(final WarningSituation warningSituation) {
         Platform.runLater(() -> {
-            this.currentSituationLabel.setText(warningSituation.getType().toString());
+            this.currentSituationLabel.setText("DANGEROUS " + warningSituation.getType().toString());
             this.currentSituationLabel.setStyle("-fx-text-fill: orange;");
         });
     }
 
     private void onCritical(final CriticalSituation criticalSituation) {
         Platform.runLater(() -> {
-            this.currentSituationLabel.setText(criticalSituation.getType().toString());
+            this.currentSituationLabel.setText("CRITICAL " + criticalSituation.getType().toString());
             this.currentSituationLabel.setStyle("-fx-text-fill: red;");
         });
     }

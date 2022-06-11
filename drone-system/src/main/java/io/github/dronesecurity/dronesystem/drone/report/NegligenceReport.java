@@ -21,7 +21,7 @@ public final class NegligenceReport {
 
     private final String negligent;
     private final ObjectNode data;
-    private final String orderId;
+    private final long orderId;
     private final Instant negligenceInstant;
 
     /**
@@ -36,7 +36,7 @@ public final class NegligenceReport {
                             final double proximity,
                             final @NotNull Map<String, Double> accelerometer,
                             final Byte @NotNull [] camera,
-                            final String orderId) {
+                            final long orderId) {
         this.negligent = negligent;
         final ObjectMapper objectMapper = new ObjectMapper();
         this.data = objectMapper.createObjectNode();
@@ -70,7 +70,7 @@ public final class NegligenceReport {
      * Gets the order identifier related to the negligence.
      * @return the order identifier
      */
-    public String getOrderId() {
+    public long getOrderId() {
         return this.orderId;
     }
 

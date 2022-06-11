@@ -38,14 +38,14 @@ public class DataController implements Initializable {
     @FXML private TableColumn<DroneData, Double> pitchColumn;
     @FXML private TableColumn<DroneData, Double> yawColumn;
     @FXML private TableColumn<DroneData, Long> cameraColumn;
-    private final String orderId;
+    private final long orderId;
 
     /**
      * Build the controller.
      * @param orderId {@link io.github.dronesecurity.userapplication.shipping.courier.entities.Order} identifier to
      *                                                                                               retrieve data from
      */
-    public DataController(final String orderId) {
+    public DataController(final long orderId) {
         this.orderId = orderId;
     }
 

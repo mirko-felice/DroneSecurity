@@ -25,7 +25,7 @@ public final class OrderSerializer extends JsonSerializer<Order> {
     public void serialize(final @NotNull Order value, final @NotNull JsonGenerator gen,
                           final SerializerProvider serializers) throws IOException {
         gen.writeStartObject();
-        gen.writeStringField(OrderConstants.ID, value.getId());
+        gen.writeNumberField(OrderConstants.ID, value.getId());
         gen.writeStringField(OrderConstants.PRODUCT, value.getProduct());
         gen.writeStringField(OrderConstants.CLIENT, value.getClient());
         gen.writeStringField(OrderConstants.PLACING_DATE, DateHelper.toString(value.getPlacingDate()));

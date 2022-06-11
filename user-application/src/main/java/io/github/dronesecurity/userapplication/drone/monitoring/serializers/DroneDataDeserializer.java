@@ -40,7 +40,7 @@ public class DroneDataDeserializer extends JsonDeserializer<DroneData> {
                 mapper.readValue(root.get(DataConstants.ACCELEROMETER).toString(), new MapTypeReference());
         final Long camera = root.get(DataConstants.CAMERA).asLong();
         final Instant detectionInstant = DateHelper.toInstant(root.get(DataConstants.DETECTION_INSTANT).asText());
-        final String orderId = root.get(DataConstants.ORDER_ID).asText();
+        final long orderId = root.get(DataConstants.ORDER_ID).asLong();
 
         return new DroneDataImpl(proximity, accelerometer, camera, detectionInstant, orderId);
     }

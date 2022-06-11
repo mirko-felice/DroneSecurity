@@ -49,7 +49,7 @@ public final class DataRepositoryImpl implements DataRepository {
      * {@inheritDoc}
      */
     @Override
-    public Future<List<DroneData>> retrieveDataHistory(final String orderId) {
+    public Future<List<DroneData>> retrieveDataHistory(final long orderId) {
         final JsonObject query = new JsonObject().put(DataConstants.ORDER_ID, orderId);
         return VertxHelper.MONGO_CLIENT.find(COLLECION_NAME, query)
                 .map(list -> list.stream().map(data -> Json.decodeValue(data.toBuffer(), DroneData.class))

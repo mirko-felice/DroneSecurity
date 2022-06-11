@@ -19,7 +19,7 @@ import java.util.StringJoiner;
  */
 public abstract class AbstractOrder implements Order {
 
-    private final String id;
+    private final long id;
     private final String product;
     private final String client;
     private final Instant placingDate;
@@ -33,7 +33,7 @@ public abstract class AbstractOrder implements Order {
      * @param placingDate the date in which the order has been placed
      * @param estimatedArrival the date in which the order should arrive
      */
-    protected AbstractOrder(final String id, final String product, final String client,  final Instant placingDate,
+    protected AbstractOrder(final long id, final String product, final String client,  final Instant placingDate,
                             final Instant estimatedArrival) {
         if (product == null || product.isEmpty())
             throw new EmptyProductException();
@@ -55,7 +55,7 @@ public abstract class AbstractOrder implements Order {
      * {@inheritDoc}
      */
     @Override
-    public String getId() {
+    public long getId() {
         return this.id;
     }
 
@@ -112,8 +112,7 @@ public abstract class AbstractOrder implements Order {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final AbstractOrder that = (AbstractOrder) o;
-        return this.placingDate.equals(that.placingDate) && this.id.equals(that.id)
-                && this.product.equals(that.product);
+        return this.id == that.id && this.placingDate.equals(that.placingDate) && this.product.equals(that.product);
     }
 
     /**

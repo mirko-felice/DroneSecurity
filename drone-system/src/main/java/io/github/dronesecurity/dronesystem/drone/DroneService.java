@@ -47,7 +47,7 @@ public class DroneService {
     private Map<String, Double> accelerometerSensorData;
     private Byte[] cameraSensorData;
 
-    private String currentOrderId;
+    private long currentOrderId;
     private String currentCourier;
 
     // Reporting
@@ -80,7 +80,7 @@ public class DroneService {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
                 if (MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE
                         .equals(json.get(MqttMessageParameterConstants.SYNC_PARAMETER).asText())) {
-                    this.currentOrderId = json.get(MqttMessageParameterConstants.ORDER_ID_PARAMETER).asText();
+                    this.currentOrderId = json.get(MqttMessageParameterConstants.ORDER_ID_PARAMETER).asLong();
                     this.currentCourier = json.get(MqttMessageParameterConstants.COURIER_PARAMETER).asText();
                     this.drone.activate();
                     this.simulateDroneLifecycle();

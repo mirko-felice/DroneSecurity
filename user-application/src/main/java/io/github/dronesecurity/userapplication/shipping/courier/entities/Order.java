@@ -26,7 +26,7 @@ public interface Order {
      * Returns the order identifier.
      * @return the order ID
      */
-    String getId();
+    long getId();
 
     /**
      * Returns the ordered product.
@@ -68,6 +68,6 @@ public interface Order {
     @Contract("_, _ -> new")
     static @NotNull PlacedOrder placeToday(final String product, final String client) {
         final Instant now = Instant.now();
-        return new PlacedOrder(String.valueOf(0), product, client, now, now.plus(1, ChronoUnit.DAYS));
+        return new PlacedOrder(0, product, client, now, now.plus(1, ChronoUnit.DAYS));
     }
 }

@@ -28,7 +28,7 @@ public final class RescheduledOrder extends PlacedOrder {
      * @param oldArrival the date in which the order should have arrived
      * @param newEstimatedArrival the new date in which the order should arrive
      */
-    public RescheduledOrder(final String id, final String product, final String client, final Instant placingDate,
+    public RescheduledOrder(final long id, final String product, final String client, final Instant placingDate,
                             final Instant oldArrival, final Instant newEstimatedArrival) {
         super(id, product, client, placingDate, oldArrival);
         this.newEstimatedArrival = newEstimatedArrival;

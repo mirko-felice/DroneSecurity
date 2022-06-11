@@ -31,9 +31,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -72,8 +70,13 @@ public final class OrdersController implements Initializable {
                 new SimpleObjectProperty<>(cell.getValue().getCurrentState()));
         this.stateColumn.setReorderable(false);
 
-        this.estimatedArrivalColumn.setCellValueFactory(cell ->
-                new SimpleObjectProperty<>(DateHelper.toString(cell.getValue().getEstimatedArrival())));
+        this.estimatedArrivalColumn.setCellValueFactory(cell -> {
+            final Order order = cell.getValue();
+            final Instant arrivalDate = order instanceof RescheduledOrder
+                    ? ((RescheduledOrder) order).getNewEstimatedArrival()
+                    : order.getEstimatedArrival();
+            return new SimpleObjectProperty<>(DateHelper.toString(arrivalDate));
+        });
         this.estimatedArrivalColumn.setReorderable(false);
 
         this.clientColumn.setCellValueFactory(cell ->
@@ -85,7 +88,8 @@ public final class OrdersController implements Initializable {
             if (order == null) {
                 this.performDeliveryButton.setDisable(true);
             } else {
-                if (OrderConstants.PLACED_ORDER_STATE.equals(order.getCurrentState())) {
+                if (OrderConstants.PLACED_ORDER_STATE.equals(order.getCurrentState())
+                    || OrderConstants.RESCHEDULED_ORDER_STATE.equals(order.getCurrentState())) {
                     this.performDeliveryButton.setDisable(false);
                     this.rescheduleDeliveryButton.setDisable(true);
                     this.showDataHistoryButton.setDisable(true);
@@ -140,8 +144,10 @@ public final class OrdersController implements Initializable {
                     final JsonObject body = new JsonObject()
                             .put(ServiceHelper.ORDER_KEY, order)
                             .put(ServiceHelper.NEW_ESTIMATED_ARRIVAL_KEY, DateHelper.toString(newEstimatedArrival));
-                    ServiceHelper.postJson(ServiceHelper.Operation.RESCHEDULE_DELIVERY, body).onSuccess(ignored ->
-                            this.refreshOrders());
+                    ServiceHelper.postJson(ServiceHelper.Operation.RESCHEDULE_DELIVERY, body).onSuccess(ignored -> {
+                        this.table.getSelectionModel().clearSelection();
+                        this.refreshOrders();
+                    });
                 }));
     }
 
@@ -158,8 +164,9 @@ public final class OrdersController implements Initializable {
         ServiceHelper.getOperation(ServiceHelper.Operation.LIST_ORDERS).onSuccess(res -> {
             final List<Order> orders = res.bodyAsJsonArray().stream()
                     .map(o -> Json.decodeValue(o.toString(), Order.class))
+                    .sorted(Comparator.comparing(Order::getId))
                     .collect(Collectors.toList());
-           Platform.runLater(() -> {
+            Platform.runLater(() -> {
                 this.table.setItems(FXCollections.observableList(orders));
                 this.table.refresh();
             });

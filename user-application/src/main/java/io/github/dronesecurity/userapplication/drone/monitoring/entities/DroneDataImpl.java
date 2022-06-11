@@ -17,7 +17,7 @@ public class DroneDataImpl implements DroneData {
     private final Map<String, Double> accelerometer;
     private final Long camera;
     private final Instant detectionInstant;
-    private final String orderId;
+    private final long orderId;
 
     /**
      * Build the object starting from data.
@@ -32,7 +32,7 @@ public class DroneDataImpl implements DroneData {
                          final Map<String, Double> accelerometer,
                          final Long camera,
                          final Instant detectionInstant,
-                         final String orderId) {
+                         final long orderId) {
         this.proximity = proximity;
         this.accelerometer = Map.copyOf(accelerometer);
         this.camera = camera;
@@ -76,7 +76,7 @@ public class DroneDataImpl implements DroneData {
      * {@inheritDoc}
      */
     @Override
-    public String getOrderId() {
+    public long getOrderId() {
         return this.orderId;
     }
 }

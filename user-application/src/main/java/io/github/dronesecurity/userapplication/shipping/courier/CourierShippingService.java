@@ -46,6 +46,8 @@ public final class CourierShippingService extends AbstractVerticle {
     private static final String SEP = "/";
     private static final int CLIENT_ERROR_CODE = 400;
     private static final OrderRepository REPOSITORY = OrderRepository.getInstance();
+    private static final Future<Void> FAILED_FUTURE =
+            Future.failedFuture("Order is delivering but new status is not 'succeeded' or 'failed'.");
 
     @Override
     public void start(final @NotNull Promise<Void> startPromise) {
@@ -110,21 +112,22 @@ public final class CourierShippingService extends AbstractVerticle {
                 .onSuccess(order -> {
                     final String status = body.getString(ServiceHelper.STATE_KEY);
                     final Future<Void> future;
-                    if (OrderConstants.PLACED_ORDER_STATE.equals(order.getCurrentState())
-                            && ServiceHelper.DELIVERING.equals(status))
-                        future = REPOSITORY.delivering(((PlacedOrder) order).deliver());
-                    else if (OrderConstants.DELIVERING_ORDER_STATE.equals(order.getCurrentState())) {
+                    if (ServiceHelper.DELIVERING.equals(status)) {
+                        if (OrderConstants.PLACED_ORDER_STATE.equals(order.getCurrentState()))
+                            future = REPOSITORY.delivering(((PlacedOrder) order).deliver());
+                        else if (OrderConstants.RESCHEDULED_ORDER_STATE.equals(order.getCurrentState()))
+                            future = REPOSITORY.delivering(((RescheduledOrder) order).deliver());
+                        else
+                            future = FAILED_FUTURE;
+                    } else if (OrderConstants.DELIVERING_ORDER_STATE.equals(order.getCurrentState())) {
                         if (ServiceHelper.DELIVERY_SUCCESSFUL.equals(status))
                             future = REPOSITORY.confirmedDelivery(((DeliveringOrder) order).confirmDelivery());
                         else if (ServiceHelper.DELIVERY_FAILED.equals(status))
                             future = REPOSITORY.failedDelivery(((DeliveringOrder) order).failDelivery());
                         else
-                            future = Future.failedFuture(
-                                    "Order is delivering but new status is not 'succeeded' or 'failed'.");
+                            future = FAILED_FUTURE;
                     } else
-                        future =
-                                Future.failedFuture(
-                                        "Order is delivering but new status is not 'succeeded' or 'failed'.");
+                        future = FAILED_FUTURE;
                     future.onSuccess(ignored -> routingContext.response().end());
                 });
     }
@@ -132,7 +135,7 @@ public final class CourierShippingService extends AbstractVerticle {
     private void callBack(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         final JsonObject body = params.body().getJsonObject();
-        final String orderId = body.getString(ServiceHelper.ORDER_ID_KEY);
+        final long orderId = body.getLong(ServiceHelper.ORDER_ID_KEY);
 
         ServiceHelper.sendCallBackMessage(orderId);
     }

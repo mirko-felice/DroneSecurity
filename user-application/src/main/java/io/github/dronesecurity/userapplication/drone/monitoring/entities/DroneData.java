@@ -48,6 +48,6 @@ public interface DroneData {
      * Gets the order identifier related to this data detection.
      * @return the order identifier
      */
-    String getOrderId();
+    long getOrderId();
 
 }

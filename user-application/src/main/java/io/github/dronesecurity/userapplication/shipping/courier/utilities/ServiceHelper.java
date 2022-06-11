@@ -144,7 +144,7 @@ public final class ServiceHelper {
      * @param orderId order identifier to track
      * @param courier courier username to track
      */
-    public static void sendPerformDeliveryMessage(final String droneId, final String orderId, final String courier) {
+    public static void sendPerformDeliveryMessage(final String droneId, final long orderId, final String courier) {
         final JsonNode messageJson = new ObjectMapper().createObjectNode()
                 .put(MqttMessageParameterConstants.SYNC_PARAMETER, MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE)
                 .put(MqttMessageParameterConstants.ORDER_ID_PARAMETER, orderId)
@@ -156,7 +156,7 @@ public final class ServiceHelper {
      * Sends the message to call back the drone on AWS.
      * @param orderId drone identifier to track
      */
-    public static void sendCallBackMessage(final String orderId) {
+    public static void sendCallBackMessage(final long orderId) {
         final JsonNode recallMessage = new ObjectMapper().createObjectNode()
                 .put(MqttMessageParameterConstants.SYNC_PARAMETER,
                         MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);

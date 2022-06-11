@@ -26,7 +26,7 @@ public interface DataRepository {
      * @param orderId order identifier to retrieve data from
      * @return the {@link Future} containing the {@link List} of {@link DroneData}
      */
-    Future<List<DroneData>> retrieveDataHistory(String orderId);
+    Future<List<DroneData>> retrieveDataHistory(long orderId);
 
     /**
      * Gets the singleton instance.

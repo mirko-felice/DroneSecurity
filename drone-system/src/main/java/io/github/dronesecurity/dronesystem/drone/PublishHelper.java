@@ -26,7 +26,7 @@ public final class PublishHelper {
      * @param accelerometerSensorData accelerometer data
      * @param cameraSensorData camera data
      */
-    public static void publishData(final String orderId,
+    public static void publishData(final long orderId,
                                    final Double proximitySensorData,
                                    final @NotNull Map<String, Double> accelerometerSensorData,
                                    final Byte @NotNull [] cameraSensorData) {
@@ -47,7 +47,7 @@ public final class PublishHelper {
      * @param currentAlertLevel current alert level to publish
      * @param type {@link AlertType} that causes the alert
      */
-    public static void publishCurrentAlertLevel(final String orderId,
+    public static void publishCurrentAlertLevel(final long orderId,
                                                 final @NotNull AlertLevel currentAlertLevel,
                                                 final @NotNull AlertType type) {
         final ObjectNode payload = new ObjectMapper().createObjectNode();
@@ -61,7 +61,7 @@ public final class PublishHelper {
      * @param orderId order identifier needed in order to publish correctly
      * @param status status to publish
      */
-    public static void publishCurrentStatus(final String orderId, final String status) {
+    public static void publishCurrentStatus(final long orderId, final String status) {
         final ObjectNode payload = new ObjectMapper().createObjectNode();
         payload.put(MqttMessageParameterConstants.STATUS_PARAMETER, status);
         Connection.getInstance().publish(MqttTopicConstants.LIFECYCLE_TOPIC + orderId, payload);

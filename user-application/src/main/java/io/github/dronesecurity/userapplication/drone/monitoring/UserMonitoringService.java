@@ -30,14 +30,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class UserMonitoringService {
 
     private static final String JSON_ERROR_MESSAGE = "Can NOT read json correctly.";
-    private final String orderId;
+    private final long orderId;
 
     /**
      * Build the service, automatically subscribed to alert topic.
      * @param orderId {@link io.github.dronesecurity.userapplication.shipping.courier.entities.Order} identifier to
      *                                                                                              monitor
      */
-    public UserMonitoringService(final String orderId) {
+    public UserMonitoringService(final long orderId) {
         this.orderId = orderId;
     }
 

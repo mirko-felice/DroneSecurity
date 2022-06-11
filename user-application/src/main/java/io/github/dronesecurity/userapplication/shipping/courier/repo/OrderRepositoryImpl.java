@@ -109,8 +109,8 @@ public final class OrderRepositoryImpl implements OrderRepository {
         what.put(OrderConstants.EVENTS, order.getCurrentState());
         update.put("$push", what);
         if (order instanceof RescheduledOrder)
-            update.put(OrderConstants.NEW_ESTIMATED_ARRIVAL,
-                    DateHelper.toString(((RescheduledOrder) order).getNewEstimatedArrival()));
+            update.put("$set", new JsonObject().put(OrderConstants.NEW_ESTIMATED_ARRIVAL,
+                    DateHelper.toString(((RescheduledOrder) order).getNewEstimatedArrival())));
         return VertxHelper.MONGO_CLIENT.findOneAndUpdate(COLLECTION_NAME, query, update).mapEmpty();
     }
 
@@ -132,6 +132,6 @@ public final class OrderRepositoryImpl implements OrderRepository {
     @Contract("_, _, _ -> new")
     private @NotNull Order generateOrder(final int i, final String product, final String client) {
         final Instant now = Instant.now();
-        return new PlacedOrder(String.valueOf(i), product, client, now, now.plus(1, ChronoUnit.DAYS));
+        return new PlacedOrder(i, product, client, now, now.plus(1, ChronoUnit.DAYS));
     }
 }

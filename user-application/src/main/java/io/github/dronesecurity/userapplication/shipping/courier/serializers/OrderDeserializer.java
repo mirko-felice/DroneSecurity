@@ -34,7 +34,7 @@ public final class OrderDeserializer extends JsonDeserializer<Order> {
             return null;
         final JsonNode events = root.get(OrderConstants.EVENTS);
         final String currentState = events.get(events.size() - 1).asText();
-        final String id = root.get(OrderConstants.ID).asText();
+        final long id = root.get(OrderConstants.ID).asLong();
         final String product = root.get(OrderConstants.PRODUCT).asText();
         final String client = root.get(OrderConstants.CLIENT).asText();
         final Instant placingDate = DateHelper.toInstant(root.get(OrderConstants.PLACING_DATE).asText());

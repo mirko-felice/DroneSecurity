@@ -13,27 +13,27 @@ public final class MqttMessageValueConstants {
     /**
      * Drone delivering lifecycle message text.
      */
-    public static final String DELIVERING_MESSAGE = "delivering";
+    public static final String DELIVERING_MESSAGE = "DELIVERING";
 
     /**
      * Successful delivery message text.
      */
-    public static final String DELIVERY_SUCCESSFUL_MESSAGE = "succeeded";
+    public static final String DELIVERY_SUCCESSFUL_MESSAGE = "SUCCEEDED";
 
     /**
      * Failed delivery message text.
      */
-    public static final String DELIVERY_FAILED_MESSAGE = "failed";
+    public static final String DELIVERY_FAILED_MESSAGE = "FAILED";
 
     /**
      * Drone returning lifecycle message text.
      */
-    public static final String RETURNING_ACKNOWLEDGEMENT_MESSAGE = "returning";
+    public static final String RETURNING_ACKNOWLEDGEMENT_MESSAGE = "RETURNING";
 
     /**
      * Drone returned lifecycle message text.
      */
-    public static final String RETURNED_ACKNOWLEDGEMENT_MESSAGE = "returned";
+    public static final String RETURNED_ACKNOWLEDGEMENT_MESSAGE = "RETURNED";
 
     /**
      * Perform delivery message text.

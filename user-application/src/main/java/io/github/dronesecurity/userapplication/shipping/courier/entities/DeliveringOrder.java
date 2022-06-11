@@ -24,7 +24,7 @@ public final class DeliveringOrder extends AbstractOrder {
      * @param placingDate the date in which the order has been placed
      * @param estimatedArrival the date in which the order should arrive
      */
-    public DeliveringOrder(final String id, final String product, final String client, final Instant placingDate,
+    public DeliveringOrder(final long id, final String product, final String client, final Instant placingDate,
                            final Instant estimatedArrival) {
         super(id, product, client, placingDate, estimatedArrival);
     }
