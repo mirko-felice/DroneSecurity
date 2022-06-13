@@ -10,6 +10,7 @@ import io.github.dronesecurity.dronesystem.performance.drone.DroneTimed;
 import io.github.dronesecurity.dronesystem.performance.drone.sensordata.AccelerometerData;
 import io.github.dronesecurity.dronesystem.performance.drone.sensordata.CameraData;
 import io.github.dronesecurity.dronesystem.performance.drone.sensordata.ProximityData;
+import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,6 +38,18 @@ public class DroneServiceSimulator {
     private final PrintWriter cameraWriter;
     private final PrintWriter accelerometerProcessingWriter;
     private final PrintWriter proximityWriter;
+
+    private long totalCameraReaderDelay;
+    private long totalCameraReadings;
+
+    private long totalAccelerometerReaderDelay;
+    private long totalAccelerometerReadings;
+
+    private long totalAccelerometerAnalyzerDelay;
+    private long totalAccelerometerAnalyzerExecutions;
+
+    private long totalProximityReaderDelay;
+    private long totalProximityReadings;
 
     /**
      * Constructor for this service.
@@ -92,6 +105,25 @@ public class DroneServiceSimulator {
         this.drone.deactivate();
     }
 
+    /**
+     * Gets the averaged delays of all performance evaluations.
+     * @return the map containing the averaged performance delays
+     */
+    public Map<String, Long> getAveragePerformance() {
+        final Map<String, Long> averagePerformance = new ConcurrentHashMap<>();
+
+        averagePerformance.put(MqttMessageParameterConstants.CAMERA_PARAMETER,
+                this.totalCameraReaderDelay / this.totalCameraReadings);
+        averagePerformance.put(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER,
+                this.totalAccelerometerReaderDelay / this.totalAccelerometerReadings);
+        averagePerformance.put(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER + "Processing",
+                this.totalAccelerometerAnalyzerDelay / this.totalAccelerometerAnalyzerExecutions);
+        averagePerformance.put(MqttMessageParameterConstants.PROXIMITY_PARAMETER,
+                this.totalProximityReaderDelay / this.totalProximityReadings);
+
+        return averagePerformance;
+    }
+
     @Contract(" -> new")
     private @NotNull Thread getMonitoringAgent() {
         return new Thread(() -> this.executor.scheduleWithFixedDelay(() -> {
@@ -100,32 +132,50 @@ public class DroneServiceSimulator {
             final AccelerometerData accelerometerPerformanceData = this.drone.getAccelerometerPerformanceData();
             final ProximityData proximityPerformanceData = this.drone.getProximityPerformanceData();
 
-            if (cameraPerformanceData.getTimestamp() != 0)
-                OutputHelper.printCameraPerformance(this.cameraWriter, cameraPerformanceData);
-            if (accelerometerPerformanceData.getTimestamp() != 0)
-                OutputHelper.printAccelerometerPerformance(this.accelerometerWriter, accelerometerPerformanceData);
-            if (proximityPerformanceData.getTimestamp() != 0)
-                OutputHelper.printProximityPerformance(this.proximityWriter, proximityPerformanceData);
+            if (cameraPerformanceData.getTimestamp() != 0) {
+                final long delay = System.currentTimeMillis() - cameraPerformanceData.getTimestamp();
+                this.totalCameraReaderDelay += delay;
+                this.totalCameraReadings++;
+                OutputHelper.printCameraPerformance(this.cameraWriter, cameraPerformanceData, delay);
+            }
+            if (accelerometerPerformanceData.getTimestamp() != 0) {
+                final long delay = System.currentTimeMillis() - accelerometerPerformanceData.getTimestamp();
+                this.totalAccelerometerReaderDelay += delay;
+                this.totalAccelerometerReadings++;
+                OutputHelper
+                        .printAccelerometerPerformance(this.accelerometerWriter, accelerometerPerformanceData, delay);
+            }
+            if (proximityPerformanceData.getTimestamp() != 0) {
+                final long delay = System.currentTimeMillis() - proximityPerformanceData.getTimestamp();
+                this.totalProximityReaderDelay += delay;
+                this.totalProximityReadings++;
+                OutputHelper.printProximityPerformance(this.proximityWriter, proximityPerformanceData, delay);
+            }
 
-            final long start = System.currentTimeMillis();
+            final long start = System.nanoTime();
 
             if (accelerometerPerformanceData.getTimestamp() != 0) {
+
                 final Map<String, Double> processedAccelerometerValues = new ConcurrentHashMap<>();
                 DataProcessor.processAccelerometer(accelerometerPerformanceData.getData())
                         .forEach((key, value) -> processedAccelerometerValues.put(key, value.doubleValue()));
-                final AccelerometerData processedAccelerometerData =
-                        new AccelerometerData(
-                                accelerometerPerformanceData.getIndex(),
+
+                final long delay = (System.nanoTime() - start) / 1_000;
+                this.totalAccelerometerAnalyzerDelay += delay;
+                this.totalAccelerometerAnalyzerExecutions++;
+                OutputHelper.printAccelerometerProcessedDataPerformance(this.accelerometerProcessingWriter,
+                        new AccelerometerData(accelerometerPerformanceData.getIndex(),
                                 start,
-                                processedAccelerometerValues);
-                OutputHelper.printAccelerometerDataProcessing(this.accelerometerProcessingWriter,
-                        processedAccelerometerData);
+                                processedAccelerometerValues),
+                        delay,
+                        true);
 
                 PerformancePublishHelper.publishData(cameraPerformanceData,
-                        processedAccelerometerData,
+                        new AccelerometerData(accelerometerPerformanceData.getIndex(),
+                                accelerometerPerformanceData.getTimestamp(),
+                                processedAccelerometerValues),
                         proximityPerformanceData);
             }
         }, 0, PERFORMANCE_READING_DELAY, TimeUnit.MILLISECONDS));
-
     }
 }

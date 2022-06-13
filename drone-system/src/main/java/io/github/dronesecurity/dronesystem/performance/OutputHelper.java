@@ -45,12 +45,13 @@ public final class OutputHelper {
      * Prints {@link CameraData} on a specific writer, transforming its timestamp to delay in ms.
      * @param cameraWriter The writer on which {@link CameraData} will be printed
      * @param cameraData Camera data to visualize
+     * @param delay Computed delay between the camera data reading and current printing
      */
     public static void printCameraPerformance(final @NotNull PrintWriter cameraWriter,
-                                              final @NotNull CameraData cameraData) {
+                                              final @NotNull CameraData cameraData,
+                                              final long delay) {
         cameraWriter.println(PACKET_NUMBER_TEXT + cameraData.getIndex() + ":");
         cameraWriter.println("Image size - " + cameraData.getImageSize());
-        final long delay = System.currentTimeMillis() - cameraData.getTimestamp();
         cameraWriter.println(TIMESTAMP_REPRESENTATION + delay + TIMEUNIT);
         cameraWriter.println();
     }
@@ -59,9 +60,11 @@ public final class OutputHelper {
      * Prints {@link AccelerometerData} on a specific writer, transforming its timestamp to delay in ms.
      * @param accelerometerWriter The writer on which {@link AccelerometerData} will be printed
      * @param accelerometerPerformanceData Accelerometer data to visualize
+     * @param delay Computed delay between the accelerometer data reading and current printing
      */
     public static void printAccelerometerPerformance(final @NotNull PrintWriter accelerometerWriter,
-                                                     final @NotNull AccelerometerData accelerometerPerformanceData) {
+                                                     final @NotNull AccelerometerData accelerometerPerformanceData,
+                                                     final long delay) {
         accelerometerWriter.println(PACKET_NUMBER_TEXT + accelerometerPerformanceData.getIndex() + ":");
 
         final Map<String, Double> accelerometerData = accelerometerPerformanceData.getData();
@@ -69,7 +72,6 @@ public final class OutputHelper {
         accelerometerWriter.println("Y - " + accelerometerData.get(AccelerometerConstants.Y));
         accelerometerWriter.println("Z - " + accelerometerData.get(AccelerometerConstants.Z));
 
-        final long delay = System.currentTimeMillis() - accelerometerPerformanceData.getTimestamp();
         accelerometerWriter.println(TIMESTAMP_REPRESENTATION + delay + TIMEUNIT);
         accelerometerWriter.println();
     }
@@ -79,9 +81,14 @@ public final class OutputHelper {
      * degree values.
      * @param accelerometerWriter The writer on which processed {@link AccelerometerData} will be printed
      * @param accelerometerPerformanceData Processed accelerometer data to visualize
+     * @param delay Computed time required to process accelerometer raw data into readable degrees
+     * @param isDelayNanos true whether the delay passed is in nanoseconds, false if it is in milliseconds
      */
-    public static void printAccelerometerDataProcessing(final @NotNull PrintWriter accelerometerWriter,
-                                                        final @NotNull AccelerometerData accelerometerPerformanceData) {
+    public static void printAccelerometerProcessedDataPerformance(
+            final @NotNull PrintWriter accelerometerWriter,
+            final @NotNull AccelerometerData accelerometerPerformanceData,
+            final long delay,
+            final boolean isDelayNanos) {
         accelerometerWriter.println(PACKET_NUMBER_TEXT + accelerometerPerformanceData.getIndex() + ":");
 
         final Map<String, Double> accelerometerData = accelerometerPerformanceData.getData();
@@ -89,8 +96,7 @@ public final class OutputHelper {
         accelerometerWriter.println("Roll - " + accelerometerData.get(MqttMessageParameterConstants.ROLL));
         accelerometerWriter.println("Yaw - " + accelerometerData.get(MqttMessageParameterConstants.YAW));
 
-        final long delay = System.currentTimeMillis() - accelerometerPerformanceData.getTimestamp();
-        accelerometerWriter.println(TIMESTAMP_REPRESENTATION + delay + TIMEUNIT);
+        accelerometerWriter.println(TIMESTAMP_REPRESENTATION + delay + (isDelayNanos ? " \u03bcs" : TIMEUNIT));
         accelerometerWriter.println();
     }
 
@@ -98,13 +104,39 @@ public final class OutputHelper {
      * Prints {@link ProximityData} on a specific writer, transforming its timestamp to delay in ms.
      * @param proximityWriter The writer on which {@link ProximityData} will be printed
      * @param proximityPerformanceData Proximity data to visualize
+     * @param delay Computed delay between the proximity sensor data reading and current printing
      */
     public static void printProximityPerformance(final @NotNull PrintWriter proximityWriter,
-                                                     final @NotNull ProximityData proximityPerformanceData) {
+                                                 final @NotNull ProximityData proximityPerformanceData,
+                                                 final long delay) {
         proximityWriter.println(PACKET_NUMBER_TEXT + proximityPerformanceData.getIndex() + ":");
         proximityWriter.println("Distance - " + proximityPerformanceData.getData() + " cm");
-        final long delay = System.currentTimeMillis() - proximityPerformanceData.getTimestamp();
         proximityWriter.println(TIMESTAMP_REPRESENTATION + delay + TIMEUNIT);
         proximityWriter.println();
+    }
+
+    /**
+     * Prints the average delay values of all data.
+     * @param resultWriter Writer on which print the results
+     * @param readerAverageResults Average results computed by the drone (local delays)
+     * @param subscriberAverageResults Average results computed by the subscriber (remote delays)
+     */
+    public static void printAverageResults(final PrintWriter resultWriter,
+                                           final @NotNull Map<String, Long> readerAverageResults,
+                                           final @NotNull Map<String, Long> subscriberAverageResults) {
+
+        printIntro(resultWriter, "Performance average results of the last performance execution");
+
+        resultWriter.println("Average results from the reader side (Drone):");
+        printAverageDelay(resultWriter, readerAverageResults);
+        resultWriter.println();
+
+        resultWriter.println("Average results from the subscriber side (User):");
+        printAverageDelay(resultWriter, subscriberAverageResults);
+    }
+
+    private static void printAverageDelay(final PrintWriter writer, final @NotNull Map<String, Long> averageResults) {
+        averageResults.forEach((dataName, averageDelay) -> writer.println(dataName + " -> " + averageDelay
+                + (dataName.contains("Processing") ? " \u03bcs" : TIMEUNIT)));
     }
 }

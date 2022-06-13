@@ -33,6 +33,15 @@ public class PerformanceSubscriber {
     private final PrintWriter accelerometerWriter;
     private final PrintWriter proximityWriter;
 
+    private long totalCameraSubscriberDelay;
+    private long totalCameraSubscriberReadings;
+
+    private long totalAccelerometerSubscriberDelay;
+    private long totalAccelerometerSubscriberReadings;
+
+    private long totalProximitySubscriberDelay;
+    private long totalProximitySubscriberReadings;
+
     /**
      *
      * @param cameraOutputFile The file on which write tracked camera performance details
@@ -72,6 +81,23 @@ public class PerformanceSubscriber {
         this.proximityWriter.close();
     }
 
+    /**
+     * Gets the averaged delays of all performance evaluations.
+     * @return the map containing the averaged performance delays
+     */
+    public Map<String, Long> getAveragePerformance() {
+        final Map<String, Long> averagePerformance = new ConcurrentHashMap<>();
+
+        averagePerformance.put(MqttMessageParameterConstants.CAMERA_PARAMETER,
+                this.totalCameraSubscriberDelay / this.totalCameraSubscriberReadings);
+        averagePerformance.put(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER,
+                this.totalAccelerometerSubscriberDelay / this.totalAccelerometerSubscriberReadings);
+        averagePerformance.put(MqttMessageParameterConstants.PROXIMITY_PARAMETER,
+                this.totalProximitySubscriberDelay / this.totalProximitySubscriberReadings);
+
+        return averagePerformance;
+    }
+
     private void dronePerformanceHandler(final @NotNull MqttMessage message) {
         try {
             final JsonNode messageJson = new ObjectMapper()
@@ -82,8 +108,13 @@ public class PerformanceSubscriber {
             if (imageSize > 0) {
                 final long cameraDataTimestamp = cameraJson.get(PerformanceStringConstants.TIMESTAMP).asLong();
                 final int cameraDataIndex = cameraJson.get(PerformanceStringConstants.INDEX).asInt();
+
+                final long cameraDelay = System.currentTimeMillis() - cameraDataTimestamp;
+                this.totalCameraSubscriberDelay += cameraDelay;
+                this.totalCameraSubscriberReadings++;
                 OutputHelper.printCameraPerformance(this.cameraWriter,
-                        new CameraData(cameraDataIndex, cameraDataTimestamp, imageSize));
+                        new CameraData(cameraDataIndex, cameraDataTimestamp, imageSize),
+                        cameraDelay);
             }
 
             final JsonNode accelerometerJson = messageJson.get(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER);
@@ -99,16 +130,25 @@ public class PerformanceSubscriber {
             final int accelerometerDataIndex =
                     accelerometerJson.get(PerformanceStringConstants.INDEX).asInt();
 
-            OutputHelper.printAccelerometerPerformance(this.accelerometerWriter,
-                    new AccelerometerData(accelerometerDataIndex, accelerometerDataTimestamp, accelerometerData));
+            final long accelerometerDelay = System.currentTimeMillis() - accelerometerDataTimestamp;
+            this.totalAccelerometerSubscriberDelay += accelerometerDelay;
+            this.totalAccelerometerSubscriberReadings++;
+            OutputHelper.printAccelerometerProcessedDataPerformance(this.accelerometerWriter,
+                    new AccelerometerData(accelerometerDataIndex, accelerometerDataTimestamp, accelerometerData),
+                    accelerometerDelay,
+                    false);
 
             final JsonNode proximityJson = messageJson.get(MqttMessageParameterConstants.PROXIMITY_PARAMETER);
             final double distance = proximityJson.get(PerformanceStringConstants.DISTANCE_PARAMETER).asDouble();
             final long proximitySensorTimestamp = proximityJson.get(PerformanceStringConstants.TIMESTAMP).asLong();
             final int proximitySensorIndex = proximityJson.get(PerformanceStringConstants.INDEX).asInt();
 
+            final long proximityDelay = System.currentTimeMillis() - proximitySensorTimestamp;
+            this.totalProximitySubscriberDelay += proximityDelay;
+            this.totalProximitySubscriberReadings++;
             OutputHelper.printProximityPerformance(this.proximityWriter,
-                    new ProximityData(proximitySensorIndex, proximitySensorTimestamp, distance));
+                    new ProximityData(proximitySensorIndex, proximitySensorTimestamp, distance),
+                    proximityDelay);
 
         } catch (IOException e) {
             LoggerFactory.getLogger(getClass()).error("Invalid message received.", e);

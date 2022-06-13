@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,6 +44,9 @@ public final class PerformanceEvaluator {
     private static final String PROXIMITY_PERFORMANCE_READER_FILE_NAME =
             RESULT_FOLDER + SEP + "proximity_reader.txt";
 
+    private static final String AVERAGE_PERFORMANCE_RESULTS_FILE_NAME =
+            RESULT_FOLDER + SEP + "average_results.txt";
+
 
     private PerformanceEvaluator() { }
 
@@ -67,6 +72,7 @@ public final class PerformanceEvaluator {
         final File accelerometerProcessingOutputFile = new File(ACCELEROMENTER_DATA_PROCESSING_FILE_NAME);
         final File proximitySubscriberOutputFile = new File(PROXIMITY_PERFORMANCE_SUBSCRIBER_FILE_NAME);
         final File proximityReaderOutputFile = new File(PROXIMITY_PERFORMANCE_READER_FILE_NAME);
+        final File averageResultsOutputFile = new File(AVERAGE_PERFORMANCE_RESULTS_FILE_NAME);
 
         try {
             final DroneServiceSimulator service =
@@ -81,11 +87,22 @@ public final class PerformanceEvaluator {
                             proximitySubscriberOutputFile);
             service.startDrone();
             subscriber.subscribeToDronePerformance();
+
             final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
             executor.schedule(() -> {
                 service.stopDrone();
                 subscriber.stop();
                 Connection.getInstance().closeConnection();
+
+                try (PrintWriter averageResultsWriter =
+                             new PrintWriter(averageResultsOutputFile, StandardCharsets.UTF_8)) {
+                    OutputHelper.printAverageResults(averageResultsWriter,
+                            service.getAveragePerformance(),
+                            subscriber.getAveragePerformance());
+                } catch (IOException e) {
+                    logger.error("Can NOT open files correctly.", e);
+                }
+
                 executor.shutdownNow();
             }, DELAY_SECONDS, TimeUnit.SECONDS);
         } catch (IOException e) {
