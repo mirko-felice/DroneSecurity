@@ -44,22 +44,22 @@ public final class MonitorController implements Initializable {
     private final Consumer<StatusChanged> statusChangedHandler;
 
     @FXML private Label proximityCurrentData;
-    @FXML private TableView<Map<String, Double>> accelerometerCurrentData;
+    @FXML private TableView<Map<String, Integer>> accelerometerCurrentData;
     @FXML private Label cameraCurrentData;
 
     @FXML private TableView<Double> proximityPreviousData;
-    @FXML private TableView<Map<String, Double>> accelerometerPreviousData;
+    @FXML private TableView<Map<String, Integer>> accelerometerPreviousData;
     @FXML private TableView<Long> cameraPreviousData;
 
     @FXML private TableColumn<Double, Double> proximityPreviousDataColumn;
-    @FXML private TableColumn<Map<String, Double>, Double> accelerometerPreviousXDataColumn;
-    @FXML private TableColumn<Map<String, Double>, Double> accelerometerPreviousYDataColumn;
-    @FXML private TableColumn<Map<String, Double>, Double> accelerometerPreviousZDataColumn;
+    @FXML private TableColumn<Map<String, Integer>, Integer> accelerometerPreviousXDataColumn;
+    @FXML private TableColumn<Map<String, Integer>, Integer> accelerometerPreviousYDataColumn;
+    @FXML private TableColumn<Map<String, Integer>, Integer> accelerometerPreviousZDataColumn;
     @FXML private TableColumn<Long, Long> cameraPreviousDataColumn;
 
-    @FXML private TableColumn<Map<String, Double>, Double> currentAccelerometerXValue;
-    @FXML private TableColumn<Map<String, Double>, Double> currentAccelerometerYValue;
-    @FXML private TableColumn<Map<String, Double>, Double> currentAccelerometerZValue;
+    @FXML private TableColumn<Map<String, Integer>, Integer> currentAccelerometerXValue;
+    @FXML private TableColumn<Map<String, Integer>, Integer> currentAccelerometerYValue;
+    @FXML private TableColumn<Map<String, Integer>, Integer> currentAccelerometerZValue;
 
     // Controls
     @FXML private Accordion accordion;
@@ -171,7 +171,7 @@ public final class MonitorController implements Initializable {
                 this.proximityPreviousData.getItems().add(0,
                         Double.valueOf(this.proximityCurrentData.getText().split(" ")[0]));
 
-            final ObservableList<Map<String, Double>> accelerometerValues = this.accelerometerCurrentData.getItems();
+            final ObservableList<Map<String, Integer>> accelerometerValues = this.accelerometerCurrentData.getItems();
             if (!accelerometerValues.isEmpty())
                 this.accelerometerPreviousData.getItems().add(0, accelerometerValues.get(0));
 

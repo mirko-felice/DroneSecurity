@@ -38,4 +38,9 @@
         <Class name="~.*Camera" />
     </Match>
 
+    <Match>
+        <Bug pattern="CE_CLASS_ENVY" />
+        <Class name="~.*DroneTest" />
+    </Match>
+
 </FindBugsFilter>

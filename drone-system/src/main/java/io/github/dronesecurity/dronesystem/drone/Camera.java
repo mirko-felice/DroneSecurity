@@ -47,23 +47,15 @@ public class Camera extends AbstractSensor<Byte[]> {
      */
     @Override
     public void readData() {
-        if (this.socket.isConnected()) {
-            try {
-                if (this.inputStream.available() > 0) {
-                    final ByteBuffer buffer = ByteBuffer.wrap(this.inputStream.readNBytes(Integer.BYTES))
-                            .order(ByteOrder.LITTLE_ENDIAN);
-                    final int length = buffer.getInt();
-                    this.image = this.inputStream.readNBytes(length);
-                }
-            } catch (IOException e) {
-                LoggerFactory.getLogger(getClass()).error("Cannot read data from sensor", e);
+        try {
+            if (this.tryConnect() && this.inputStream.available() > 0) {
+                final ByteBuffer buffer = ByteBuffer.wrap(this.inputStream.readNBytes(Integer.BYTES))
+                        .order(ByteOrder.LITTLE_ENDIAN);
+                final int length = buffer.getInt();
+                this.image = this.inputStream.readNBytes(length);
             }
-        } else {
-            try {
-                this.connect();
-            } catch (IOException e) {
-                this.socket = new Socket();
-            }
+        } catch (IOException e) {
+            LoggerFactory.getLogger(getClass()).error("Cannot read data from sensor", e);
         }
     }
 
@@ -92,8 +84,15 @@ public class Camera extends AbstractSensor<Byte[]> {
         }
     }
 
-    private void connect() throws IOException {
-        this.socket.connect(new InetSocketAddress("localhost", CONNECTION_PORT));
-        this.inputStream = this.socket.getInputStream();
+    private boolean tryConnect() {
+        if (!this.socket.isConnected()) {
+            try {
+                this.socket.connect(new InetSocketAddress("localhost", CONNECTION_PORT));
+                this.inputStream = this.socket.getInputStream();
+            } catch (IOException e) {
+                this.socket = new Socket();
+            }
+        }
+        return this.socket.isConnected();
     }
 }

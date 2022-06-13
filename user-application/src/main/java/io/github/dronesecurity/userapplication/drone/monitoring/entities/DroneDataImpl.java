@@ -14,7 +14,7 @@ import java.util.Map;
 public class DroneDataImpl implements DroneData {
 
     private final Double proximity;
-    private final Map<String, Double> accelerometer;
+    private final Map<String, Integer> accelerometer;
     private final Long camera;
     private final Instant detectionInstant;
     private final long orderId;
@@ -29,7 +29,7 @@ public class DroneDataImpl implements DroneData {
      *                                                                                              to data detection
      */
     public DroneDataImpl(final Double proximity,
-                         final Map<String, Double> accelerometer,
+                         final Map<String, Integer> accelerometer,
                          final Long camera,
                          final Instant detectionInstant,
                          final long orderId) {
@@ -52,7 +52,7 @@ public class DroneDataImpl implements DroneData {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Double> getAccelerometer() {
+    public Map<String, Integer> getAccelerometer() {
         return Map.copyOf(this.accelerometer);
     }
 

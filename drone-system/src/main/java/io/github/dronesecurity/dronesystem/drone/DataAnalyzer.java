@@ -43,10 +43,10 @@ public final class DataAnalyzer {
      * @param accelerometerData map of data collected by the {@link Accelerometer}
      * @return an {@link AlertLevel}
      */
-    public AlertLevel checkAccelerometerDataAlertLevel(final @NotNull Map<String, Double> accelerometerData) {
+    public AlertLevel checkAccelerometerDataAlertLevel(final @NotNull Map<String, Integer> accelerometerData) {
         if (!accelerometerData.isEmpty()) {
-            final double roll = accelerometerData.get(MqttMessageParameterConstants.ROLL);
-            final double pitch = accelerometerData.get(MqttMessageParameterConstants.PITCH);
+            final int roll = accelerometerData.get(MqttMessageParameterConstants.ROLL);
+            final int pitch = accelerometerData.get(MqttMessageParameterConstants.PITCH);
             // TODO yaw?
 
             final boolean isWarning = Math.abs(roll) > ACCELEROMETER_WARNING_THRESHOLD

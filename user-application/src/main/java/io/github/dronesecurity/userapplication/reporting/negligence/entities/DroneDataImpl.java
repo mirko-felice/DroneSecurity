@@ -20,7 +20,7 @@ public class DroneDataImpl implements DroneData {
 
     private final JsonNode copy;
     private Double proximity;
-    private final Map<String, Double> accelerometer;
+    private final Map<String, Integer> accelerometer;
     private Long camera;
 
     /**
@@ -42,7 +42,7 @@ public class DroneDataImpl implements DroneData {
         this.accelerometer = new HashMap<>();
         if (data.has(NegligenceConstants.ACCELEROMETER))
             data.get(NegligenceConstants.ACCELEROMETER).fields().forEachRemaining(entry ->
-                this.accelerometer.put(entry.getKey(), entry.getValue().asDouble()));
+                this.accelerometer.put(entry.getKey(), entry.getValue().asInt()));
         if (data.has(NegligenceConstants.CAMERA))
             this.camera = data.get(NegligenceConstants.CAMERA).asLong();
     }
@@ -59,7 +59,7 @@ public class DroneDataImpl implements DroneData {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Double> getAccelerometer() {
+    public Map<String, Integer> getAccelerometer() {
         return Map.copyOf(this.accelerometer);
     }
 

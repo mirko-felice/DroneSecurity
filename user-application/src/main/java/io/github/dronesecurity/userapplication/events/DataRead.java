@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class DataRead implements Event {
     private final double proximity;
-    private final Map<String, Double> accelerometerData;
+    private final Map<String, Integer> accelerometerData;
     private final long cameraData;
 
     /**
@@ -22,7 +22,7 @@ public class DataRead implements Event {
      * @param accelerometer data read by the accelerometer
      * @param camera data read by the camera
      */
-    public DataRead(final double proximity, final Map<String, Double> accelerometer, final long camera) {
+    public DataRead(final double proximity, final Map<String, Integer> accelerometer, final long camera) {
         this.proximity = proximity;
         this.accelerometerData = Map.copyOf(accelerometer);
         this.cameraData = camera;
@@ -42,7 +42,7 @@ public class DataRead implements Event {
      *
      * @return value read by the accelerometer
      */
-    public Map<String, Double> getAccelerometerData() {
+    public Map<String, Integer> getAccelerometerData() {
         return Map.copyOf(this.accelerometerData);
     }
 

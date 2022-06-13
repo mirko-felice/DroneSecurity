@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +51,7 @@ public class DroneServiceSimulator {
                                  final File accelerometerOutputFile,
                                  final File accelerometerProcessingOutputFile,
                                  final File proximityOutputFile) throws IOException {
-        this.drone = new DroneTimed();
+        this.drone = new DroneTimed("Performance Drone");
         this.dataMonitoringAgent = this.getMonitoringAgent();
         this.executor = Executors.newScheduledThreadPool(2);
 
@@ -108,10 +110,14 @@ public class DroneServiceSimulator {
             final long start = System.currentTimeMillis();
 
             if (accelerometerPerformanceData.getTimestamp() != 0) {
-
+                final Map<String, Double> processedAccelerometerValues = new ConcurrentHashMap<>();
+                DataProcessor.processAccelerometer(accelerometerPerformanceData.getData())
+                        .forEach((key, value) -> processedAccelerometerValues.put(key, value.doubleValue()));
                 final AccelerometerData processedAccelerometerData =
-                        new AccelerometerData(accelerometerPerformanceData.getIndex(), start, new DataProcessor()
-                                .processAccelerometer(accelerometerPerformanceData.getData()));
+                        new AccelerometerData(
+                                accelerometerPerformanceData.getIndex(),
+                                start,
+                                processedAccelerometerValues);
                 OutputHelper.printAccelerometerDataProcessing(this.accelerometerProcessingWriter,
                         processedAccelerometerData);
 

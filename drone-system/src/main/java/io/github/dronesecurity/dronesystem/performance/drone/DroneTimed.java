@@ -21,8 +21,10 @@ public class DroneTimed extends Drone {
 
     /**
      * Builds the drone.
+     * @param id drone identifier
      */
-    public DroneTimed() {
+    public DroneTimed(final String id) {
+        super(id);
         this.camera = new CameraTimed();
         this.accelerometer = new AccelerometerTimed();
         this.proximity = new ProximityTimed();

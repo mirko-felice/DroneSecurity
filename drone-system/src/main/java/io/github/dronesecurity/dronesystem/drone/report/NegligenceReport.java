@@ -34,7 +34,7 @@ public final class NegligenceReport {
      */
     public NegligenceReport(final String negligent,
                             final double proximity,
-                            final @NotNull Map<String, Double> accelerometer,
+                            final @NotNull Map<String, Integer> accelerometer,
                             final Byte @NotNull [] camera,
                             final long orderId) {
         this.negligent = negligent;

@@ -30,7 +30,7 @@ public interface DroneData {
      * Gets the accelerometer data.
      * @return the accelerometer
      */
-    Map<String, Double> getAccelerometer();
+    Map<String, Integer> getAccelerometer();
 
     /**
      * Gets the camera data.

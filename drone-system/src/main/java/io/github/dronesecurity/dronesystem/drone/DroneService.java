@@ -44,7 +44,7 @@ public class DroneService {
 
     // Connection
     private Double proximitySensorData;
-    private Map<String, Double> accelerometerSensorData;
+    private Map<String, Integer> accelerometerSensorData;
     private Byte[] cameraSensorData;
 
     private long currentOrderId;
@@ -59,7 +59,7 @@ public class DroneService {
      * Constructs the drone to be observed by this drone service.
      */
     public DroneService() {
-        this.drone = new Drone();
+        this.drone = new Drone(Connection.getInstance().getIdentifier());
         this.dataAnalyzer = new DataAnalyzer();
         this.randomGenerator = new SecureRandom();
         this.latch = new CountDownLatch(1);
@@ -174,8 +174,7 @@ public class DroneService {
             this.drone.readAllData();
 
             this.proximitySensorData = this.drone.getProximitySensorData();
-            this.accelerometerSensorData =
-                    new DataProcessor().processAccelerometer(this.drone.getAccelerometerSensorData());
+            this.accelerometerSensorData = DataProcessor.processAccelerometer(this.drone.getAccelerometerSensorData());
             this.cameraSensorData = this.drone.getCameraSensorData();
             PublishHelper.publishData(
                     this.currentOrderId,

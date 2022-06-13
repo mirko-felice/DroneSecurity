@@ -32,11 +32,11 @@ public class DataController implements Initializable {
     @FXML private Label title;
     @FXML private TableView<DroneData> dataTable;
     @FXML private TableColumn<DroneData, String> instantColumn;
-    @FXML private TableColumn<DroneData, Map<String, Double>> accelerometerColumn;
+    @FXML private TableColumn<DroneData, Map<String, Integer>> accelerometerColumn;
     @FXML private TableColumn<DroneData, Double> proximityColumn;
-    @FXML private TableColumn<DroneData, Double> rollColumn;
-    @FXML private TableColumn<DroneData, Double> pitchColumn;
-    @FXML private TableColumn<DroneData, Double> yawColumn;
+    @FXML private TableColumn<DroneData, Integer> rollColumn;
+    @FXML private TableColumn<DroneData, Integer> pitchColumn;
+    @FXML private TableColumn<DroneData, Integer> yawColumn;
     @FXML private TableColumn<DroneData, Long> cameraColumn;
     private final long orderId;
 

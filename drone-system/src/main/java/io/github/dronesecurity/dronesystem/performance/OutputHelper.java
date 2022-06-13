@@ -5,6 +5,7 @@
 
 package io.github.dronesecurity.dronesystem.performance;
 
+import io.github.dronesecurity.dronesystem.drone.AccelerometerConstants;
 import io.github.dronesecurity.dronesystem.performance.drone.sensordata.AccelerometerData;
 import io.github.dronesecurity.dronesystem.performance.drone.sensordata.CameraData;
 import io.github.dronesecurity.dronesystem.performance.drone.sensordata.ProximityData;
@@ -64,9 +65,9 @@ public final class OutputHelper {
         accelerometerWriter.println(PACKET_NUMBER_TEXT + accelerometerPerformanceData.getIndex() + ":");
 
         final Map<String, Double> accelerometerData = accelerometerPerformanceData.getData();
-        accelerometerWriter.println("X - " + accelerometerData.get("x"));
-        accelerometerWriter.println("Y - " + accelerometerData.get("y"));
-        accelerometerWriter.println("Z - " + accelerometerData.get("z"));
+        accelerometerWriter.println("X - " + accelerometerData.get(AccelerometerConstants.X));
+        accelerometerWriter.println("Y - " + accelerometerData.get(AccelerometerConstants.Y));
+        accelerometerWriter.println("Z - " + accelerometerData.get(AccelerometerConstants.Z));
 
         final long delay = System.currentTimeMillis() - accelerometerPerformanceData.getTimestamp();
         accelerometerWriter.println(TIMESTAMP_REPRESENTATION + delay + TIMEUNIT);

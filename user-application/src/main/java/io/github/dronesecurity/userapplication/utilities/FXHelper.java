@@ -212,12 +212,12 @@ public final class FXHelper {
      * Cell showing one of the accelerometer angle.
      * @param <T> type parameter of the table using this cell
      */
-    public static class AngleCell<T> extends TextFieldTableCell<T, Double> {
+    public static class AngleCell<T> extends TextFieldTableCell<T, Integer> {
         /**
          * {@inheritDoc}
          */
         @Override
-        public void updateItem(final Double value, final boolean empty) {
+        public void updateItem(final Integer value, final boolean empty) {
             super.updateItem(value, empty);
             if (!empty && value == null)
                 setText("Not available.");

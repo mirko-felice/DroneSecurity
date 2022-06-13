@@ -36,7 +36,7 @@ public class DroneDataDeserializer extends JsonDeserializer<DroneData> {
         final ObjectNode root = mapper.readTree(parser);
 
         final Double proximity = root.get(DataConstants.PROXIMITY).asDouble();
-        final ConcurrentHashMap<String, Double> accelerometer =
+        final ConcurrentHashMap<String, Integer> accelerometer =
                 mapper.readValue(root.get(DataConstants.ACCELEROMETER).toString(), new MapTypeReference());
         final Long camera = root.get(DataConstants.CAMERA).asLong();
         final Instant detectionInstant = DateHelper.toInstant(root.get(DataConstants.DETECTION_INSTANT).asText());
@@ -46,7 +46,7 @@ public class DroneDataDeserializer extends JsonDeserializer<DroneData> {
     }
 
     /**
-     * {@link TypeReference} to deserialize into a {@code Map<String, Double>}.
+     * {@link TypeReference} to deserialize into a {@code Map<String, Integer>}.
      */
-    private static class MapTypeReference extends TypeReference<ConcurrentHashMap<String, Double>> { }
+    private static class MapTypeReference extends TypeReference<ConcurrentHashMap<String, Integer>> { }
 }

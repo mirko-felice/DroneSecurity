@@ -28,7 +28,7 @@ public final class PublishHelper {
      */
     public static void publishData(final long orderId,
                                    final Double proximitySensorData,
-                                   final @NotNull Map<String, Double> accelerometerSensorData,
+                                   final @NotNull Map<String, Integer> accelerometerSensorData,
                                    final Byte @NotNull [] cameraSensorData) {
         final ObjectMapper mapper = new ObjectMapper();
         final ObjectNode mapJson = mapper.createObjectNode();
