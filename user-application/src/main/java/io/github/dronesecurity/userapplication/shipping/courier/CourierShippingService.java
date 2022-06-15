@@ -108,7 +108,7 @@ public final class CourierShippingService extends AbstractVerticle {
     private void saveDelivery(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         final JsonObject body = params.body().getJsonObject();
-        REPOSITORY.getOrderById(body.getString(ServiceHelper.ORDER_ID_KEY))
+        REPOSITORY.getOrderById(body.getLong(ServiceHelper.ORDER_ID_KEY))
                 .onSuccess(order -> {
                     final String status = body.getString(ServiceHelper.STATE_KEY);
                     final Future<Void> future;

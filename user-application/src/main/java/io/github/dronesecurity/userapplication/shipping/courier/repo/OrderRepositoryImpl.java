@@ -73,7 +73,7 @@ public final class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public Future<Order> getOrderById(final String orderId) {
+    public Future<Order> getOrderById(final long orderId) {
         return VertxHelper.MONGO_CLIENT.findOne(COLLECTION_NAME,
                         new JsonObject().put(OrderConstants.ID, orderId),
                         null)

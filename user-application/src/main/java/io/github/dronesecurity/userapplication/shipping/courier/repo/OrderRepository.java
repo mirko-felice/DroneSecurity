@@ -28,7 +28,7 @@ public interface OrderRepository {
      * @param orderId order identifier
      * @return the order
      */
-    Future<Order> getOrderById(String orderId);
+    Future<Order> getOrderById(long orderId);
 
     /**
      * Save the delivering order.
