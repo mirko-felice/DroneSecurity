@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -50,6 +52,6 @@ public class ProximitySensor extends AbstractSensor<Double> {
      */
     @Override
     public Double getData() {
-        return this.distance;
+        return BigDecimal.valueOf(this.distance).setScale(2, RoundingMode.HALF_EVEN).doubleValue();
     }
 }

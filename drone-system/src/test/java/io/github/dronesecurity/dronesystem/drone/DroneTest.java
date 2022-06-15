@@ -35,6 +35,10 @@ class DroneTest {
 
         TimeUnit.SECONDS.sleep(SENSOR_DATA_READING_WAITING_TIME);
         drone.readAllData();
+
+        TimeUnit.SECONDS.sleep(CAMERA_READING_WAITING_TIME);
+        drone.readAllData();
+
         Assertions.assertTrue(drone.getProximitySensorData() > 0.0);
 
         final Map<String, Double> accelerometerValues = drone.getAccelerometerSensorData();
@@ -44,9 +48,7 @@ class DroneTest {
                 accelerometerValues.containsKey(AccelerometerConstants.Y));
         Assertions.assertTrue(
                 accelerometerValues.containsKey(AccelerometerConstants.Z));
-        TimeUnit.SECONDS.sleep(CAMERA_READING_WAITING_TIME);
 
-        drone.readAllData();
         Assertions.assertTrue(drone.getCameraSensorData().length > 0);
 
         drone.deactivate();
