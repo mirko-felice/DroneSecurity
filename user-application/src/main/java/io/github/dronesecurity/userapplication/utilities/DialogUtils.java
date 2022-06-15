@@ -5,14 +5,20 @@
 
 package io.github.dronesecurity.userapplication.utilities;
 
+import io.github.dronesecurity.lib.DateHelper;
+import io.github.dronesecurity.userapplication.auth.entities.Courier;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
+import javafx.scene.control.*;
 import javafx.stage.Window;
 import org.controlsfx.control.Notifications;
 import org.jetbrains.annotations.NotNull;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 /**
  * Provider of {@link Alert} utility methods.
@@ -80,19 +86,47 @@ public final class DialogUtils {
     }
 
     /**
-     * Create a custom {@link Dialog} with title, header and buttons.
-     * @param title title of the dialog
-     * @param header header message of the dialog
-     * @param buttons buttons to add on the dialog
-     * @return the dialog
-     * @param <R> type parameter of the dialog
+     * Creates drone picker dialog to select a drone from the list provided by {@link Courier}.
+     * WARNING: must be used only if the logged user is a Courier.
+     * @param contentMessage message text to insert into the dialog
+     * @return the {@link Dialog} returning the drone identifier.
      */
-    public static <R> @NotNull Dialog<R> createCustomDialog(final String title, final String header,
-                                                            final ButtonType... buttons) {
-        final Dialog<R> dialog = new Dialog<>();
-        dialog.setTitle(title);
-        dialog.setHeaderText(header);
-        dialog.getDialogPane().getButtonTypes().addAll(buttons);
+    public static @NotNull Dialog<String> createDronePickerDialog(final String contentMessage) {
+        final Dialog<String> dialog = createCustomDialog("Drone Selection",
+                contentMessage, ButtonType.OK, ButtonType.CANCEL);
+
+        final List<String> drones = ((Courier) UserHelper.logged()).getDrones();
+        final ChoiceBox<String> choiceBox = new ChoiceBox<>(FXCollections.observableList(drones));
+        choiceBox.setValue(drones.get(0));
+        dialog.getDialogPane().setContent(choiceBox);
+
+        dialog.setResultConverter(button -> {
+            if (button == ButtonType.OK)
+                return choiceBox.getValue();
+            else
+                return null;
+        });
+        return dialog;
+    }
+
+    /**
+     * Creates a date picker dialog to select a date from tomorrow.
+     * @return the {@link Dialog} returning the date selected as an {@link Instant}
+     */
+    public static @NotNull Dialog<Instant> createDatePickerDialog() {
+        final Dialog<Instant> dialog = DialogUtils.createCustomDialog("Reschedule Delivery",
+                "Choose the new estimated arrival date", ButtonType.OK, ButtonType.CANCEL);
+
+        final DatePicker datePicker = new DatePicker(LocalDate.now().plus(1, ChronoUnit.DAYS));
+        datePicker.setDayCellFactory(ignored -> new OnlyFutureDateCell());
+        dialog.getDialogPane().setContent(datePicker);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == ButtonType.OK)
+                return DateHelper.fromLocalDate(datePicker.getValue());
+            else
+                return null;
+        });
         return dialog;
     }
 
@@ -111,4 +145,23 @@ public final class DialogUtils {
                 .showInformation();
     }
 
+    private static <R> @NotNull Dialog<R> createCustomDialog(final String title, final String header,
+                                                             final ButtonType... buttons) {
+        final Dialog<R> dialog = new Dialog<>();
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.getDialogPane().getButtonTypes().addAll(buttons);
+        return dialog;
+    }
+
+    /**
+     * {@link DatePicker} cell disabling date if it's chronologically before today.
+     */
+    private static class OnlyFutureDateCell extends DateCell {
+        @Override
+        public void updateItem(final LocalDate date, final boolean empty) {
+            super.updateItem(date, empty);
+            setDisable(empty || date.compareTo(LocalDate.now()) <= 0);
+        }
+    }
 }

@@ -10,10 +10,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 /**
  * Test for Sensors.
  */
@@ -46,12 +42,8 @@ class SensorTest {
         final Sensor<?> sensor = this.initSensor(sensorType);
         sensor.activate();
         Assertions.assertTrue(sensor.isOn());
-        final ScheduledExecutorService execService = Executors.newSingleThreadScheduledExecutor();
-        execService.schedule(() -> {
-            sensor.deactivate();
-            Assertions.assertFalse(sensor.isOn());
-            execService.shutdown();
-        }, 2, TimeUnit.SECONDS);
+        sensor.deactivate();
+        Assertions.assertFalse(sensor.isOn());
     }
 
     /**

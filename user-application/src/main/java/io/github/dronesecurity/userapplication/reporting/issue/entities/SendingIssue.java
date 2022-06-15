@@ -19,6 +19,7 @@ public class SendingIssue implements Issue {
     private final String courierUsername;
     private final String assigneeUsername;
     private final Instant sendingTime;
+    private final String droneId;
 
     /**
      * Builds a new issue report.
@@ -27,17 +28,20 @@ public class SendingIssue implements Issue {
      * @param courierUsername username of the courier who sends the issue
      * @param assigneeUsername username of the maintainer assigned to the issue
      * @param sendingTime the timestamp of when the issue was sent
+     * @param droneId drone identifier that owns the issue
      */
     public SendingIssue(final String subject,
                         final String issueInfo,
                         final String courierUsername,
                         final String assigneeUsername,
-                        final Instant sendingTime) {
+                        final Instant sendingTime,
+                        final String droneId) {
         this.subject = subject;
         this.issueInfo = issueInfo;
         this.courierUsername = courierUsername;
         this.assigneeUsername = assigneeUsername;
         this.sendingTime = sendingTime;
+        this.droneId = droneId;
     }
 
     /**
@@ -88,5 +92,11 @@ public class SendingIssue implements Issue {
         return IssueStringHelper.STATUS_OPEN;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDroneId() {
+        return this.droneId;
+    }
 }

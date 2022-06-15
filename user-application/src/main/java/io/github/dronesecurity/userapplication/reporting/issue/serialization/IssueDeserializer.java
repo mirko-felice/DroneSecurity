@@ -34,22 +34,24 @@ public class IssueDeserializer extends JsonDeserializer<Issue> {
         final String assigneeUsername = root.get(IssueStringHelper.ASSIGNEE).asText();
         final Instant sendingInstant = DateHelper.toInstant(root.get(IssueStringHelper.SENDING_INSTANT).asText());
         final String status = root.get(IssueStringHelper.STATUS).asText();
+        final String droneId = root.get(IssueStringHelper.DRONE_ID).asText();
         if (root.has(IssueStringHelper.ID)) {
             final int id = root.get(IssueStringHelper.ID).asInt();
 
             if (IssueStringHelper.STATUS_OPEN.equals(status))
-                return new OpenIssue(subject, id, details, courierUsername, assigneeUsername, sendingInstant);
+                return new OpenIssue(subject, id, details, courierUsername, assigneeUsername, sendingInstant, droneId);
 
             if (IssueStringHelper.STATUS_VISIONED.equals(status))
-                return new VisionedIssue(subject, id, details, courierUsername, assigneeUsername, sendingInstant);
+                return new VisionedIssue(subject, id, details, courierUsername, assigneeUsername, sendingInstant,
+                        droneId);
 
             if (IssueStringHelper.STATUS_CLOSED.equals(status)) {
                 final String solution = root.get(IssueStringHelper.SOLUTION).asText();
-                return new ClosedIssue(subject, id, details, courierUsername, assigneeUsername, sendingInstant,
+                return new ClosedIssue(subject, id, details, courierUsername, assigneeUsername, sendingInstant, droneId,
                         solution);
             }
         }
 
-        return new SendingIssue(subject, details, courierUsername, assigneeUsername, sendingInstant);
+        return new SendingIssue(subject, details, courierUsername, assigneeUsername, sendingInstant, droneId);
     }
 }

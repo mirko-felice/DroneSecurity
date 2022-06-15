@@ -92,15 +92,11 @@ public final class MonitorController implements Initializable {
         this.accordion.setExpandedPane(this.controlsPane);
 
         this.negligenceReportService.subscribeToNewNegligence(newNegligence ->
-                Platform.runLater(() -> {
-                    this.haltButton.setDisable(true);
-                    this.proceedButton.setDisable(false);
-                    DialogUtils.showInfoNotification("INFO",
-                              "You have committed a negligence. The drone has been halted for security purpose."
-                            + "\nMaintainer " + newNegligence.getReport().assignedTo()
-                            + " will take care of this. Go to the 'reports' window to show more information about it.",
-                            this.switchMode.getScene().getWindow());
-                }));
+                Platform.runLater(() -> DialogUtils.showInfoNotification("INFO",
+                        "You have committed a negligence. The drone has been halted for security purpose."
+                        + "\nMaintainer " + newNegligence.getReport().assignedTo()
+                        + " will take care of this. Go to the 'reports' window to show more information about it.",
+                        this.switchMode.getScene().getWindow())));
 
         DomainEvents.register(CriticalSituation.class, this.criticalSituationHandler);
         DomainEvents.register(WarningSituation.class, this.warningSituationHandler);
@@ -155,13 +151,7 @@ public final class MonitorController implements Initializable {
                 this.monitoringService.changeMode(DrivingMode.AUTOMATIC);
             else
                 this.monitoringService.changeMode(DrivingMode.MANUAL);
-            this.proceedButton.setDisable(!isAutomatic
-                   || MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(this.deliveryStatusLabel.getText())
-                   || MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE.equals(this.deliveryStatusLabel.getText()));
-            this.haltButton.setDisable(true);
-            this.recallButton.setDisable(!isAutomatic
-                   || !MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE.equals(this.deliveryStatusLabel.getText())
-                   && !MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE.equals(this.deliveryStatusLabel.getText()));
+            this.checkButtons(this.deliveryStatusLabel.getText(), isAutomatic, this.currentSituationLabel.getText());
         });
     }
 
@@ -190,45 +180,41 @@ public final class MonitorController implements Initializable {
 
     private void onWarning(final WarningSituation warningSituation) {
         Platform.runLater(() -> {
-            this.currentSituationLabel.setText("DANGEROUS " + warningSituation.getType().toString());
+            this.currentSituationLabel.setText(warningSituation.toString());
             this.currentSituationLabel.setStyle("-fx-text-fill: orange;");
+            this.checkButtons(this.deliveryStatusLabel.getText(), this.switchMode.isSelected(),
+                    this.currentSituationLabel.getText());
         });
     }
 
     private void onCritical(final CriticalSituation criticalSituation) {
         Platform.runLater(() -> {
-            this.currentSituationLabel.setText("CRITICAL " + criticalSituation.getType().toString());
+            this.currentSituationLabel.setText(criticalSituation.toString());
             this.currentSituationLabel.setStyle("-fx-text-fill: red;");
+            this.checkButtons(this.deliveryStatusLabel.getText(), this.switchMode.isSelected(),
+                    this.currentSituationLabel.getText());
         });
     }
 
     private void onStatusChanged(final StatusChanged statusEvent) {
         Platform.runLater(() -> {
             this.deliveryStatusLabel.setText(statusEvent.getStatus());
+            this.checkButtons(statusEvent.getStatus(), this.switchMode.isSelected(),
+                    this.currentSituationLabel.getText());
             switch (statusEvent.getStatus()) {
                 case MqttMessageValueConstants.DELIVERING_MESSAGE:
-                    this.haltButton.setDisable(false);
-                    this.switchMode.setDisable(false);
                     this.sendSaveDeliveryMessage(statusEvent.getStatus());
                     break;
                 case MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: green;");
-                    this.proceedButton.setDisable(true);
-                    this.haltButton.setDisable(true);
-                    this.recallButton.setDisable(false);
                     this.sendSaveDeliveryMessage(statusEvent.getStatus());
                     break;
                 case MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: red;");
-                    this.proceedButton.setDisable(true);
-                    this.haltButton.setDisable(true);
-                    this.recallButton.setDisable(false);
                     this.sendSaveDeliveryMessage(statusEvent.getStatus());
                     break;
                 case MqttMessageValueConstants.RETURNING_ACKNOWLEDGEMENT_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: black;");
-                    this.proceedButton.setDisable(true);
-                    this.haltButton.setDisable(false);
                     break;
                 case MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: cyan;");
@@ -251,6 +237,8 @@ public final class MonitorController implements Initializable {
         Platform.runLater(() -> {
             this.currentSituationLabel.setText(standardSituation.toString());
             this.currentSituationLabel.setStyle("-fx-text-fill: black;");
+            this.checkButtons(this.deliveryStatusLabel.getText(), this.switchMode.isSelected(),
+                    this.currentSituationLabel.getText());
         });
     }
 
@@ -281,5 +269,42 @@ public final class MonitorController implements Initializable {
         body.put(ServiceHelper.STATE_KEY, status);
         ServiceHelper.postJson(ServiceHelper.Operation.SAVE_DELIVERY, body)
                 .onSuccess(ignored -> DomainEvents.raise(new OrdersUpdate()));
+    }
+
+    private void checkButtons(final String currentStatus,
+                              final boolean isAutomaticMode,
+                              final String currentSituation) {
+        if (isAutomaticMode) {
+            if ("STABLE".equals(currentSituation)) {
+                switch (currentStatus) {
+                    case MqttMessageValueConstants.DELIVERING_MESSAGE:
+                    case MqttMessageValueConstants.RETURNING_ACKNOWLEDGEMENT_MESSAGE:
+                        this.proceedButton.setDisable(false);
+                        this.haltButton.setDisable(true);
+                        this.recallButton.setDisable(true);
+                        break;
+                    case MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE:
+                    case MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE:
+                        this.proceedButton.setDisable(true);
+                        this.haltButton.setDisable(true);
+                        this.recallButton.setDisable(false);
+                        break;
+                    case MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE:
+                        this.proceedButton.setDisable(true);
+                        this.haltButton.setDisable(true);
+                        this.recallButton.setDisable(true);
+                        break;
+                    default:
+                }
+            } else if (currentSituation.contains("CRITICAL")) {
+                this.proceedButton.setDisable(true);
+                this.haltButton.setDisable(true);
+                this.recallButton.setDisable(true);
+            }
+        } else {
+            this.proceedButton.setDisable(true);
+            this.haltButton.setDisable(true);
+            this.recallButton.setDisable(true);
+        }
     }
 }

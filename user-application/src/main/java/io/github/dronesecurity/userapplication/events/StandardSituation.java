@@ -15,6 +15,6 @@ public class StandardSituation implements Event {
      */
     @Override
     public String toString() {
-        return "No current warnings";
+        return "STABLE";
     }
 }

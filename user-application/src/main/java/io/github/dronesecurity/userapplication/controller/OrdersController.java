@@ -25,12 +25,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -115,32 +112,34 @@ public final class OrdersController implements Initializable {
     @FXML
     private void performDelivery() {
         this.getSelectedOrder().flatMap(o -> CastHelper.safeCast(o, PlacedOrder.class)).ifPresent(order ->
-            this.createDronePickerDialog().showAndWait().ifPresent(droneId -> {
-                final JsonObject body = new JsonObject()
-                        .put(ServiceHelper.ORDER_KEY, order)
-                        .put(ServiceHelper.COURIER_KEY, UserHelper.logged().getUsername())
-                        .put(ServiceHelper.DRONE_ID_KEY, droneId);
-                ServiceHelper.postJson(ServiceHelper.Operation.PERFORM_DELIVERY, body)
-                        .onSuccess(h -> Platform.runLater(() -> {
-                            ((Courier) UserHelper.logged()).removeDrone(droneId);
-                            this.table.getSelectionModel().clearSelection();
-                            final URL fileUrl = getClass().getResource(MONITORING_FXML);
-                            final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-                            fxmlLoader.setController(new MonitorController(order.getId()));
-                            FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Monitoring...", fxmlLoader)
-                                    .ifPresent(stage -> {
-                                        stage.setOnCloseRequest(Event::consume);
-                                        stage.setOnHidden(ignored -> ((Courier) UserHelper.logged()).addDrone(droneId));
-                                        stage.show();
-                                    });
-                        }));
-            }));
+            DialogUtils.createDronePickerDialog("Choose the Drone to use for delivery")
+                    .showAndWait().ifPresent(droneId -> {
+                        final JsonObject body = new JsonObject()
+                                .put(ServiceHelper.ORDER_KEY, order)
+                                .put(ServiceHelper.COURIER_KEY, UserHelper.logged().getUsername())
+                                .put(ServiceHelper.DRONE_ID_KEY, droneId);
+                        ServiceHelper.postJson(ServiceHelper.Operation.PERFORM_DELIVERY, body)
+                                .onSuccess(h -> Platform.runLater(() -> {
+                                    ((Courier) UserHelper.logged()).removeDrone(droneId);
+                                    this.table.getSelectionModel().clearSelection();
+                                    final URL fileUrl = getClass().getResource(MONITORING_FXML);
+                                    final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
+                                    fxmlLoader.setController(new MonitorController(order.getId()));
+                                    FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Monitoring...", fxmlLoader)
+                                            .ifPresent(stage -> {
+                                                stage.setOnCloseRequest(Event::consume);
+                                                stage.setOnHidden(ignored ->
+                                                        ((Courier) UserHelper.logged()).addDrone(droneId));
+                                                stage.show();
+                                            });
+                                }));
+                    }));
     }
 
     @FXML
     private void rescheduleDelivery() {
         this.getSelectedOrder().flatMap(o -> CastHelper.safeCast(o, FailedOrder.class)).ifPresent(order ->
-                this.createDatePickerDialog().showAndWait().ifPresent(newEstimatedArrival -> {
+                DialogUtils.createDatePickerDialog().showAndWait().ifPresent(newEstimatedArrival -> {
                     final JsonObject body = new JsonObject()
                             .put(ServiceHelper.ORDER_KEY, order)
                             .put(ServiceHelper.NEW_ESTIMATED_ARRIVAL_KEY, DateHelper.toString(newEstimatedArrival));
@@ -177,49 +176,4 @@ public final class OrdersController implements Initializable {
         return Optional.ofNullable(this.table.getSelectionModel().getSelectedItem());
     }
 
-    private @NotNull Dialog<Instant> createDatePickerDialog() {
-        final Dialog<Instant> dialog = DialogUtils.createCustomDialog("Reschedule Delivery",
-                "Choose the new estimated arrival date", ButtonType.OK, ButtonType.CANCEL);
-
-        final DatePicker datePicker = new DatePicker(LocalDate.now().plus(1, ChronoUnit.DAYS));
-        datePicker.setDayCellFactory(ignored -> new OnlyFutureDateCell());
-        dialog.getDialogPane().setContent(datePicker);
-
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == ButtonType.OK)
-                return DateHelper.fromLocalDate(datePicker.getValue());
-            else
-                return null;
-        });
-        return dialog;
-    }
-
-    private @NotNull Dialog<String> createDronePickerDialog() {
-        final Dialog<String> dialog = DialogUtils.createCustomDialog("Drone Selection",
-                "Choose the Drone to use for delivery", ButtonType.OK, ButtonType.CANCEL);
-
-        final List<String> drones = ((Courier) UserHelper.logged()).getDrones();
-        final ChoiceBox<String> choiceBox = new ChoiceBox<>(FXCollections.observableList(drones));
-        choiceBox.setValue(drones.get(0));
-        dialog.getDialogPane().setContent(choiceBox);
-
-        dialog.setResultConverter(button -> {
-            if (button == ButtonType.OK)
-                return choiceBox.getValue();
-            else
-                return null;
-        });
-        return dialog;
-    }
-
-    /**
-     * {@link DatePicker} cell disabling date if it's chronologically before today.
-     */
-    private static class OnlyFutureDateCell extends DateCell {
-        @Override
-        public void updateItem(final LocalDate date, final boolean empty) {
-            super.updateItem(date, empty);
-            setDisable(empty || date.compareTo(LocalDate.now()) <= 0);
-        }
-    }
 }

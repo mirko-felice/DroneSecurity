@@ -36,6 +36,6 @@ public class WarningSituation implements Event {
      */
     @Override
     public String toString() {
-        return "Warning because of " + this.type.toString();
+        return "DANGEROUS " + this.type.toString();
     }
 }

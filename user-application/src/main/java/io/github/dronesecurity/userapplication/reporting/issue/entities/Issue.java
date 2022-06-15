@@ -55,4 +55,10 @@ public interface Issue {
      * @return the string representation of the state
      */
     String getState();
+
+    /**
+     * Gets the drone identifier that owns the issue.
+     * @return the drone identifier
+     */
+    String getDroneId();
 }

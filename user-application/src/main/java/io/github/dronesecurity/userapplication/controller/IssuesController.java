@@ -23,11 +23,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
+import org.apache.commons.text.CaseUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
 import java.util.Comparator;
-import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -49,6 +49,7 @@ public class IssuesController implements Initializable {
     @FXML private Label selectedIssueCreationTime;
     @FXML private Label selectedIssueCourier;
     @FXML private Text selectedIssueDetails;
+    @FXML private Label selectedIssueDroneId;
     @FXML private Button visionIssueButton;
     @FXML private Button goToClosingPageButton;
 
@@ -57,10 +58,12 @@ public class IssuesController implements Initializable {
     @FXML private TableColumn<CreatedIssue, String> openIssuesId;
     @FXML private TableColumn<CreatedIssue, String> openIssuesSubject;
     @FXML private TableColumn<CreatedIssue, String> openIssuesCourier;
+    @FXML private TableColumn<CreatedIssue, String> openIssuesDroneId;
     @FXML private TableView<CreatedIssue> closedIssuesTable;
     @FXML private TableColumn<CreatedIssue, String> closedIssuesId;
     @FXML private TableColumn<CreatedIssue, String> closedIssuesSubject;
     @FXML private TableColumn<CreatedIssue, String> closedIssuesCourier;
+    @FXML private TableColumn<CreatedIssue, String> closedIssuesDroneId;
 
     // Closing issue panel
     @FXML private AnchorPane closingIssuePane;
@@ -100,7 +103,7 @@ public class IssuesController implements Initializable {
         this.newIssueButton.setVisible(this.role == Role.COURIER);
 
         this.initTable(this.openIssuesTable, this.openIssuesId, this.openIssuesSubject, this.openIssuesCourier,
-                issue -> {
+                this.openIssuesDroneId, issue -> {
             this.currentlySelectedIssue = issue;
             this.solutionLabel.setVisible(false);
             this.closedIssueSolution.setVisible(false);
@@ -114,7 +117,7 @@ public class IssuesController implements Initializable {
         });
 
         this.initTable(this.closedIssuesTable, this.closedIssuesId, this.closedIssuesSubject, this.closedIssuesCourier,
-                issue -> {
+                this.closedIssuesDroneId, issue -> {
                     this.currentlySelectedIssue = issue;
                     this.solutionLabel.setVisible(true);
                     this.closedIssueSolution.setVisible(true);
@@ -216,10 +219,12 @@ public class IssuesController implements Initializable {
                            final @NotNull TableColumn<CreatedIssue, String> idColumn,
                            final @NotNull TableColumn<CreatedIssue, String> subjectColumn,
                            final @NotNull TableColumn<CreatedIssue, String> courierColumn,
+                           final @NotNull TableColumn<CreatedIssue, String> droneIdColumn,
                            final Consumer<CreatedIssue> consumer) {
         idColumn.setCellValueFactory(val -> new SimpleStringProperty("#" + val.getValue().getId()));
         subjectColumn.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getSubject()));
         courierColumn.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getCourier()));
+        droneIdColumn.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getDroneId()));
 
         final TableView.TableViewSelectionModel<CreatedIssue> selectionModel = table.getSelectionModel();
         selectionModel.setSelectionMode(SelectionMode.SINGLE);
@@ -231,14 +236,14 @@ public class IssuesController implements Initializable {
 
     private void fillIssueFields() {
         this.selectedIssueSubject.setText(this.currentlySelectedIssue.getSubject());
-        this.issueState.setText(this.currentlySelectedIssue.getState().substring(0, 1).toUpperCase(Locale.ITALY)
-                + this.currentlySelectedIssue.getState().substring(1));
+        this.issueState.setText(CaseUtils.toCamelCase(this.currentlySelectedIssue.getState(), true));
         final String creationInstant = DateHelper.toString(this.currentlySelectedIssue.getReportingDate());
-        final String[] instantComponents = creationInstant.split(" ");
-        this.selectedIssueCreationDate.setText(instantComponents[0]);
-        this.selectedIssueCreationTime.setText(instantComponents[1]);
+        final int splitIndex = creationInstant.indexOf(':') - 2;
+        this.selectedIssueCreationDate.setText(creationInstant.substring(0, splitIndex));
+        this.selectedIssueCreationTime.setText(creationInstant.substring(splitIndex));
         this.selectedIssueCourier.setText(this.currentlySelectedIssue.getCourier());
         this.selectedIssueDetails.setText(this.currentlySelectedIssue.getDetails());
+        this.selectedIssueDroneId.setText(this.currentlySelectedIssue.getDroneId());
 
         this.issuesPane.setVisible(false);
         this.selectedIssuePane.setVisible(true);

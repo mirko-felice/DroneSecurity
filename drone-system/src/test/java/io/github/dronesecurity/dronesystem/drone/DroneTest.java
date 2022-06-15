@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 class DroneTest {
 
     private static final int SENSOR_DATA_READING_WAITING_TIME = 3;
+    private static final int CAMERA_READING_WAITING_TIME = 1;
 
     /**
      * Tests drone lifecycle.
@@ -24,7 +25,7 @@ class DroneTest {
     @Test
     void testDroneLifecycle() throws InterruptedException {
         final Drone drone = new Drone("Test Drone");
-
+        // TODO pensare a se spostare la logica del recall e le altre azioni al courier
         drone.activate();
         Assertions.assertTrue(drone.isOperating());
 
@@ -43,6 +44,7 @@ class DroneTest {
                 accelerometerValues.containsKey(AccelerometerConstants.Y));
         Assertions.assertTrue(
                 accelerometerValues.containsKey(AccelerometerConstants.Z));
+        TimeUnit.SECONDS.sleep(CAMERA_READING_WAITING_TIME);
 
         drone.readAllData();
         Assertions.assertTrue(drone.getCameraSensorData().length > 0);

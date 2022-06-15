@@ -30,9 +30,10 @@
                     <Label layoutX="168.0" layoutY="14.0" text="Open Issues" AnchorPane.topAnchor="14.0" />
                     <TableView fx:id="openIssuesTable" layoutX="19.0" layoutY="43.0" prefHeight="222.0" prefWidth="373.0">
                         <columns>
-                            <TableColumn fx:id="openIssuesId" prefWidth="151.0" text="ID" />
-                            <TableColumn fx:id="openIssuesSubject" prefWidth="97.0" sortable="false" text="Subject" />
-                            <TableColumn fx:id="openIssuesCourier" prefWidth="75.0" text="Courier" />
+                            <TableColumn fx:id="openIssuesId" editable="false" prefWidth="151.0" sortable="false" text="ID" />
+                            <TableColumn fx:id="openIssuesSubject" editable="false" prefWidth="97.0" sortable="false" text="Subject" />
+                            <TableColumn fx:id="openIssuesCourier" editable="false" prefWidth="75.0" sortable="false" text="Courier" />
+                            <TableColumn fx:id="openIssuesDroneId" editable="false" prefWidth="75.0" sortable="false" text="Drone" />
                         </columns>
                         <columnResizePolicy>
                             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -46,8 +47,9 @@
                     <TableView fx:id="closedIssuesTable" layoutX="19.0" layoutY="43.0" prefHeight="222.0" prefWidth="373.0">
                         <columns>
                             <TableColumn fx:id="closedIssuesId" prefWidth="151.0" text="ID" />
-                            <TableColumn fx:id="closedIssuesSubject" prefWidth="97.0" sortable="false" text="Subject" />
-                            <TableColumn fx:id="closedIssuesCourier" prefWidth="75.0" text="Courier" />
+                            <TableColumn fx:id="closedIssuesSubject" editable="false" prefWidth="97.0" sortable="false" text="Subject" />
+                            <TableColumn fx:id="closedIssuesCourier" editable="false" prefWidth="75.0" sortable="false" text="Courier" />
+                            <TableColumn fx:id="closedIssuesDroneId" editable="false" prefWidth="75.0" sortable="false" text="Drone" />
                         </columns>
                         <columnResizePolicy>
                             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -98,6 +100,8 @@
          <Label fx:id="solutionLabel" text="Solution:" visible="false" GridPane.rowIndex="5" />
          <Button fx:id="visionIssueButton" mnemonicParsing="false" onAction="#visionIssue" text="Vision" visible="false" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="BOTTOM" />
          <Button fx:id="goToClosingPageButton" layoutX="361.0" layoutY="285.0" mnemonicParsing="false" onMouseClicked="#goToClosingPage" text="Close" visible="false" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="BOTTOM" />
+         <Label text="Drone:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+         <Label fx:id="selectedIssueDroneId" text="-" GridPane.columnIndex="3" GridPane.rowIndex="2" />
         </GridPane>
         <AnchorPane fx:id="closingIssuePane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <Label layoutX="6.0" layoutY="40.0" text="Solution" />

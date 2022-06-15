@@ -23,14 +23,16 @@ public class OpenIssue extends CreatedIssue {
      * @param courierUsername username of the courier who sends the issue
      * @param assigneeUsername username of the maintainer assigned to the issue
      * @param sendingTime the timestamp of when the issue was sent
+     * @param droneId drone identifier that owns the issue
      */
     public OpenIssue(final String subject,
                      final int id,
                      final String issueInfo,
                      final String courierUsername,
                      final String assigneeUsername,
-                     final Instant sendingTime) {
-        super(subject, id, issueInfo, courierUsername, assigneeUsername, sendingTime);
+                     final Instant sendingTime,
+                     final String droneId) {
+        super(subject, id, issueInfo, courierUsername, assigneeUsername, sendingTime, droneId);
     }
 
     /**
@@ -45,12 +47,14 @@ public class OpenIssue extends CreatedIssue {
      * Transforms this issue in visioned issue when the maintainer starts processing it.
      * @return the new {@link VisionedIssue} from this OpenIssue
      */
+    // TODO check usage
     public VisionedIssue visionIssue() {
         return new VisionedIssue(this.getSubject(),
                 this.getId(),
                 this.getDetails(),
                 this.getCourier(),
                 this.assignedTo(),
-                this.getReportingDate());
+                this.getReportingDate(),
+                this.getDroneId());
     }
 }

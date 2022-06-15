@@ -25,16 +25,18 @@ public class ClosedIssue extends CreatedIssue {
      * @param courierUsername username of the courier who sends the issue
      * @param assigneeUsername username of the maintainer assigned to the issue
      * @param sendingTime the timestamp of when the issue was sent
+     * @param droneId drone identifier that owns the issue
      * @param issueSolution string representing the solution used by the maintainer
      */
     public ClosedIssue(final String subject,
-                     final int id,
-                     final String issueInfo,
-                     final String courierUsername,
-                     final String assigneeUsername,
-                     final Instant sendingTime,
-                     final String issueSolution) {
-        super(subject, id, issueInfo, courierUsername, assigneeUsername, sendingTime);
+                       final int id,
+                       final String issueInfo,
+                       final String courierUsername,
+                       final String assigneeUsername,
+                       final Instant sendingTime,
+                       final String droneId,
+                       final String issueSolution) {
+        super(subject, id, issueInfo, courierUsername, assigneeUsername, sendingTime, droneId);
         this.issueSolution = issueSolution;
     }
 

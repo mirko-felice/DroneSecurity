@@ -46,6 +46,11 @@ public final class IssueStringHelper {
     public static final String SENDING_INSTANT = "sent";
 
     /**
+     * DB drone identifier parameter name for issue.
+     */
+    public static final String DRONE_ID = "droneId";
+
+    /**
      * DB status parameter name for issue.
      */
     public static final String STATUS = "status";

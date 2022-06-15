@@ -37,6 +37,7 @@ public class IssueSerializer extends JsonSerializer<Issue> {
         gen.writeStringField(IssueStringHelper.ASSIGNEE, value.assignedTo());
         gen.writeStringField(IssueStringHelper.SENDING_INSTANT, DateHelper.toString(value.getReportingDate()));
         gen.writeStringField(IssueStringHelper.STATUS, value.getState());
+        gen.writeStringField(IssueStringHelper.DRONE_ID, value.getDroneId());
 
         final Optional<ClosedIssue> closedIssue = CastHelper.safeCast(value, ClosedIssue.class);
         closedIssue.ifPresent(issue -> {

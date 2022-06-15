@@ -77,8 +77,10 @@ public class Camera extends AbstractSensor<Byte[]> {
     public void deactivate() {
         super.deactivate();
         try {
-            this.inputStream.close();
-            this.socket.close();
+            if (this.inputStream != null)
+                this.inputStream.close();
+            if (this.socket.isConnected())
+                this.socket.close();
         } catch (IOException e) {
             LoggerFactory.getLogger(getClass()).error("Error closing connection", e);
         }

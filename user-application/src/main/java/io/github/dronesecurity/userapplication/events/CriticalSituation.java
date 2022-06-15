@@ -36,6 +36,6 @@ public class CriticalSituation implements Event {
      */
     @Override
     public String toString() {
-        return "Critical because of " + this.type.toString();
+        return "CRITICAL " + this.type.toString();
     }
 }
