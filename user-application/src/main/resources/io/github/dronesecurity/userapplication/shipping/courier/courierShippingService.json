@@ -116,7 +116,7 @@
                 "type": "object",
                 "properties": {
                   "orderId": {
-                    "type": "string"
+                    "type": "integer"
                   },
                   "state": {
                     "type": "string"
@@ -144,7 +144,7 @@
                 "type": "object",
                 "properties": {
                   "orderId": {
-                    "type": "string"
+                    "type": "integer"
                   }
                 }
               }

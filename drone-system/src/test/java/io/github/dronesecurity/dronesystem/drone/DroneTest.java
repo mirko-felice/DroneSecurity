@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
  */
 class DroneTest {
 
-    private static final int SENSOR_DATA_READING_WAITING_TIME = 3;
-    private static final int CAMERA_READING_WAITING_TIME = 1;
+    private static final int SENSOR_DATA_READING_WAITING_TIME = 4;
+    private static final int CAMERA_READING_WAITING_TIME = 3;
 
     /**
      * Tests drone lifecycle.

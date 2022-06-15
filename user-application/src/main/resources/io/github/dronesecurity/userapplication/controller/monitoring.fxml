@@ -94,8 +94,7 @@
               <GridPane>
                   <columnConstraints>
                       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
                   <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                       <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                   </columnConstraints>
@@ -108,13 +107,13 @@
                   <font>
                      <Font size="14.0" />
                   </font></Label>
-                  <Button fx:id="recallButton" disable="true" mnemonicParsing="false" onMouseClicked="#recallDrone" text="Recall" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
-                  <ToggleSwitch fx:id="switchMode" selected="true" GridPane.columnIndex="4" />
-               <Label text="Automatic Mode" GridPane.columnIndex="3">
+                  <Button fx:id="recallButton" disable="true" mnemonicParsing="false" onMouseClicked="#recallDrone" text="Recall" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                  <ToggleSwitch fx:id="switchMode" selected="true" GridPane.columnIndex="3" />
+               <Label text="Automatic Mode" GridPane.columnIndex="2">
                   <font>
                      <Font size="13.0" />
                   </font></Label>
-               <Button fx:id="haltButton" disable="true" mnemonicParsing="false" onMouseClicked="#halt" text="Halt" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+               <Button fx:id="haltButton" mnemonicParsing="false" onMouseClicked="#halt" text="Halt" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                <Label text="Current Situation:" GridPane.rowIndex="2">
                   <font>
                      <Font size="14.0" />
@@ -127,7 +126,7 @@
                   <font>
                      <Font size="14.0" />
                   </font></Label>
-               <Button fx:id="proceedButton" mnemonicParsing="false" onMouseClicked="#proceed" text="Proceed" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+               <Button fx:id="proceedButton" disable="true" mnemonicParsing="false" onMouseClicked="#proceed" text="Proceed" GridPane.columnIndex="2" GridPane.rowIndex="1" />
               </GridPane>
           </TitledPane>
       </panes>

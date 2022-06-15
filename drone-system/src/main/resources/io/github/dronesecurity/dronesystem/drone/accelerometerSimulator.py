@@ -8,6 +8,5 @@ while True:
           ",\n        \"y\": " + str(1) +
           ",\n        \"z\": " + str(0) +
           "\n    }"
-          "\n}")
-    sys.stdout.flush()
+          "\n}", flush=True)
     time.sleep(0.3)

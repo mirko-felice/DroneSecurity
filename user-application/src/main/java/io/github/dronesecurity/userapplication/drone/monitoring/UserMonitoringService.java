@@ -99,10 +99,10 @@ public final class UserMonitoringService {
                     DomainEvents.raise(new CriticalSituation(alertType));
                     break;
                 case WARNING:
-                    DomainEvents.raise(new WarningSituation(alertType));
+                    DomainEvents.raise(new DangerousSituation(alertType));
                     break;
-                case NONE:
-                    DomainEvents.raise(new StandardSituation());
+                case STABLE:
+                    DomainEvents.raise(new StableSituation());
                     break;
                 default:
             }

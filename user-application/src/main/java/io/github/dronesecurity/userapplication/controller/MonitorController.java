@@ -38,10 +38,11 @@ public final class MonitorController implements Initializable {
     private final long orderId;
 
     private final Consumer<CriticalSituation> criticalSituationHandler;
-    private final Consumer<WarningSituation> warningSituationHandler;
-    private final Consumer<StandardSituation> standardSituationHandler;
+    private final Consumer<DangerousSituation> dangerousSituationHandler;
+    private final Consumer<StableSituation> stableSituationHandler;
     private final Consumer<DataRead> dataReadHandler;
     private final Consumer<StatusChanged> statusChangedHandler;
+    private boolean wasCritical;
 
     @FXML private Label proximityCurrentData;
     @FXML private TableView<Map<String, Integer>> accelerometerCurrentData;
@@ -76,13 +77,14 @@ public final class MonitorController implements Initializable {
      * @param orderId order identifier to monitoring
      */
     public MonitorController(final long orderId) {
+        this.wasCritical = false;
         this.orderId = orderId;
         this.monitoringService = new UserMonitoringService(orderId);
         this.negligenceReportService = CourierNegligenceReportService.getInstance();
 
-        this.criticalSituationHandler = this::onCritical;
-        this.warningSituationHandler = this::onWarning;
-        this.standardSituationHandler = this::backOnStandardSituation;
+        this.criticalSituationHandler = this::onCriticalSituation;
+        this.dangerousSituationHandler = this::onDangerousSituation;
+        this.stableSituationHandler = this::backOnStableSituation;
         this.dataReadHandler = this::onDataRead;
         this.statusChangedHandler = this::onStatusChanged;
     }
@@ -99,8 +101,8 @@ public final class MonitorController implements Initializable {
                         this.switchMode.getScene().getWindow())));
 
         DomainEvents.register(CriticalSituation.class, this.criticalSituationHandler);
-        DomainEvents.register(WarningSituation.class, this.warningSituationHandler);
-        DomainEvents.register(StandardSituation.class, this.standardSituationHandler);
+        DomainEvents.register(DangerousSituation.class, this.dangerousSituationHandler);
+        DomainEvents.register(StableSituation.class, this.stableSituationHandler);
         DomainEvents.register(DataRead.class, this.dataReadHandler);
         DomainEvents.register(StatusChanged.class, this.statusChangedHandler);
 
@@ -178,16 +180,16 @@ public final class MonitorController implements Initializable {
         });
     }
 
-    private void onWarning(final WarningSituation warningSituation) {
+    private void onDangerousSituation(final DangerousSituation dangerousSituation) {
         Platform.runLater(() -> {
-            this.currentSituationLabel.setText(warningSituation.toString());
+            this.currentSituationLabel.setText(dangerousSituation.toString());
             this.currentSituationLabel.setStyle("-fx-text-fill: orange;");
             this.checkButtons(this.deliveryStatusLabel.getText(), this.switchMode.isSelected(),
                     this.currentSituationLabel.getText());
         });
     }
 
-    private void onCritical(final CriticalSituation criticalSituation) {
+    private void onCriticalSituation(final CriticalSituation criticalSituation) {
         Platform.runLater(() -> {
             this.currentSituationLabel.setText(criticalSituation.toString());
             this.currentSituationLabel.setStyle("-fx-text-fill: red;");
@@ -220,8 +222,8 @@ public final class MonitorController implements Initializable {
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: cyan;");
                     DialogUtils.showInfoDialog("Drone successfully returned.", () -> {
                                 DomainEvents.unregister(CriticalSituation.class, this.criticalSituationHandler);
-                                DomainEvents.unregister(WarningSituation.class, this.warningSituationHandler);
-                                DomainEvents.unregister(StandardSituation.class, this.standardSituationHandler);
+                                DomainEvents.unregister(DangerousSituation.class, this.dangerousSituationHandler);
+                                DomainEvents.unregister(StableSituation.class, this.stableSituationHandler);
                                 DomainEvents.unregister(DataRead.class, this.dataReadHandler);
                                 DomainEvents.unregister(StatusChanged.class, this.statusChangedHandler);
 
@@ -233,9 +235,9 @@ public final class MonitorController implements Initializable {
         });
     }
 
-    private void backOnStandardSituation(final @NotNull StandardSituation standardSituation) {
+    private void backOnStableSituation(final @NotNull StableSituation stableSituation) {
         Platform.runLater(() -> {
-            this.currentSituationLabel.setText(standardSituation.toString());
+            this.currentSituationLabel.setText(stableSituation.toString());
             this.currentSituationLabel.setStyle("-fx-text-fill: black;");
             this.checkButtons(this.deliveryStatusLabel.getText(), this.switchMode.isSelected(),
                     this.currentSituationLabel.getText());
@@ -275,13 +277,16 @@ public final class MonitorController implements Initializable {
                               final boolean isAutomaticMode,
                               final String currentSituation) {
         if (isAutomaticMode) {
-            if ("STABLE".equals(currentSituation)) {
+            if (SituationConstants.STABLE.equals(currentSituation)) {
                 switch (currentStatus) {
                     case MqttMessageValueConstants.DELIVERING_MESSAGE:
                     case MqttMessageValueConstants.RETURNING_ACKNOWLEDGEMENT_MESSAGE:
-                        this.proceedButton.setDisable(false);
-                        this.haltButton.setDisable(true);
-                        this.recallButton.setDisable(true);
+                        if (this.wasCritical) {
+                            this.wasCritical = false;
+                            this.proceedButton.setDisable(false);
+                            this.haltButton.setDisable(true);
+                            this.recallButton.setDisable(true);
+                        }
                         break;
                     case MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE:
                     case MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE:
@@ -296,7 +301,9 @@ public final class MonitorController implements Initializable {
                         break;
                     default:
                 }
-            } else if (currentSituation.contains("CRITICAL")) {
+            } else if (SituationConstants.CRITICAL_ANGLE.equals(currentSituation)
+                    || SituationConstants.CRITICAL_DISTANCE.equals(currentSituation)) {
+                this.wasCritical = true;
                 this.proceedButton.setDisable(true);
                 this.haltButton.setDisable(true);
                 this.recallButton.setDisable(true);

@@ -10,7 +10,8 @@ import io.github.dronesecurity.lib.AlertType;
 /**
  * The event to be raised when the drone informs of a warning situation.
  */
-public class WarningSituation implements Event {
+public class DangerousSituation implements Event {
+
     private final AlertType type;
 
     /**
@@ -18,7 +19,7 @@ public class WarningSituation implements Event {
      *
      * @param type type of the alert
      */
-    public WarningSituation(final String type) {
+    public DangerousSituation(final String type) {
         this.type = AlertType.valueOf(type);
     }
 
@@ -36,6 +37,8 @@ public class WarningSituation implements Event {
      */
     @Override
     public String toString() {
-        return "DANGEROUS " + this.type.toString();
+        return this.type == AlertType.ANGLE
+                ? SituationConstants.DANGEROUS_ANGLE
+                : SituationConstants.DANGEROUS_DISTANCE;
     }
 }

@@ -8,13 +8,13 @@ package io.github.dronesecurity.userapplication.events;
 /**
  * The event to be raised when alert is no more occurring and standard situation comes back.
  */
-public class StandardSituation implements Event {
+public class StableSituation implements Event {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public String toString() {
-        return "STABLE";
+        return SituationConstants.STABLE;
     }
 }

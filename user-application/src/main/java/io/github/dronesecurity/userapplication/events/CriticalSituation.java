@@ -11,6 +11,7 @@ import io.github.dronesecurity.lib.AlertType;
  * The event to be raised when the drone informs of a critical situation.
  */
 public class CriticalSituation implements Event {
+
     private final AlertType type;
 
     /**
@@ -36,6 +37,6 @@ public class CriticalSituation implements Event {
      */
     @Override
     public String toString() {
-        return "CRITICAL " + this.type.toString();
+        return this.type == AlertType.ANGLE ? SituationConstants.CRITICAL_ANGLE : SituationConstants.CRITICAL_DISTANCE;
     }
 }

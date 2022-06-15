@@ -42,6 +42,12 @@
         <exclude name="DataClass" />
     </rule>
 
+    <rule ref="category/java/design.xml/CyclomaticComplexity">
+        <properties>
+            <property name="methodReportLevel" value="12" />
+        </properties>
+    </rule>
+
     <rule ref="category/java/design.xml/TooManyMethods">
         <properties>
             <property name="maxmethods" value="12" />

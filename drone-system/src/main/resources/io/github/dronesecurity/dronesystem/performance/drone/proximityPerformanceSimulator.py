@@ -11,11 +11,11 @@ while True:
               ",\n\"index\": " + str(index) +
               "\n}", flush=True)
         index = index + 1
-        time.sleep(0.028)
+        time.sleep(0.033)
     for i in backward:
         print("{\"proximity\": " + str(i) +
               ",\n\"timestamp\": " + str(int(time.time() * 1000)) +
               ",\n\"index\": " + str(index) +
               "\n}", flush=True)
         index = index + 1
-        time.sleep(0.028)
+        time.sleep(0.033)

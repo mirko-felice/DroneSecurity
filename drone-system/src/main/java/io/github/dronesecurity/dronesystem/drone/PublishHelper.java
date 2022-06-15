@@ -57,6 +57,16 @@ public final class PublishHelper {
     }
 
     /**
+     * Publish the Stable {@link AlertLevel} on the related topic.
+     * @param orderId order identifier needed in order to publish correctly
+     */
+    public static void publishStableAlertLevel(final long orderId) {
+        final ObjectNode payload = new ObjectMapper().createObjectNode();
+        payload.put(MqttMessageParameterConstants.ALERT_LEVEL_PARAMETER, AlertLevel.STABLE.toString());
+        Connection.getInstance().publish(MqttTopicConstants.ALERT_LEVEL_TOPIC + orderId, payload);
+    }
+
+    /**
      * Publish current drone status.
      * @param orderId order identifier needed in order to publish correctly
      * @param status status to publish

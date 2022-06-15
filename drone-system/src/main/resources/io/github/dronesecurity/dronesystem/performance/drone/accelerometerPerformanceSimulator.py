@@ -16,4 +16,4 @@ while True:
 
     i = i + 1
 
-    time.sleep(0.028)
+    time.sleep(0.033)

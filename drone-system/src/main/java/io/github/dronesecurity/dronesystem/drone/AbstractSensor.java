@@ -62,8 +62,9 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
     @Override
     public void activate() {
         if (this.isPythonVersionCompatible()) {
+            final String scriptFileName = this.getScriptFile(this.getScriptName());
             this.setOn(true);
-            new Thread(() -> this.executeScript(this.getScriptFile(this.getScriptName()))).start();
+            new Thread(() -> this.executeScript(scriptFileName)).start();
         }
     }
 

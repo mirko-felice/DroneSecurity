@@ -22,14 +22,14 @@ final class DomainEventTest {
      */
     @Test
     void raiseEventTest() {
-        DomainEvents.register(WarningSituation.class, this::onEventRaised);
-        final WarningSituation event = new WarningSituation(EVENT_ALERT_TEST.toString());
+        DomainEvents.register(DangerousSituation.class, this::onEventRaised);
+        final DangerousSituation event = new DangerousSituation(EVENT_ALERT_TEST.toString());
         Assertions.assertFalse(this.wasEventRaised);
         DomainEvents.raise(event);
         Assertions.assertTrue(this.wasEventRaised);
     }
 
-    private void onEventRaised(final WarningSituation event) {
+    private void onEventRaised(final DangerousSituation event) {
         this.wasEventRaised = EVENT_ALERT_TEST == event.getType();
     }
 }

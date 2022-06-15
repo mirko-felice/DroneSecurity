@@ -35,7 +35,7 @@ public final class DataAnalyzer {
             else if (isWarning)
                 return AlertLevel.WARNING;
         }
-        return AlertLevel.NONE;
+        return AlertLevel.STABLE;
     }
 
     /**
@@ -60,7 +60,7 @@ public final class DataAnalyzer {
             else if (isWarning)
                 return AlertLevel.WARNING;
         }
-        return AlertLevel.NONE;
+        return AlertLevel.STABLE;
     }
 
 }

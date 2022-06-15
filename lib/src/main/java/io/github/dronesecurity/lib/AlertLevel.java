@@ -10,9 +10,9 @@ package io.github.dronesecurity.lib;
  */
 public enum AlertLevel {
     /**
-     * No alert situation.
+     * Stable situation.
      */
-    NONE,
+    STABLE,
     /**
      * Warning situation.
      */
