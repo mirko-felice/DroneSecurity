@@ -85,11 +85,11 @@ with smbus2.SMBus(1) as bus:
               "\n        \"x\": " + str(accelX) +
               ",\n        \"y\": " + str(accelY) +
               ",\n        \"z\": " + str(accelZ) +
-              "\n    }"
+              "\n    },"
               "\n\"timestamp\": " + str(int(time.time() * 1000)) +
               ",\n\"index\": " + str(i) +
               "\n}", flush=True)
 
         i = i + 1
 
-        time.sleep(0.028)
+        time.sleep(0.033)

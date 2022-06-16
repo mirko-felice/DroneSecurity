@@ -36,7 +36,7 @@ public class AccelerometerTimed extends Accelerometer {
      */
     @Override
     protected String getScriptName() {
-        return "accelerometerPerformanceSimulator";
+        return this.isRaspberry() ? "accelerometerPerformance" : "accelerometerPerformanceSimulator";
     }
 
     /**

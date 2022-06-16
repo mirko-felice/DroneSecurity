@@ -65,5 +65,15 @@ public final class MqttMessageValueConstants {
      */
     public static final String HALT_MESSAGE = "halt";
 
+    /**
+     * Drone message text informing that it is moving.
+     */
+    public static final String DRONE_MOVING_STATE_MESSAGE = "MOVING";
+
+    /**
+     * Drone message text informing that it is NOT moving.
+     */
+    public static final String DRONE_STOPPED_STATE_MESSAGE = "STOPPED";
+
     private MqttMessageValueConstants() { }
 }

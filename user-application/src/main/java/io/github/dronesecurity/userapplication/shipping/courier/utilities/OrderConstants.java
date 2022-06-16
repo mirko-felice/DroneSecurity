@@ -53,12 +53,12 @@ public final class OrderConstants {
     /**
      * {@link io.github.dronesecurity.userapplication.shipping.courier.entities.FailedOrder} state.
      */
-    public static final String FAILED_ORDER_STATE = "Order fails delivery.";
+    public static final String FAILED_ORDER_STATE = "Order delivery failed.";
 
     /**
      * {@link io.github.dronesecurity.userapplication.shipping.courier.entities.DeliveredOrder} state.
      */
-    public static final String DELIVERED_ORDER_STATE = "Order is delivered.";
+    public static final String DELIVERED_ORDER_STATE = "Order delivery succeeded.";
 
     /**
      * {@link io.github.dronesecurity.userapplication.shipping.courier.entities.DeliveringOrder} state.

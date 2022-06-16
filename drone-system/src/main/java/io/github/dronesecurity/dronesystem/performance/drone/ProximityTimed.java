@@ -36,7 +36,7 @@ public class ProximityTimed extends ProximitySensor {
      */
     @Override
     protected String getScriptName() {
-        return "proximityPerformanceSimulator";
+        return this.isRaspberry() ? "proximityPerformance" : "proximityPerformanceSimulator";
     }
 
     /**

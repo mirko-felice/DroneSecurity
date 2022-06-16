@@ -64,11 +64,11 @@ public class NegligenceController implements Initializable {
             this.pane.add(fxmlLoader.load(), 0, 0, 2, 1);
             this.dataController = fxmlLoader.getController();
             this.dataController.setOnClosedTabSelectionChanged(isSelected -> {
+                this.pane.getScene().getWindow().setOnHidden(ignored ->
+                        DomainEvents.unregister(NewNegligence.class, this.newNegligenceHandler));
                 this.takeActionButton.setDisable(isSelected);
                 this.solution.setDisable(isSelected);
             });
-            this.pane.getScene().getWindow().setOnHidden(ignored ->
-                    DomainEvents.unregister(NewNegligence.class, this.newNegligenceHandler));
         } catch (IOException e) {
             LoggerFactory.getLogger(this.getClass()).warn("Can NOT load reports window.", e);
         }

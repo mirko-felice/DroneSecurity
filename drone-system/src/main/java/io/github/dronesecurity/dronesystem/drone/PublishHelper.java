@@ -76,4 +76,15 @@ public final class PublishHelper {
         payload.put(MqttMessageParameterConstants.STATUS_PARAMETER, status);
         Connection.getInstance().publish(MqttTopicConstants.LIFECYCLE_TOPIC + orderId, payload);
     }
+
+    /**
+     * Publishes the change of moving state of the drone.
+     * @param orderId The id of the order that the drone is currently delivering
+     * @param movingState The new moving state of the drone
+     */
+    public static void publishMovingState(final long orderId, final String movingState) {
+        final ObjectNode payload = new ObjectMapper().createObjectNode();
+        payload.put(MqttMessageParameterConstants.DRONE_MOVING_STATE_PARAMETER, movingState);
+        Connection.getInstance().publish(MqttTopicConstants.LIFECYCLE_TOPIC + orderId, payload);
+    }
 }

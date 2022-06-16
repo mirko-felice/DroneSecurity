@@ -35,7 +35,6 @@ wp.wiringPiSetup()
 wp.pinMode(pin_echo, wp.INPUT)
 wp.pinMode(pin_trigger, wp.OUTPUT)
 wp.digitalWrite(pin_trigger, wp.LOW)
-time.sleep(0.5)
 
 while True:
     # Sensor activation
@@ -56,4 +55,4 @@ while True:
                 print("{\"proximity\": " + str(distance) +
                       "\n}", flush=True)
 
-    time.sleep(1)
+    time.sleep(0.1)

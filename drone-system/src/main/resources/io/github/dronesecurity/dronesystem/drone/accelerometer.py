@@ -88,4 +88,4 @@ with smbus2.SMBus(1) as bus:
               "\n}")
         sys.stdout.flush()
 
-        time.sleep(0.5)
+        time.sleep(0.1)

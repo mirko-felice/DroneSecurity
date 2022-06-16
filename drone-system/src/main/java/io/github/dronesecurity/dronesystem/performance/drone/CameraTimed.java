@@ -36,7 +36,7 @@ public class CameraTimed extends Camera {
      */
     @Override
     protected String getScriptName() {
-        return "cameraPerformance";
+        return this.isRaspberry() ? "cameraPerformance" : "cameraPerformanceSimulator";
     }
 
     /**

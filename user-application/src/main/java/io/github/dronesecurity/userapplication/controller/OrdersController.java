@@ -91,8 +91,12 @@ public final class OrdersController implements Initializable {
 
         this.refreshOrders();
         this.table.getSelectionModel().selectedItemProperty().addListener((observable, oldOrder, order) -> {
+            this.table.getScene().getWindow().setOnHidden(ignored ->
+                    DomainEvents.unregister(OrdersUpdate.class, this.ordersUpdateHandler));
             if (order == null) {
                 this.performDeliveryButton.setDisable(true);
+                this.rescheduleDeliveryButton.setDisable(true);
+                this.showDataHistoryButton.setDisable(true);
             } else {
                 if (OrderConstants.PLACED_ORDER_STATE.equals(order.getCurrentState())
                     || OrderConstants.RESCHEDULED_ORDER_STATE.equals(order.getCurrentState())) {
@@ -116,8 +120,6 @@ public final class OrdersController implements Initializable {
         });
 
         DomainEvents.register(OrdersUpdate.class, this.ordersUpdateHandler);
-        this.table.getScene().getWindow().setOnHidden(ignored ->
-                DomainEvents.unregister(OrdersUpdate.class, this.ordersUpdateHandler));
     }
 
     @FXML

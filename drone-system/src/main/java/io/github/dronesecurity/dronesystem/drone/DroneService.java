@@ -28,7 +28,7 @@ public class DroneService {
 
     private static final String JSON_ERROR_MESSAGE = "Can NOT read json correctly.";
     private static final long TRAVELING_TIME = 6000;
-    private static final long ANALIZER_SLEEP_DURATION = 500;
+    private static final long ANALIZER_SLEEP_DURATION = 100;
     private static final long TRAVEL_SIMULATION_DELAY = 50;
     private static final int RANDOM_GENERATION_RANGE = 100;
     private static final int SUCCESS_PERCENTAGE = 70;
@@ -127,6 +127,8 @@ public class DroneService {
                     PublishHelper.publishCurrentStatus(this.currentOrderId,
                             MqttMessageValueConstants.RETURNING_ACKNOWLEDGEMENT_MESSAGE);
                     this.drone.proceed();
+                    PublishHelper.publishMovingState(this.currentOrderId,
+                            MqttMessageValueConstants.DRONE_MOVING_STATE_MESSAGE);
                     this.travelSimulation(this.returnExecutor, this::stopDrone);
                 }
             } catch (JsonProcessingException e) {
@@ -144,6 +146,8 @@ public class DroneService {
             PublishHelper.publishCurrentStatus(this.currentOrderId,
                     MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE);
         this.drone.halt();
+        PublishHelper.publishMovingState(this.currentOrderId,
+                MqttMessageValueConstants.DRONE_STOPPED_STATE_MESSAGE);
     }
 
     private void travelSimulation(final @NotNull ScheduledExecutorService executor, final Runnable runnable) {
@@ -216,6 +220,8 @@ public class DroneService {
                     && (this.currentProximityAlertLevel == AlertLevel.CRITICAL
                     || this.currentAccelerometerAlertLevel == AlertLevel.CRITICAL)) {
                 this.drone.halt();
+                PublishHelper.publishMovingState(this.currentOrderId,
+                        MqttMessageValueConstants.DRONE_STOPPED_STATE_MESSAGE);
                 this.reportNegligence();
             }
         }
@@ -241,13 +247,19 @@ public class DroneService {
                 else if (MqttMessageValueConstants.MANUAL_MODE_MESSAGE.equals(mode)) {
                     this.drone.changeMode(DrivingMode.MANUAL);
                     this.drone.halt();
+                    PublishHelper.publishMovingState(this.currentOrderId,
+                            MqttMessageValueConstants.DRONE_STOPPED_STATE_MESSAGE);
                 }
             } else if (json.has(MqttMessageParameterConstants.MOVE_PARAMETER)) {
                 final String move = json.get(MqttMessageParameterConstants.MOVE_PARAMETER).asText();
-                if (MqttMessageValueConstants.PROCEED_MESSAGE.equals(move))
+                if (MqttMessageValueConstants.PROCEED_MESSAGE.equals(move)) {
                     this.drone.proceed();
-                else if (MqttMessageValueConstants.HALT_MESSAGE.equals(move)) {
+                    PublishHelper.publishMovingState(this.currentOrderId,
+                            MqttMessageValueConstants.DRONE_MOVING_STATE_MESSAGE);
+                } else if (MqttMessageValueConstants.HALT_MESSAGE.equals(move)) {
                     this.drone.halt();
+                    PublishHelper.publishMovingState(this.currentOrderId,
+                            MqttMessageValueConstants.DRONE_STOPPED_STATE_MESSAGE);
                 }
             }
         } catch (JsonProcessingException e) {

@@ -90,5 +90,10 @@ public final class MqttMessageParameterConstants {
      */
     public static final String MOVE_PARAMETER = "move";
 
+    /**
+     * Parameter that contains the moving state parameter of the drone.
+     */
+    public static final String DRONE_MOVING_STATE_PARAMETER = "movingState";
+
     private MqttMessageParameterConstants() { }
 }

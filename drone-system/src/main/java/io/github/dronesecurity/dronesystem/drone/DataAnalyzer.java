@@ -53,7 +53,7 @@ public final class DataAnalyzer {
                                     || Math.abs(pitch) > ACCELEROMETER_WARNING_THRESHOLD;
 
             final boolean isCritical = Math.abs(roll) > ACCELEROMETER_CRITICAL_THRESHOLD
-                                    || Math.abs(pitch) > ACCELEROMETER_WARNING_THRESHOLD;
+                                    || Math.abs(pitch) > ACCELEROMETER_CRITICAL_THRESHOLD;
 
             if (isCritical)
                 return AlertLevel.CRITICAL;

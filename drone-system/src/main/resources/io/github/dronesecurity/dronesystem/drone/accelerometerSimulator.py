@@ -9,4 +9,4 @@ while True:
           ",\n        \"z\": " + str(0) +
           "\n    }"
           "\n}", flush=True)
-    time.sleep(0.3)
+    time.sleep(0.1)

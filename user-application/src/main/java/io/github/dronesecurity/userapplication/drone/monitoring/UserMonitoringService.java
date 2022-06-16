@@ -80,8 +80,14 @@ public final class UserMonitoringService {
         Connection.getInstance().subscribe(MqttTopicConstants.LIFECYCLE_TOPIC + this.orderId, msg -> {
             try {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
-                final String status = json.get(MqttMessageParameterConstants.STATUS_PARAMETER).asText();
-                DomainEvents.raise(new StatusChanged(status));
+                if (json.has(MqttMessageParameterConstants.STATUS_PARAMETER)) {
+                    final String status = json.get(MqttMessageParameterConstants.STATUS_PARAMETER).asText();
+                    DomainEvents.raise(new StatusChanged(status));
+                } else if (json.has(MqttMessageParameterConstants.DRONE_MOVING_STATE_PARAMETER)) {
+                    final String movingState = json
+                            .get(MqttMessageParameterConstants.DRONE_MOVING_STATE_PARAMETER).asText();
+                    DomainEvents.raise(new DroneMovingStateChangeEvent(movingState));
+                }
             } catch (JsonProcessingException e) {
                 LoggerFactory.getLogger(getClass()).error(JSON_ERROR_MESSAGE, e);
             }
@@ -110,8 +116,6 @@ public final class UserMonitoringService {
             }
         });
     }
-
-    // TODO negligence reports non si vede la solution
 
     /**
      * Retrieves data history related to the order monitoring.

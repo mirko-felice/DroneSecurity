@@ -27,9 +27,9 @@
          <TableColumn fx:id="orderIdColumn" editable="false" prefWidth="50.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="ID" />
             <TableColumn fx:id="orderDateColumn" editable="false" prefWidth="170.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Order Date" />
             <TableColumn fx:id="productColumn" editable="false" prefWidth="90.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Product" />
-            <TableColumn fx:id="stateColumn" editable="false" prefWidth="140.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="State" />
+            <TableColumn fx:id="stateColumn" editable="false" prefWidth="150.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="State" />
          <TableColumn fx:id="estimatedArrivalColumn" editable="false" prefWidth="170.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Estimated Arrival" />
-         <TableColumn fx:id="clientColumn" editable="false" prefWidth="100.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Client" />
+         <TableColumn fx:id="clientColumn" editable="false" prefWidth="90.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Client" />
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

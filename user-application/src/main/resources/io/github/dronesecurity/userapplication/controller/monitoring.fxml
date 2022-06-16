@@ -118,7 +118,7 @@
                   <font>
                      <Font size="14.0" />
                   </font></Label>
-               <Label fx:id="deliveryStatusLabel" text="starting" GridPane.columnIndex="1">
+               <Label fx:id="deliveryStatusLabel" text="STARTING" GridPane.columnIndex="1">
                   <font>
                      <Font size="14.0" />
                   </font></Label>
@@ -127,6 +127,16 @@
                      <Font size="14.0" />
                   </font></Label>
                <Button fx:id="proceedButton" disable="true" mnemonicParsing="false" onMouseClicked="#proceed" text="Proceed" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+               <Label text="Drone State: " GridPane.rowIndex="1">
+                  <font>
+                     <Font size="14.0" />
+                  </font>
+               </Label>
+               <Label fx:id="droneStateLabel" text="MOVING" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <font>
+                     <Font size="14.0" />
+                  </font>
+               </Label>
               </GridPane>
           </TitledPane>
       </panes>

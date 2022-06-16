@@ -145,6 +145,7 @@ public final class CourierShippingService extends AbstractVerticle {
         final long orderId = body.getLong(ShippingServiceHelper.ORDER_ID_KEY);
 
         ShippingServiceHelper.sendCallBackMessage(orderId);
+        routingContext.response().end();
     }
 
     private void rescheduleDelivery(final @NotNull RoutingContext routingContext) {
@@ -175,6 +176,7 @@ public final class CourierShippingService extends AbstractVerticle {
         final DrivingMode drivingMode = DrivingMode.valueOf(body.getString(ShippingServiceHelper.DRIVING_MODE_KEY));
 
         ShippingServiceHelper.sendChangeModeMessage(orderId, drivingMode);
+        routingContext.response().end();
     }
 
     private void proceed(final @NotNull RoutingContext routingContext) {
@@ -183,6 +185,7 @@ public final class CourierShippingService extends AbstractVerticle {
         final long orderId = body.getLong(ShippingServiceHelper.ORDER_ID_KEY);
 
         ShippingServiceHelper.sendProceedMessage(orderId);
+        routingContext.response().end();
     }
 
     private void halt(final @NotNull RoutingContext routingContext) {
@@ -191,5 +194,6 @@ public final class CourierShippingService extends AbstractVerticle {
         final long orderId = body.getLong(ShippingServiceHelper.ORDER_ID_KEY);
 
         ShippingServiceHelper.sendHaltMessage(orderId);
+        routingContext.response().end();
     }
 }

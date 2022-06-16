@@ -46,7 +46,7 @@ public final class MonitorController implements Initializable {
     private final Consumer<StableSituation> stableSituationHandler;
     private final Consumer<DataRead> dataReadHandler;
     private final Consumer<StatusChanged> statusChangedHandler;
-    private boolean wasCritical;
+    private final Consumer<DroneMovingStateChangeEvent> movingStateChangedHandler;
 
     @FXML private Label proximityCurrentData;
     @FXML private TableView<Map<String, Integer>> accelerometerCurrentData;
@@ -73,6 +73,7 @@ public final class MonitorController implements Initializable {
     @FXML private Button proceedButton;
     @FXML private Button haltButton;
     @FXML private Label deliveryStatusLabel;
+    @FXML private Label droneStateLabel;
     @FXML private Label currentSituationLabel;
     @FXML private Button recallButton;
 
@@ -81,7 +82,6 @@ public final class MonitorController implements Initializable {
      * @param orderId order identifier to monitoring
      */
     public MonitorController(final long orderId) {
-        this.wasCritical = false;
         this.orderId = orderId;
         this.monitoringService = new UserMonitoringService(orderId);
         this.negligenceReportService = new NegligenceReportService();
@@ -92,6 +92,7 @@ public final class MonitorController implements Initializable {
         this.stableSituationHandler = this::backOnStableSituation;
         this.dataReadHandler = this::onDataRead;
         this.statusChangedHandler = this::onStatusChanged;
+        this.movingStateChangedHandler = this::onMovingStateChanged;
     }
 
     @Override
@@ -106,6 +107,7 @@ public final class MonitorController implements Initializable {
         DomainEvents.register(StableSituation.class, this.stableSituationHandler);
         DomainEvents.register(DataRead.class, this.dataReadHandler);
         DomainEvents.register(StatusChanged.class, this.statusChangedHandler);
+        DomainEvents.register(DroneMovingStateChangeEvent.class, this.movingStateChangedHandler);
 
         this.monitoringService.subscribeToDataRead();
         this.monitoringService.subscribeToOrderStatusChange();
@@ -157,7 +159,7 @@ public final class MonitorController implements Initializable {
             else
                 ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.CHANGE_MODE,
                         body.put(ShippingServiceHelper.DRIVING_MODE_KEY, DrivingMode.MANUAL.toString()));
-            this.checkButtons(this.deliveryStatusLabel.getText(), isAutomatic, this.currentSituationLabel.getText());
+            this.checkButtons();
         });
     }
 
@@ -196,8 +198,7 @@ public final class MonitorController implements Initializable {
         Platform.runLater(() -> {
             this.currentSituationLabel.setText(dangerousSituation.toString());
             this.currentSituationLabel.setStyle("-fx-text-fill: orange;");
-            this.checkButtons(this.deliveryStatusLabel.getText(), this.switchMode.isSelected(),
-                    this.currentSituationLabel.getText());
+            this.checkButtons();
         });
     }
 
@@ -205,16 +206,14 @@ public final class MonitorController implements Initializable {
         Platform.runLater(() -> {
             this.currentSituationLabel.setText(criticalSituation.toString());
             this.currentSituationLabel.setStyle("-fx-text-fill: red;");
-            this.checkButtons(this.deliveryStatusLabel.getText(), this.switchMode.isSelected(),
-                    this.currentSituationLabel.getText());
+            this.checkButtons();
         });
     }
 
     private void onStatusChanged(final StatusChanged statusEvent) {
         Platform.runLater(() -> {
             this.deliveryStatusLabel.setText(statusEvent.getStatus());
-            this.checkButtons(statusEvent.getStatus(), this.switchMode.isSelected(),
-                    this.currentSituationLabel.getText());
+            this.checkButtons();
             switch (statusEvent.getStatus()) {
                 case MqttMessageValueConstants.DELIVERING_MESSAGE:
                     this.sendSaveDeliveryMessage(statusEvent.getStatus());
@@ -239,6 +238,7 @@ public final class MonitorController implements Initializable {
                         DomainEvents.unregister(StableSituation.class, this.stableSituationHandler);
                         DomainEvents.unregister(DataRead.class, this.dataReadHandler);
                         DomainEvents.unregister(StatusChanged.class, this.statusChangedHandler);
+                        DomainEvents.unregister(DroneMovingStateChangeEvent.class, this.movingStateChangedHandler);
 
                         ((Stage) this.accordion.getScene().getWindow()).close();
                     });
@@ -252,8 +252,14 @@ public final class MonitorController implements Initializable {
         Platform.runLater(() -> {
             this.currentSituationLabel.setText(stableSituation.toString());
             this.currentSituationLabel.setStyle("-fx-text-fill: black;");
-            this.checkButtons(this.deliveryStatusLabel.getText(), this.switchMode.isSelected(),
-                    this.currentSituationLabel.getText());
+            this.checkButtons();
+        });
+    }
+
+    private void onMovingStateChanged(final DroneMovingStateChangeEvent droneMovingStateChangeEvent) {
+        Platform.runLater(() -> {
+            this.droneStateLabel.setText(droneMovingStateChangeEvent.getMovingState());
+            this.checkButtons();
         });
     }
 
@@ -288,20 +294,22 @@ public final class MonitorController implements Initializable {
                 .onSuccess(ignored -> DomainEvents.raise(new OrdersUpdate()));
     }
 
-    private void checkButtons(final String currentStatus,
-                              final boolean isAutomaticMode,
-                              final String currentSituation) {
-        if (isAutomaticMode) {
+    private void checkButtons() {
+        final String currentSituation = this.currentSituationLabel.getText();
+        if (this.switchMode.isSelected()) {
             if (SituationConstants.STABLE.equals(currentSituation)) {
-                switch (currentStatus) {
+                switch (this.deliveryStatusLabel.getText()) {
                     case MqttMessageValueConstants.DELIVERING_MESSAGE:
                     case MqttMessageValueConstants.RETURNING_ACKNOWLEDGEMENT_MESSAGE:
-                        if (this.wasCritical) {
-                            this.wasCritical = false;
+                        if (MqttMessageValueConstants.DRONE_STOPPED_STATE_MESSAGE
+                                .equals(this.droneStateLabel.getText())) {
                             this.proceedButton.setDisable(false);
                             this.haltButton.setDisable(true);
-                            this.recallButton.setDisable(true);
+                        } else {
+                            this.proceedButton.setDisable(true);
+                            this.haltButton.setDisable(false);
                         }
+                        this.recallButton.setDisable(true);
                         break;
                     case MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE:
                     case MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE:
@@ -318,7 +326,6 @@ public final class MonitorController implements Initializable {
                 }
             } else if (SituationConstants.CRITICAL_ANGLE.equals(currentSituation)
                     || SituationConstants.CRITICAL_DISTANCE.equals(currentSituation)) {
-                this.wasCritical = true;
                 this.proceedButton.setDisable(true);
                 this.haltButton.setDisable(true);
                 this.recallButton.setDisable(true);
