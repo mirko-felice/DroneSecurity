@@ -15,12 +15,16 @@ import java.time.Instant;
 class ClosedNegligenceReportImpl extends NegligenceReportWithIDImpl implements ClosedNegligenceReport {
 
     private final Instant closingInstant;
+    private final String solution;
 
-    ClosedNegligenceReportImpl(final NegligenceReportWithID report, final Instant closingInstant) {
+    ClosedNegligenceReportImpl(final NegligenceReportWithID report,
+                               final Instant closingInstant,
+                               final String solution) {
         super(report.getId(), report);
         if (report.getData().isEmpty())
             throw new ReportEmptyDataException();
         this.closingInstant = closingInstant;
+        this.solution = solution;
     }
 
     /**
@@ -29,5 +33,13 @@ class ClosedNegligenceReportImpl extends NegligenceReportWithIDImpl implements C
     @Override
     public Instant getClosingInstant() {
         return this.closingInstant;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSolution() {
+        return this.solution;
     }
 }

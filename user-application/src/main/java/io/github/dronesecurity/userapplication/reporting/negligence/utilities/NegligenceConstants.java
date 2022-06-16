@@ -62,5 +62,10 @@ public final class NegligenceConstants {
      */
     public static final String CLOSING_INSTANT = "closingInstant";
 
+    /**
+     * Key for the solution.
+     */
+    public static final String SOLUTION = "solution";
+
     private NegligenceConstants() { }
 }

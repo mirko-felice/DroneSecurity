@@ -38,6 +38,7 @@ public class NegligenceReportWithIDSerializer extends JsonSerializer<NegligenceR
         if (value instanceof ClosedNegligenceReport) {
             final Instant closingInstant = ((ClosedNegligenceReport) value).getClosingInstant();
             gen.writeStringField(NegligenceConstants.CLOSING_INSTANT, DateHelper.toString(closingInstant));
+            gen.writeStringField(NegligenceConstants.SOLUTION, ((ClosedNegligenceReport) value).getSolution());
         }
         gen.writeEndObject();
         gen.flush();

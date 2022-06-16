@@ -27,6 +27,7 @@ final class ReportTest {
     private static final String NEGLIGENT = "courier";
     private static final String ASSIGNEE = "maintainer";
     private static final String ORDER_ID = "123";
+    private static final String SOLUTION = "test Solution";
 
     @Test
     void testEmptyData() {
@@ -55,20 +56,20 @@ final class ReportTest {
         );
         assertInstanceOf(OpenNegligenceReport.class, openWithoutData,
                 "Object should be instance of " + OpenNegligenceReport.class + ".");
-        assertThrowsExactly(ReportEmptyDataException.class, () -> openWithoutData.close(Instant.now()),
+        assertThrowsExactly(ReportEmptyDataException.class, () -> openWithoutData.close(Instant.now(), SOLUTION),
                 "Report can not be closed without providing data.");
 
         final OpenNegligenceReport openWithData = NegligenceReportFactory.open(
                 NegligenceReportFactory.withID(0, this.generateReportWithData())
         );
-        assertDoesNotThrow(() -> openWithData.close(Instant.now()),
+        assertDoesNotThrow(() -> openWithData.close(Instant.now(), SOLUTION),
                 "Closing report with data should not throw " + ReportEmptyDataException.class + ".");
     }
 
     @Test
     void testClosedReport() {
         final ClosedNegligenceReport report = NegligenceReportFactory.closed(
-                NegligenceReportFactory.withID(0, this.generateReportWithData()), Instant.now()
+                NegligenceReportFactory.withID(0, this.generateReportWithData()), Instant.now(), SOLUTION
         );
         assertInstanceOf(ClosedNegligenceReport.class, report,
                 "Object should be instance of " + ClosedNegligenceReport.class + ".");

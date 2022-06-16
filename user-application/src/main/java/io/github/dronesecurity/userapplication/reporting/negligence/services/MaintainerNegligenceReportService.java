@@ -9,7 +9,6 @@ import io.github.dronesecurity.userapplication.auth.entities.Courier;
 import io.github.dronesecurity.userapplication.auth.entities.Maintainer;
 import io.github.dronesecurity.userapplication.events.NewNegligence;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.ClosedNegligenceReport;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceActionForm;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.OpenNegligenceReport;
 import io.vertx.core.Future;
 
@@ -35,11 +34,12 @@ public interface MaintainerNegligenceReportService {
     Future<List<ClosedNegligenceReport>> retrieveClosedReportsForMaintainer(String username);
 
     /**
-     * Takes action against a {@link Courier} using a {@link NegligenceActionForm}.
-     * @param form the form to use
+     * Takes action against a {@link Courier} providing solution.
+     * @param report report to close
+     * @param solution solution text used to take action
      * @return a {@link Future} to check when action is finished
      */
-    Future<Void> takeAction(NegligenceActionForm form);
+    Future<Void> takeAction(OpenNegligenceReport report, String solution);
 
     /**
      * Subscribes to {@link NewNegligence} events.

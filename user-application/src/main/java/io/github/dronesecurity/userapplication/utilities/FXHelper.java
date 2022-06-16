@@ -9,8 +9,9 @@ import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.userapplication.auth.AuthenticationService;
 import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
 import io.github.dronesecurity.userapplication.controller.DetailController;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.ClosedNegligenceReport;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.DroneData;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceReport;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceReportWithID;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
@@ -88,17 +89,18 @@ public final class FXHelper {
     }
 
     /**
-     * Generates a {@link TableView} of {@link NegligenceReport} or subclass.
+     * Generates a {@link TableView} of {@link NegligenceReportWithID} or subclass.
      * @param detailFile name of the detail fxml file
      * @param masterDetailPane {@link MasterDetailPane} on which setting a detail node
      * @param id javafx:id to set on the table
      * @param <T> type parameter
      * @return the {@link TableView}
      */
-    public static <T extends NegligenceReport> @Nullable Pair<TableView<T>, DetailController> generateTableWithDetails(
-            final URL detailFile,
-            final @NotNull MasterDetailPane masterDetailPane,
-            final String id) {
+    public static <T extends NegligenceReportWithID> @Nullable
+            Pair<TableView<T>, DetailController> generateTableWithDetails(
+                    final URL detailFile,
+                    final @NotNull MasterDetailPane masterDetailPane,
+                    final String id) {
         try {
             final FXMLLoader loader = new FXMLLoader(detailFile);
             final Node node = loader.load();
@@ -112,8 +114,9 @@ public final class FXHelper {
         }
     }
 
-    private static <T extends NegligenceReport> @NotNull TableView<T> generateTable(final DetailController controller,
-                                                                                    final String id) {
+    private static <T extends NegligenceReportWithID> @NotNull
+            TableView<T> generateTable(final DetailController controller,
+                                       final @NotNull String id) {
         final TableView<T> table = new TableView<>();
         table.setId(id + "Table");
         table.setPlaceholder(new Label("No reports found."));
@@ -127,32 +130,44 @@ public final class FXHelper {
                 AuthenticationService.getInstance().retrieveCourier(value).onSuccess(userConsumer::accept);
 
         final TableColumn<T, String> negligentColumn =
-                initializeColumn("Negligent", String.class, "getNegligent", courierConsumer);
+                initializeColumn("Negligent", String.class, "getNegligent", courierConsumer, false);
 
         final Consumer<String> maintainerConsumer = value ->
                 AuthenticationService.getInstance().retrieveMaintainer(value).onSuccess(userConsumer::accept);
         final TableColumn<T, String> assignedToColumn =
-                initializeColumn("Assigned To", String.class, "assignedTo", maintainerConsumer);
+                initializeColumn("Assigned To", String.class, "assignedTo", maintainerConsumer, false);
 
         final Consumer<DroneData> dataConsumer = data ->
                 Platform.runLater(() -> controller.updateDetails(data));
         final TableColumn<T, DroneData> dataColumn =
-                initializeColumn("Drone Data", DroneData.class, "getData", dataConsumer);
+                initializeColumn("Drone Data", DroneData.class, "getData", dataConsumer, false);
 
         table.getColumns().addAll(Arrays.asList(negligentColumn, assignedToColumn, dataColumn));
+
+        if (id.contains("closed")) {
+            final Consumer<String> solutionConsumer = solution ->
+                    Platform.runLater(() -> controller.updateDetails(solution));
+            final TableColumn<T, String> solutionColumn =
+                    initializeColumn("Solution", String.class, "getSolution", solutionConsumer, true);
+            table.getColumns().add(solutionColumn);
+        }
+
         return table;
     }
 
-    private static <T extends NegligenceReport, S> @NotNull TableColumn<T, S> initializeColumn(
+    private static <T extends NegligenceReportWithID, S> @NotNull TableColumn<T, S> initializeColumn(
             final String header,
             final Class<S> type,
             final String methodName,
-            final Consumer<S> mouseClickedListener) {
+            final Consumer<S> mouseClickedListener,
+            final boolean isClosed) {
         final TableColumn<T, S> column = new TableColumn<>(header);
         column.setCellFactory(ignored -> new NegligenceReportCell<>(mouseClickedListener));
         column.setCellValueFactory(cell -> {
             try {
-                final S object = type.cast(Arrays.stream(NegligenceReport.class.getMethods())
+                final S object = type.cast(Arrays.stream(isClosed
+                                ? ClosedNegligenceReport.class.getMethods()
+                                : NegligenceReportWithID.class.getMethods())
                         .filter(m -> m.getName().equals(methodName))
                         .findFirst()
                         .orElseThrow()
@@ -170,10 +185,11 @@ public final class FXHelper {
     /**
      * Class to create default {@link TextFieldTableCell} adding a {@link Consumer} to trigger code on mouse clicked
      * on a non-empty cell.
-     * @param <T> table type value extending {@link NegligenceReport}
+     * @param <T> table type value extending {@link NegligenceReportWithID}
      * @param <S> cell type value
      */
-    private static final class NegligenceReportCell<T extends NegligenceReport, S> extends TextFieldTableCell<T, S> {
+    private static final class NegligenceReportCell<T extends NegligenceReportWithID, S>
+            extends TextFieldTableCell<T, S> {
 
         private final Consumer<S> consumer;
 

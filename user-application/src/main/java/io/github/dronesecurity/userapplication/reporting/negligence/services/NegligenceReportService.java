@@ -14,7 +14,6 @@ import io.github.dronesecurity.userapplication.auth.AuthenticationService;
 import io.github.dronesecurity.userapplication.events.DomainEvents;
 import io.github.dronesecurity.userapplication.events.NewNegligence;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.ClosedNegligenceReport;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceActionForm;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceReport;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.OpenNegligenceReport;
 import io.github.dronesecurity.userapplication.reporting.negligence.repo.NegligenceRepository;
@@ -107,8 +106,8 @@ public final class NegligenceReportService
      * {@inheritDoc}
      */
     @Override
-    public Future<Void> takeAction(final NegligenceActionForm form) {
-        return REPOSITORY.takeAction(form);
+    public Future<Void> takeAction(final OpenNegligenceReport report, final String solution) {
+        return REPOSITORY.takeAction(report, solution);
     }
 
     private void onNewNegligence(final @NotNull NewNegligence newNegligence) {

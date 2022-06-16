@@ -50,7 +50,8 @@ public final class NegligenceReportDeserializer extends JsonDeserializer<Neglige
         if (isClosed) {
             final Instant closingInstant =
                     DateHelper.toInstant(root.get(NegligenceConstants.CLOSING_INSTANT).asText());
-            return NegligenceReportFactory.closed(withID, closingInstant);
+            final String solution = root.get(NegligenceConstants.SOLUTION).asText();
+            return NegligenceReportFactory.closed(withID, closingInstant, solution);
         } else
             return NegligenceReportFactory.open(withID);
     }

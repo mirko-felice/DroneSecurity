@@ -17,4 +17,10 @@ public interface ClosedNegligenceReport extends NegligenceReportWithID {
      * @return the {@link Instant}
      */
     Instant getClosingInstant();
+
+    /**
+     * Gets the solution used to take action.
+     * @return the solution text
+     */
+    String getSolution();
 }

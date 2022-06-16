@@ -17,8 +17,9 @@ public interface OpenNegligenceReport extends NegligenceReportWithID {
     /**
      * Close this report.
      * @param closingInstant instant when the report has been closed
+     * @param solution solution used to take action
      * @return the closed report as a {@link ClosedNegligenceReport}
      * @throws ReportEmptyDataException if drone data of this report are empty
      */
-    ClosedNegligenceReport close(Instant closingInstant);
+    ClosedNegligenceReport close(Instant closingInstant, String solution);
 }

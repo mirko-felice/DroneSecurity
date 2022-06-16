@@ -43,12 +43,14 @@ public final class NegligenceReportFactory {
      * Creates a {@link ClosedNegligenceReport}.
      * @param report the {@link NegligenceReportWithID} to retrieve information from
      * @param closingInstant {@link Instant} when the report has been closed
+     * @param solution solution used to take action
      * @return a new {@link ClosedNegligenceReport}
      */
-    @Contract("_, _ -> new")
+    @Contract("_, _, _ -> new")
     public static @NotNull ClosedNegligenceReport closed(final @NotNull NegligenceReportWithID report,
-                                                         final Instant closingInstant) {
-        return new ClosedNegligenceReportImpl(report, closingInstant);
+                                                         final Instant closingInstant,
+                                                         final String solution) {
+        return new ClosedNegligenceReportImpl(report, closingInstant, solution);
     }
 
     /**

@@ -19,9 +19,9 @@ class OpenNegligenceReportImpl extends NegligenceReportWithIDImpl implements Ope
         super(report.getId(), report);
     }
 
-    @Contract("_ -> new")
+    @Contract("_, _ -> new")
     @Override
-    public @NotNull ClosedNegligenceReport close(final Instant closingInstant) {
-        return new ClosedNegligenceReportImpl(this, closingInstant);
+    public @NotNull ClosedNegligenceReport close(final Instant closingInstant, final String solution) {
+        return new ClosedNegligenceReportImpl(this, closingInstant, solution);
     }
 }

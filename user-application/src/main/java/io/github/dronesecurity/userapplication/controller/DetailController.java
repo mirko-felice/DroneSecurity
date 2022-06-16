@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
@@ -38,8 +39,13 @@ public class DetailController implements Initializable {
     @FXML private Label accelerometerValueLabel;
     @FXML private Label cameraLabel;
     @FXML private Label cameraValueLabel;
+
+    @FXML private Label solutionLabel;
+    @FXML private Text solutionText;
+
     private List<Node> userElements;
     private List<Node> dataElements;
+    private List<Node> solutionElements;
 
     /**
      * {@inheritDoc}
@@ -52,6 +58,7 @@ public class DetailController implements Initializable {
                 Arrays.asList(this.proximityLabel, this.proximityValueLabel,
                         this.accelerometerLabel, this.accelerometerValueLabel,
                         this.cameraLabel, this.cameraValueLabel));
+        this.solutionElements = new ArrayList<>(Arrays.asList(this.solutionLabel, this.solutionText));
     }
 
     /**
@@ -63,6 +70,7 @@ public class DetailController implements Initializable {
         this.roleValueLabel.setText(user.getRole().toString());
         this.userElements.forEach(n -> n.setVisible(true));
         this.dataElements.forEach(n -> n.setVisible(false));
+        this.solutionElements.forEach(n -> n.setVisible(false));
     }
 
     /**
@@ -75,6 +83,18 @@ public class DetailController implements Initializable {
         this.cameraValueLabel.setText(String.valueOf(data.getCamera()));
         this.userElements.forEach(n -> n.setVisible(false));
         this.dataElements.forEach(n -> n.setVisible(true));
+        this.solutionElements.forEach(n -> n.setVisible(false));
+    }
+
+    /**
+     * Update detail node using the solution of the report.
+     * @param solution solution text of the report
+     */
+    public void updateDetails(final @NotNull String solution) {
+        this.solutionText.setText(solution);
+        this.userElements.forEach(n -> n.setVisible(false));
+        this.dataElements.forEach(n -> n.setVisible(false));
+        this.solutionElements.forEach(n -> n.setVisible(true));
     }
 
     /**
@@ -90,6 +110,11 @@ public class DetailController implements Initializable {
             n.setVisible(false);
             if (GridPane.getColumnIndex(n) == CLEARABLE_LABEL_COLUMN_INDEX)
                 ((Label) n).setText(EMPTY_STRING);
+        });
+        this.solutionElements.forEach(n -> {
+            n.setVisible(false);
+            if (n instanceof Text)
+                ((Text) n).setText(EMPTY_STRING);
         });
     }
 }

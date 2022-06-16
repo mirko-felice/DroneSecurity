@@ -12,6 +12,7 @@ import io.vertx.core.Future;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.util.List;
@@ -22,8 +23,7 @@ import java.util.stream.Collectors;
  */
 public final class NegligenceRepositoryImpl implements NegligenceRepository {
 
-    private static final String REPORTS_COLLECTION_NAME = "negligenceReports";
-    private static final String FORMS_COLLECTION_NAME = "negligenceActionForms";
+    private static final String COLLECTION_NAME = "negligenceReports";
     private static NegligenceRepositoryImpl singleton;
 
     /**
@@ -50,23 +50,19 @@ public final class NegligenceRepositoryImpl implements NegligenceRepository {
                         )
         );
         final long[] id = {1};
-        VertxHelper.MONGO_CLIENT.aggregate(REPORTS_COLLECTION_NAME, command)
+        VertxHelper.MONGO_CLIENT.aggregate(COLLECTION_NAME, command)
                 .handler(result -> id[0] = result.getLong("maxID") + 1)
                 .endHandler(ignored -> {
                     final NegligenceReportWithID reportWithID = NegligenceReportFactory.withID(id[0], report);
-                    VertxHelper.MONGO_CLIENT.save(REPORTS_COLLECTION_NAME, JsonObject.mapFrom(reportWithID));
+                    VertxHelper.MONGO_CLIENT.save(COLLECTION_NAME, JsonObject.mapFrom(reportWithID));
                 });
     }
 
     @Override
-    public Future<Void> takeAction(final NegligenceActionForm form) {
-        VertxHelper.MONGO_CLIENT.save(FORMS_COLLECTION_NAME, JsonObject.mapFrom(form));
-        final NegligenceReportWithID report = form.getReport();
-        if (!(report instanceof OpenNegligenceReport))
-            throw new IllegalArgumentException("Can NOT take action because report " + report + " is not open.");
-        final ClosedNegligenceReport closedReport = ((OpenNegligenceReport) report).close(Instant.now());
+    public Future<Void> takeAction(final @NotNull OpenNegligenceReport report, final String solution) {
+        final ClosedNegligenceReport closedReport = report.close(Instant.now(), solution);
         final JsonObject query = new JsonObject().put(NegligenceConstants.ID, report.getId());
-        return VertxHelper.MONGO_CLIENT.findOneAndReplace(REPORTS_COLLECTION_NAME,
+        return VertxHelper.MONGO_CLIENT.findOneAndReplace(COLLECTION_NAME,
                 query,
                 JsonObject.mapFrom(closedReport))
                 .mapEmpty();
@@ -98,7 +94,7 @@ public final class NegligenceRepositoryImpl implements NegligenceRepository {
 
     private <T extends NegligenceReportWithID> Future<List<T>> retrieveReportsForUser(final JsonObject query,
                                                                                 final Class<T> clazz) {
-        return VertxHelper.MONGO_CLIENT.find(REPORTS_COLLECTION_NAME, query)
+        return VertxHelper.MONGO_CLIENT.find(COLLECTION_NAME, query)
                 .map(reports -> reports.stream()
                         .map(report -> Json.decodeValue(report.toString(), NegligenceReportWithID.class))
                         .filter(clazz::isInstance)
