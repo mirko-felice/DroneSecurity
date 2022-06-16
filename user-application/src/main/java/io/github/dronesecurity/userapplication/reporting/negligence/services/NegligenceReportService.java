@@ -35,29 +35,21 @@ public final class NegligenceReportService
         implements CourierNegligenceReportService, MaintainerNegligenceReportService {
 
     private static final NegligenceRepository REPOSITORY = NegligenceRepository.getInstance();
-    private static NegligenceReportService singleton;
-
-    private NegligenceReportService() { }
+    private final Consumer<NewNegligence> newNegligenceHandler;
 
     /**
-     * Get the Singleton instance.
-     * @return the singleton
+     * Build the service.
      */
-    public static NegligenceReportService getInstance() {
-        synchronized (NegligenceReportService.class) {
-            if (singleton == null)
-                singleton = new NegligenceReportService();
-            return singleton;
-        }
+    public NegligenceReportService() {
+        this.newNegligenceHandler = this::onNewNegligence;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void subscribeToNewNegligence(final @NotNull Consumer<NewNegligence> consumer) {
-        DomainEvents.register(NewNegligence.class, this::onNewNegligence);
-        DomainEvents.register(NewNegligence.class, consumer);
+    public void subscribeToNewNegligence() {
+        DomainEvents.register(NewNegligence.class, this.newNegligenceHandler);
         this.subscribeToNewNegligence(UserHelper.logged().getUsername());
     }
 
@@ -65,8 +57,17 @@ public final class NegligenceReportService
      * {@inheritDoc}
      */
     @Override
-    public void subscribeToCourierNegligence(final String courier, final Consumer<NewNegligence> consumer) {
-        DomainEvents.register(NewNegligence.class, consumer);
+    public void unsubscribeFromNewNegligence() {
+        DomainEvents.unregister(NewNegligence.class, this.newNegligenceHandler);
+        Connection.getInstance()
+                .unsubscribe(MqttTopicConstants.NEGLIGENCE_REPORTS_TOPIC + UserHelper.logged().getUsername());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void subscribeToCourierNegligence(final String courier) {
         this.subscribeToNewNegligence(courier);
     }
 

@@ -7,10 +7,8 @@ package io.github.dronesecurity.userapplication.shipping.courier.utilities;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.dronesecurity.lib.Connection;
-import io.github.dronesecurity.lib.MqttMessageParameterConstants;
-import io.github.dronesecurity.lib.MqttMessageValueConstants;
-import io.github.dronesecurity.lib.MqttTopicConstants;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.dronesecurity.lib.*;
 import io.github.dronesecurity.userapplication.utilities.VertxHelper;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
@@ -23,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  * Helper class dedicated to communication between controllers and the
  * {@link io.github.dronesecurity.userapplication.shipping.courier.CourierShippingService} and for the latter itself.
  */
-public final class ServiceHelper {
+public final class ShippingServiceHelper {
 
     /**
      * Key to get the courier username.
@@ -56,6 +54,11 @@ public final class ServiceHelper {
     public static final String NEW_ESTIMATED_ARRIVAL_KEY = "newEstimatedArrival";
 
     /**
+     * Key to get the driving mode of the drone to apply.
+     */
+    public static final String DRIVING_MODE_KEY = MqttMessageParameterConstants.MODE_PARAMETER;
+
+    /**
      * Represents the delivering of the order.
      */
     public static final String DELIVERING = MqttMessageValueConstants.DELIVERING_MESSAGE;
@@ -81,6 +84,16 @@ public final class ServiceHelper {
     public enum Operation {
 
         /**
+         * Represents the operation to list the orders.
+         */
+        LIST_ORDERS,
+
+        /**
+         * Represents the operation to save the delivery state.
+         */
+        SAVE_DELIVERY,
+
+        /**
          * Represents the operation to perform a delivery.
          */
         PERFORM_DELIVERY,
@@ -91,19 +104,24 @@ public final class ServiceHelper {
         RESCHEDULE_DELIVERY,
 
         /**
-         * Represents the operation to list the orders.
-         */
-        LIST_ORDERS,
-
-        /**
          * Represents the operation to call back the drone.
          */
         CALL_BACK,
 
         /**
-         * Represents the operation to save the delivery state.
+         * Represents the operation to change driving mode of the drone.
          */
-        SAVE_DELIVERY;
+        CHANGE_MODE,
+
+        /**
+         * Represents the operation to tell drone to proceed.
+         */
+        PROCEED,
+
+        /**
+         * Represents the operation to tell drone to halt.
+         */
+        HALT;
 
         @Override
         public String toString() {
@@ -111,7 +129,7 @@ public final class ServiceHelper {
         }
     }
 
-    private ServiceHelper() { }
+    private ShippingServiceHelper() { }
 
     /**
      * Performs the HTTP Get method requesting a particular {@link Operation}.
@@ -154,12 +172,46 @@ public final class ServiceHelper {
 
     /**
      * Sends the message to call back the drone on AWS.
-     * @param orderId drone identifier to track
+     * @param orderId order identifier to track
      */
     public static void sendCallBackMessage(final long orderId) {
         final JsonNode recallMessage = new ObjectMapper().createObjectNode()
                 .put(MqttMessageParameterConstants.SYNC_PARAMETER,
                         MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE);
         Connection.getInstance().publish(MqttTopicConstants.ORDER_TOPIC + orderId, recallMessage);
+    }
+
+    /**
+     * Sends the message to change driving mode of the drone.
+     * @param orderId order identifier to track
+     * @param drivingMode {@link DrivingMode} to set
+     */
+    public static void sendChangeModeMessage(final long orderId, final DrivingMode drivingMode) {
+        final ObjectNode jsonNode = new ObjectMapper().createObjectNode();
+        final String modeMessage = drivingMode == DrivingMode.AUTOMATIC
+                ? MqttMessageValueConstants.AUTOMATIC_MODE_MESSAGE
+                : MqttMessageValueConstants.MANUAL_MODE_MESSAGE;
+        jsonNode.put(MqttMessageParameterConstants.MODE_PARAMETER, modeMessage);
+        Connection.getInstance().publish(MqttTopicConstants.CONTROL_TOPIC + orderId, jsonNode);
+    }
+
+    /**
+     * Sends the message to tell drone to proceed.
+     * @param orderId order identifier to track
+     */
+    public static void sendProceedMessage(final long orderId) {
+        final ObjectNode jsonNode = new ObjectMapper().createObjectNode();
+        jsonNode.put(MqttMessageParameterConstants.MOVE_PARAMETER, MqttMessageValueConstants.PROCEED_MESSAGE);
+        Connection.getInstance().publish(MqttTopicConstants.CONTROL_TOPIC + orderId, jsonNode);
+    }
+
+    /**
+     * Sends the message to tell drone to halt.
+     * @param orderId order identifier to track
+     */
+    public static void sendHaltMessage(final long orderId) {
+        final ObjectNode jsonNode = new ObjectMapper().createObjectNode();
+        jsonNode.put(MqttMessageParameterConstants.MOVE_PARAMETER, MqttMessageValueConstants.HALT_MESSAGE);
+        Connection.getInstance().publish(MqttTopicConstants.CONTROL_TOPIC + orderId, jsonNode);
     }
 }

@@ -11,7 +11,7 @@ import io.github.dronesecurity.userapplication.events.DomainEvents;
 import io.github.dronesecurity.userapplication.events.OrdersUpdate;
 import io.github.dronesecurity.userapplication.shipping.courier.entities.*;
 import io.github.dronesecurity.userapplication.shipping.courier.utilities.OrderConstants;
-import io.github.dronesecurity.userapplication.shipping.courier.utilities.ServiceHelper;
+import io.github.dronesecurity.userapplication.shipping.courier.utilities.ShippingServiceHelper;
 import io.github.dronesecurity.userapplication.utilities.*;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +39,7 @@ public final class OrdersController implements Initializable {
 
     private static final String MONITORING_FXML = "monitoring.fxml";
     private static final String DATA_FXML = "data.fxml";
+    private final Consumer<OrdersUpdate> ordersUpdateHandler;
     @FXML private TableView<Order> table;
     @FXML private TableColumn<Order, String> orderIdColumn;
     @FXML private TableColumn<Order, String> orderDateColumn;
@@ -48,6 +50,13 @@ public final class OrdersController implements Initializable {
     @FXML private Button performDeliveryButton;
     @FXML private Button rescheduleDeliveryButton;
     @FXML private Button showDataHistoryButton;
+
+    /**
+     * Build the controller.
+     */
+    public OrdersController() {
+        this.ordersUpdateHandler = ignored -> this.refreshOrders();
+    }
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -106,7 +115,9 @@ public final class OrdersController implements Initializable {
             }
         });
 
-        DomainEvents.register(OrdersUpdate.class, ignored -> this.refreshOrders());
+        DomainEvents.register(OrdersUpdate.class, this.ordersUpdateHandler);
+        this.table.getScene().getWindow().setOnHidden(ignored ->
+                DomainEvents.unregister(OrdersUpdate.class, this.ordersUpdateHandler));
     }
 
     @FXML
@@ -115,10 +126,10 @@ public final class OrdersController implements Initializable {
             DialogUtils.createDronePickerDialog("Choose the Drone to use for delivery")
                     .showAndWait().ifPresent(droneId -> {
                         final JsonObject body = new JsonObject()
-                                .put(ServiceHelper.ORDER_KEY, order)
-                                .put(ServiceHelper.COURIER_KEY, UserHelper.logged().getUsername())
-                                .put(ServiceHelper.DRONE_ID_KEY, droneId);
-                        ServiceHelper.postJson(ServiceHelper.Operation.PERFORM_DELIVERY, body)
+                                .put(ShippingServiceHelper.ORDER_KEY, order)
+                                .put(ShippingServiceHelper.COURIER_KEY, UserHelper.logged().getUsername())
+                                .put(ShippingServiceHelper.DRONE_ID_KEY, droneId);
+                        ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.PERFORM_DELIVERY, body)
                                 .onSuccess(h -> Platform.runLater(() -> {
                                     ((Courier) UserHelper.logged()).removeDrone(droneId);
                                     this.table.getSelectionModel().clearSelection();
@@ -141,12 +152,14 @@ public final class OrdersController implements Initializable {
         this.getSelectedOrder().flatMap(o -> CastHelper.safeCast(o, FailedOrder.class)).ifPresent(order ->
                 DialogUtils.createDatePickerDialog().showAndWait().ifPresent(newEstimatedArrival -> {
                     final JsonObject body = new JsonObject()
-                            .put(ServiceHelper.ORDER_KEY, order)
-                            .put(ServiceHelper.NEW_ESTIMATED_ARRIVAL_KEY, DateHelper.toString(newEstimatedArrival));
-                    ServiceHelper.postJson(ServiceHelper.Operation.RESCHEDULE_DELIVERY, body).onSuccess(ignored -> {
-                        this.table.getSelectionModel().clearSelection();
-                        this.refreshOrders();
-                    });
+                            .put(ShippingServiceHelper.ORDER_KEY, order)
+                            .put(ShippingServiceHelper.NEW_ESTIMATED_ARRIVAL_KEY,
+                                    DateHelper.toString(newEstimatedArrival));
+                    ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.RESCHEDULE_DELIVERY, body)
+                            .onSuccess(ignored -> {
+                                this.table.getSelectionModel().clearSelection();
+                                this.refreshOrders();
+                            });
                 }));
     }
 
@@ -160,7 +173,7 @@ public final class OrdersController implements Initializable {
     }
 
     private void refreshOrders() {
-        ServiceHelper.getOperation(ServiceHelper.Operation.LIST_ORDERS).onSuccess(res -> {
+        ShippingServiceHelper.getOperation(ShippingServiceHelper.Operation.LIST_ORDERS).onSuccess(res -> {
             final List<Order> orders = res.bodyAsJsonArray().stream()
                     .map(o -> Json.decodeValue(o.toString(), Order.class))
                     .sorted(Comparator.comparing(Order::getId))

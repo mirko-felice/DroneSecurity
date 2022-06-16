@@ -23,5 +23,4 @@ public interface NegligenceActionForm {
      * @return the solution as a {@link String}
      */
     String getSolution();
-    // TODO think about real solutions
 }

@@ -8,8 +8,10 @@ package io.github.dronesecurity.userapplication.drone.monitoring;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.dronesecurity.lib.*;
+import io.github.dronesecurity.lib.AlertLevel;
+import io.github.dronesecurity.lib.Connection;
+import io.github.dronesecurity.lib.MqttMessageParameterConstants;
+import io.github.dronesecurity.lib.MqttTopicConstants;
 import io.github.dronesecurity.userapplication.drone.monitoring.entities.DroneData;
 import io.github.dronesecurity.userapplication.drone.monitoring.entities.DroneDataImpl;
 import io.github.dronesecurity.userapplication.drone.monitoring.repo.DataRepository;
@@ -110,36 +112,6 @@ public final class UserMonitoringService {
     }
 
     // TODO negligence reports non si vede la solution
-    /**
-     * Change the drone driving mode.
-     * @param drivingMode {@link DrivingMode} to set
-     */
-    public void changeMode(final DrivingMode drivingMode) {
-        final ObjectNode jsonNode = new ObjectMapper().createObjectNode();
-        final String modeMessage = drivingMode == DrivingMode.AUTOMATIC
-                ? MqttMessageValueConstants.AUTOMATIC_MODE_MESSAGE
-                : MqttMessageValueConstants.MANUAL_MODE_MESSAGE;
-        jsonNode.put(MqttMessageParameterConstants.MODE_PARAMETER, modeMessage);
-        Connection.getInstance().publish(MqttTopicConstants.CONTROL_TOPIC + this.orderId, jsonNode);
-    }
-
-    /**
-     * Makes the drone proceeding.
-     */
-    public void proceed() {
-        final ObjectNode jsonNode = new ObjectMapper().createObjectNode();
-        jsonNode.put(MqttMessageParameterConstants.MOVE_PARAMETER, MqttMessageValueConstants.PROCEED_MESSAGE);
-        Connection.getInstance().publish(MqttTopicConstants.CONTROL_TOPIC + this.orderId, jsonNode);
-    }
-
-    /**
-     * Halts the drone.
-     */
-    public void halt() {
-        final ObjectNode jsonNode = new ObjectMapper().createObjectNode();
-        jsonNode.put(MqttMessageParameterConstants.MOVE_PARAMETER, MqttMessageValueConstants.HALT_MESSAGE);
-        Connection.getInstance().publish(MqttTopicConstants.CONTROL_TOPIC + this.orderId, jsonNode);
-    }
 
     /**
      * Retrieves data history related to the order monitoring.

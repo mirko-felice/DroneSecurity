@@ -5,11 +5,14 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.lib.*;
+import io.github.dronesecurity.lib.DrivingMode;
+import io.github.dronesecurity.lib.MqttMessageParameterConstants;
+import io.github.dronesecurity.lib.MqttMessageValueConstants;
 import io.github.dronesecurity.userapplication.drone.monitoring.UserMonitoringService;
 import io.github.dronesecurity.userapplication.events.*;
 import io.github.dronesecurity.userapplication.reporting.negligence.services.CourierNegligenceReportService;
-import io.github.dronesecurity.userapplication.shipping.courier.utilities.ServiceHelper;
+import io.github.dronesecurity.userapplication.reporting.negligence.services.NegligenceReportService;
+import io.github.dronesecurity.userapplication.shipping.courier.utilities.ShippingServiceHelper;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.vertx.core.json.JsonObject;
@@ -37,6 +40,7 @@ public final class MonitorController implements Initializable {
     private final CourierNegligenceReportService negligenceReportService;
     private final long orderId;
 
+    private final Consumer<NewNegligence> newNegligenceHandler;
     private final Consumer<CriticalSituation> criticalSituationHandler;
     private final Consumer<DangerousSituation> dangerousSituationHandler;
     private final Consumer<StableSituation> stableSituationHandler;
@@ -80,7 +84,8 @@ public final class MonitorController implements Initializable {
         this.wasCritical = false;
         this.orderId = orderId;
         this.monitoringService = new UserMonitoringService(orderId);
-        this.negligenceReportService = CourierNegligenceReportService.getInstance();
+        this.negligenceReportService = new NegligenceReportService();
+        this.newNegligenceHandler = this::onNewNegligence;
 
         this.criticalSituationHandler = this::onCriticalSituation;
         this.dangerousSituationHandler = this::onDangerousSituation;
@@ -93,12 +98,8 @@ public final class MonitorController implements Initializable {
     public void initialize(final URL location, final ResourceBundle resources) {
         this.accordion.setExpandedPane(this.controlsPane);
 
-        this.negligenceReportService.subscribeToNewNegligence(newNegligence ->
-                Platform.runLater(() -> DialogUtils.showInfoNotification("INFO",
-                        "You have committed a negligence. The drone has been halted for security purpose."
-                        + "\nMaintainer " + newNegligence.getReport().assignedTo()
-                        + " will take care of this. Go to the 'reports' window to show more information about it.",
-                        this.switchMode.getScene().getWindow())));
+        DomainEvents.register(NewNegligence.class, this.newNegligenceHandler);
+        this.negligenceReportService.subscribeToNewNegligence();
 
         DomainEvents.register(CriticalSituation.class, this.criticalSituationHandler);
         DomainEvents.register(DangerousSituation.class, this.dangerousSituationHandler);
@@ -149,12 +150,23 @@ public final class MonitorController implements Initializable {
         this.currentAccelerometerZValue.setReorderable(false);
 
         this.switchMode.selectedProperty().addListener((ignored, unused, isAutomatic) -> {
+            final JsonObject body = new JsonObject().put(ShippingServiceHelper.ORDER_ID_KEY, this.orderId);
             if (Boolean.TRUE.equals(isAutomatic))
-                this.monitoringService.changeMode(DrivingMode.AUTOMATIC);
+                ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.CHANGE_MODE,
+                        body.put(ShippingServiceHelper.DRIVING_MODE_KEY, DrivingMode.AUTOMATIC.toString()));
             else
-                this.monitoringService.changeMode(DrivingMode.MANUAL);
+                ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.CHANGE_MODE,
+                        body.put(ShippingServiceHelper.DRIVING_MODE_KEY, DrivingMode.MANUAL.toString()));
             this.checkButtons(this.deliveryStatusLabel.getText(), isAutomatic, this.currentSituationLabel.getText());
         });
+    }
+
+    private void onNewNegligence(final NewNegligence newNegligence) {
+        Platform.runLater(() -> DialogUtils.showInfoNotification("INFO",
+                "You have committed a negligence. The drone has been halted for security purpose."
+                        + "\nMaintainer " + newNegligence.getReport().assignedTo()
+                        + " will take care of this. Go to the 'reports' window to show more information about it.",
+                this.switchMode.getScene().getWindow()));
     }
 
     private void onDataRead(final DataRead dataRead) {
@@ -221,14 +233,15 @@ public final class MonitorController implements Initializable {
                 case MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: cyan;");
                     DialogUtils.showInfoDialog("Drone successfully returned.", () -> {
-                                DomainEvents.unregister(CriticalSituation.class, this.criticalSituationHandler);
-                                DomainEvents.unregister(DangerousSituation.class, this.dangerousSituationHandler);
-                                DomainEvents.unregister(StableSituation.class, this.stableSituationHandler);
-                                DomainEvents.unregister(DataRead.class, this.dataReadHandler);
-                                DomainEvents.unregister(StatusChanged.class, this.statusChangedHandler);
+                        DomainEvents.unregister(NewNegligence.class, this.newNegligenceHandler);
+                        DomainEvents.unregister(CriticalSituation.class, this.criticalSituationHandler);
+                        DomainEvents.unregister(DangerousSituation.class, this.dangerousSituationHandler);
+                        DomainEvents.unregister(StableSituation.class, this.stableSituationHandler);
+                        DomainEvents.unregister(DataRead.class, this.dataReadHandler);
+                        DomainEvents.unregister(StatusChanged.class, this.statusChangedHandler);
 
-                                ((Stage) this.accordion.getScene().getWindow()).close();
-                            });
+                        ((Stage) this.accordion.getScene().getWindow()).close();
+                    });
                     break;
                 default:
             }
@@ -246,30 +259,32 @@ public final class MonitorController implements Initializable {
 
     @FXML
     private void recallDrone() {
-        ServiceHelper.postJson(ServiceHelper.Operation.CALL_BACK,
-                new JsonObject().put(ServiceHelper.ORDER_ID_KEY, this.orderId));
+        ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.CALL_BACK,
+                new JsonObject().put(ShippingServiceHelper.ORDER_ID_KEY, this.orderId));
         this.recallButton.setDisable(true);
     }
 
     @FXML
     private void proceed() {
-        this.monitoringService.proceed();
+        ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.PROCEED,
+                new JsonObject().put(ShippingServiceHelper.ORDER_ID_KEY, this.orderId));
         this.proceedButton.setDisable(true);
         this.haltButton.setDisable(false);
     }
 
     @FXML
     private void halt() {
-        this.monitoringService.halt();
+        ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.HALT,
+                new JsonObject().put(ShippingServiceHelper.ORDER_ID_KEY, this.orderId));
         this.haltButton.setDisable(true);
         this.proceedButton.setDisable(false);
     }
 
     private void sendSaveDeliveryMessage(final String status) {
         final JsonObject body = new JsonObject();
-        body.put(ServiceHelper.ORDER_ID_KEY, this.orderId);
-        body.put(ServiceHelper.STATE_KEY, status);
-        ServiceHelper.postJson(ServiceHelper.Operation.SAVE_DELIVERY, body)
+        body.put(ShippingServiceHelper.ORDER_ID_KEY, this.orderId);
+        body.put(ShippingServiceHelper.STATE_KEY, status);
+        ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.SAVE_DELIVERY, body)
                 .onSuccess(ignored -> DomainEvents.raise(new OrdersUpdate()));
     }
 

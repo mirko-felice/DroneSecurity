@@ -22,6 +22,55 @@
     }
   ],
   "paths": {
+    "/listOrders": {
+      "get": {
+        "operationId": "listOrders",
+        "responses": {
+          "200": {
+            "description": "Successfully got Orders.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Order"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/saveDelivery" : {
+      "post": {
+        "operationId": "saveDelivery",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "orderId": {
+                    "type": "integer"
+                  },
+                  "state": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully save the delivery status"
+          }
+        }
+      }
+    },
     "/performDelivery": {
       "post": {
         "operationId": "performDelivery",
@@ -84,55 +133,6 @@
         }
       }
     },
-    "/listOrders": {
-      "get": {
-        "operationId": "listOrders",
-        "responses": {
-          "200": {
-            "description": "Successfully got Orders.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Order"
-                  },
-                  "uniqueItems": true
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/saveDelivery" : {
-      "post": {
-        "operationId": "saveDelivery",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "orderId": {
-                    "type": "integer"
-                  },
-                  "state": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successfully save the delivery status"
-          }
-        }
-      }
-    },
     "/callBack": {
       "post": {
         "operationId": "callBack",
@@ -154,6 +154,84 @@
         "responses": {
           "200": {
             "description": "Successfully called back drone."
+          }
+        }
+      }
+    },
+    "/changeMode": {
+      "post": {
+        "operationId": "changeMode",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "orderId": {
+                    "type": "integer"
+                  },
+                  "mode": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Driving mode successfully changed."
+          }
+        }
+      }
+    },
+    "/proceed": {
+      "post": {
+        "operationId": "proceed",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "orderId": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully proceeding drone."
+          }
+        }
+      }
+    },
+    "/halt": {
+      "post": {
+        "operationId": "halt",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "orderId": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully halting drone."
           }
         }
       }

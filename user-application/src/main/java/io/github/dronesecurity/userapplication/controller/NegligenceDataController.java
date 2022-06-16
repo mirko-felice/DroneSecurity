@@ -11,6 +11,7 @@ import io.github.dronesecurity.userapplication.reporting.negligence.entities.Neg
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.OpenNegligenceReport;
 import io.github.dronesecurity.userapplication.reporting.negligence.services.CourierNegligenceReportService;
 import io.github.dronesecurity.userapplication.reporting.negligence.services.MaintainerNegligenceReportService;
+import io.github.dronesecurity.userapplication.reporting.negligence.services.NegligenceReportService;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.UserHelper;
 import io.vertx.core.Future;
@@ -113,14 +114,12 @@ public class NegligenceDataController implements Initializable {
         final Future<List<ClosedNegligenceReport>> closedReportsFuture;
         switch (user.getRole()) {
             case COURIER:
-                final CourierNegligenceReportService courierService =
-                        CourierNegligenceReportService.getInstance();
+                final CourierNegligenceReportService courierService = new NegligenceReportService();
                 openReportsFuture = courierService.retrieveOpenReportsForCourier(username);
                 closedReportsFuture = courierService.retrieveClosedReportsForCourier(username);
                 break;
             case MAINTAINER:
-                final MaintainerNegligenceReportService maintainerService =
-                        MaintainerNegligenceReportService.getInstance();
+                final MaintainerNegligenceReportService maintainerService = new NegligenceReportService();
                 openReportsFuture = maintainerService.retrieveOpenReportsForMaintainer(username);
                 closedReportsFuture = maintainerService.retrieveClosedReportsForMaintainer(username);
                 break;

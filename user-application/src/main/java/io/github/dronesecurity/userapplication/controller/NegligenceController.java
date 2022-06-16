@@ -6,10 +6,12 @@
 package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.userapplication.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.events.DomainEvents;
 import io.github.dronesecurity.userapplication.events.NewNegligence;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceActionFormImpl;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.OpenNegligenceReport;
 import io.github.dronesecurity.userapplication.reporting.negligence.services.MaintainerNegligenceReportService;
+import io.github.dronesecurity.userapplication.reporting.negligence.services.NegligenceReportService;
 import io.github.dronesecurity.userapplication.utilities.CastHelper;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.UserHelper;
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 /**
  * Controller dedicated to control main window of a {@link Maintainer}.
@@ -34,6 +37,7 @@ public class NegligenceController implements Initializable {
 
     private static final String NEGLIGENCE_DATA_FXML = "negligenceData.fxml";
     private final MaintainerNegligenceReportService negligenceReportService;
+    private final Consumer<NewNegligence> newNegligenceHandler;
     @FXML private GridPane pane;
     @FXML private TextArea solution;
     @FXML private Button takeActionButton;
@@ -43,10 +47,11 @@ public class NegligenceController implements Initializable {
      * Build the controller.
      */
     public NegligenceController() {
-        this.negligenceReportService = MaintainerNegligenceReportService.getInstance();
+        this.negligenceReportService = new NegligenceReportService();
+        this.newNegligenceHandler = this::onNewNegligence;
+        DomainEvents.register(NewNegligence.class, this.newNegligenceHandler);
         CastHelper.safeCast(UserHelper.logged(), Maintainer.class).ifPresent(maintainer -> maintainer.getCouriers()
-                .forEach(courier ->
-                        this.negligenceReportService.subscribeToCourierNegligence(courier, this::onNewNegligence)));
+                .forEach(this.negligenceReportService::subscribeToCourierNegligence));
     }
 
     /**
@@ -63,6 +68,8 @@ public class NegligenceController implements Initializable {
                 this.takeActionButton.setDisable(isSelected);
                 this.solution.setDisable(isSelected);
             });
+            this.pane.getScene().getWindow().setOnHidden(ignored ->
+                    DomainEvents.unregister(NewNegligence.class, this.newNegligenceHandler));
         } catch (IOException e) {
             LoggerFactory.getLogger(this.getClass()).warn("Can NOT load reports window.", e);
         }

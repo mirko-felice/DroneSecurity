@@ -25,7 +25,7 @@ class DroneTest {
     @Test
     void testDroneLifecycle() throws InterruptedException {
         final Drone drone = new Drone("Test Drone");
-        // TODO pensare a se spostare la logica del recall e le altre azioni al courier
+
         drone.activate();
         Assertions.assertTrue(drone.isOperating());
 

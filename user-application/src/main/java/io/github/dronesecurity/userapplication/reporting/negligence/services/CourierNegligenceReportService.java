@@ -12,7 +12,6 @@ import io.github.dronesecurity.userapplication.reporting.negligence.entities.Ope
 import io.vertx.core.Future;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Service dedicated to {@link Courier} needs, related to negligence reporting.
@@ -35,15 +34,11 @@ public interface CourierNegligenceReportService {
 
     /**
      * Subscribe to {@link NewNegligence} events.
-     * @param consumer {@link Consumer} to execute when a {@link NewNegligence} is raised
      */
-    void subscribeToNewNegligence(Consumer<NewNegligence> consumer);
+    void subscribeToNewNegligence();
 
     /**
-     * Get the instance of this service.
-     * @return the instance
+     * Unsubscribe from {@link NewNegligence} events.
      */
-    static CourierNegligenceReportService getInstance() {
-        return NegligenceReportService.getInstance();
-    }
+    void unsubscribeFromNewNegligence();
 }

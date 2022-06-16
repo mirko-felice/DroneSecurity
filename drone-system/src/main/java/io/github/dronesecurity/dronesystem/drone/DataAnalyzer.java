@@ -17,8 +17,8 @@ import java.util.Map;
 public final class DataAnalyzer {
 
     private static final double PROXIMITY_WARNING_THRESHOLD = 50;
-    private static final double PROXIMITY_CRITICAL_THRESHOLD = 30;
-    private static final double ACCELEROMETER_CRITICAL_THRESHOLD = 50;
+    private static final double PROXIMITY_CRITICAL_THRESHOLD = 25;
+    private static final double ACCELEROMETER_CRITICAL_THRESHOLD = 45;
     private static final double ACCELEROMETER_WARNING_THRESHOLD = 30;
 
     /**
@@ -47,7 +47,7 @@ public final class DataAnalyzer {
         if (!accelerometerData.isEmpty()) {
             final int roll = accelerometerData.get(MqttMessageParameterConstants.ROLL);
             final int pitch = accelerometerData.get(MqttMessageParameterConstants.PITCH);
-            // TODO yaw?
+            // Yaw angle is not analyzed because of its uselessness in this context
 
             final boolean isWarning = Math.abs(roll) > ACCELEROMETER_WARNING_THRESHOLD
                                     || Math.abs(pitch) > ACCELEROMETER_WARNING_THRESHOLD;
