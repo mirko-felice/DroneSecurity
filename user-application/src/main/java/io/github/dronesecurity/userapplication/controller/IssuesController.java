@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -59,11 +60,11 @@ public class IssuesController implements Initializable {
     @FXML private TableColumn<CreatedIssue, String> openIssuesSubject;
     @FXML private TableColumn<CreatedIssue, String> openIssuesCourier;
     @FXML private TableColumn<CreatedIssue, String> openIssuesDroneId;
-    @FXML private TableView<CreatedIssue> closedIssuesTable;
-    @FXML private TableColumn<CreatedIssue, String> closedIssuesId;
-    @FXML private TableColumn<CreatedIssue, String> closedIssuesSubject;
-    @FXML private TableColumn<CreatedIssue, String> closedIssuesCourier;
-    @FXML private TableColumn<CreatedIssue, String> closedIssuesDroneId;
+    @FXML private TableView<ClosedIssue> closedIssuesTable;
+    @FXML private TableColumn<ClosedIssue, String> closedIssuesId;
+    @FXML private TableColumn<ClosedIssue, String> closedIssuesSubject;
+    @FXML private TableColumn<ClosedIssue, String> closedIssuesCourier;
+    @FXML private TableColumn<ClosedIssue, String> closedIssuesDroneId;
 
     // Closing issue panel
     @FXML private AnchorPane closingIssuePane;
@@ -104,16 +105,16 @@ public class IssuesController implements Initializable {
 
         this.initTable(this.openIssuesTable, this.openIssuesId, this.openIssuesSubject, this.openIssuesCourier,
                 this.openIssuesDroneId, issue -> {
-            this.currentlySelectedIssue = issue;
-            this.solutionLabel.setVisible(false);
-            this.closedIssueSolution.setVisible(false);
-            this.visionIssueButton.setVisible(
-                    this.role == Role.MAINTAINER && IssueStringHelper.STATUS_OPEN.equals(issue.getState()));
-            this.goToClosingPageButton.setVisible(
-                    this.role == Role.MAINTAINER && IssueStringHelper.STATUS_VISIONED.equals(issue.getState()));
-            this.newIssueButton.setVisible(false);
+                    this.currentlySelectedIssue = issue;
+                    this.solutionLabel.setVisible(false);
+                    this.closedIssueSolution.setVisible(false);
+                    this.visionIssueButton.setVisible(
+                            this.role == Role.MAINTAINER && IssueStringHelper.STATUS_OPEN.equals(issue.getState()));
+                    this.goToClosingPageButton.setVisible(
+                            this.role == Role.MAINTAINER && IssueStringHelper.STATUS_VISIONED.equals(issue.getState()));
+                    this.newIssueButton.setVisible(false);
 
-            this.fillIssueFields();
+                    this.fillIssueFields();
         });
 
         this.initTable(this.closedIssuesTable, this.closedIssuesId, this.closedIssuesSubject, this.closedIssuesCourier,
@@ -121,7 +122,7 @@ public class IssuesController implements Initializable {
                     this.currentlySelectedIssue = issue;
                     this.solutionLabel.setVisible(true);
                     this.closedIssueSolution.setVisible(true);
-                    this.closedIssueSolution.setText(((ClosedIssue) issue).getIssueSolution());
+                    this.closedIssueSolution.setText(issue.getIssueSolution());
                     this.visionIssueButton.setVisible(false);
                     this.goToClosingPageButton.setVisible(false);
                     this.newIssueButton.setVisible(false);
@@ -153,7 +154,7 @@ public class IssuesController implements Initializable {
     @FXML
     private void visionIssue() {
         CastHelper.safeCast(this.currentlySelectedIssue, OpenIssue.class).ifPresent(openIssue ->
-                this.issueReportService.visionIssue(openIssue).onComplete(res -> {
+                this.issueReportService.visionIssue(openIssue.visionIssue()).onComplete(res -> {
                     if (Boolean.TRUE.equals(res.result())) {
                         Platform.runLater(() -> {
                             this.refreshOpenIssues();
@@ -161,7 +162,12 @@ public class IssuesController implements Initializable {
                                     this.openIssuesTable.getSelectionModel();
 
                             selectionModel.clearSelection();
-                            selectionModel.select(this.currentlySelectedIssue.getId() - 1);
+                            final Optional<CreatedIssue> a =
+                                    this.openIssuesTable.getItems()
+                                            .filtered(c -> c.getId() == this.currentlySelectedIssue.getId())
+                                            .stream()
+                                            .findFirst();
+                            a.ifPresent(selectionModel::select);
                         });
                     } else
                         DialogUtils.showErrorDialog("Error connecting to issue information. Please retry.");
@@ -171,25 +177,30 @@ public class IssuesController implements Initializable {
     @FXML
     private void closeIssue() {
         CastHelper.safeCast(this.currentlySelectedIssue, VisionedIssue.class).ifPresent(visionedIssue ->
-                this.issueReportService.closeIssue(visionedIssue, this.solutionTextArea.getText())
+                this.issueReportService.closeIssue(visionedIssue.closeIssue(this.solutionTextArea.getText()))
                         .onSuccess(succeeded -> {
                             if (Boolean.TRUE.equals(succeeded)) {
                                 Platform.runLater(() -> {
-                                    final ClosedIssue closedIssue =
-                                            visionedIssue.closeIssue(this.solutionTextArea.getText());
                                     this.refreshOpenIssues();
                                     this.issueReportService.getClosedIssueReports().onSuccess(issues ->
+                                        Platform.runLater(() -> {
                                             this.closedIssuesTable.setItems(FXCollections.observableList(issues.stream()
                                                     .sorted(Comparator.comparingInt(CreatedIssue::getId))
-                                                    .collect(Collectors.toList()))));
-
-                                    this.currentlySelectedIssue = closedIssue;
-
-                                    this.openIssuesTable.getSelectionModel().clearSelection();
-                                    this.closedIssuesTable.getSelectionModel().select(this.currentlySelectedIssue);
-                                    this.cancelClosing();
+                                                    .collect(Collectors.toList())));
+                                            final Optional<ClosedIssue> selectedIssue = this.closedIssuesTable
+                                                    .getItems()
+                                                    .filtered(c -> c.getId() == this.currentlySelectedIssue.getId())
+                                                    .stream().findFirst();
+                                            selectedIssue.ifPresent(issue ->
+                                                    this.closedIssuesTable.getSelectionModel().select(issue));
+                                    }));
                                 });
-                            }
+
+                                this.openIssuesTable.getSelectionModel().clearSelection();
+
+                                this.cancelClosing();
+                            } else
+                                DialogUtils.showErrorDialog("Error connecting to issue information. Please retry.");
                         }));
     }
 
@@ -215,18 +226,18 @@ public class IssuesController implements Initializable {
         this.selectedIssuePane.setVisible(true);
     }
 
-    private void initTable(final @NotNull TableView<CreatedIssue> table,
-                           final @NotNull TableColumn<CreatedIssue, String> idColumn,
-                           final @NotNull TableColumn<CreatedIssue, String> subjectColumn,
-                           final @NotNull TableColumn<CreatedIssue, String> courierColumn,
-                           final @NotNull TableColumn<CreatedIssue, String> droneIdColumn,
-                           final Consumer<CreatedIssue> consumer) {
+    private <T extends CreatedIssue> void initTable(final @NotNull TableView<T> table,
+                           final @NotNull TableColumn<T, String> idColumn,
+                           final @NotNull TableColumn<T, String> subjectColumn,
+                           final @NotNull TableColumn<T, String> courierColumn,
+                           final @NotNull TableColumn<T, String> droneIdColumn,
+                           final Consumer<T> consumer) {
         idColumn.setCellValueFactory(val -> new SimpleStringProperty("#" + val.getValue().getId()));
         subjectColumn.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getSubject()));
         courierColumn.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getCourier()));
         droneIdColumn.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getDroneId()));
 
-        final TableView.TableViewSelectionModel<CreatedIssue> selectionModel = table.getSelectionModel();
+        final TableView.TableViewSelectionModel<T> selectionModel = table.getSelectionModel();
         selectionModel.setSelectionMode(SelectionMode.SINGLE);
         selectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null)

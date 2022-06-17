@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.dronesystem.performance.drone;
 
-import io.github.dronesecurity.dronesystem.drone.Drone;
+import io.github.dronesecurity.dronesystem.drone.entities.Drone;
 import io.github.dronesecurity.dronesystem.performance.drone.sensordata.AccelerometerData;
 import io.github.dronesecurity.dronesystem.performance.drone.sensordata.CameraData;
 import io.github.dronesecurity.dronesystem.performance.drone.sensordata.ProximityData;

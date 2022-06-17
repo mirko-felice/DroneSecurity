@@ -3,7 +3,7 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.dronesystem.drone;
+package io.github.dronesecurity.dronesystem.drone.entities.sensors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,23 +11,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Item representing a real accelerometer sensor and observing its values.
+ * Item representing a real proximity sensor and observing its values.
  */
-public class Accelerometer extends AbstractSensor<Map<String, Double>> {
+public class ProximitySensor extends AbstractSensor<Double> {
 
-    private final Map<String, Double> values = new ConcurrentHashMap<>();
+    private double distance;
 
     /**
      * {@inheritDoc}
      */
     @Override
     protected String getScriptName() {
-       return this.isRaspberry() ? "accelerometer" : "accelerometerSimulator";
+        return this.isRaspberry() ? "proximitySensor" : "proximitySimulator";
     }
 
     /**
@@ -37,15 +37,9 @@ public class Accelerometer extends AbstractSensor<Map<String, Double>> {
     public void readData() {
         if (this.isOn() && getOutputStream().size() > 0) {
             final String orig = getOutputStream().toString(StandardCharsets.UTF_8).trim();
-
-            final int index = orig.lastIndexOf("\"accelerometer") - 1;
-
-            final String jsonValues = orig.substring(index);
-
             try {
-                final JsonNode accelValues = new ObjectMapper().readTree(jsonValues)
-                        .get(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER);
-                accelValues.fields().forEachRemaining(k -> this.values.put(k.getKey(), k.getValue().asDouble()));
+                final JsonNode proximityData = new ObjectMapper().readTree(orig);
+                this.distance = proximityData.get(MqttMessageParameterConstants.PROXIMITY_PARAMETER).asDouble();
             } catch (JsonProcessingException e) {
                 LoggerFactory.getLogger(getClass()).error("Can NOT read json correctly.", e);
             }
@@ -57,7 +51,7 @@ public class Accelerometer extends AbstractSensor<Map<String, Double>> {
      * {@inheritDoc}
      */
     @Override
-    public Map<String, Double> getData() {
-        return Map.copyOf(this.values);
+    public Double getData() {
+        return BigDecimal.valueOf(this.distance).setScale(2, RoundingMode.HALF_EVEN).doubleValue();
     }
 }

@@ -76,16 +76,16 @@ public final class IssueReportService implements CourierIssueReportService, Main
      * {@inheritDoc}
      */
     @Override
-    public Future<Boolean> visionIssue(final OpenIssue issue) {
-        return REPOSITORY.visionOpenIssue(issue);
+    public Future<Boolean> visionIssue(final VisionedIssue issue) {
+        return REPOSITORY.updateIssueState(issue);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Future<Boolean> closeIssue(final VisionedIssue issue, final String solution) {
-        return REPOSITORY.closeVisionedIssue(issue, solution);
+    public Future<Boolean> closeIssue(final ClosedIssue issue) {
+        return REPOSITORY.closeIssue(issue);
     }
 
     /**

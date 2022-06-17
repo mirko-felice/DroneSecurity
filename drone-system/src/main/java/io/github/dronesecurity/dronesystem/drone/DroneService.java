@@ -8,8 +8,12 @@ package io.github.dronesecurity.dronesystem.drone;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.dronesecurity.dronesystem.drone.entities.Drone;
 import io.github.dronesecurity.dronesystem.drone.report.DroneReportService;
 import io.github.dronesecurity.dronesystem.drone.report.NegligenceReport;
+import io.github.dronesecurity.dronesystem.drone.utilities.DataAnalyzer;
+import io.github.dronesecurity.dronesystem.drone.utilities.DataProcessor;
+import io.github.dronesecurity.dronesystem.drone.utilities.PublishHelper;
 import io.github.dronesecurity.lib.*;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
@@ -35,7 +39,6 @@ public class DroneService {
 
     //Drone
     private final Drone drone;
-    private final DataAnalyzer dataAnalyzer;
     private final SecureRandom randomGenerator;
     private final CountDownLatch latch;
     private final ScheduledExecutorService deliveryExecutor;
@@ -60,7 +63,6 @@ public class DroneService {
      */
     public DroneService() {
         this.drone = new Drone(Connection.getInstance().getIdentifier());
-        this.dataAnalyzer = new DataAnalyzer();
         this.randomGenerator = new SecureRandom();
         this.latch = new CountDownLatch(1);
         this.deliveryExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -74,7 +76,7 @@ public class DroneService {
     /**
      * Waits for someone who wants to perform delivery.
      */
-    public void waitForDeliveryAssignment() {
+    public void waitForActivation() {
         Connection.getInstance().subscribe(MqttTopicConstants.ORDER_TOPIC + this.drone.getId(), msg -> {
             try {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
@@ -195,11 +197,11 @@ public class DroneService {
 
     private void analyzeSensors() {
         final AlertLevel lastProximityAlertLevel = this.currentProximityAlertLevel;
-        this.currentProximityAlertLevel = this.dataAnalyzer
+        this.currentProximityAlertLevel = DataAnalyzer
                 .checkProximitySensorDataAlertLevel(this.proximitySensorData);
 
         final AlertLevel lastAccelerometerAlertLevel = this.currentAccelerometerAlertLevel;
-        this.currentAccelerometerAlertLevel = this.dataAnalyzer
+        this.currentAccelerometerAlertLevel = DataAnalyzer
                 .checkAccelerometerDataAlertLevel(this.accelerometerSensorData);
 
         if (lastProximityAlertLevel != this.currentProximityAlertLevel

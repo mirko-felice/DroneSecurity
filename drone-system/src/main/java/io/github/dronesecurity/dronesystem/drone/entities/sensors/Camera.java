@@ -3,7 +3,7 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.dronesystem.drone;
+package io.github.dronesecurity.dronesystem.drone.entities.sensors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.LoggerFactory;

@@ -30,7 +30,7 @@ class BaseUser implements User {
     @Override
     public final boolean equals(final Object o) {
         if (o == null) return false;
-        if (this == o || this.getClass() == o.getClass()) return true;
+        if (this == o) return true;
         if (!User.class.isAssignableFrom(o.getClass())) return false;
         final BaseUser baseUser = (BaseUser) o;
         return this.getUsername().equals(baseUser.getUsername());

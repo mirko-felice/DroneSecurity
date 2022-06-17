@@ -55,7 +55,7 @@ public final class Activation {
     private static void connectAndStart() {
         Connection.getInstance().connect();
         SCANNER.close();
-        new DroneService().waitForDeliveryAssignment();
+        new DroneService().waitForActivation();
     }
 
     private static void generateProperties() {

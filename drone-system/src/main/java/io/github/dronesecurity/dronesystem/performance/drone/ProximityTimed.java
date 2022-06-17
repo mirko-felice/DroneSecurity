@@ -8,7 +8,7 @@ package io.github.dronesecurity.dronesystem.performance.drone;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.dronesecurity.dronesystem.drone.ProximitySensor;
+import io.github.dronesecurity.dronesystem.drone.entities.sensors.ProximitySensor;
 import io.github.dronesecurity.dronesystem.performance.PerformanceStringConstants;
 import org.slf4j.LoggerFactory;
 

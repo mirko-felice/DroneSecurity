@@ -52,7 +52,7 @@ public abstract class CreatedIssue extends SendingIssue {
     @Override
     public final boolean equals(final Object o) {
         if (o == null) return false;
-        if (this == o || this.getClass() == o.getClass()) return true;
+        if (this == o) return true;
         if (!CreatedIssue.class.isAssignableFrom(o.getClass())) return false;
         return this.getId() == ((CreatedIssue) o).getId();
     }

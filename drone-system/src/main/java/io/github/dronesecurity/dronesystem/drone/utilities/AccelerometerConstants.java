@@ -3,7 +3,7 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.dronesystem.drone;
+package io.github.dronesecurity.dronesystem.drone.utilities;
 
 /**
  * Accelerometer related strings.

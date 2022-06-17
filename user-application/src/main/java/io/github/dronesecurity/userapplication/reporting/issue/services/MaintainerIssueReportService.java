@@ -5,6 +5,8 @@
 
 package io.github.dronesecurity.userapplication.reporting.issue.services;
 
+import io.github.dronesecurity.userapplication.reporting.issue.entities.ClosedIssue;
+import io.github.dronesecurity.userapplication.reporting.issue.entities.Issue;
 import io.github.dronesecurity.userapplication.reporting.issue.entities.OpenIssue;
 import io.github.dronesecurity.userapplication.reporting.issue.entities.VisionedIssue;
 import io.vertx.core.Future;
@@ -20,15 +22,15 @@ public interface MaintainerIssueReportService extends DataIssueReportService {
      * @param issue the issue that is visioned
      * @return whether the update operation has succeeded or not
      */
-    Future<Boolean> visionIssue(OpenIssue issue);
+    Future<Boolean> visionIssue(VisionedIssue issue);
 
     /**
-     * Informs the database that a {@link VisionedIssue} is being closed by a maintainer.
-     * @param issue the issue that is closed
-     * @param solution string representing the solution used by the maintainer
+     * Informs the database that an {@link Issue} has been closed by a maintainer
+     * and there is a new {@link ClosedIssue} in the system.
+     * @param issue the issue that was closed
      * @return whether the update operation has succeeded or not
      */
-    Future<Boolean> closeIssue(VisionedIssue issue, String solution);
+    Future<Boolean> closeIssue(ClosedIssue issue);
 
     /**
      * Get the instance of this service.

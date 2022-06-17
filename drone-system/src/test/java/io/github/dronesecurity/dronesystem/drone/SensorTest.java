@@ -5,6 +5,7 @@
 
 package io.github.dronesecurity.dronesystem.drone;
 
+import io.github.dronesecurity.dronesystem.drone.entities.sensors.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;

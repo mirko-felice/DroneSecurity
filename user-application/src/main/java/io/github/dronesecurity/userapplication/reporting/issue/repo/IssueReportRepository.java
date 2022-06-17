@@ -26,19 +26,18 @@ public interface IssueReportRepository {
     Future<JsonObject> addIssue(Issue issue);
 
     /**
-     * Updates an existing {@link OpenIssue} and sets it as visioned.
-     * @param issue the issue to be updated
+     * Updates a {@link CreatedIssue} and sets its state with the new one.
+     * @param issue the issue with the new state to be updated
      * @return whether the operation went successfully or not
      */
-    Future<Boolean> visionOpenIssue(OpenIssue issue);
+    Future<Boolean> updateIssueState(CreatedIssue issue);
 
     /**
-     * Updates an existing {@link VisionedIssue} and sets it as closed.
-     * @param issue the issue to be updated
-     * @param solution string representing the solution used by the maintainer
+     * Closes an existing issue.
+     * @param issue the issue to be closed
      * @return whether the operation went successfully or not
      */
-    Future<Boolean> closeVisionedIssue(VisionedIssue issue, String solution);
+    Future<Boolean> closeIssue(ClosedIssue issue);
 
     /**
      * Gets all open issues of the currently logged user.

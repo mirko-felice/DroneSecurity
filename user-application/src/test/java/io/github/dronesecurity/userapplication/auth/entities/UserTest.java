@@ -63,6 +63,11 @@ final class UserTest {
 
         assertNotEquals(maintainer, notLoggedUser, SHOULD_NOT_BE_EQUALS);
         assertNotEquals(maintainer, courier, SHOULD_NOT_BE_EQUALS);
+
+        final Courier courierOne = new Courier("Max", "Mirko", new ArrayList<>());
+        final Courier courierAnother = new Courier("Mirko", "Max", new ArrayList<>());
+
+        assertNotEquals(courierAnother, courierOne, SHOULD_NOT_BE_EQUALS);
     }
 
 }

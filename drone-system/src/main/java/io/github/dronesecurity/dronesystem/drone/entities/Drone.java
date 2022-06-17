@@ -3,8 +3,10 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.dronesystem.drone;
+package io.github.dronesecurity.dronesystem.drone.entities;
 
+import io.github.dronesecurity.dronesystem.drone.entities.sensors.Sensor;
+import io.github.dronesecurity.dronesystem.drone.entities.sensors.SensorFactory;
 import io.github.dronesecurity.lib.DrivingMode;
 
 import java.util.Map;

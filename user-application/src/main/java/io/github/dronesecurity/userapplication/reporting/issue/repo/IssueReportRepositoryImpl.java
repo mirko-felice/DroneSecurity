@@ -67,9 +67,9 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
      * {@inheritDoc}
      */
     @Override
-    public Future<Boolean> visionOpenIssue(final @NotNull OpenIssue issue) {
+    public Future<Boolean> updateIssueState(final @NotNull CreatedIssue issue) {
         final JsonObject newStatus = new JsonObject()
-                .put(IssueStringHelper.STATUS, IssueStringHelper.STATUS_VISIONED);
+                .put(IssueStringHelper.STATUS, issue.getState());
         return this.updateIssue(issue.getId(), newStatus);
     }
 
@@ -77,10 +77,10 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
      * {@inheritDoc}
      */
     @Override
-    public Future<Boolean> closeVisionedIssue(final @NotNull VisionedIssue issue, final String solution) {
+    public Future<Boolean> closeIssue(final @NotNull ClosedIssue issue) {
         final JsonObject update = new JsonObject()
-                .put(IssueStringHelper.STATUS, IssueStringHelper.STATUS_CLOSED)
-                .put(IssueStringHelper.SOLUTION, solution);
+                .put(IssueStringHelper.STATUS, issue.getState())
+                .put(IssueStringHelper.SOLUTION, issue.getIssueSolution());
 
         return this.updateIssue(issue.getId(), update);
     }

@@ -5,6 +5,8 @@
 
 package io.github.dronesecurity.dronesystem.drone;
 
+import io.github.dronesecurity.dronesystem.drone.entities.Drone;
+import io.github.dronesecurity.dronesystem.drone.utilities.AccelerometerConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
