@@ -30,8 +30,7 @@ public final class DomainEvents {
      * @param <T> type parameter to constraint consuming only {@link Event} subclasses
      */
     public static <T extends Event> void register(final Class<T> clazz, final Consumer<T> handler) {
-        if (!ALL_CONSUMERS.containsKey(clazz))
-            ALL_CONSUMERS.put(clazz, new ArrayList<>());
+        ALL_CONSUMERS.computeIfAbsent(clazz, k -> new ArrayList<>());
         ALL_CONSUMERS.get(clazz).add(handler);
     }
 

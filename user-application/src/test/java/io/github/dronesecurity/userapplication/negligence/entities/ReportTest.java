@@ -5,17 +5,16 @@
 
 package io.github.dronesecurity.userapplication.negligence.entities;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import io.github.dronesecurity.userapplication.exceptions.ReportEmptyDataException;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.*;
-import io.github.dronesecurity.userapplication.reporting.negligence.utilities.NegligenceConstants;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,7 +30,7 @@ final class ReportTest {
 
     @Test
     void testEmptyData() {
-        final DroneData emptyData = this.generateReportWithoutData().getData();
+        final NegligenceDroneData emptyData = this.generateReportWithoutData().getData();
         assertTrue(emptyData.isEmpty(), "Drone data should be empty.");
         assertNull(emptyData.getProximity(), "Report should have empty proximity value.");
         assertTrue(emptyData.getAccelerometer().isEmpty(), "Report should have empty accelerometer data.");
@@ -79,18 +78,18 @@ final class ReportTest {
 
     @Contract(" -> new")
     private @NotNull NegligenceReport generateReportWithoutData() {
-        return NegligenceReportFactory.withoutID(NEGLIGENT, ASSIGNEE, new DroneDataImpl(), ORDER_ID, Instant.now());
+        return NegligenceReportFactory.withoutID(NEGLIGENT, ASSIGNEE,
+                new NegligenceDroneDataImpl(null, new ConcurrentHashMap<>(), null), ORDER_ID, Instant.now());
     }
 
     private @NotNull NegligenceReport generateReportWithData() {
-        final ObjectMapper mapper = new ObjectMapper();
-        final JsonNode data = mapper.createObjectNode()
-                .put(NegligenceConstants.PROXIMITY, 1)
-                .put(NegligenceConstants.CAMERA, 1)
-                .set(NegligenceConstants.ACCELEROMETER, mapper.createObjectNode()
-                        .put(MqttMessageParameterConstants.ROLL, 1)
-                        .put(MqttMessageParameterConstants.PITCH, 1)
-                        .put(MqttMessageParameterConstants.YAW, 1));
-        return NegligenceReportFactory.withoutID(NEGLIGENT, ASSIGNEE, new DroneDataImpl(data), ORDER_ID, Instant.now());
+        final double proximity = 1;
+        final Map<String, Integer> accelerometer = new ConcurrentHashMap<>();
+        final long camera = 1;
+        accelerometer.put(MqttMessageParameterConstants.ROLL, 1);
+        accelerometer.put(MqttMessageParameterConstants.PITCH, 1);
+        accelerometer.put(MqttMessageParameterConstants.YAW, 1);
+        return NegligenceReportFactory.withoutID(NEGLIGENT, ASSIGNEE,
+                new NegligenceDroneDataImpl(proximity, accelerometer, camera), ORDER_ID, Instant.now());
     }
 }

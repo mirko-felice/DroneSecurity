@@ -3,17 +3,22 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.userapplication.reporting.negligence.entities;
+package io.github.dronesecurity.userapplication.common.data.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.github.dronesecurity.userapplication.reporting.negligence.serializers.DroneDataSerializer;
+import io.github.dronesecurity.userapplication.common.data.serializers.DroneDataSerializer;
+import io.github.dronesecurity.userapplication.common.data.serializers.DroneDataDeserializer;
 
 import java.util.Map;
 
 /**
- * Immutable Value Object representing Drone Data.
+ * Wrapper class for all the sensors' data detected.
  */
+@JsonDeserialize(using = DroneDataDeserializer.class)
 @JsonSerialize(using = DroneDataSerializer.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public interface DroneData {
 
     /**
@@ -38,12 +43,5 @@ public interface DroneData {
      * Copy this object.
      * @return a new fresh copy
      */
-     DroneData deepCopy();
-
-    /**
-     * Checks if data are empty.
-     * @return true if data are empty, false otherwise
-     */
-    boolean isEmpty();
-
+    DroneData deepCopy();
 }

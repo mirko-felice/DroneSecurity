@@ -3,43 +3,29 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.userapplication.monitoring.entities;
+package io.github.dronesecurity.userapplication.common.data.entities;
 
-import io.github.dronesecurity.userapplication.shipping.entities.Order;
-
-import java.time.Instant;
 import java.util.Map;
 
 /**
- * Implementation of {@link DroneData}.
+ * Wrapper class for all the sensors' data detected.
  */
 public class DroneDataImpl implements DroneData {
 
     private final Double proximity;
     private final Map<String, Integer> accelerometer;
     private final Long camera;
-    private final Instant detectionInstant;
-    private final long orderId;
 
     /**
      * Build the object starting from data.
      * @param proximity proximity detected
      * @param accelerometer accelerometer info detected
      * @param camera camera value detected
-     * @param detectionInstant {@link Instant} when the detection is happened
-     * @param orderId {@link Order} identifier related
-     *                                                                                              to data detection
      */
-    public DroneDataImpl(final Double proximity,
-                         final Map<String, Integer> accelerometer,
-                         final Long camera,
-                         final Instant detectionInstant,
-                         final long orderId) {
+    public DroneDataImpl(final Double proximity, final Map<String, Integer> accelerometer, final Long camera) {
         this.proximity = proximity;
         this.accelerometer = Map.copyOf(accelerometer);
         this.camera = camera;
-        this.detectionInstant = detectionInstant;
-        this.orderId = orderId;
     }
 
     /**
@@ -70,15 +56,7 @@ public class DroneDataImpl implements DroneData {
      * {@inheritDoc}
      */
     @Override
-    public Instant getDetectionInstant() {
-        return this.detectionInstant;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public long getOrderId() {
-        return this.orderId;
+    public DroneData deepCopy() {
+        return new DroneDataImpl(this.getProximity(), this.getAccelerometer(), this.getCamera());
     }
 }

@@ -5,28 +5,28 @@
 
 package io.github.dronesecurity.userapplication.monitoring.repo;
 
-import io.github.dronesecurity.userapplication.monitoring.entities.DroneData;
+import io.github.dronesecurity.userapplication.monitoring.entities.MonitoringDroneData;
 import io.vertx.core.Future;
 
 import java.util.List;
 
 /**
- * Repository to perform actions on {@link DroneData} entity.
+ * Repository to perform actions on {@link MonitoringDroneData} entity.
  */
 public interface DataRepository {
 
     /**
      * Saves the drone data instance.
-     * @param data {@link DroneData} to save
+     * @param data {@link MonitoringDroneData} to save
      */
-    void save(DroneData data);
+    void save(MonitoringDroneData data);
 
     /**
      * Retrieves data history related to an order.
      * @param orderId order identifier to retrieve data from
-     * @return the {@link Future} containing the {@link List} of {@link DroneData}
+     * @return the {@link Future} containing the {@link List} of {@link MonitoringDroneData}
      */
-    Future<List<DroneData>> retrieveDataHistory(long orderId);
+    Future<List<MonitoringDroneData>> retrieveDataHistory(long orderId);
 
     /**
      * Gets the singleton instance.

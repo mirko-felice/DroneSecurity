@@ -135,10 +135,10 @@ public final class FXHelper {
         final TableColumn<T, String> assignedToColumn =
                 initializeColumn("Assigned To", String.class, "assignedTo", maintainerConsumer, false);
 
-        final Consumer<DroneData> dataConsumer = data ->
+        final Consumer<NegligenceDroneData> dataConsumer = data ->
                 Platform.runLater(() -> controller.updateDetails(data));
-        final TableColumn<T, DroneData> dataColumn =
-                initializeColumn("Drone Data", DroneData.class, "getData", dataConsumer, false);
+        final TableColumn<T, NegligenceDroneData> dataColumn =
+                initializeColumn("Drone Data", NegligenceDroneData.class, "getData", dataConsumer, false);
 
         table.getColumns().addAll(Arrays.asList(negligentColumn, assignedToColumn, dataColumn));
 

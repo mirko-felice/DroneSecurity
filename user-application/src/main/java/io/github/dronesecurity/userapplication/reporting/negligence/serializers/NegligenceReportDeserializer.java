@@ -33,7 +33,8 @@ public final class NegligenceReportDeserializer extends JsonDeserializer<Neglige
         final String assignee = (String) ctx.getAttribute(NegligenceConstants.ASSIGNEE);
         final String maintainer = assignee == null ? root.get(NegligenceConstants.ASSIGNEE).asText() : assignee;
 
-        final DroneData data = new DroneDataImpl(root.get(NegligenceConstants.DATA));
+        final NegligenceDroneData data =
+                mapper.readValue(root.get(NegligenceConstants.DATA).toString(), NegligenceDroneData.class);
 
         final long orderId = root.get(NegligenceConstants.ORDER_ID).asLong();
         final Instant negligenceInstant =

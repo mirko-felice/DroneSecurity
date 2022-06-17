@@ -3,14 +3,13 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.userapplication.monitoring.serializers;
+package io.github.dronesecurity.userapplication.common.data.serializers;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import io.github.dronesecurity.lib.DateHelper;
-import io.github.dronesecurity.userapplication.monitoring.entities.DroneData;
-import io.github.dronesecurity.userapplication.monitoring.utilities.DataConstants;
+import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
+import io.github.dronesecurity.userapplication.common.data.utilities.DataConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -31,8 +30,6 @@ public class DroneDataSerializer extends JsonSerializer<DroneData> {
         gen.writeNumberField(DataConstants.PROXIMITY, value.getProximity());
         gen.writeObjectField(DataConstants.ACCELEROMETER, value.getAccelerometer());
         gen.writeNumberField(DataConstants.CAMERA, value.getCamera());
-        gen.writeStringField(DataConstants.DETECTION_INSTANT, DateHelper.toString(value.getDetectionInstant()));
-        gen.writeNumberField(DataConstants.ORDER_ID, value.getOrderId());
         gen.writeEndObject();
         gen.flush();
     }

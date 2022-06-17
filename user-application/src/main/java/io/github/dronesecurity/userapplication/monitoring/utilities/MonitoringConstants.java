@@ -10,7 +10,7 @@ import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 /**
  * Data related strings.
  */
-public final class DataConstants {
+public final class MonitoringConstants {
 
     /**
      * Key for proximity data.
@@ -52,5 +52,5 @@ public final class DataConstants {
      */
     public static final String YAW = MqttMessageParameterConstants.YAW;
 
-    private DataConstants() { }
+    private MonitoringConstants() { }
 }

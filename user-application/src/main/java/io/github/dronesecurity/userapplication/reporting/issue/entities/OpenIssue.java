@@ -47,7 +47,6 @@ public class OpenIssue extends CreatedIssue {
      * Transforms this issue in visioned issue when the maintainer starts processing it.
      * @return the new {@link VisionedIssue} from this OpenIssue
      */
-    // TODO check usage
     public VisionedIssue visionIssue() {
         return new VisionedIssue(this.getSubject(),
                 this.getId(),

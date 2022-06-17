@@ -12,8 +12,8 @@ import io.github.dronesecurity.lib.AlertLevel;
 import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import io.github.dronesecurity.lib.MqttTopicConstants;
-import io.github.dronesecurity.userapplication.monitoring.entities.DroneData;
-import io.github.dronesecurity.userapplication.monitoring.entities.DroneDataImpl;
+import io.github.dronesecurity.userapplication.monitoring.entities.MonitoringDroneData;
+import io.github.dronesecurity.userapplication.monitoring.entities.MonitoringDroneDataImpl;
 import io.github.dronesecurity.userapplication.monitoring.repo.DataRepository;
 import io.github.dronesecurity.userapplication.events.*;
 import io.github.dronesecurity.userapplication.shipping.entities.Order;
@@ -69,7 +69,7 @@ public final class UserMonitoringService {
             DomainEvents.raise(new DataRead(proximity, accelerometer, camera));
 
             DataRepository.getInstance().save(
-                    new DroneDataImpl(proximity, accelerometer, camera, Instant.now(), this.orderId));
+                    new MonitoringDroneDataImpl(proximity, accelerometer, camera, Instant.now(), this.orderId));
         });
     }
 
@@ -119,9 +119,9 @@ public final class UserMonitoringService {
 
     /**
      * Retrieves data history related to the order monitoring.
-     * @return the {@link Future} containing the {@link List} of {@link DroneData}
+     * @return the {@link Future} containing the {@link List} of {@link MonitoringDroneData}
      */
-    public Future<List<DroneData>> retrieveDataHistory() {
+    public Future<List<MonitoringDroneData>> retrieveDataHistory() {
         return DataRepository.getInstance().retrieveDataHistory(this.orderId);
     }
 }

@@ -5,8 +5,8 @@
 
 package io.github.dronesecurity.userapplication.monitoring.repo;
 
-import io.github.dronesecurity.userapplication.monitoring.entities.DroneData;
-import io.github.dronesecurity.userapplication.monitoring.utilities.DataConstants;
+import io.github.dronesecurity.userapplication.monitoring.entities.MonitoringDroneData;
+import io.github.dronesecurity.userapplication.monitoring.utilities.MonitoringConstants;
 import io.github.dronesecurity.userapplication.utilities.VertxHelper;
 import io.vertx.core.Future;
 import io.vertx.core.json.Json;
@@ -41,7 +41,7 @@ public final class DataRepositoryImpl implements DataRepository {
      * {@inheritDoc}
      */
     @Override
-    public void save(final DroneData data) {
+    public void save(final MonitoringDroneData data) {
         VertxHelper.MONGO_CLIENT.save(COLLECION_NAME, JsonObject.mapFrom(data));
     }
 
@@ -49,10 +49,10 @@ public final class DataRepositoryImpl implements DataRepository {
      * {@inheritDoc}
      */
     @Override
-    public Future<List<DroneData>> retrieveDataHistory(final long orderId) {
-        final JsonObject query = new JsonObject().put(DataConstants.ORDER_ID, orderId);
+    public Future<List<MonitoringDroneData>> retrieveDataHistory(final long orderId) {
+        final JsonObject query = new JsonObject().put(MonitoringConstants.ORDER_ID, orderId);
         return VertxHelper.MONGO_CLIENT.find(COLLECION_NAME, query)
-                .map(list -> list.stream().map(data -> Json.decodeValue(data.toBuffer(), DroneData.class))
+                .map(list -> list.stream().map(data -> Json.decodeValue(data.toBuffer(), MonitoringDroneData.class))
                         .collect(Collectors.toList()));
     }
 }

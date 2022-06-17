@@ -7,36 +7,18 @@ package io.github.dronesecurity.userapplication.monitoring.entities;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.github.dronesecurity.userapplication.monitoring.serializers.DroneDataDeserializer;
-import io.github.dronesecurity.userapplication.monitoring.serializers.DroneDataSerializer;
+import io.github.dronesecurity.userapplication.monitoring.serializers.MonitoringDroneDataDeserializer;
+import io.github.dronesecurity.userapplication.monitoring.serializers.MonitoringDroneDataSerializer;
+import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
 
 import java.time.Instant;
-import java.util.Map;
 
 /**
  * Immutable Value Object representing Drone Data.
  */
-@JsonSerialize(using = DroneDataSerializer.class)
-@JsonDeserialize(using = DroneDataDeserializer.class)
-public interface DroneData {
-
-    /**
-     * Gets the proximity data.
-     * @return the proximity
-     */
-    Double getProximity();
-
-    /**
-     * Gets the accelerometer data.
-     * @return the accelerometer
-     */
-    Map<String, Integer> getAccelerometer();
-
-    /**
-     * Gets the camera data.
-     * @return the camera data
-     */
-    Long getCamera();
+@JsonSerialize(using = MonitoringDroneDataSerializer.class)
+@JsonDeserialize(using = MonitoringDroneDataDeserializer.class)
+public interface MonitoringDroneData extends DroneData {
 
     /**
      * Gets the instant when detection is happened.

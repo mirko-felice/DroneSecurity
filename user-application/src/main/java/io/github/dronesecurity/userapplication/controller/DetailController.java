@@ -6,7 +6,7 @@
 package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.DroneData;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceDroneData;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceSolution;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -75,10 +75,10 @@ public class DetailController implements Initializable {
     }
 
     /**
-     * Update detail node using a {@link DroneData}.
+     * Update detail node using a {@link NegligenceDroneData}.
      * @param data data object providing information
      */
-    public void updateDetails(final @NotNull DroneData data) {
+    public void updateDetails(final @NotNull NegligenceDroneData data) {
         this.proximityValueLabel.setText(String.valueOf(data.getProximity()));
         this.accelerometerValueLabel.setText(data.getAccelerometer().toString());
         this.cameraValueLabel.setText(String.valueOf(data.getCamera()));

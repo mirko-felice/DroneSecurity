@@ -3,7 +3,7 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.userapplication.monitoring.serializers;
+package io.github.dronesecurity.userapplication.common.data.serializers;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -11,14 +11,12 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.dronesecurity.lib.DateHelper;
-import io.github.dronesecurity.userapplication.monitoring.entities.DroneData;
-import io.github.dronesecurity.userapplication.monitoring.entities.DroneDataImpl;
-import io.github.dronesecurity.userapplication.monitoring.utilities.DataConstants;
+import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
+import io.github.dronesecurity.userapplication.common.data.entities.DroneDataImpl;
+import io.github.dronesecurity.userapplication.common.data.utilities.DataConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -39,10 +37,8 @@ public class DroneDataDeserializer extends JsonDeserializer<DroneData> {
         final ConcurrentHashMap<String, Integer> accelerometer =
                 mapper.readValue(root.get(DataConstants.ACCELEROMETER).toString(), new MapTypeReference());
         final Long camera = root.get(DataConstants.CAMERA).asLong();
-        final Instant detectionInstant = DateHelper.toInstant(root.get(DataConstants.DETECTION_INSTANT).asText());
-        final long orderId = root.get(DataConstants.ORDER_ID).asLong();
 
-        return new DroneDataImpl(proximity, accelerometer, camera, detectionInstant, orderId);
+        return new DroneDataImpl(proximity, accelerometer, camera);
     }
 
     /**
