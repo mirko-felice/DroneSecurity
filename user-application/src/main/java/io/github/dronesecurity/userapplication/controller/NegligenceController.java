@@ -76,10 +76,13 @@ public class NegligenceController implements Initializable {
     }
 
     private void onNewNegligence(final @NotNull NewNegligence newNegligence) {
-        Platform.runLater(() -> DialogUtils.showInfoNotification("INFO",
-                "New negligence committed by " + newNegligence.getReport().getNegligent()
-                        + ". Please take care of this. Go to the 'reports' window to show more information about it.",
-                this.pane.getScene().getWindow()));
+        Platform.runLater(() -> {
+            this.dataController.updateReports();
+            DialogUtils.showInfoNotification("INFO",
+                    "New negligence committed by " + newNegligence.getReport().getNegligent()
+                    + ". Please take care of this. Go to the 'reports' window to show more information about it.",
+                    this.pane.getScene().getWindow());
+        });
     }
 
     @FXML

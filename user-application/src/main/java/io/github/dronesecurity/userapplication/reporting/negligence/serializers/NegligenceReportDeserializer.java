@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.*;
 import io.github.dronesecurity.userapplication.reporting.negligence.utilities.NegligenceConstants;
 import io.github.dronesecurity.lib.DateHelper;
@@ -33,8 +34,8 @@ public final class NegligenceReportDeserializer extends JsonDeserializer<Neglige
         final String assignee = (String) ctx.getAttribute(NegligenceConstants.ASSIGNEE);
         final String maintainer = assignee == null ? root.get(NegligenceConstants.ASSIGNEE).asText() : assignee;
 
-        final NegligenceDroneData data =
-                mapper.readValue(root.get(NegligenceConstants.DATA).toString(), NegligenceDroneData.class);
+        final DroneData data =
+                mapper.readValue(root.get(NegligenceConstants.DATA).toString(), DroneData.class);
 
         final long orderId = root.get(NegligenceConstants.ORDER_ID).asLong();
         final Instant negligenceInstant =

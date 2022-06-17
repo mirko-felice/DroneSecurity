@@ -44,4 +44,10 @@ public interface DroneData {
      * @return a new fresh copy
      */
     DroneData deepCopy();
+
+    /**
+     * Checks if data are empty.
+     * @return true if data are empty, false otherwise
+     */
+    boolean isEmpty();
 }

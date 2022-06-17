@@ -6,9 +6,9 @@
 package io.github.dronesecurity.userapplication.reporting.negligence.entities;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.dronesecurity.userapplication.auth.entities.Courier;
 import io.github.dronesecurity.userapplication.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
 import io.github.dronesecurity.userapplication.reporting.negligence.serializers.NegligenceReportDeserializer;
 
 import java.time.Instant;
@@ -27,9 +27,9 @@ public interface NegligenceReport {
 
     /**
      * Gets the data collected in that instant.
-     * @return the {@link ObjectNode} representing the data
+     * @return the {@link DroneData} representing the data
      */
-    NegligenceDroneData getData();
+    DroneData getData();
 
     /**
      * Gets the {@link Maintainer} assigned to the report.

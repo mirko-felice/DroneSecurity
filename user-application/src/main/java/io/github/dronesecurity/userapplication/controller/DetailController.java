@@ -6,7 +6,7 @@
 package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceDroneData;
+import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceSolution;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -75,13 +75,16 @@ public class DetailController implements Initializable {
     }
 
     /**
-     * Update detail node using a {@link NegligenceDroneData}.
+     * Update detail node using a {@link DroneData}.
      * @param data data object providing information
      */
-    public void updateDetails(final @NotNull NegligenceDroneData data) {
-        this.proximityValueLabel.setText(String.valueOf(data.getProximity()));
-        this.accelerometerValueLabel.setText(data.getAccelerometer().toString());
-        this.cameraValueLabel.setText(String.valueOf(data.getCamera()));
+    public void updateDetails(final @NotNull DroneData data) {
+        this.proximityValueLabel.setText(data.getProximity() + " cm");
+        final StringBuilder stringBuilder = new StringBuilder();
+        data.getAccelerometer().forEach((key, value) ->
+                stringBuilder.append(key).append(" -> ").append(value).append(" \u00B0\t"));
+        this.accelerometerValueLabel.setText(stringBuilder.toString());
+        this.cameraValueLabel.setText(data.getCamera() + " bytes");
         this.userElements.forEach(n -> n.setVisible(false));
         this.dataElements.forEach(n -> n.setVisible(true));
         this.solutionElements.forEach(n -> n.setVisible(false));

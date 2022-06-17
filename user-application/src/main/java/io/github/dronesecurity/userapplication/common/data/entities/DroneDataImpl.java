@@ -59,4 +59,20 @@ public class DroneDataImpl implements DroneData {
     public DroneData deepCopy() {
         return new DroneDataImpl(this.getProximity(), this.getAccelerometer(), this.getCamera());
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isEmpty() {
+        return this.getProximity() == null || this.getAccelerometer().isEmpty() || this.getCamera() == null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return "Click for details";
+    }
 }

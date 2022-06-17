@@ -28,7 +28,7 @@ public class DroneDataDeserializer extends JsonDeserializer<DroneData> {
      * {@inheritDoc}
      */
     @Override
-    public DroneData deserialize(final @NotNull JsonParser parser, final DeserializationContext ctxt)
+    public DroneData deserialize(final @NotNull JsonParser parser, final DeserializationContext ctx)
             throws IOException {
         final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
         final ObjectNode root = mapper.readTree(parser);

@@ -8,6 +8,7 @@ package io.github.dronesecurity.userapplication.utilities;
 import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.userapplication.auth.AuthenticationService;
 import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
+import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
 import io.github.dronesecurity.userapplication.controller.DetailController;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.*;
 import javafx.application.Platform;
@@ -135,10 +136,10 @@ public final class FXHelper {
         final TableColumn<T, String> assignedToColumn =
                 initializeColumn("Assigned To", String.class, "assignedTo", maintainerConsumer, false);
 
-        final Consumer<NegligenceDroneData> dataConsumer = data ->
+        final Consumer<DroneData> dataConsumer = data ->
                 Platform.runLater(() -> controller.updateDetails(data));
-        final TableColumn<T, NegligenceDroneData> dataColumn =
-                initializeColumn("Drone Data", NegligenceDroneData.class, "getData", dataConsumer, false);
+        final TableColumn<T, DroneData> dataColumn =
+                initializeColumn("Drone Data", DroneData.class, "getData", dataConsumer, false);
 
         table.getColumns().addAll(Arrays.asList(negligentColumn, assignedToColumn, dataColumn));
 

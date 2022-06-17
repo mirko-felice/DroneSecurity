@@ -7,6 +7,7 @@ package io.github.dronesecurity.userapplication.reporting.negligence.entities;
 
 import io.github.dronesecurity.userapplication.auth.entities.Courier;
 import io.github.dronesecurity.userapplication.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,7 +26,7 @@ public final class NegligenceReportFactory {
      *                  negligence
      * @param assignee the {@link Maintainer} assigned to the
      *                 report
-     * @param data the {@link NegligenceDroneData} associated to the report
+     * @param data the {@link DroneData} associated to the report
      * @param orderId the order identifier related to the negligence
      * @param negligenceInstant {@link Instant} when the negligence has happened
      * @return a new {@link NegligenceReport}
@@ -33,7 +34,7 @@ public final class NegligenceReportFactory {
     @Contract(value = "_, _, _, _, _ -> new", pure = true)
     public static @NotNull NegligenceReport withoutID(final String negligent,
                                                       final String assignee,
-                                                      final NegligenceDroneData data,
+                                                      final DroneData data,
                                                       final long orderId,
                                                       final Instant negligenceInstant) {
         return new NegligenceReportImpl(negligent, assignee, data, orderId, negligenceInstant);

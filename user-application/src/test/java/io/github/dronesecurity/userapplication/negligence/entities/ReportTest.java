@@ -6,6 +6,8 @@
 package io.github.dronesecurity.userapplication.negligence.entities;
 
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
+import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
+import io.github.dronesecurity.userapplication.common.data.entities.DroneDataImpl;
 import io.github.dronesecurity.userapplication.exceptions.ReportEmptyDataException;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.*;
 import org.jetbrains.annotations.Contract;
@@ -30,7 +32,7 @@ final class ReportTest {
 
     @Test
     void testEmptyData() {
-        final NegligenceDroneData emptyData = this.generateReportWithoutData().getData();
+        final DroneData emptyData = this.generateReportWithoutData().getData();
         assertTrue(emptyData.isEmpty(), "Drone data should be empty.");
         assertNull(emptyData.getProximity(), "Report should have empty proximity value.");
         assertTrue(emptyData.getAccelerometer().isEmpty(), "Report should have empty accelerometer data.");
@@ -79,7 +81,7 @@ final class ReportTest {
     @Contract(" -> new")
     private @NotNull NegligenceReport generateReportWithoutData() {
         return NegligenceReportFactory.withoutID(NEGLIGENT, ASSIGNEE,
-                new NegligenceDroneDataImpl(null, new ConcurrentHashMap<>(), null), ORDER_ID, Instant.now());
+                new DroneDataImpl(null, new ConcurrentHashMap<>(), null), ORDER_ID, Instant.now());
     }
 
     private @NotNull NegligenceReport generateReportWithData() {
@@ -90,6 +92,6 @@ final class ReportTest {
         accelerometer.put(MqttMessageParameterConstants.PITCH, 1);
         accelerometer.put(MqttMessageParameterConstants.YAW, 1);
         return NegligenceReportFactory.withoutID(NEGLIGENT, ASSIGNEE,
-                new NegligenceDroneDataImpl(proximity, accelerometer, camera), ORDER_ID, Instant.now());
+                new DroneDataImpl(proximity, accelerometer, camera), ORDER_ID, Instant.now());
     }
 }
