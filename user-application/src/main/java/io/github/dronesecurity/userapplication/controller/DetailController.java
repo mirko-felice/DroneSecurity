@@ -7,6 +7,7 @@ package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.DroneData;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceSolution;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -88,10 +89,10 @@ public class DetailController implements Initializable {
 
     /**
      * Update detail node using the solution of the report.
-     * @param solution solution text of the report
+     * @param solution {@link NegligenceSolution} related to the report
      */
-    public void updateDetails(final @NotNull String solution) {
-        this.solutionText.setText(solution);
+    public void updateDetails(final @NotNull NegligenceSolution solution) {
+        this.solutionText.setText(solution.getSolution());
         this.userElements.forEach(n -> n.setVisible(false));
         this.dataElements.forEach(n -> n.setVisible(false));
         this.solutionElements.forEach(n -> n.setVisible(true));

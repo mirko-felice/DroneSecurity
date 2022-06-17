@@ -34,7 +34,7 @@ public final class NegligenceReportFactory {
     public static @NotNull NegligenceReport withoutID(final String negligent,
                                                       final String assignee,
                                                       final DroneData data,
-                                                      final String orderId,
+                                                      final long orderId,
                                                       final Instant negligenceInstant) {
         return new NegligenceReportImpl(negligent, assignee, data, orderId, negligenceInstant);
     }
@@ -43,13 +43,13 @@ public final class NegligenceReportFactory {
      * Creates a {@link ClosedNegligenceReport}.
      * @param report the {@link NegligenceReportWithID} to retrieve information from
      * @param closingInstant {@link Instant} when the report has been closed
-     * @param solution solution used to take action
+     * @param solution {@link NegligenceSolution} used to take action
      * @return a new {@link ClosedNegligenceReport}
      */
     @Contract("_, _, _ -> new")
     public static @NotNull ClosedNegligenceReport closed(final @NotNull NegligenceReportWithID report,
                                                          final Instant closingInstant,
-                                                         final String solution) {
+                                                         final NegligenceSolution solution) {
         return new ClosedNegligenceReportImpl(report, closingInstant, solution);
     }
 

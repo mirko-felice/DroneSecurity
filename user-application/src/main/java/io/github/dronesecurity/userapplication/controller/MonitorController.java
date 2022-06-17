@@ -8,11 +8,11 @@ package io.github.dronesecurity.userapplication.controller;
 import io.github.dronesecurity.lib.DrivingMode;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import io.github.dronesecurity.lib.MqttMessageValueConstants;
-import io.github.dronesecurity.userapplication.drone.monitoring.UserMonitoringService;
+import io.github.dronesecurity.userapplication.monitoring.UserMonitoringService;
 import io.github.dronesecurity.userapplication.events.*;
 import io.github.dronesecurity.userapplication.reporting.negligence.services.CourierNegligenceReportService;
 import io.github.dronesecurity.userapplication.reporting.negligence.services.NegligenceReportService;
-import io.github.dronesecurity.userapplication.shipping.courier.utilities.ShippingServiceHelper;
+import io.github.dronesecurity.userapplication.shipping.utilities.ShippingServiceHelper;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.vertx.core.json.JsonObject;
@@ -239,7 +239,7 @@ public final class MonitorController implements Initializable {
                         DomainEvents.unregister(DataRead.class, this.dataReadHandler);
                         DomainEvents.unregister(StatusChanged.class, this.statusChangedHandler);
                         DomainEvents.unregister(DroneMovingStateChangeEvent.class, this.movingStateChangedHandler);
-
+                        this.negligenceReportService.unsubscribeFromNewNegligence();
                         ((Stage) this.accordion.getScene().getWindow()).close();
                     });
                     break;

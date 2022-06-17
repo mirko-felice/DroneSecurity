@@ -21,7 +21,7 @@ class OpenNegligenceReportImpl extends NegligenceReportWithIDImpl implements Ope
 
     @Contract("_, _ -> new")
     @Override
-    public @NotNull ClosedNegligenceReport close(final Instant closingInstant, final String solution) {
+    public @NotNull ClosedNegligenceReport close(final Instant closingInstant, final NegligenceSolution solution) {
         return new ClosedNegligenceReportImpl(this, closingInstant, solution);
     }
 }

@@ -23,6 +23,7 @@ dependencies {
     implementation("org.jetbrains:annotations:23.0.0")
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.awaitility:awaitility:4.2.0")
     implementation("software.amazon.awssdk.iotdevicesdk:aws-iot-device-sdk:$awsIotVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")
     spotbugsPlugins("com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0")

@@ -9,21 +9,23 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+
+import static org.awaitility.Awaitility.await;
 
 /**
  * Test for Drone Service.
  */
 class DroneTest {
 
-    private static final int SENSOR_DATA_READING_WAITING_TIME = 4;
-    private static final int CAMERA_READING_WAITING_TIME = 3;
+    private static final int SENSOR_DATA_READING_WAITING_TIME = 10;
 
     /**
      * Tests drone lifecycle.
      */
     @Test
-    void testDroneLifecycle() throws InterruptedException {
+    void testDroneLifecycle() {
         final Drone drone = new Drone("Test Drone");
 
         drone.activate();
@@ -33,25 +35,29 @@ class DroneTest {
         Assertions.assertTrue(drone.getAccelerometerSensorData().isEmpty());
         Assertions.assertEquals(0, drone.getCameraSensorData().length);
 
-        TimeUnit.SECONDS.sleep(SENSOR_DATA_READING_WAITING_TIME);
-        drone.readAllData();
+        this.awaitUntil(() -> {
+            drone.readAllData();
+            return drone.getProximitySensorData() > 0.0;
+        });
 
-        TimeUnit.SECONDS.sleep(CAMERA_READING_WAITING_TIME);
-        drone.readAllData();
+        this.awaitUntil(() -> {
+            drone.readAllData();
+            final Map<String, Double> accelerometerValues = drone.getAccelerometerSensorData();
+            return accelerometerValues.containsKey(AccelerometerConstants.X)
+                    && accelerometerValues.containsKey(AccelerometerConstants.Y)
+                    && accelerometerValues.containsKey(AccelerometerConstants.Z);
+        });
 
-        Assertions.assertTrue(drone.getProximitySensorData() > 0.0);
-
-        final Map<String, Double> accelerometerValues = drone.getAccelerometerSensorData();
-        Assertions.assertTrue(
-                accelerometerValues.containsKey(AccelerometerConstants.X));
-        Assertions.assertTrue(
-                accelerometerValues.containsKey(AccelerometerConstants.Y));
-        Assertions.assertTrue(
-                accelerometerValues.containsKey(AccelerometerConstants.Z));
-
-        Assertions.assertTrue(drone.getCameraSensorData().length > 0);
+        this.awaitUntil(() -> {
+            drone.readAllData();
+            return drone.getCameraSensorData().length > 0;
+        });
 
         drone.deactivate();
         Assertions.assertFalse(drone.isOperating());
+    }
+
+    private void awaitUntil(final Callable<Boolean> booleanCallable) {
+        await().atMost(SENSOR_DATA_READING_WAITING_TIME, TimeUnit.SECONDS).until(booleanCallable);
     }
 }

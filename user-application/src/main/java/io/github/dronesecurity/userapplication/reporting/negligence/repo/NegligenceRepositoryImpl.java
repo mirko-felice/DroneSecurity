@@ -59,7 +59,7 @@ public final class NegligenceRepositoryImpl implements NegligenceRepository {
     }
 
     @Override
-    public Future<Void> takeAction(final @NotNull OpenNegligenceReport report, final String solution) {
+    public Future<Void> takeAction(final @NotNull OpenNegligenceReport report, final NegligenceSolution solution) {
         final ClosedNegligenceReport closedReport = report.close(Instant.now(), solution);
         final JsonObject query = new JsonObject().put(NegligenceConstants.ID, report.getId());
         return VertxHelper.MONGO_CLIENT.findOneAndReplace(COLLECTION_NAME,

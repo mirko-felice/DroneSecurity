@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.exceptions;
 
-import io.github.dronesecurity.userapplication.shipping.courier.entities.Order;
+import io.github.dronesecurity.userapplication.shipping.entities.Order;
 
 /**
  * Exception thrown if {@link Order} is built using an empty client.

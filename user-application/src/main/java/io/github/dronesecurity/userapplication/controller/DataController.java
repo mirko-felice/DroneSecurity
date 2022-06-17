@@ -6,9 +6,10 @@
 package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.lib.DateHelper;
-import io.github.dronesecurity.userapplication.drone.monitoring.UserMonitoringService;
-import io.github.dronesecurity.userapplication.drone.monitoring.entities.DroneData;
-import io.github.dronesecurity.userapplication.drone.monitoring.utilities.DataConstants;
+import io.github.dronesecurity.userapplication.monitoring.UserMonitoringService;
+import io.github.dronesecurity.userapplication.monitoring.entities.DroneData;
+import io.github.dronesecurity.userapplication.monitoring.utilities.DataConstants;
+import io.github.dronesecurity.userapplication.shipping.entities.Order;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -25,7 +26,7 @@ import java.util.ResourceBundle;
 
 /**
  * Controller dedicated to show all the data related to an
- * {@link io.github.dronesecurity.userapplication.shipping.courier.entities.Order}.
+ * {@link Order}.
  */
 public class DataController implements Initializable {
 
@@ -42,7 +43,7 @@ public class DataController implements Initializable {
 
     /**
      * Build the controller.
-     * @param orderId {@link io.github.dronesecurity.userapplication.shipping.courier.entities.Order} identifier to
+     * @param orderId {@link Order} identifier to
      *                                                                                               retrieve data from
      */
     public DataController(final long orderId) {

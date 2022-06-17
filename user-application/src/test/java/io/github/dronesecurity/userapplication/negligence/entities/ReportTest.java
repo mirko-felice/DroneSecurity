@@ -26,8 +26,8 @@ final class ReportTest {
 
     private static final String NEGLIGENT = "courier";
     private static final String ASSIGNEE = "maintainer";
-    private static final String ORDER_ID = "123";
-    private static final String SOLUTION = "test Solution";
+    private static final long ORDER_ID = 123;
+    private static final NegligenceSolution SOLUTION = new NegligenceSolutionImpl("test Solution");
 
     @Test
     void testEmptyData() {

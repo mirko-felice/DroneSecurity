@@ -6,7 +6,7 @@
 package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.userapplication.auth.entities.Role;
-import io.github.dronesecurity.userapplication.shipping.courier.CourierShippingService;
+import io.github.dronesecurity.userapplication.shipping.CourierShippingService;
 import io.github.dronesecurity.userapplication.utilities.CastHelper;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.UserHelper;

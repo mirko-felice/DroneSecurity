@@ -35,7 +35,7 @@ public final class NegligenceReportDeserializer extends JsonDeserializer<Neglige
 
         final DroneData data = new DroneDataImpl(root.get(NegligenceConstants.DATA));
 
-        final String orderId = root.get(NegligenceConstants.ORDER_ID).asText();
+        final long orderId = root.get(NegligenceConstants.ORDER_ID).asLong();
         final Instant negligenceInstant =
                 DateHelper.toInstant(root.get(NegligenceConstants.NEGLIGENCE_INSTANT).asText());
 
@@ -50,7 +50,8 @@ public final class NegligenceReportDeserializer extends JsonDeserializer<Neglige
         if (isClosed) {
             final Instant closingInstant =
                     DateHelper.toInstant(root.get(NegligenceConstants.CLOSING_INSTANT).asText());
-            final String solution = root.get(NegligenceConstants.SOLUTION).asText();
+            final NegligenceSolution solution =
+                    new NegligenceSolutionImpl(root.get(NegligenceConstants.SOLUTION).asText());
             return NegligenceReportFactory.closed(withID, closingInstant, solution);
         } else
             return NegligenceReportFactory.open(withID);

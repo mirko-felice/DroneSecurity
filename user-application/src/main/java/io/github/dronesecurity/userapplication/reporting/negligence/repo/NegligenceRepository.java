@@ -7,6 +7,7 @@ package io.github.dronesecurity.userapplication.reporting.negligence.repo;
 
 import io.github.dronesecurity.userapplication.auth.entities.Courier;
 import io.github.dronesecurity.userapplication.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceSolution;
 import io.vertx.core.Future;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.ClosedNegligenceReport;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceReport;
@@ -28,10 +29,10 @@ public interface NegligenceRepository {
     /**
      * Take action closing the report.
      * @param report report to close
-     * @param solution solution text used to close the report
+     * @param solution {@link NegligenceSolution} used to close the report
      * @return a {@link Future} to check when action is finished
      */
-    Future<Void> takeAction(OpenNegligenceReport report, String solution);
+    Future<Void> takeAction(OpenNegligenceReport report, NegligenceSolution solution);
 
     /**
      * Retrieve all {@link OpenNegligenceReport} owned to a {@link Courier}.

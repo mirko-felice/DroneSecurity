@@ -8,6 +8,7 @@ package io.github.dronesecurity.userapplication.controller;
 import io.github.dronesecurity.userapplication.auth.entities.Maintainer;
 import io.github.dronesecurity.userapplication.events.DomainEvents;
 import io.github.dronesecurity.userapplication.events.NewNegligence;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceSolutionImpl;
 import io.github.dronesecurity.userapplication.reporting.negligence.entities.OpenNegligenceReport;
 import io.github.dronesecurity.userapplication.reporting.negligence.services.MaintainerNegligenceReportService;
 import io.github.dronesecurity.userapplication.reporting.negligence.services.NegligenceReportService;
@@ -88,7 +89,7 @@ public class NegligenceController implements Initializable {
             DialogUtils.showErrorDialog("You have to select a report to take action on.");
         else {
             this.dataController.emptyDetails();
-            this.negligenceReportService.takeAction(report, this.solution.getText())
+            this.negligenceReportService.takeAction(report, new NegligenceSolutionImpl(this.solution.getText()))
                     .onSuccess(unused -> Platform.runLater(() -> {
                         this.dataController.updateReports();
                         DialogUtils.showInfoNotification("INFO",

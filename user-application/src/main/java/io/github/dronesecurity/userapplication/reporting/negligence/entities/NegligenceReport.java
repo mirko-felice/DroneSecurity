@@ -41,7 +41,7 @@ public interface NegligenceReport {
      * Gets the order identifier related to the negligence.
      * @return the order identifier
      */
-    String getOrderId();
+    long getOrderId();
 
     /**
      * Gets the {@link Instant} when negligence has happened.

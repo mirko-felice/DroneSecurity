@@ -7,6 +7,7 @@ package io.github.dronesecurity.userapplication.reporting.negligence.entities;
 
 import io.github.dronesecurity.userapplication.auth.entities.Courier;
 import io.github.dronesecurity.userapplication.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.shipping.entities.Order;
 
 import java.time.Instant;
 
@@ -18,7 +19,7 @@ class NegligenceReportImpl implements NegligenceReport {
     private final String negligent;
     private final String assignee;
     private final DroneData data;
-    private final String orderId;
+    private final long orderId;
     private final Instant negligenceInstant;
 
     /**
@@ -26,14 +27,14 @@ class NegligenceReportImpl implements NegligenceReport {
      * @param negligent the {@link Courier} that has committed negligence
      * @param assignee the {@link Maintainer} assigned to the report
      * @param data the {@link DroneData} associated to the report
-     * @param orderId the {@link io.github.dronesecurity.userapplication.shipping.courier.entities.Order} identifier
+     * @param orderId the {@link Order} identifier
      *                related to the negligence
      * @param negligenceInstant the {@link Instant} when the negligence has happened
      */
     NegligenceReportImpl(final String negligent,
                          final String assignee,
                          final DroneData data,
-                         final String orderId,
+                         final long orderId,
                          final Instant negligenceInstant) {
         this.negligent = negligent;
         this.assignee = assignee;
@@ -70,7 +71,7 @@ class NegligenceReportImpl implements NegligenceReport {
      * {@inheritDoc}
      */
     @Override
-    public String getOrderId() {
+    public long getOrderId() {
         return this.orderId;
     }
 

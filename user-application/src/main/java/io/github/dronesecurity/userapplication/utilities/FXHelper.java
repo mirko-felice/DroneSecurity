@@ -9,9 +9,7 @@ import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.userapplication.auth.AuthenticationService;
 import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
 import io.github.dronesecurity.userapplication.controller.DetailController;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.ClosedNegligenceReport;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.DroneData;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceReportWithID;
+import io.github.dronesecurity.userapplication.reporting.negligence.entities.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
@@ -145,10 +143,10 @@ public final class FXHelper {
         table.getColumns().addAll(Arrays.asList(negligentColumn, assignedToColumn, dataColumn));
 
         if (id.contains("closed")) {
-            final Consumer<String> solutionConsumer = solution ->
+            final Consumer<NegligenceSolution> solutionConsumer = solution ->
                     Platform.runLater(() -> controller.updateDetails(solution));
-            final TableColumn<T, String> solutionColumn =
-                    initializeColumn("Solution", String.class, "getSolution", solutionConsumer, true);
+            final TableColumn<T, NegligenceSolution> solutionColumn =
+                    initializeColumn("Solution", NegligenceSolution.class, "getSolution", solutionConsumer, true);
             table.getColumns().add(solutionColumn);
         }
 
