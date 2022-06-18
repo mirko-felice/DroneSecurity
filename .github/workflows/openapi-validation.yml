@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: List files
         id: list-files
-        uses: mirko-felice/list-files-action@v3.0.1
+        uses: mirko-felice/list-files-action@v3.0.3
         with:
           repo: ${{ github.repository }}
           ref: ${{ github.ref }}
