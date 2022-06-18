@@ -1,3 +1,15 @@
+# [1.0.0](https://github.com/mirko-felice/DroneSecurity/compare/0.4.0...1.0.0) (2022-06-18)
+
+
+### Documentation
+
+* update drone-system class diagram ([7ad4b34](https://github.com/mirko-felice/DroneSecurity/commit/7ad4b34d13aff5e8d57a88fdc10ac5d44f982abb))
+
+
+### BREAKING CHANGES
+
+* first release
+
 # [0.4.0](https://github.com/mirko-felice/DroneSecurity/compare/0.3.3...0.4.0) (2022-06-18)
 
 
