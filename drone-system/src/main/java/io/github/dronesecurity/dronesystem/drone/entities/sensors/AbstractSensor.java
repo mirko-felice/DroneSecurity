@@ -45,6 +45,7 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
                                                                                                         : "python3 ";
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private final DefaultExecutor executor = new DefaultExecutor();
+    private String scriptFilePath;
 
     private boolean on;
 
@@ -62,9 +63,9 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
     @Override
     public void activate() {
         if (this.isPythonVersionCompatible()) {
-            final String scriptFileName = this.getScriptFile(this.getScriptName());
+            this.scriptFilePath = this.getScriptFile(this.getScriptName());
             this.setOn(true);
-            new Thread(() -> this.executeScript(scriptFileName)).start();
+            new Thread(() -> this.executeScript(this.scriptFilePath)).start();
         }
     }
 
@@ -81,6 +82,12 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
             LoggerFactory.getLogger(getClass()).error("Failed to close output stream.", e);
         }
         this.setOn(false);
+        try {
+            if (this.scriptFilePath != null)
+                Files.deleteIfExists(Path.of(this.scriptFilePath));
+        } catch (IOException e) {
+            LoggerFactory.getLogger(getClass()).error("Failed to delete file.", e);
+        }
     }
 
     /**

@@ -54,7 +54,6 @@ public final class UserMonitoringService {
             final JsonObject accelerometerJson =
                     json.getJsonObject(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER);
             final Map<String, Integer> accelerometer = new ConcurrentHashMap<>();
-            // TODO refactor strings
             if (!accelerometerJson.isEmpty()) {
                 accelerometer.put(MqttMessageParameterConstants.ROLL,
                         accelerometerJson.getInteger(MqttMessageParameterConstants.ROLL));
