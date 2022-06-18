@@ -1,3 +1,35 @@
+# [0.4.0](https://github.com/mirko-felice/DroneSecurity/compare/0.3.3...0.4.0) (2022-06-18)
+
+
+### Bug Fixes
+
+* fix Open Api specification ([68c0622](https://github.com/mirko-felice/DroneSecurity/commit/68c0622b3d66e7c8b1fb282f61f08b4be45d64ea))
+* refactor UserMonitoringService due to multiple subscribe issue ([576f504](https://github.com/mirko-felice/DroneSecurity/commit/576f5045c78e7faa9ecf2edf16514dd4e6f5fafa))
+* solve courier shipping service saving issues ([0e5a832](https://github.com/mirko-felice/DroneSecurity/commit/0e5a8320b4e1407dbf76de2aa7b5c7acc15e4b1b))
+* solve issues related to drone moving logic ([0396b08](https://github.com/mirko-felice/DroneSecurity/commit/0396b0883c0c68a67cbbb0c9fa26efab8d90c421))
+* solve negligence report issues ([5e11db2](https://github.com/mirko-felice/DroneSecurity/commit/5e11db2f3b0f3d20b9b8f902f9f9d26f3bf32d09))
+* solve problems related to visioning and closing of an issue ([862c602](https://github.com/mirko-felice/DroneSecurity/commit/862c60293753d07d867231e2c8a604cd74b48439))
+* solve wrong alert management and drone service issues ([f283363](https://github.com/mirko-felice/DroneSecurity/commit/f28336393190b85e35f994557407fdf14b74e1ed))
+* wait for drone activation before getting data and deregister domain events' handlers ([06b8991](https://github.com/mirko-felice/DroneSecurity/commit/06b8991ce0a088a69ba4d8004ddc8b070d01af4f))
+
+
+### Features
+
+* add accelerometer performance evaluation and refactor performance data management ([9607edb](https://github.com/mirko-felice/DroneSecurity/commit/9607edbe97ae8cf2a86d1c06983a7892f3a4a2b9))
+* add average performance values visualization ([caf7fb6](https://github.com/mirko-felice/DroneSecurity/commit/caf7fb61859da25f1652328aa6b67eaa969495a9))
+* add data history management + some refactoring ([9ef1518](https://github.com/mirko-felice/DroneSecurity/commit/9ef1518db4143efd140e3e4d50eeb6c4d5c86737))
+* add drone controlling in monitoring feature ([ef6edec](https://github.com/mirko-felice/DroneSecurity/commit/ef6edecc5cc35b4e1ec8e7d4742cf6345caf3864))
+* add drone identifer to issues + fix controls during monitoring ([2f8cef0](https://github.com/mirko-felice/DroneSecurity/commit/2f8cef0817f8b98fb283cbee93cf1e6460b9545a))
+* add multi-drone delivering ([46bd6c5](https://github.com/mirko-felice/DroneSecurity/commit/46bd6c5e5998b32ce696e9d3a0f4ec268ca0439c))
+* add performance evaluation for camera ([ec6a1d7](https://github.com/mirko-felice/DroneSecurity/commit/ec6a1d7153c47efa0b9ca0004da61f42cd66c2ce))
+* add picamera reading and sending image size ([e70f1fb](https://github.com/mirko-felice/DroneSecurity/commit/e70f1fbf69ab0c5025c2a3ec46001657ceeaa740))
+* add proximity sensor to performance evaluation ([d61847a](https://github.com/mirko-felice/DroneSecurity/commit/d61847aca0b52ffb4fb82a6592f6c091a5cd5558))
+
+
+### Performance Improvements
+
+* improve GUI for orders ([64e7326](https://github.com/mirko-felice/DroneSecurity/commit/64e7326c0034d4f27074ae8f69c117473a793db6))
+
 ## [0.3.3](https://github.com/mirko-felice/DroneSecurity/compare/0.3.2...0.3.3) (2022-05-23)
 
 
