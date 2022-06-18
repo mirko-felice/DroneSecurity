@@ -24,12 +24,12 @@
     </rowConstraints>
     <TableView fx:id="table" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="250.0" prefWidth="735.0" GridPane.columnSpan="2147483647">
         <columns>
-         <TableColumn fx:id="orderIdColumn" editable="false" prefWidth="50.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="ID" />
-            <TableColumn fx:id="orderDateColumn" editable="false" prefWidth="170.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Order Date" />
-            <TableColumn fx:id="productColumn" editable="false" prefWidth="90.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Product" />
-            <TableColumn fx:id="stateColumn" editable="false" prefWidth="150.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="State" />
-         <TableColumn fx:id="estimatedArrivalColumn" editable="false" prefWidth="170.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Estimated Arrival" />
-         <TableColumn fx:id="clientColumn" editable="false" prefWidth="90.0" resizable="false" sortable="false" style="-fx-alignment: CENTER;" text="Client" />
+         <TableColumn fx:id="orderIdColumn" editable="false" minWidth="-1.0" prefWidth="50.0" sortable="false" style="-fx-alignment: CENTER;" text="ID" />
+            <TableColumn fx:id="orderDateColumn" editable="false" minWidth="-1.0" prefWidth="170.0" sortable="false" style="-fx-alignment: CENTER;" text="Order Date" />
+            <TableColumn fx:id="productColumn" editable="false" minWidth="-1.0" prefWidth="90.0" sortable="false" style="-fx-alignment: CENTER;" text="Product" />
+            <TableColumn fx:id="stateColumn" editable="false" minWidth="-1.0" prefWidth="150.0" sortable="false" style="-fx-alignment: CENTER;" text="State" />
+         <TableColumn fx:id="estimatedArrivalColumn" editable="false" minWidth="-1.0" prefWidth="170.0" sortable="false" style="-fx-alignment: CENTER;" text="Estimated Arrival" />
+         <TableColumn fx:id="clientColumn" editable="false" minWidth="-1.0" prefWidth="90.0" sortable="false" style="-fx-alignment: CENTER;" text="Client" />
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

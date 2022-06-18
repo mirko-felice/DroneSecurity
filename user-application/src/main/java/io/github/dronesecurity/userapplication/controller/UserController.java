@@ -30,6 +30,16 @@ import java.util.ResourceBundle;
  */
 public class UserController implements Initializable {
 
+    private static final double LOGIN_MIN_WIDTH = 350;
+    private static final double LOGIN_MIN_HEIGHT = 200;
+    private static final double ORDERS_MIN_WIDTH = 100;
+    private static final double ORDERS_MIN_HEIGHT = 500;
+    private static final double ISSUES_MIN_WIDTH = 550;
+    private static final double ISSUES_MIN_HEIGHT = 400;
+    private static final double NEGLIGENCE_MIN_WIDTH = 600;
+    private static final double NEGLIGENCE_MIN_HEIGHT = 500;
+    private static final double NEGLIGENCE_DATA_MIN_WIDTH = 600;
+    private static final double NEGLIGENCE_DATA_MIN_HEIGHT = 300;
     private static final String LOGIN_FXML = "login.fxml";
     private static final String ORDERS_FXML = "orders.fxml";
     private static final String NEGLIGENCE_FXML = "negligence.fxml";
@@ -65,7 +75,7 @@ public class UserController implements Initializable {
     private void logout() {
         UserHelper.logout();
         CastHelper.safeCast(this.progressBar.getScene().getWindow(), Stage.class).ifPresent(Stage::close);
-        this.show(LOGIN_FXML, "Login", true);
+        this.show(LOGIN_FXML, "Login", true, LOGIN_MIN_WIDTH, LOGIN_MIN_HEIGHT);
     }
 
     @FXML
@@ -76,7 +86,8 @@ public class UserController implements Initializable {
             this.progressBar.setVisible(false);
             this.showOrdersButton.setDisable(false);
             if (res.succeeded())
-                Platform.runLater(() -> this.show(ORDERS_FXML, "Orders", false));
+                Platform.runLater(() -> this.show(ORDERS_FXML, "Orders", false, ORDERS_MIN_WIDTH,
+                        ORDERS_MIN_HEIGHT));
             else
                 LoggerFactory.getLogger(getClass()).error("Error creating the service:",
                         res.cause());
@@ -86,20 +97,21 @@ public class UserController implements Initializable {
     @FXML
     private void showReports() {
         if (this.role == Role.COURIER)
-            this.show(NEGLIGENCE_DATA_FXML, "Reports", false);
+            this.show(NEGLIGENCE_DATA_FXML, "Reports", false, NEGLIGENCE_DATA_MIN_WIDTH, NEGLIGENCE_DATA_MIN_HEIGHT);
         else if (this.role == Role.MAINTAINER)
-            this.show(NEGLIGENCE_FXML, "Reports", false);
+            this.show(NEGLIGENCE_FXML, "Reports", false, NEGLIGENCE_MIN_WIDTH, NEGLIGENCE_MIN_HEIGHT);
     }
 
     @FXML
     private void showIssues() {
-        this.show(ISSUES_FXML, "Issues", false);
+        this.show(ISSUES_FXML, "Issues", false, ISSUES_MIN_WIDTH, ISSUES_MIN_HEIGHT);
     }
 
-    private void show(final String fxml, final String title, final boolean closeable) {
+    private void show(final String fxml, final String title, final boolean closeable, final double minWidth,
+                      final double minHeight) {
         final URL fileUrl = UserController.class.getResource(fxml);
         final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
         final Modality modality = closeable ? Modality.NONE : Modality.WINDOW_MODAL;
-        FXHelper.initializeWindow(modality, title, fxmlLoader).ifPresent(Stage::show);
+        FXHelper.initializeWindow(modality, title, fxmlLoader, minWidth, minHeight).ifPresent(Stage::show);
     }
 }

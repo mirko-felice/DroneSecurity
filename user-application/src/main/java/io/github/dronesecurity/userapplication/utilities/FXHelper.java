@@ -47,15 +47,20 @@ public final class FXHelper {
      * @param stage stage to initialize
      * @param title title to set on the window
      * @param loader loader to use to load the scene from fxml
+     * @param minWidth minimum width of the window
+     * @param minHeight minimum height of the window
      * @return an {@link Optional} indicating if an error happened during the loading of resource file or not
      */
     public static Optional<Stage> initializeWindow(final @NotNull Stage stage,
                                                    final String title,
-                                                   final @NotNull FXMLLoader loader) {
+                                                   final @NotNull FXMLLoader loader,
+                                                   final double minWidth,
+                                                   final double minHeight) {
         try {
             stage.setScene(new Scene(loader.load()));
             stage.setTitle(title);
-            stage.setResizable(false);
+            stage.setMinWidth(minWidth);
+            stage.setMinHeight(minHeight);
             if (stage.getModality() == Modality.NONE)
                 stage.setOnCloseRequest(unused -> {
                     VertxHelper.WEB_CLIENT.close();
@@ -77,14 +82,18 @@ public final class FXHelper {
      * @param modality modality to initialize window
      * @param title title to set on the window
      * @param loader loader to use to load the scene from fxml
+     * @param minWidth minimum width of the window
+     * @param minHeight minimum height of the window
      * @return an {@link Optional} indicating if an error happened during the loading of resource file or not
      */
     public static Optional<Stage> initializeWindow(final Modality modality,
                                                    final String title,
-                                                   final @NotNull FXMLLoader loader) {
+                                                   final @NotNull FXMLLoader loader,
+                                                   final double minWidth,
+                                                   final double minHeight) {
         final Stage stage = new Stage();
         stage.initModality(modality);
-        return initializeWindow(stage, title, loader);
+        return initializeWindow(stage, title, loader, minWidth, minHeight);
     }
 
     /**
@@ -161,6 +170,9 @@ public final class FXHelper {
             final Consumer<S> mouseClickedListener,
             final boolean isClosed) {
         final TableColumn<T, S> column = new TableColumn<>(header);
+        column.setReorderable(false);
+        column.setEditable(false);
+        column.setSortable(false);
         column.setCellFactory(ignored -> new NegligenceReportCell<>(mouseClickedListener));
         column.setCellValueFactory(cell -> {
             try {

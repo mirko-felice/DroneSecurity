@@ -86,7 +86,7 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
             if (this.scriptFilePath != null)
                 Files.deleteIfExists(Path.of(this.scriptFilePath));
         } catch (IOException e) {
-            LoggerFactory.getLogger(getClass()).error("Failed to delete file.", e);
+            LoggerFactory.getLogger(getClass()).error("Failed to delete sensor script.", e);
         }
     }
 
@@ -139,14 +139,20 @@ public abstract class AbstractSensor<SensorData> implements Sensor<SensorData> {
      * @return true if is Raspberry, false otherwise
      */
     protected final boolean isRaspberry() {
-        this.executeScript(this.getScriptFile("os_detector"));
+        final String osDetectorPath = this.getScriptFile("os_detector");
+        this.executeScript(osDetectorPath);
 
         String nodeName;
         do {
             nodeName = this.outputStream.toString(StandardCharsets.UTF_8).trim();
         } while (nodeName.isEmpty());
         this.outputStream.reset();
-
+        try {
+            if (osDetectorPath != null)
+                Files.deleteIfExists(Path.of(osDetectorPath));
+        } catch (IOException e) {
+            LoggerFactory.getLogger(getClass()).error("Failed to delete os detector script.", e);
+        }
         return nodeName.toLowerCase(Locale.getDefault()).contains("raspberry");
     }
 

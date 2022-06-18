@@ -24,6 +24,10 @@ import java.io.File;
  */
 public final class Launcher extends Application {
 
+    private static final double CONNECTION_MIN_WIDTH = 400;
+    private static final double CONNECTION_MIN_HEIGHT = 600;
+    private static final double LOGIN_MIN_WIDTH = 350;
+    private static final double LOGIN_MIN_HEIGHT = 200;
     private static final String CONNECTION_FXML = "connection.fxml";
     private static final String LOGIN_FXML = "login.fxml";
 
@@ -33,17 +37,18 @@ public final class Launcher extends Application {
         if (!propertiesFile.exists() || DialogUtils.showConfirmationDialog("File properties already found!",
                 "Would you like to reset values?")) {
             final FXMLLoader fxmlLoader = new FXMLLoader(ConnectionController.class.getResource(CONNECTION_FXML));
-            FXHelper.initializeWindow(stage, "Connection settings", fxmlLoader).ifPresent(window -> {
-                window.setOnCloseRequest(unused -> {
-                    VertxHelper.WEB_CLIENT.close();
-                    VertxHelper.MONGO_CLIENT.close();
-                    VertxHelper.VERTX.close();
-                    Platform.exit();
-                    System.exit(0);
-                });
-                window.setOnHidden(ignored -> this.showLogin());
-                window.show();
-            });
+            FXHelper.initializeWindow(stage, "Connection settings", fxmlLoader, CONNECTION_MIN_WIDTH,
+                    CONNECTION_MIN_HEIGHT).ifPresent(window -> {
+                        window.setOnCloseRequest(unused -> {
+                            VertxHelper.WEB_CLIENT.close();
+                            VertxHelper.MONGO_CLIENT.close();
+                            VertxHelper.VERTX.close();
+                            Platform.exit();
+                            System.exit(0);
+                        });
+                        window.setOnHidden(ignored -> this.showLogin());
+                        window.show();
+                    });
         } else
             this.showLogin();
     }
@@ -59,6 +64,7 @@ public final class Launcher extends Application {
     private void showLogin() {
         Connection.getInstance().connect();
         final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(LOGIN_FXML));
-        FXHelper.initializeWindow(Modality.NONE, "Login", fxmlLoader).ifPresent(Stage::show);
+        FXHelper.initializeWindow(Modality.NONE, "Login", fxmlLoader, LOGIN_MIN_WIDTH, LOGIN_MIN_HEIGHT)
+                .ifPresent(Stage::show);
     }
 }

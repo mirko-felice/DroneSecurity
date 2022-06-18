@@ -40,6 +40,10 @@ import java.util.stream.Collectors;
  */
 public final class OrdersController implements Initializable {
 
+    private static final double MONITORING_MIN_WIDTH = 800;
+    private static final double MONITORING_MIN_HEIGHT = 800;
+    private static final double DATA_MIN_WIDTH = 900;
+    private static final double DATA_MIN_HEIGHT = 500;
     private static final String MONITORING_FXML = "monitoring.fxml";
     private static final String DATA_FXML = "data.fxml";
     private final Consumer<OrdersUpdate> ordersUpdateHandler;
@@ -141,7 +145,8 @@ public final class OrdersController implements Initializable {
                                     final URL fileUrl = getClass().getResource(MONITORING_FXML);
                                     final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
                                     fxmlLoader.setController(new MonitorController(order.getId()));
-                                    FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Monitoring...", fxmlLoader)
+                                    FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Monitoring...", fxmlLoader,
+                                                    MONITORING_MIN_WIDTH, MONITORING_MIN_HEIGHT)
                                             .ifPresent(stage -> {
                                                 stage.setOnCloseRequest(Event::consume);
                                                 stage.setOnHidden(ignored ->
@@ -173,7 +178,8 @@ public final class OrdersController implements Initializable {
         this.getSelectedOrder().ifPresent(order -> {
             final FXMLLoader loader = new FXMLLoader(OrdersController.class.getResource(DATA_FXML));
             loader.setController(new DataController(order.getId()));
-            FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Data History", loader).ifPresent(Stage::show);
+            FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Data History", loader, DATA_MIN_WIDTH, DATA_MIN_HEIGHT)
+                    .ifPresent(Stage::show);
         });
     }
 

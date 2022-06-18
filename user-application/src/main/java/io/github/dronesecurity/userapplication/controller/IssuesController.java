@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
  */
 public class IssuesController implements Initializable {
 
+    private static final double MIN_WIDTH = 450;
+    private static final double MIN_HEIGHT = 300;
     private static final String NEW_ISSUE_FXML = "newIssue.fxml";
     @FXML
     private TabPane issuesPane;
@@ -108,6 +110,7 @@ public class IssuesController implements Initializable {
                     this.currentlySelectedIssue = issue;
                     this.solutionLabel.setVisible(false);
                     this.closedIssueSolution.setVisible(false);
+                    this.closedIssueSolution.setText("");
                     this.visionIssueButton.setVisible(
                             this.role == Role.MAINTAINER && IssueStringHelper.STATUS_OPEN.equals(issue.getState()));
                     this.goToClosingPageButton.setVisible(
@@ -144,11 +147,12 @@ public class IssuesController implements Initializable {
     @FXML
     private void newIssue() {
         final FXMLLoader loader = new FXMLLoader(IssuesController.class.getResource(NEW_ISSUE_FXML));
-        FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Create new Issue", loader).ifPresent(stage -> {
-            stage.initOwner(this.issuesPane.getScene().getWindow());
-            stage.setOnHidden(ignored -> this.refreshOpenIssues());
-            stage.showAndWait();
-        });
+        FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Create new Issue", loader, MIN_WIDTH, MIN_HEIGHT)
+                .ifPresent(stage -> {
+                    stage.initOwner(this.issuesPane.getScene().getWindow());
+                    stage.setOnHidden(ignored -> this.refreshOpenIssues());
+                    stage.showAndWait();
+                });
     }
 
     @FXML

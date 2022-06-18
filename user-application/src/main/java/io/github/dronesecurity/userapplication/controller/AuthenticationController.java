@@ -34,6 +34,8 @@ import java.net.URL;
  */
 public final class AuthenticationController {
 
+    private static final double MIN_WIDTH = 350;
+    private static final double MIN_HEIGHT = 200;
     private static final String USER_FXML = "user.fxml";
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
@@ -64,7 +66,8 @@ public final class AuthenticationController {
                         ((Stage) this.loginButton.getScene().getWindow()).close();
                         final URL fileUrl = getClass().getResource(USER_FXML);
                         final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-                        FXHelper.initializeWindow(Modality.NONE, "User Menu", fxmlLoader).ifPresent(Stage::show);
+                        FXHelper.initializeWindow(Modality.NONE, "User Menu", fxmlLoader, MIN_WIDTH, MIN_HEIGHT)
+                                .ifPresent(Stage::show);
                     });
                 })
                 .onFailure(e ->

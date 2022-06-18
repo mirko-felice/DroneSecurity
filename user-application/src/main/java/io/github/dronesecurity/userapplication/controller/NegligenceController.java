@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -77,7 +79,8 @@ public class NegligenceController implements Initializable {
 
     private void onNewNegligence(final @NotNull NewNegligence newNegligence) {
         Platform.runLater(() -> {
-            this.dataController.updateReports();
+            Executors.newSingleThreadScheduledExecutor().schedule(() ->
+                    Platform.runLater(() -> this.dataController.updateReports()), 2, TimeUnit.SECONDS);
             DialogUtils.showInfoNotification("INFO",
                     "New negligence committed by " + newNegligence.getReport().getNegligent()
                     + ". Please take care of this. Go to the 'reports' window to show more information about it.",
