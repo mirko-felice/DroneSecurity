@@ -17,8 +17,4 @@ All documentation is available at [Github Pages](https://mirko-felice.github.io/
 
 Licensed under the [MIT License](LICENSE).
 
-The project uses other licenses:
-- [IPA Font License](IPA%20Font%20License).
-
-
 </div>
