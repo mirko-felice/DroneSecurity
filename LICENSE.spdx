@@ -1,10 +1,10 @@
 SPDXVersion: SPDX-2.1
 DataLicense:  CC0-1.0
-DocumentNamespace: https://s3.us-east-1.amazonaws.com/blob.fossa.io/FOSSA_BOMS/git%2Bgithub.com%2Fmirko-felice%2FDroneSecurity%2437a5df5dbe18bbc25752fde0ba8e372e8aeae685
+DocumentNamespace: https://s3.us-east-1.amazonaws.com/blob.fossa.io/FOSSA_BOMS/git%2Bgithub.com%2Fmirko-felice%2FDroneSecurity%24430c7eb2c2db19e68dc1185c92ce13e6b3fa261e
 SPDXID: SPDXRef-DOCUMENT
-DocumentName: github.com/mirko-felice/DroneSecurity-37a5df5dbe18bbc25752fde0ba8e372e8aeae685
+DocumentName: github.com/mirko-felice/DroneSecurity-430c7eb2c2db19e68dc1185c92ce13e6b3fa261e
 Creator: Organization: FOSSA, INC.
-Created: 2022-06-18T04:02:25Z
+Created: 2022-06-18T04:10:20Z
 
 ##Relationships
 SPDXRef-DOCUMENT CONTAINS SPDXRef-Package
@@ -12,12 +12,34 @@ SPDXRef-DOCUMENT DESCRIBES SPDXRef-Package
 ## Packages
 ## DroneSecurity License Information
 PackageName: DroneSecurity
-PackageVersion: 37a5df5dbe18bbc25752fde0ba8e372e8aeae685
+PackageVersion: 430c7eb2c2db19e68dc1185c92ce13e6b3fa261e
 FilesAnalyzed: false
-PackageLicenseDeclared: NONE
-PackageCopyrightText: NONE
-PackageLicenseInfoFromFiles: MIT
+PackageLicenseDeclared: MIT
+PackageCopyrightText: 2021-2022 Mirko Felice & Maxim Derevyanchenko
+PackageLicenseInfoFromFiles: 0BSD
+PackageLicenseInfoFromFiles: AAL
+PackageLicenseInfoFromFiles: ADSL
+PackageLicenseInfoFromFiles: AFL-1.1
+PackageLicenseInfoFromFiles: AFL-1.2
+PackageLicenseInfoFromFiles: AFL-2.0
+PackageLicenseInfoFromFiles: AFL-2.1
+PackageLicenseInfoFromFiles: AFL-3.0
+PackageLicenseInfoFromFiles: APL-1.0
+PackageLicenseInfoFromFiles: Artistic-2.0
+PackageLicenseInfoFromFiles: BSD-2-Clause
+PackageLicenseInfoFromFiles: BSD-3-Clause
+PackageLicenseInfoFromFiles: BSD-3-Clause-Clear
+PackageLicenseInfoFromFiles: CC0-1.0
+PackageLicenseInfoFromFiles: CC-BY-1.0
+PackageLicenseInfoFromFiles: CC-BY-3.0
+PackageLicenseInfoFromFiles: CC-BY-SA-4.0
+PackageLicenseInfoFromFiles: GPL-2.0-only
+PackageLicenseInfoFromFiles: GPL-3.0-only
+PackageLicenseInfoFromFiles: GPL-3.0-or-later
 PackageLicenseInfoFromFiles: IPA
+PackageLicenseInfoFromFiles: ISC
+PackageLicenseInfoFromFiles: LGPL-2.1-only
+PackageLicenseInfoFromFiles: WTFPL
 PackageLicenseInfoFromFiles: Apache-2.0
 PackageLicenseConcluded: NOASSERTION
 
@@ -26,10 +48,8 @@ PackageName: abbrev
 PackageVersion: 1.1.1
 FilesAnalyzed: false
 PackageLicenseDeclared: ISC OR MIT
-PackageCopyrightText: Isaac Z. Schlueter and Contributors
-Isaac Z. Schlueter
+PackageCopyrightText:  Isaac Z. Schlueter and Contributors
 Isaac Z. Schlueter and Contributors
- Isaac Z. Schlueter and Contributors
 PackageLicenseInfoFromFiles: ISC
 PackageLicenseConcluded: NOASSERTION
 
@@ -645,8 +665,7 @@ PackageName: diff
 PackageVersion: 5.0.0
 FilesAnalyzed: false
 PackageLicenseDeclared: BSD-2-Clause OR BSD-3-Clause OR BSD-3-Clause
-PackageCopyrightText: silverwind
-2009-2015 Kevin Decker <kpdecker@gmail.com>
+PackageCopyrightText: 2009-2015 Kevin Decker <kpdecker@gmail.com>
 PackageLicenseInfoFromFiles: IPA
 PackageLicenseConcluded: NOASSERTION
 
@@ -1526,8 +1545,7 @@ PackageName: lodash.capitalize
 PackageVersion: 4.2.1
 FilesAnalyzed: false
 PackageLicenseDeclared: CC0-1.0 OR MIT
-PackageCopyrightText: jQuery Foundation and other contributors <https://jquery.org/>
- jQuery Foundation and other contributors <https://jquery.org/>
+PackageCopyrightText:  jQuery Foundation and other contributors <https://jquery.org/>
  Jeremy Ashkenas,
 PackageLicenseInfoFromFiles: MIT
 PackageLicenseConcluded: NOASSERTION
@@ -1606,10 +1624,6 @@ PackageVersion: 4.0.12
 FilesAnalyzed: false
 PackageLicenseDeclared: BSD-3-Clause OR MIT OR MIT
 PackageCopyrightText: 2018 MarkedJS (https://github.com/markedjs/)
-2009-2015 Kevin Decker <kpdecker@gmail.com>
-2012-2014 Bram Stein
-Isaac Z. Schlueter
-2018 MarkedJS (https://github.com/markedjs/)
 2011-2018 Christopher Jeffrey (https://github.com/chjj/)
 2004 John Gruber
 2011-2022 Christopher Jeffrey. (MIT License)
@@ -2666,7 +2680,7 @@ PackageName: retry
 PackageVersion: 0.13.1
 FilesAnalyzed: false
 PackageLicenseDeclared: MIT
-PackageCopyrightText: 2011
+PackageCopyrightText: 2011 
 PackageLicenseInfoFromFiles: NONE
 PackageLicenseConcluded: NOASSERTION
 
