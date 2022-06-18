@@ -41,8 +41,8 @@ import java.util.stream.Collectors;
 public final class OrdersController implements Initializable {
 
     private static final double MONITORING_MIN_WIDTH = 800;
-    private static final double MONITORING_MIN_HEIGHT = 800;
-    private static final double DATA_MIN_WIDTH = 900;
+    private static final double MONITORING_MIN_HEIGHT = 700;
+    private static final double DATA_MIN_WIDTH = 850;
     private static final double DATA_MIN_HEIGHT = 500;
     private static final String MONITORING_FXML = "monitoring.fxml";
     private static final String DATA_FXML = "data.fxml";

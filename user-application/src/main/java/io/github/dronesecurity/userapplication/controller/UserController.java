@@ -32,13 +32,13 @@ public class UserController implements Initializable {
 
     private static final double LOGIN_MIN_WIDTH = 350;
     private static final double LOGIN_MIN_HEIGHT = 200;
-    private static final double ORDERS_MIN_WIDTH = 100;
-    private static final double ORDERS_MIN_HEIGHT = 500;
+    private static final double ORDERS_MIN_WIDTH = 800;
+    private static final double ORDERS_MIN_HEIGHT = 400;
     private static final double ISSUES_MIN_WIDTH = 550;
     private static final double ISSUES_MIN_HEIGHT = 400;
     private static final double NEGLIGENCE_MIN_WIDTH = 600;
     private static final double NEGLIGENCE_MIN_HEIGHT = 500;
-    private static final double NEGLIGENCE_DATA_MIN_WIDTH = 600;
+    private static final double NEGLIGENCE_DATA_MIN_WIDTH = 650;
     private static final double NEGLIGENCE_DATA_MIN_HEIGHT = 300;
     private static final String LOGIN_FXML = "login.fxml";
     private static final String ORDERS_FXML = "orders.fxml";
