@@ -1,16 +1,14 @@
 {
-  "devDependencies": {
+  "engines": {
+    "node": "16.15"
+  },
+  "dependencies": {
+    "npm": "^8.12.1",
     "@semantic-release/changelog": "6.0.1",
     "@semantic-release/commit-analyzer": "9.0.2",
     "@semantic-release/git": "10.0.1",
     "@semantic-release/github": "8.0.4",
     "@semantic-release/release-notes-generator": "10.0.3",
     "semantic-release": "^19.0.3"
-  },
-  "engines": {
-    "node": "16.15"
-  },
-  "dependencies": {
-    "npm": "^8.12.1"
   }
 }
