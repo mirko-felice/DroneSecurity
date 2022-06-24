@@ -1,7 +1,7 @@
 ## Ubiquitous Language
 
-Per risultare il più coerenti e integri possibile, si è deciso di disambiguare il più 
-possibile il linguaggio utilizzato nel dominio.
+Come risultato della sessione di [Knowledge Crunching](../knowledgeCrunching), si è eseguito un processo di
+disambiguazione allo scopo di chiarificare il più possibile il linguaggio utilizzato nel dominio.
 
 Per questo motivo è stata costruita una 
 [_board_](https://miro.com/app/live-embed/uXjVOfQexp8=/?moveToViewport=-1236,-720,1965,959)

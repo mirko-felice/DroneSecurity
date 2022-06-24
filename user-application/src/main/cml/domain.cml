@@ -3,16 +3,14 @@ ContextMap DroneManagementMap {
 	state = TO_BE
 	contains DroneContext, IssueReportingContext, NegligenceReportingContext, ShippingContext
 
-	DroneContext [U, OHS] -> [D] NegligenceReportingContext
+	NegligenceReportingContext [U] <- [D, CF] DroneContext
 
-	DroneContext [U] -> [D, ACL] ShippingContext
+	DroneContext [U] -> [D, CF] ShippingContext
 }
-
 BoundedContext DroneContext implements Drone {
 	type = FEATURE
 	
 	Aggregate Drone {
-		
 		ValueObject SensorData
 		ValueObject Path
 		
@@ -29,27 +27,39 @@ BoundedContext DroneContext implements Drone {
 		Service DataAnalyzer {
 			@AlertLevel checkDataAlertLevel(@SensorData sensorData);
 		}
-		
-		enum AlertLevel {
-			NONE, WARNING, CRITICAL;
+
+		Service DataProcessor {
+		   Map<String, Integer> processAccelerometer(Map<String, Double> accelerometerData);
 		}
-		
+
+		enum AlertLevel {
+			STABLE, WARNING, CRITICAL;
+		}
+
+		enum DrivingMode {
+            AUTOMATIC, MANUAL;
+        }
+
 		Entity Drone {
 			String id
 			- List<Sensor> sensors
+			- DrivingMode drivingMode
 
 			def void readAllData();
 			def @SensorData getAllData();
 			def void activate();
-			def void halt();
 			def void deactivate();
+			def void proceed();
+			def void halt();
 			def boolean isOperating();
+			def void changeMode(@DrivingMode drivingMode);
 		}
 		
 		Service DroneService {
 			@Drone drone;
+			@DataAnalyzer dataAnalyzer;
 			
-			void waitForDeliveryAssignment();
+			void waitForActivation();
 			private void startDrone(@Path path_);
 			private void stopDrone();
 			
@@ -79,10 +89,10 @@ BoundedContext DroneContext implements Drone {
 		
 		Service UserMonitoringService {
 			
-			void subscribeToDataRead(@DataRead domainEvent);
-			void subscribeToWarningSituation(@WarningSituation domainEvent);
-			void subscribeToCriticalSituation(@CriticalSituation domainEvent);
-			void subscribeToDroneStatusChange(@StatusChanged domainEvent);
+			void subscribeToDataRead();
+			void subscribeToAlerts();
+			void subscribeToOrderStatusChange();
+			List<DroneData> retrieveDataHistory(long orderId);
 		}
 	}
 }
@@ -100,7 +110,7 @@ BoundedContext IssueReportingContext implements Reporting {
 		DomainEvent NewIssue {
 			- IssueReport report
 		}
-		
+
 		Service CourierReportService {
 			
 			void reportsIssue(@IssueReport report);
@@ -129,8 +139,10 @@ BoundedContext NegligenceReportingContext implements Reporting {
 	Aggregate DroneReport {
 		
 		Entity NegligenceReport {
-			String id
-			- NegligenceMaintainer referenceMaintainer
+			long orderId
+			String negligent
+			- DroneData data
+			- Instant negligenceInstant
 		}
 		
 		Service DroneReportService {
@@ -139,7 +151,7 @@ BoundedContext NegligenceReportingContext implements Reporting {
 		}
 	}
 	
-	Aggregate MaintainerNegligenceReport {
+	Aggregate NegligenceReporting {
 		
 		Entity NegligenceActionForm {
 			String id
@@ -153,8 +165,18 @@ BoundedContext NegligenceReportingContext implements Reporting {
 
 		Service MaintainerNegligenceReportService {
 			
-			void onNewNegligence();
-			void takeAction(@NegligenceActionForm form);
+			void subscribeToCourierNegligence(String courier);
+			void takeAction(@NegligenceReport report, String solution);
+			List<OpenNegligenceReport> retrieveOpenReportsForMaintainer(String username);
+			List<ClosedNegligenceReport> retrieveClosedReportsForMaintainer(String username);
+		}
+
+		Service CourierNegligenceReportService {
+
+		    void subscribeToNewNegligence();
+		    void unsubscribeFromNewNegligence();
+		    List<OpenNegligenceReport> retrieveOpenReportsForCourier(String username);
+		    List<ClosedNegligenceReport> retrieveClosedReportsForCourier(String username);
 		}
 	}
 }
@@ -166,17 +188,19 @@ BoundedContext ShippingContext implements Shipping {
 		abstract Entity Order {
 			aggregateRoot
 			
-			String id
+			long id
 			String product
-			Date placingDate
-			Date estimatedArrival
+			Instant placingDate
+			Instant estimatedArrival
+			String client
 			
 			Repository OrderRepository {
 				List<@Order> getOrders();
-				@Order getOrderById(String orderId);
+				@Order getOrderById(long orderId);
 				void delivering(@DeliveringOrder order);
 				void confirmedDelivery(@DeliveredOrder order);
 				void failedDelivery(@FailedOrder order);
+				void rescheduled(@RescheduledOrder order);
 			}
 		}
 		
@@ -189,13 +213,15 @@ BoundedContext ShippingContext implements Shipping {
 		Entity FailedOrder extends Order
 	
 		Entity RescheduledOrder extends PlacedOrder
-			
-		Entity DroneSelection
 		
 		Service CourierShippingService {
-			void performDelivery(@PlacedOrder order, @DroneSelection droneSelection);
-			void callBack(@DroneSelection droneSelection);
-			Date rescheduleDelivery(@FailedOrder order);
+		    List<Order> listOrders(String courierUsername);
+			void performDelivery(@PlacedOrder order, @Path path, String droneId);
+			void rescheduleDelivery(@FailedOrder order, Instant newEstimatedArrival);
+			void callBack(long orderId);
+			void changeMode(long orderId,@DrivingMode drivingMode);
+			void proceed(long orderId);
+			void halt(long orderId);
 		}
 	}
 	
@@ -203,13 +229,13 @@ BoundedContext ShippingContext implements Shipping {
 		
 		ValueObject GPSPosition 
 		
-		DomainEvent DeliveredNotification
+		DomainEvent ArrivalNotification
 		DomainEvent RescheduleNotification
 		
 		Service ClientService {
 			@Order placeOrder(String product);
 			@GPSPosition track(@Order order);
-			void onDeliveredNotification();
+			void onArrivalNotification();
 			void onRescheduleNotification();
 		}
 	}

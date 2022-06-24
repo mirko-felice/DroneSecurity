@@ -1,9 +1,14 @@
 ## Installazione
 
-Ciascuno degli eseguibili JAR forniti contengono tutto ciò che è necessario per la propria esecuzione.
+Il sistema propone come prodotti finali utilizzabili dagli utenti due tipi di eseguibili.
+Ciascuno degli eseguibili JAR forniti contiene tutto ciò che è necessario per la propria esecuzione.
+Gli eseguibili si suddividono in relazione allo scopo che essi debbano portare a termine.
+Difatti, come intuibile dal progetto per definizione, sono disponibili il JAR relativo al sistema che dovrà essere 
+installato sul drone e il JAR relativo al sistema dell'applicativo utente, fornito in tre diverse versioni, a seconda
+del sistema operativo sul quale vuole essere eseguito, così da risparmiare spazio nella dimensione del pacchetto 
+compresso. 
 
-I requisiti necessari per avviare e far funzionare correttamente i due applicativi sono differenti a seconda che sia 
-l'applicativo da eseguire sul drone o sul sistema dell'utente.
+I requisiti necessari per avviare e far funzionare correttamente i due applicativi sono differenti a seconda del tipo.
 
 I requisiti comuni sono:
 
@@ -24,13 +29,13 @@ connessione del servizio cloud.
 Per questo motivo è necessario eseguire il comando `java -jar drone-system-fat.jar` da linea di comando per permettere
 all'applicativo di chiedere all'utente alcune informazioni indispensabili.
 Dall'esecuzione successiva non sarà più necessario richiedere altre informazioni in quanto le informazioni vengono 
-salvate su un file nella cartella corrente in cui viene lanciato l'applicativo, a meno che l'utente non voglia 
+memorizzate su un file nella cartella corrente in cui viene lanciato l'applicativo, a meno che l'utente non voglia 
 modificare la configurazione. In tal caso è necessario riavviare l'applicativo da riga di comando, aggiungendo come 
 parametro `generate-properties`.
 
 Per quanto riguarda l'applicativo utente è predisposta un'interfaccia grafica tramite la quale memorizzare la 
 configurazione della connessione. Se si vorrà modificare alcuni parametri, l'applicativo permetterà di modificarli 
-ponendo la domanda all'avvio del programma.
+ponendo la relativa domanda all'avvio del programma.
 
 Poiché non è possibile controllare che il _Client Identifier_ sia univoco, è opportuno prestare attenzione a
 non inserire il medesimo nei due applicativi, altrimenti il comportamento del sistema in toto diventa imprevedibile.

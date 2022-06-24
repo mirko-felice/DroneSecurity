@@ -26,15 +26,14 @@ Nel nostro dominio sono stati individuati quattro Bounded Context:
 Dopo aver determinato i Bounded Context è necessario capire le relazioni tra di essi.
 Per mostrare tali relazioni viene costruita una _Context Map_.
 In questo dominio le associazioni riconosciute sono state le seguenti:
-* _DroneContext [U, OHS] -> [D] NegligenceReportingContext_:
+* _NegligenceReportingContext [U] <- [D, CF] DroneContext_:
 
-  questa relazione indica che il _supplier_ **DroneContext** fornisce al _consumer_ **NegligenceReportingContext** le 
-funzionalità per permettere d'individuare le situazioni critiche. 
-Tale _Context_ vuole dedicare un _Open-Host Service (OHS)_ il quale permetta ai consumatori di non doversi adattare 
-alle esigenze di modellazione del fornitore. Verrà quindi sfruttato un _Published Language_, protocollo che si 
-prenda la briga d'interpolare i dati e convertirli in un modello appropriato al consumatore.
-* _DroneContext [U] -> [D, ACL] ShippingContext_:
+  questa relazione indica che il _supplier_ **NegligenceReportingContext** fornisce al _consumer_ **DroneContext** le 
+funzionalità per permettere di eseguire una segnalazione per negligenza.
+Per far ciò il _consumer_ deve adeguarsi ai cambiamenti del modello del dominio presente nel _supplier_.
+* _DroneContext [U] <- [D, CF] ShippingContext_:
 
-  analogamente il **DroneContext** funziona da _supplier_ verso lo **ShippingContext** per mettere a disposizione
-le possibilità di avviare il viaggio di spedizione, di tracciare il drone durante il 
-viaggio, di ricevere la notifica di avvenuta consegna e di richiamare il drone al magazzino.
+  in un altro scenario il **DroneContext** funziona da _supplier_ verso lo **ShippingContext** per mettere a 
+disposizione le possibilità di avviare il viaggio di spedizione, di tracciare il drone durante il 
+viaggio, di ricevere la notifica di arrivo a destinazione e di richiamare il drone al magazzino.
+Anche in questo caso, il _consumer_ deve adattarsi alle richieste del _supplier_.
