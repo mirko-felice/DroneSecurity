@@ -13,7 +13,7 @@ dependencies {
     implementation("de.jjohannes.gradle:extra-java-module-info:0.14")
     implementation("org.openjfx:javafx-plugin:0.0.13")
     implementation("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.4.0.2513")
-    implementation("com.lordcodes.turtle:turtle:0.6.0")
+    implementation("com.lordcodes.turtle:turtle:0.7.0")
 }
 
 val javaVersion: String = file(rootDir.parentFile.path + File.separator + "gradle.properties").inputStream().use {
