@@ -133,4 +133,4 @@ jobs:
           ORG_GRADLE_PROJECT_mavenUsername: ${{ secrets.MAVEN_USERNAME }}
           ORG_GRADLE_PROJECT_mavenPassword: ${{ secrets.MAVEN_PASSWORD }}
         with:
-          arguments: publish
+          arguments: publish --no-parallel
