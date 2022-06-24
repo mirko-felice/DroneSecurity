@@ -2,7 +2,7 @@ plugins {
     id("dronesecurity-application")
 }
 
-val vertxVersion = "4.3.0"
+val vertxVersion = "4.3.1"
 val javaVersion = properties["java.version"].toString()
 
 dependencies {
