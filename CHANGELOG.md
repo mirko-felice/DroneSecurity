@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/mirko-felice/DroneSecurity/compare/1.0.0...1.0.1) (2022-06-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency npm to v8.13.1 ([c2f6f4d](https://github.com/mirko-felice/DroneSecurity/commit/c2f6f4dc750c3cccafe29765dd55cfd089f71cc8))
+
 # [1.0.0](https://github.com/mirko-felice/DroneSecurity/compare/0.4.0...1.0.0) (2022-06-18)
 
 
