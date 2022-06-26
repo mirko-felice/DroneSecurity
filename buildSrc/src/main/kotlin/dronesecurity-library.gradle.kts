@@ -52,7 +52,11 @@ spotbugs {
 publishing {
     publications {
         val baseVersion = project.version.toString()
-        val projectVersion = if (baseVersion.startsWith("0")) baseVersion.substringBefore("-") + "-SNAPSHOT" else baseVersion
+        val projectVersion =
+            if (baseVersion.contains("-"))
+                baseVersion.substringBefore("-") + "-SNAPSHOT"
+            else
+                baseVersion
         create<MavenPublication>("DroneSecurity") {
             from(components["java"])
             version = projectVersion
@@ -115,7 +119,7 @@ tasks {
     withType<PublishToMavenRepository>().configureEach {
         val baseVersion = project.version.toString()
         val projectVersion =
-            if (baseVersion.startsWith("0") || baseVersion.contains("-"))
+            if (baseVersion.contains("-"))
                 baseVersion.substringBefore("-") + "-SNAPSHOT"
             else
                 baseVersion
