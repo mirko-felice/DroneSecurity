@@ -3,7 +3,7 @@ ContextMap DroneManagementMap {
 	state = TO_BE
 	contains DroneContext, IssueReportingContext, NegligenceReportingContext, ShippingContext
 
-	NegligenceReportingContext [U] <- [D, CF] DroneContext
+	NegligenceReportingContext [U] -> [D, CF] DroneContext
 
 	DroneContext [U] -> [D, CF] ShippingContext
 }
@@ -57,7 +57,7 @@ BoundedContext DroneContext implements Drone {
 		
 		Service DroneService {
 			@Drone drone;
-			@DataAnalyzer dataAnalyzer;
+			DataAnalyzer dataAnalyzer;
 			
 			void waitForActivation();
 			private void startDrone(@Path path_);
@@ -183,23 +183,33 @@ BoundedContext NegligenceReportingContext implements Reporting {
 
 BoundedContext ShippingContext implements Shipping {
 	
-	Aggregate CourierShipping {
-		
+	Aggregate Shipping {
+
+		ValueObject OrderIdentifier
+		ValueObject Product
+		ValueObject PlacingDate
+		ValueObject EstimatedArrival
+		ValueObject DronePath
+
+		enum OrderState {
+		    PLACED, DELIVERING, SUCCEEDED, FAILED, RESCHEDULED;
+		}
+
 		abstract Entity Order {
 			aggregateRoot
 			
-			long id
-			String product
-			Instant placingDate
-			Instant estimatedArrival
-			String client
+			- OrderIdentifier id
+			- Product product
+			- PlacingDate placingDate
+			- EstimatedArrival estimatedArrival
+			- Client client
 			
 			Repository OrderRepository {
-				List<@Order> getOrders();
-				@Order getOrderById(long orderId);
+				List<@Order> listOrders();
+				@Order retrieveOrderById(@OrderIdentifier orderId);
 				void delivering(@DeliveringOrder order);
-				void confirmedDelivery(@DeliveredOrder order);
-				void failedDelivery(@FailedOrder order);
+				void succeeded(@SucceededOrder order);
+				void failed(@FailedOrder order);
 				void rescheduled(@RescheduledOrder order);
 			}
 		}
@@ -208,24 +218,35 @@ BoundedContext ShippingContext implements Shipping {
 		
 		Entity DeliveringOrder extends Order
 		
-		Entity DeliveredOrder extends Order
+		Entity SucceededOrder extends Order
 		
 		Entity FailedOrder extends Order
 	
-		Entity RescheduledOrder extends PlacedOrder
-		
-		Service CourierShippingService {
-		    List<Order> listOrders(String courierUsername);
-			void performDelivery(@PlacedOrder order, @Path path, String droneId);
-			void rescheduleDelivery(@FailedOrder order, Instant newEstimatedArrival);
-			void callBack(long orderId);
-			void changeMode(long orderId,@DrivingMode drivingMode);
-			void proceed(long orderId);
-			void halt(long orderId);
+		Entity RescheduledOrder extends Order
+
+		Service OrderManager {
+		    List<@Order> listOrders();
+            @Order retrieveOrderById(@OrderIdentifier identifier);
+		}
+
+		Service DeliveryService {
+		    void performDelivery(@PlacedOrder order, @DronePath dronePath, String droneId);
+            void succeedDelivery(@DeliveringOrder order);
+            void failDelivery(@DeliveringOrder order);
+            void rescheduleDelivery(@FailedOrder order, @EstimatedArrival newEstimatedArrival);
+		}
+
+		Service DroneController {
+		    void callBack(@OrderIdentifier orderId);
+            void changeDrivingMode(@OrderIdentifier orderId, @DrivingMode drivingMode);
+            void proceed(@OrderIdentifier orderId);
+            void halt(@OrderIdentifier orderId);
 		}
 	}
 	
 	Aggregate Client {
+
+	    Entity Client
 		
 		ValueObject GPSPosition 
 		
@@ -233,7 +254,7 @@ BoundedContext ShippingContext implements Shipping {
 		DomainEvent RescheduleNotification
 		
 		Service ClientService {
-			@Order placeOrder(String product);
+			@Order placeOrder(@Product product);
 			@GPSPosition track(@Order order);
 			void onArrivalNotification();
 			void onRescheduleNotification();
@@ -253,7 +274,7 @@ Domain DroneSecurity {
 		domainVisionStatement "Subdomain managing reports about drone issues and couriers' negligence."
 	}
 
-	Subdomain Shipping supports DeliveredNotification, Tracking, OrderPlacing, Shipping, DeliveryRescheduling {
+	Subdomain Shipping supports ArrivalNotification, Tracking, OrderPlacing, Shipping, DeliveryRescheduling {
 		type = SUPPORTING_DOMAIN
 		domainVisionStatement "Subdomain supporting everything related to the shipping process."
 	}
@@ -296,11 +317,11 @@ UseCase WarningAlert {
 	benefit "the Courier can prevent accidents."
 }
 
-UseCase DeliveredNotification {
+UseCase ArrivalNotification {
 	actor "Drone"
 	interactions
 	"notify" "Client"
-	benefit "Client will know that the product has been delivered."
+	benefit "Client will know that the product has arrived to destination."
 }
 
 UseCase Tracking {
