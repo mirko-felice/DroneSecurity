@@ -86,6 +86,10 @@ Poiché è stata ampiamente utilizzata la _Continuous Integration_, la quale per
 correlati alla mancanza di sicurezza nel condividere online i certificati privati relativi alla copia remota del Drone su AWS,
 non permette di eseguire i test coinvolgenti AWS durante l'esecuzione della CI.
 
+#### Performance
+
+[//]: # ( TODO add performance documentation)
+
 #### Continuous Integration
 
 A questo proposito, la CI permette di controllare la validità delle specifiche OpenAPI, mediante _Github Actions_. 

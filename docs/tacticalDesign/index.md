@@ -3,17 +3,22 @@
 Successivamente, il DDD richiede uno studio più approfondito dei Bounded Context chiamato _Tactical Design_.
 
 Sono stati quindi analizzati nel dettaglio ciascuno di essi:
-* _**Shipping Context**_: esso mette a disposizione due aggregati: _Courier Shipping_ e _Client_.
+* _**Shipping Context**_: esso mette a disposizione due aggregati: _Shipping_ e _Client_.
 
-  Il primo di questi sostanzialmente fornisce un servizio il quale innanzitutto permette di mostrare tutti gli ordini
-  assegnati a un corriere e inoltre, mediante le entità _Order_ e _Path_ e l'identificativo del drone, le quali 
-  rispettivamente rappresentano l'ordine effettuato dal cliente e la selezione del drone, concede di svolgere la 
-  spedizione a partire da tali entità.
-  Inoltre, consente di controllare il drone tramite diverse opzioni, tra cui il richiamo al magazzino o il cambio 
-  di modalità di pilotaggio, e di poter programmare un nuovo tentativo di consegna di uno specifico ordine 
-  ritenuto fallito a causa del mancato ritiro del pacco da parte del cliente.
-  Come raccomandato, per evitare lo _State Pattern_ lo stato dell'ordine è stato ripensato come differenti entità
-  rappresentanti lo specifico stato.
+  Il primo di questi fonda le proprie basi sull'entità _Order_, la cui particolarità è il ciclo di vita collegato alla
+  consegna del medesimo. Viene chiaramente supportato da _Value Object_ indispensabili a rappresentare le informazioni 
+  che esso contiene.
+  Esso inoltre agisce da _aggregate root_, perciò viene supportato da un _repository_ apposito per fare in modo di 
+  assicurarsi che le informazioni rimangano persistenti e consistenti.
+  Come raccomandato, per evitare lo _State Pattern_ lo stato dell'ordine è stato realizzato come una collezione di 
+  differenti entità, ciascuna delle quali rappresenta lo specifico stato in quel momento.
+  Per separare il più possibile la logica relativa agli ordini e alle consegne, sono stati modellati tre _domain 
+  services_:
+   * _Order Manager_: esso si occupa soltanto della mera gestione degli ordini;
+   * _Delivery Service_: esso offre le funzionalità dedicate alla consegna, ad esempio permette di avviare la spedizione
+  o di pianificare un ulteriore tentativo di consegna.
+   * _Drone Controller_: questo servizio permette di controllare il drone durante la spedizione.  
+   <br/>
 
   L'aggregato Client invece, provvede, tramite un servizio apposito, le seguenti funzionalità:
     * Creazione dell'ordine, a partire da un dato prodotto;
