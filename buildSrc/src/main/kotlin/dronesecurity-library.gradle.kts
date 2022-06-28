@@ -168,6 +168,7 @@ tasks {
                 .map { it.group + "/" + it.name + "/" + it.version }
                 .forEach { links?.add("https://javadoc.io/doc/$it") }
             links?.add("https://docs.oracle.com/en/java/javase/${javaVersion}/docs/api/")
+            links?.add("https://javadoc.io/doc/io.github.mirko-felice.dronesecurity/lib/latest")
         }
     }
 
