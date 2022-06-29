@@ -23,7 +23,7 @@ System documentation is available at [GitHub Pages](https://mirko-felice.github.
 
 #### Code Quality:
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DroneSecurity&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=DroneSecurity)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=DroneSecurity&metric=alert_status)](https://sonarcloud.io/summary/overall?id=DroneSecurity)
 
 #### Build Checks:
 
