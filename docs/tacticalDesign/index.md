@@ -19,6 +19,12 @@ Sono stati quindi analizzati nel dettaglio ciascuno di essi:
   o di pianificare un ulteriore tentativo di consegna.
    * _Drone Controller_: questo servizio permette di controllare il drone durante la spedizione.  
    <br/>
+  
+  NOTE: a causa del suo ruolo nel dominio e avendo evitato lo _State Pattern_, non sono presenti
+  ulteriori invarianti dell'entità _Order_ oltre alla semplice validazione che la data di consegna
+  debba essere successiva alla data di ordinazione e che il nuovo tentativo di consegna non debba essere
+  precedente al vecchio.  
+  <br/>
 
   L'aggregato Client invece, provvede, tramite un servizio apposito, le seguenti funzionalità:
     * Creazione dell'ordine, a partire da un dato prodotto;
