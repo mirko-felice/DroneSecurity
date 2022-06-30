@@ -117,8 +117,7 @@
         "type": "object",
         "properties": {
           "orderId": {
-            "type": "integer",
-            "required": true
+            "type": "integer"
           }
         }
       }
