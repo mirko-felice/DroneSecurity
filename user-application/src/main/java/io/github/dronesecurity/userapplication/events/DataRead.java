@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * The event to be raised when the drone publishes its sensor data.
  */
-public class DataRead implements Event {
+public class DataRead implements DomainEvent {
     private final double proximity;
     private final Map<String, Integer> accelerometerData;
     private final long cameraData;

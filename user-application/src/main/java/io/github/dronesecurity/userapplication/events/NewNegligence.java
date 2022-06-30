@@ -5,14 +5,14 @@
 
 package io.github.dronesecurity.userapplication.events;
 
-import io.github.dronesecurity.userapplication.auth.entities.Courier;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceReport;
+import io.github.dronesecurity.userapplication.domain.auth.entities.Courier;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.NegligenceReport;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * The event to be raised when a {@link Courier} commits negligence.
  */
-public class NewNegligence implements Event {
+public class NewNegligence implements DomainEvent {
 
     private final NegligenceReport report;
 

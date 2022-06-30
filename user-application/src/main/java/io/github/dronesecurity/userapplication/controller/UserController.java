@@ -5,8 +5,10 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.auth.entities.Role;
-import io.github.dronesecurity.userapplication.shipping.CourierShippingService;
+import io.github.dronesecurity.userapplication.domain.auth.entities.Courier;
+import io.github.dronesecurity.userapplication.domain.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.domain.auth.entities.Role;
+import io.github.dronesecurity.userapplication.presentation.shipping.ShippingAPI;
 import io.github.dronesecurity.userapplication.utilities.CastHelper;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.UserHelper;
@@ -25,8 +27,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * Controller dedicated to manage both {@link io.github.dronesecurity.userapplication.auth.entities.Courier} and
- * {@link io.github.dronesecurity.userapplication.auth.entities.Maintainer} actions.
+ * Controller dedicated to manage both {@link Courier} and
+ * {@link Maintainer} actions.
  */
 public class UserController implements Initializable {
 
@@ -82,7 +84,7 @@ public class UserController implements Initializable {
     private void showOrders() {
         this.progressBar.setVisible(true);
         this.showOrdersButton.setDisable(true);
-        VertxHelper.VERTX.deployVerticle(CourierShippingService.class.getName()).onComplete(res -> {
+        VertxHelper.VERTX.deployVerticle(ShippingAPI.class.getName()).onComplete(res -> {
             this.progressBar.setVisible(false);
             this.showOrdersButton.setDisable(false);
             if (res.succeeded())

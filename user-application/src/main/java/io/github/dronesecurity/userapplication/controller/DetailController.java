@@ -5,9 +5,9 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
+import io.github.dronesecurity.userapplication.domain.auth.entities.LoggedUser;
 import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceSolution;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.NegligenceSolution;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;

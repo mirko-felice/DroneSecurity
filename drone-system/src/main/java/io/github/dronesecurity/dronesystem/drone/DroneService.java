@@ -83,7 +83,7 @@ public class DroneService {
                 if (MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE
                         .equals(json.get(MqttMessageParameterConstants.SYNC_PARAMETER).asText())) {
 
-                    this.currentOrderId = json.get(MqttMessageParameterConstants.ORDER_ID_PARAMETER).asLong();
+                    this.currentOrderId = json.get(MqttMessageParameterConstants.ORDER_PARAMETER).asLong();
                     this.currentCourier = json.get(MqttMessageParameterConstants.COURIER_PARAMETER).asText();
                     this.drone.activate();
                     new Thread(this::simulateDroneLifecycle).start();

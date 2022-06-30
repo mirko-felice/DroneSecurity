@@ -6,11 +6,14 @@
 package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.lib.DateHelper;
-import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
-import io.github.dronesecurity.userapplication.auth.entities.Role;
-import io.github.dronesecurity.userapplication.reporting.issue.entities.*;
-import io.github.dronesecurity.userapplication.reporting.issue.serialization.IssueStringHelper;
-import io.github.dronesecurity.userapplication.reporting.issue.services.MaintainerIssueReportService;
+import io.github.dronesecurity.userapplication.domain.auth.entities.LoggedUser;
+import io.github.dronesecurity.userapplication.domain.auth.entities.Role;
+import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.ClosedIssue;
+import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.CreatedIssue;
+import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.OpenIssue;
+import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.VisionedIssue;
+import io.github.dronesecurity.userapplication.domain.reporting.issue.serialization.IssueStringHelper;
+import io.github.dronesecurity.userapplication.domain.reporting.issue.services.MaintainerIssueReportService;
 import io.github.dronesecurity.userapplication.utilities.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;

@@ -8,13 +8,15 @@ package io.github.dronesecurity.userapplication.controller;
 import io.github.dronesecurity.lib.DrivingMode;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import io.github.dronesecurity.lib.MqttMessageValueConstants;
-import io.github.dronesecurity.userapplication.monitoring.UserMonitoringService;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
 import io.github.dronesecurity.userapplication.events.*;
-import io.github.dronesecurity.userapplication.reporting.negligence.services.CourierNegligenceReportService;
-import io.github.dronesecurity.userapplication.reporting.negligence.services.NegligenceReportService;
-import io.github.dronesecurity.userapplication.shipping.utilities.ShippingServiceHelper;
+import io.github.dronesecurity.userapplication.domain.monitoring.UserMonitoringService;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.CourierNegligenceReportService;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.NegligenceReportService;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
+import io.github.dronesecurity.userapplication.utilities.shipping.DroneAPIHelper;
+import io.github.dronesecurity.userapplication.utilities.shipping.ShippingAPIHelper;
 import io.vertx.core.json.JsonObject;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -38,7 +40,7 @@ public final class MonitorController implements Initializable {
 
     private final UserMonitoringService monitoringService;
     private final CourierNegligenceReportService negligenceReportService;
-    private final long orderId;
+    private final Order order;
 
     private final Consumer<NewNegligence> newNegligenceHandler;
     private final Consumer<CriticalSituation> criticalSituationHandler;
@@ -79,11 +81,11 @@ public final class MonitorController implements Initializable {
 
     /**
      * Build the Controller to interact with services.
-     * @param orderId order identifier to monitoring
+     * @param order {@link Order} to monitoring
      */
-    public MonitorController(final long orderId) {
-        this.orderId = orderId;
-        this.monitoringService = new UserMonitoringService(orderId);
+    public MonitorController(final Order order) {
+        this.order = order;
+        this.monitoringService = new UserMonitoringService(this.order.getId().asLong());
         this.negligenceReportService = new NegligenceReportService();
         this.newNegligenceHandler = this::onNewNegligence;
 
@@ -152,13 +154,15 @@ public final class MonitorController implements Initializable {
         this.currentAccelerometerZValue.setReorderable(false);
 
         this.switchMode.selectedProperty().addListener((ignored, unused, isAutomatic) -> {
-            final JsonObject body = new JsonObject().put(ShippingServiceHelper.ORDER_ID_KEY, this.orderId);
+            final JsonObject body = new JsonObject().put(DroneAPIHelper.ORDER_ID_KEY, this.order.getId().asLong());
+            // TODO check if asLong necessary
             if (Boolean.TRUE.equals(isAutomatic))
-                ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.CHANGE_MODE,
-                        body.put(ShippingServiceHelper.DRIVING_MODE_KEY, DrivingMode.AUTOMATIC.toString()));
+                DroneAPIHelper.postJson(DroneAPIHelper.Operation.CHANGE_MODE,
+                        body.put(DroneAPIHelper.DRIVING_MODE_KEY, DrivingMode.AUTOMATIC.toString()));
+            // TODO check if toString necessary
             else
-                ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.CHANGE_MODE,
-                        body.put(ShippingServiceHelper.DRIVING_MODE_KEY, DrivingMode.MANUAL.toString()));
+                DroneAPIHelper.postJson(DroneAPIHelper.Operation.CHANGE_MODE,
+                        body.put(DroneAPIHelper.DRIVING_MODE_KEY, DrivingMode.MANUAL.toString()));
             this.checkButtons();
         });
     }
@@ -216,15 +220,14 @@ public final class MonitorController implements Initializable {
             this.checkButtons();
             switch (statusEvent.getStatus()) {
                 case MqttMessageValueConstants.DELIVERING_MESSAGE:
-                    this.sendSaveDeliveryMessage(statusEvent.getStatus());
                     break;
                 case MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: green;");
-                    this.sendSaveDeliveryMessage(statusEvent.getStatus());
+                    this.performShippingOperation(ShippingAPIHelper.Operation.SUCCEED_DELIVERY);
                     break;
                 case MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: red;");
-                    this.sendSaveDeliveryMessage(statusEvent.getStatus());
+                    this.performShippingOperation(ShippingAPIHelper.Operation.FAIL_DELIVERY);
                     break;
                 case MqttMessageValueConstants.RETURNING_ACKNOWLEDGEMENT_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: black;");
@@ -265,33 +268,31 @@ public final class MonitorController implements Initializable {
 
     @FXML
     private void recallDrone() {
-        ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.CALL_BACK,
-                new JsonObject().put(ShippingServiceHelper.ORDER_ID_KEY, this.orderId));
+        DroneAPIHelper.postJson(DroneAPIHelper.Operation.CALL_BACK,
+                new JsonObject().put(DroneAPIHelper.ORDER_ID_KEY, this.order.getId().asLong()));
         this.recallButton.setDisable(true);
     }
 
     @FXML
     private void proceed() {
-        ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.PROCEED,
-                new JsonObject().put(ShippingServiceHelper.ORDER_ID_KEY, this.orderId));
+        DroneAPIHelper.postJson(DroneAPIHelper.Operation.PROCEED,
+                new JsonObject().put(DroneAPIHelper.ORDER_ID_KEY, this.order.getId().asLong()));
         this.proceedButton.setDisable(true);
         this.haltButton.setDisable(false);
     }
 
     @FXML
     private void halt() {
-        ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.HALT,
-                new JsonObject().put(ShippingServiceHelper.ORDER_ID_KEY, this.orderId));
+        DroneAPIHelper.postJson(DroneAPIHelper.Operation.HALT,
+                new JsonObject().put(DroneAPIHelper.ORDER_ID_KEY, this.order.getId().asLong()));
         this.haltButton.setDisable(true);
         this.proceedButton.setDisable(false);
     }
 
-    private void sendSaveDeliveryMessage(final String status) {
+    private void performShippingOperation(final ShippingAPIHelper.Operation operation) {
         final JsonObject body = new JsonObject();
-        body.put(ShippingServiceHelper.ORDER_ID_KEY, this.orderId);
-        body.put(ShippingServiceHelper.STATE_KEY, status);
-        ShippingServiceHelper.postJson(ShippingServiceHelper.Operation.SAVE_DELIVERY, body)
-                .onSuccess(ignored -> DomainEvents.raise(new OrdersUpdate()));
+        body.put(ShippingAPIHelper.ORDER_ID_KEY, this.order.getId().asLong());
+        ShippingAPIHelper.postJson(operation, body);
     }
 
     private void checkButtons() {

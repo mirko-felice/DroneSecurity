@@ -6,10 +6,10 @@
 package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.lib.DateHelper;
-import io.github.dronesecurity.userapplication.monitoring.UserMonitoringService;
-import io.github.dronesecurity.userapplication.monitoring.entities.MonitoringDroneData;
-import io.github.dronesecurity.userapplication.monitoring.utilities.MonitoringConstants;
-import io.github.dronesecurity.userapplication.shipping.entities.Order;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
+import io.github.dronesecurity.userapplication.domain.monitoring.UserMonitoringService;
+import io.github.dronesecurity.userapplication.domain.monitoring.entities.MonitoringDroneData;
+import io.github.dronesecurity.userapplication.domain.monitoring.utilities.MonitoringConstants;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -39,15 +39,14 @@ public class DataController implements Initializable {
     @FXML private TableColumn<MonitoringDroneData, Integer> pitchColumn;
     @FXML private TableColumn<MonitoringDroneData, Integer> yawColumn;
     @FXML private TableColumn<MonitoringDroneData, Long> cameraColumn;
-    private final long orderId;
+    private final Order order;
 
     /**
      * Build the controller.
-     * @param orderId {@link Order} identifier to
-     *                                                                                               retrieve data from
+     * @param order {@link Order} to retrieve data history from
      */
-    public DataController(final long orderId) {
-        this.orderId = orderId;
+    public DataController(final Order order) {
+        this.order = order;
     }
 
     /**
@@ -55,7 +54,7 @@ public class DataController implements Initializable {
      */
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        this.title.setText(this.title.getText() + this.orderId);
+        this.title.setText(this.title.getText() + this.order.getId().asLong());
 
         this.dataTable.setSelectionModel(null);
 
@@ -90,7 +89,7 @@ public class DataController implements Initializable {
         this.cameraColumn.setCellFactory(ignored -> new FXHelper.CameraCell<>());
         this.cameraColumn.setReorderable(false);
 
-        new UserMonitoringService(this.orderId).retrieveDataHistory().onSuccess(data -> Platform.runLater(() ->
-                this.dataTable.setItems(FXCollections.observableList(data))));
+        new UserMonitoringService(this.order.getId().asLong()).retrieveDataHistory().onSuccess(data ->
+                Platform.runLater(() -> this.dataTable.setItems(FXCollections.observableList(data))));
     }
 }

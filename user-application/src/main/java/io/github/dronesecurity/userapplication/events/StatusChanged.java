@@ -8,7 +8,7 @@ package io.github.dronesecurity.userapplication.events;
 /**
  * The event to be raised when the drone informs of its status changing.
  */
-public class StatusChanged implements Event {
+public class StatusChanged implements DomainEvent {
     private final String status;
 
     /**

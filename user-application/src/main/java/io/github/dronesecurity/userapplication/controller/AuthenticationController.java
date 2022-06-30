@@ -5,10 +5,10 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.auth.AuthenticationService;
-import io.github.dronesecurity.userapplication.auth.entities.NotLoggedUser;
-import io.github.dronesecurity.userapplication.auth.entities.NotLoggedUserImpl;
-import io.github.dronesecurity.userapplication.auth.entities.User;
+import io.github.dronesecurity.userapplication.domain.auth.AuthenticationService;
+import io.github.dronesecurity.userapplication.domain.auth.entities.NotLoggedUser;
+import io.github.dronesecurity.userapplication.domain.auth.entities.NotLoggedUserImpl;
+import io.github.dronesecurity.userapplication.domain.auth.entities.User;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.UserHelper;

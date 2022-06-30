@@ -10,7 +10,7 @@ import io.github.dronesecurity.lib.AlertType;
 /**
  * The event to be raised when the drone informs of a critical situation.
  */
-public class CriticalSituation implements Event {
+public class CriticalSituation implements DomainEvent {
 
     private final AlertType type;
 
