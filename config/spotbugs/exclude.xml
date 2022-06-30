@@ -25,7 +25,7 @@
 
     <Match>
         <Bug pattern="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY" />
-        <Class name="~.*DeliveringOrder" />
+        <Class name="~.*OrderImpl" />
     </Match>
 
     <Match>
@@ -41,6 +41,11 @@
     <Match>
         <Bug pattern="CE_CLASS_ENVY" />
         <Class name="~.*DroneTest" />
+    </Match>
+
+    <Match>
+        <Bug pattern="SEC_SIDE_EFFECT_CONSTRUCTOR" />
+        <Class name="~.*Test" />
     </Match>
 
 </FindBugsFilter>

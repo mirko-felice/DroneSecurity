@@ -5,11 +5,15 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.lib.PropertiesConstants;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderDate;
+import io.github.dronesecurity.userapplication.infrastructure.shipping.repo.MongoOrderRepository;
+import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.VertxHelper;
+import io.github.dronesecurity.userapplication.utilities.shipping.ShippingAPIHelper;
+import io.vertx.core.json.JsonObject;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -18,11 +22,19 @@ import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.security.SecureRandom;
 
 /**
  * Launch the application.
  */
 public final class Launcher extends Application {
+
+    private static final int INITIAL_SIZE = 10;
+    private static final String[] FAKE_PRODUCTS = {
+            "HDD", "SSD", "MOUSE", "KEYBOARD", "HEADSET", "MONITOR", "WEBCAM", "CONTROLLER", "USB", "HDMI" };
+    private static final String[] FAKE_CLIENTS = {
+            "John", "James", "Robert", "Mary", "Jennifer", "Patricia", "David", "William", "Micheal", "Anthony" };
+    private static final SecureRandom RANDOM_GENERATOR = new SecureRandom();
 
     private static final double CONNECTION_MIN_WIDTH = 400;
     private static final double CONNECTION_MIN_HEIGHT = 600;
@@ -58,7 +70,26 @@ public final class Launcher extends Application {
      * @param args additional arguments
      */
     public static void main(final String[] args) {
+        // TODO improve?
+        new Thread(() -> {
+            if (new MongoOrderRepository().listOrders().isEmpty()) {
+                for (int i = 1; i <= INITIAL_SIZE; i++) {
+                    final String productName = FAKE_PRODUCTS[RANDOM_GENERATOR.nextInt(INITIAL_SIZE)];
+                    final String clientName = FAKE_CLIENTS[RANDOM_GENERATOR.nextInt(INITIAL_SIZE)];
+                    ShippingAPIHelper.postJson(ShippingAPIHelper.Operation.PLACE_ORDER,
+                            createBody(productName, clientName));
+                }
+            }
+        }).start();
         launch(args);
+    }
+
+    private static @NotNull JsonObject createBody(final String productName, final String clientName) {
+        final JsonObject body = new JsonObject();
+        body.put(ShippingAPIHelper.CLIENT_NAME_KEY, clientName);
+        body.put(ShippingAPIHelper.PRODUCT_NAME_KEY, productName);
+        body.put(ShippingAPIHelper.ESTIMATED_ARRIVAL_KEY, OrderDate.TOMORROW.asString());
+        return body;
     }
 
     private void showLogin() {

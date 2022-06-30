@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.utilities;
 
-import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
+import io.github.dronesecurity.userapplication.domain.auth.entities.LoggedUser;
 import io.github.dronesecurity.userapplication.exceptions.UserAlreadyLoggedException;
 import io.github.dronesecurity.userapplication.exceptions.UserNotLoggedException;
 import org.jetbrains.annotations.NotNull;

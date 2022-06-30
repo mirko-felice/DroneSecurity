@@ -1,0 +1,171 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API exposing shipping operations.",
+    "version": "1.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://{host}:{port}/{basePath}",
+      "description": "Localhost server",
+      "variables": {
+        "host": {
+          "default": "localhost"
+        },
+        "port": {
+          "default": "15000"
+        },
+        "basePath": {
+          "default": "shippingAPI"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/listOrders": {
+      "get": {
+        "operationId": "listOrders",
+        "responses": {
+          "200": {
+            "description": "Successfully got Orders.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Order"
+                  },
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/performDelivery": {
+      "post": {
+        "operationId": "performDelivery",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "orderId": {
+                    "type": "integer"
+                  },
+                  "droneId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Performing delivery."
+          }
+        }
+      }
+    },
+    "/succeedDelivery": {
+      "post": {
+        "operationId": "succeedDelivery",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderIdentifier"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order succeeded."
+          }
+        }
+      }
+    },
+    "/failDelivery": {
+      "post": {
+        "operationId": "failDelivery",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderIdentifier"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order failed."
+          }
+        }
+      }
+    },
+    "/rescheduleDelivery": {
+      "post": {
+        "operationId": "rescheduleDelivery",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "orderId": {
+                    "type": "integer"
+                  },
+                  "newEstimatedArrival": {
+                    "$ref": "#/components/schemas/OrderDate"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order rescheduled."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "OrderDate": {
+        "type": "string",
+        "pattern": "^([A-Za-z]{0,12}) (([0-2]\\d|[3][0-1]) [2][0]\\d{2}\\s([0-1]\\d|[2][0-3])\\:[0-5]\\d\\:[0-5]\\d)$"
+      },
+      "OrderIdentifier": {
+        "type": "integer"
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "$ref": "#/components/schemas/OrderIdentifier"
+          },
+          "product": {
+            "type": "string"
+          },
+          "placingDate": {
+            "$ref": "#/components/schemas/OrderDate"
+          },
+          "estimatedArrival": {
+            "$ref": "#/components/schemas/OrderDate"
+          }
+        }
+      }
+    }
+  }
+}

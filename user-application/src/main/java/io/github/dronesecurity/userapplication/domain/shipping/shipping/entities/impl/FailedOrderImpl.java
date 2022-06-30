@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) 2021-2022, Mirko Felice & Maxim Derevyanchenko. All rights reserved.
+ * Licensed under the MIT license. See LICENSE file in the project root for details.
+ */
+
+package io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.impl;
+
+import io.github.dronesecurity.userapplication.domain.shipping.client.Client;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.FailedOrder;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.OrderState;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.RescheduledOrder;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.events.OrderRescheduled;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderDate;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderIdentifier;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.Product;
+import io.github.dronesecurity.userapplication.events.DomainEvents;
+
+/**
+ * Implementation of {@link FailedOrder}.
+ */
+public final class FailedOrderImpl extends AbstractOrder implements FailedOrder {
+
+    /**
+     * Build the Failed Order.
+     * @param id the {@link OrderIdentifier}
+     * @param product the ordered {@link Product}
+     * @param client the {@link Client} who placed the order
+     * @param placingDate {@link OrderDate} -{@literal >} the date in which the order has been placed
+     * @param estimatedArrival {@link OrderDate} -{@literal >} the date in which the order should arrive
+     */
+    public FailedOrderImpl(final OrderIdentifier id,
+                           final Product product,
+                           final Client client,
+                           final OrderDate placingDate,
+                           final OrderDate estimatedArrival) {
+        super(id, product, client, placingDate, estimatedArrival, OrderState.FAILED);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void rescheduleDelivery(final OrderDate newEstimatedArrival) {
+        final RescheduledOrder order = new RescheduledOrderImpl(
+                this.getId(),
+                this.getProduct(),
+                this.getClient(),
+                this.getPlacingDate(),
+                this.getEstimatedArrival(),
+                newEstimatedArrival);
+        DomainEvents.raise(new OrderRescheduled(order));
+    }
+
+}

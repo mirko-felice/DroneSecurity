@@ -5,13 +5,13 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.ClosedNegligenceReport;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceReport;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.OpenNegligenceReport;
-import io.github.dronesecurity.userapplication.reporting.negligence.services.CourierNegligenceReportService;
-import io.github.dronesecurity.userapplication.reporting.negligence.services.MaintainerNegligenceReportService;
-import io.github.dronesecurity.userapplication.reporting.negligence.services.NegligenceReportService;
+import io.github.dronesecurity.userapplication.domain.auth.entities.LoggedUser;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.ClosedNegligenceReport;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.NegligenceReport;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.OpenNegligenceReport;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.CourierNegligenceReportService;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.MaintainerNegligenceReportService;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.NegligenceReportService;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.UserHelper;
 import io.vertx.core.Future;

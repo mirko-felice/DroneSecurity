@@ -5,9 +5,9 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.auth.AuthenticationService;
-import io.github.dronesecurity.userapplication.reporting.issue.entities.SendingIssue;
-import io.github.dronesecurity.userapplication.reporting.issue.services.CourierIssueReportService;
+import io.github.dronesecurity.userapplication.domain.auth.AuthenticationService;
+import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.SendingIssue;
+import io.github.dronesecurity.userapplication.domain.reporting.issue.services.CourierIssueReportService;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.UserHelper;
 import javafx.application.Platform;

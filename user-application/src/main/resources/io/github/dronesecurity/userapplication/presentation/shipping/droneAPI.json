@@ -1,0 +1,127 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API exposing drone operations.",
+    "version": "1.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://{host}:{port}/{basePath}",
+      "description": "Localhost server",
+      "variables": {
+        "host": {
+          "default": "localhost"
+        },
+        "port": {
+          "default": "16000"
+        },
+        "basePath": {
+          "default": "droneAPI"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/callBack": {
+      "post": {
+        "operationId": "callBack",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderIdentifier"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully called back drone."
+          }
+        }
+      }
+    },
+    "/changeMode": {
+      "post": {
+        "operationId": "changeMode",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "orderId": {
+                    "type": "integer"
+                  },
+                  "drivingMode": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Driving mode successfully changed."
+          }
+        }
+      }
+    },
+    "/proceed": {
+      "post": {
+        "operationId": "proceed",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderIdentifier"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully proceeding drone."
+          }
+        }
+      }
+    },
+    "/halt": {
+      "post": {
+        "operationId": "halt",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderIdentifier"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully halting drone."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "OrderIdentifier" : {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "integer",
+            "required": true
+          }
+        }
+      }
+    }
+  }
+}

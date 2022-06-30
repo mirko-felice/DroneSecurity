@@ -8,7 +8,7 @@ package io.github.dronesecurity.userapplication.events;
 /**
  * Event representing Drone's notification about its moving state change.
  */
-public class DroneMovingStateChangeEvent implements Event {
+public class DroneMovingStateChangeEvent implements DomainEvent {
 
     private final String movingState;
 

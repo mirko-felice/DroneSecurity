@@ -5,13 +5,13 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.domain.auth.entities.Maintainer;
 import io.github.dronesecurity.userapplication.events.DomainEvents;
 import io.github.dronesecurity.userapplication.events.NewNegligence;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.NegligenceSolutionImpl;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.OpenNegligenceReport;
-import io.github.dronesecurity.userapplication.reporting.negligence.services.MaintainerNegligenceReportService;
-import io.github.dronesecurity.userapplication.reporting.negligence.services.NegligenceReportService;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.NegligenceSolutionImpl;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.OpenNegligenceReport;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.MaintainerNegligenceReportService;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.NegligenceReportService;
 import io.github.dronesecurity.userapplication.utilities.CastHelper;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.UserHelper;

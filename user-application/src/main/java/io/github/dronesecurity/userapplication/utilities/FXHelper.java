@@ -6,11 +6,11 @@
 package io.github.dronesecurity.userapplication.utilities;
 
 import io.github.dronesecurity.lib.Connection;
-import io.github.dronesecurity.userapplication.auth.AuthenticationService;
-import io.github.dronesecurity.userapplication.auth.entities.LoggedUser;
+import io.github.dronesecurity.userapplication.domain.auth.AuthenticationService;
+import io.github.dronesecurity.userapplication.domain.auth.entities.LoggedUser;
 import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
 import io.github.dronesecurity.userapplication.controller.DetailController;
-import io.github.dronesecurity.userapplication.reporting.negligence.entities.*;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
