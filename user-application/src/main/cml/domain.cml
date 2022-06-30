@@ -187,9 +187,7 @@ BoundedContext ShippingContext implements Shipping {
 
 		ValueObject OrderIdentifier
 		ValueObject Product
-		ValueObject PlacingDate
-		ValueObject EstimatedArrival
-		ValueObject DronePath
+		ValueObject OrderDate
 
 		enum OrderState {
 		    PLACED, DELIVERING, SUCCEEDED, FAILED, RESCHEDULED;
@@ -200,13 +198,15 @@ BoundedContext ShippingContext implements Shipping {
 			
 			- OrderIdentifier id
 			- Product product
-			- PlacingDate placingDate
-			- EstimatedArrival estimatedArrival
+			- OrderDate placingDate
+			- OrderDate estimatedArrival
 			- Client client
 			
 			Repository OrderRepository {
 				List<@Order> listOrders();
 				@Order retrieveOrderById(@OrderIdentifier orderId);
+				@OrderIdentifier lastOrderIdentifier();
+				void placed(@PlacedOrder order);
 				void delivering(@DeliveringOrder order);
 				void succeeded(@SucceededOrder order);
 				void failed(@FailedOrder order);
@@ -214,23 +214,33 @@ BoundedContext ShippingContext implements Shipping {
 			}
 		}
 		
-		Entity PlacedOrder extends Order
+		Entity PlacedOrder extends Order {
+		    void startDelivering(String droneId);
+		}
 		
-		Entity DeliveringOrder extends Order
+		Entity DeliveringOrder extends Order {
+		    void succeedDelivery();
+		    void failDelivery();
+		}
 		
 		Entity SucceededOrder extends Order
 		
-		Entity FailedOrder extends Order
+		Entity FailedOrder extends Order {
+		    void rescheduleDelivery(@OrderDate newEstimatedArrival);
+		}
 	
-		Entity RescheduledOrder extends Order
+		Entity RescheduledOrder extends Order {
+		    @OrderDate getNewEstimatedArrival();
+		}
 
 		Service OrderManager {
 		    List<@Order> listOrders();
             @Order retrieveOrderById(@OrderIdentifier identifier);
+            void placeOrder(@PlacedOrder order);
 		}
 
 		Service DeliveryService {
-		    void performDelivery(@PlacedOrder order, @DronePath dronePath, String droneId);
+		    void performDelivery(@PlacedOrder order, String droneId);
             void succeedDelivery(@DeliveringOrder order);
             void failDelivery(@DeliveringOrder order);
             void rescheduleDelivery(@FailedOrder order, @EstimatedArrival newEstimatedArrival);
