@@ -8,24 +8,22 @@ package io.github.dronesecurity.userapplication.infrastructure.shipping.repo;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.*;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderIdentifier;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.repo.OrderRepository;
+import io.github.dronesecurity.userapplication.infrastructure.MongoRepository;
 import io.github.dronesecurity.userapplication.infrastructure.shipping.OrderConstants;
-import io.github.dronesecurity.userapplication.utilities.VertxHelper;
 import io.vertx.core.Future;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
 import io.vertx.ext.mongo.UpdateOptions;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
  * Implementation of the {@link OrderRepository} to work with the underlying DB.
  */
-public final class MongoOrderRepository implements OrderRepository {
+public final class MongoOrderRepository extends MongoRepository implements OrderRepository {
 
     private static final String COLLECTION_NAME = "orders";
 
@@ -35,7 +33,7 @@ public final class MongoOrderRepository implements OrderRepository {
     @Override
     public List<Order> listOrders() {
         return this.waitFutureResult(
-                VertxHelper.MONGO_CLIENT.find(COLLECTION_NAME, null)
+                this.mongo().find(COLLECTION_NAME, null)
                         .map(orders -> orders.stream()
                                 .map(o -> Json.decodeValue(o.toString(), Order.class))
                                 .collect(Collectors.toList())));
@@ -47,7 +45,7 @@ public final class MongoOrderRepository implements OrderRepository {
     @Override
     public Order retrieveOrderById(final @NotNull OrderIdentifier orderId) {
         return this.waitFutureResult(
-                VertxHelper.MONGO_CLIENT.findOne(COLLECTION_NAME,
+                this.mongo().findOne(COLLECTION_NAME,
                                 new JsonObject().put(OrderConstants.ID, orderId.asLong()), null)
                         .map(o -> Json.decodeValue(o.toString(), Order.class))
                         .otherwiseEmpty());
@@ -59,7 +57,7 @@ public final class MongoOrderRepository implements OrderRepository {
     @Override
     public OrderIdentifier nextOrderIdentifier() {
         return this.waitFutureResult(
-                VertxHelper.MONGO_CLIENT.count(COLLECTION_NAME, null)
+                this.mongo().count(COLLECTION_NAME, null)
                         .map(value -> value == 0 ? OrderIdentifier.first() : OrderIdentifier.fromLong(value)));
     }
 
@@ -103,15 +101,6 @@ public final class MongoOrderRepository implements OrderRepository {
         this.waitFutureResult(this.updateOrderState(order));
     }
 
-    private <T> @Nullable T waitFutureResult(final @NotNull Future<T> future) {
-        try {
-            return future.toCompletionStage().toCompletableFuture().get();
-        } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-            return null;
-        }
-    }
-
     private Future<Void> updateOrderState(final @NotNull Order order) {
         final JsonObject query = new JsonObject();
         query.put(OrderConstants.ID, order.getId());
@@ -122,7 +111,7 @@ public final class MongoOrderRepository implements OrderRepository {
         if (order instanceof RescheduledOrder)
             update.put("$set", new JsonObject().put(OrderConstants.NEW_ESTIMATED_ARRIVAL,
                     ((RescheduledOrder) order).getNewEstimatedArrival().asString()));
-        return VertxHelper.MONGO_CLIENT.findOneAndUpdateWithOptions(COLLECTION_NAME,
+        return this.mongo().findOneAndUpdateWithOptions(COLLECTION_NAME,
                         query,
                         update,
                         new FindOptions(),
