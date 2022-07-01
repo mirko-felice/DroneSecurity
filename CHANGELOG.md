@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/mirko-felice/DroneSecurity/compare/1.0.1...1.0.2) (2022-07-01)
+
+
+### Bug Fixes
+
+* remove required attribute from OrderIdentifier ([8ecb4fa](https://github.com/mirko-felice/DroneSecurity/commit/8ecb4fa2fd801ade4561586308fc654dc15913ff))
+
 ## [1.0.1](https://github.com/mirko-felice/DroneSecurity/compare/1.0.0...1.0.1) (2022-06-25)
 
 
