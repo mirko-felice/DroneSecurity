@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/mirko-felice/DroneSecurity/compare/1.0.2...1.0.3) (2022-07-01)
+
+
+### Bug Fixes
+
+* solve licenses compliance ([bd5e83d](https://github.com/mirko-felice/DroneSecurity/commit/bd5e83d7e4c5383c1b1ef59dd991fa117c8170d9))
+
 ## [1.0.2](https://github.com/mirko-felice/DroneSecurity/compare/1.0.1...1.0.2) (2022-07-01)
 
 
