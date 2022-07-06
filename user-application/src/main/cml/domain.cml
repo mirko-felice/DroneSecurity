@@ -1,12 +1,19 @@
 ContextMap DroneManagementMap {
 	type = SYSTEM_LANDSCAPE
 	state = TO_BE
-	contains DroneContext, IssueReportingContext, NegligenceReportingContext, ShippingContext
+	contains DroneContext, IssueReportingContext, NegligenceReportingContext, ShippingContext, UserContext
 
 	NegligenceReportingContext [U] -> [D, CF] DroneContext
 
 	DroneContext [U] -> [D, CF] ShippingContext
+
+    UserContext [U, OHS, PL] -> [D] ShippingContext
+
+	UserContext [U, OHS, PL] -> [D] NegligenceReportingContext
+
+	UserContext [U, OHS, PL] -> [D] IssueReportingContext
 }
+
 BoundedContext DroneContext implements Drone {
 	type = FEATURE
 	
@@ -215,22 +222,22 @@ BoundedContext ShippingContext implements Shipping {
 		}
 		
 		Entity PlacedOrder extends Order {
-		    void startDelivering(String droneId);
+		    def void startDelivering(String droneId);
 		}
 		
 		Entity DeliveringOrder extends Order {
-		    void succeedDelivery();
-		    void failDelivery();
+		    def void succeedDelivery();
+		    def void failDelivery();
 		}
 		
 		Entity SucceededOrder extends Order
 		
 		Entity FailedOrder extends Order {
-		    void rescheduleDelivery(@OrderDate newEstimatedArrival);
+		    def void rescheduleDelivery(@OrderDate newEstimatedArrival);
 		}
 	
 		Entity RescheduledOrder extends Order {
-		    @OrderDate getNewEstimatedArrival();
+		    def @OrderDate getNewEstimatedArrival();
 		}
 
 		Service OrderManager {
@@ -243,7 +250,7 @@ BoundedContext ShippingContext implements Shipping {
 		    void performDelivery(@PlacedOrder order, String droneId);
             void succeedDelivery(@DeliveringOrder order);
             void failDelivery(@DeliveringOrder order);
-            void rescheduleDelivery(@FailedOrder order, @EstimatedArrival newEstimatedArrival);
+            void rescheduleDelivery(@FailedOrder order, @OrderDate newEstimatedArrival);
 		}
 
 		Service DroneController {
@@ -272,6 +279,60 @@ BoundedContext ShippingContext implements Shipping {
 	}
 }
 
+BoundedContext UserContext {
+
+    Aggregate User {
+
+        ValueObject Username
+
+        enum Role {
+            COURIER, MAINTAINER;
+        }
+
+        abstract Entity User {
+            aggregateRoot
+
+            def Username getUsername();
+            def Role getRole();
+            def boolean isLogged();
+            def void logIn();
+            def void logOut();
+
+            Repository UserRepository {
+
+                boolean isAuthenticated(@Username username, String password);
+                void loggedIn(@User user);
+                void loggedOut(@User user);
+                @Courier retrieveCourierByUsername(@Username username);
+                @Maintainer retrieveMaintainerByUsername(@Username username);
+                Optional<@Role> checkLoggedUserRole();
+                Optional<@Courier> retrieveLoggedCourierIfPresent();
+                Optional<@Maintainer> retrieveLoggedMaintainerIfPresent();
+            }
+        }
+
+        Entity Courier extends User {
+            def @Username supervisor();
+            def List<String> assignedDrones();
+        }
+
+        Entity Maintainer extends User
+
+        Service AuthenticationService {
+           boolean logIn(@Username username, String password);
+           boolean logOut();
+        }
+
+        Service UserManager {
+            @Courier retrieveCourierByUsername(@Username username);
+            @Maintainer retrieveMaintainerByUsername(@Username username);
+            Optional<@Role> checkLoggedUserRole();
+            Optional<@Courier> retrieveLoggedCourierIfPresent();
+            Optional<@Maintainer> retrieveLoggedMaintainerIfPresent();
+        }
+    }
+}
+
 Domain DroneSecurity {
 	
 	Subdomain Drone supports DataAnalysis, DataMonitoring, AccidentPrevention, WarningAlert {
@@ -287,6 +348,11 @@ Domain DroneSecurity {
 	Subdomain Shipping supports ArrivalNotification, Tracking, OrderPlacing, Shipping, DeliveryRescheduling {
 		type = SUPPORTING_DOMAIN
 		domainVisionStatement "Subdomain supporting everything related to the shipping process."
+	}
+
+	Subdomain User supports LogIn, LogOut {
+	    type = SUPPORTING_DOMAIN
+	    domainVisionStatement "Subdomain supporting user login and logout."
 	}
 
 }
@@ -381,4 +447,18 @@ UseCase NegligenceManagement {
 	interactions
 	"takes" "action" for "Courier"
 	benefit "the Courier will be punished."
+}
+
+UseCase LogIn {
+    actor "User"
+    interactions
+    "log" "in"
+    benefit "he can use his functionalities."
+}
+
+UseCase LogOut {
+    actor "User"
+    interactions
+    "log" "out"
+    benefit "another user can log into the system."
 }

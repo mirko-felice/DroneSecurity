@@ -77,3 +77,12 @@ Sono stati quindi analizzati nel dettaglio ciascuno di essi:
   A questo punto, il secondo aggregato entra in gioco, in quanto è capace di gestire l'arrivo di una
   segnalazione per negligenza e inoltre, di occuparsene, compilando un'apposita scheda
   di provvedimento.
+
+* _**User Context**_: questo contesto, relativamente di minor dominio, offre un singolo aggregato _User_,
+il quale offre le funzionalità base per ciò che concerne tutti gli utenti, come la possibilità di effettuare
+il login e il logout. Inoltre, per differenziare i tipi di utenti del sistema sono presenti estensioni
+dell'utente generico a seconda dei ruoli ricoperti da essi: attualmente sono presenti _Courier_ e
+_Maintainer_. Infine, sono due i principali servizi legati a questo sotto-dominio: _Authentication Service_
+e _User Manager_. Il primo di questi permette di effettuare il login e il logout dal sistema.
+Il secondo invece, fungendo da gestore degli utenti, concede la possibilità di ricavare le informazioni
+relative a specifici utenti, così come all'utente che ha acceduto al sistema.
