@@ -303,8 +303,9 @@ BoundedContext UserContext {
                 boolean isAuthenticated(@Username username, String password);
                 void loggedIn(@User user);
                 void loggedOut(@User user);
-                @Courier retrieveCourierByUsername(@Username username);
-                @Maintainer retrieveMaintainerByUsername(@Username username);
+                Optional<@User> retrieveUserByUsername(@Username username);
+                Optional<@Courier> retrieveCourierByUsername(@Username username);
+                Optional<@Maintainer> retrieveMaintainerByUsername(@Username username);
                 Optional<@Role> checkLoggedUserRole();
                 Optional<@Courier> retrieveLoggedCourierIfPresent();
                 Optional<@Maintainer> retrieveLoggedMaintainerIfPresent();
@@ -324,8 +325,8 @@ BoundedContext UserContext {
         }
 
         Service UserManager {
-            @Courier retrieveCourierByUsername(@Username username);
-            @Maintainer retrieveMaintainerByUsername(@Username username);
+            Optional<@Courier> retrieveCourierByUsername(@Username username);
+            Optional<@Maintainer> retrieveMaintainerByUsername(@Username username);
             Optional<@Role> checkLoggedUserRole();
             Optional<@Courier> retrieveLoggedCourierIfPresent();
             Optional<@Maintainer> retrieveLoggedMaintainerIfPresent();
