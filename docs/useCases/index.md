@@ -40,3 +40,7 @@ notifica al**Cliente** per avvisarlo di procedere con il ritiro del pacco.
 Nel caso di mancato ritiro, il**Corriere** potrà riprogrammare la consegna 
 per un giorno lavorativo successivo e il **Cliente** verrà notificato della data del nuovo tentativo di
 consegna.
+
+Per vincolare meglio il sistema, è necessario che gli utenti (**Corrieri** e **Manutentori**)
+eseguano l'accesso per poter operare le proprie funzionalità. Per par condicio, è possibile 
+effettuare il _log out_.
