@@ -6,15 +6,15 @@
 package io.github.dronesecurity.userapplication.controller;
 
 import io.github.dronesecurity.lib.DateHelper;
-import io.github.dronesecurity.userapplication.domain.auth.entities.LoggedUser;
-import io.github.dronesecurity.userapplication.domain.auth.entities.Role;
-import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.ClosedIssue;
-import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.CreatedIssue;
-import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.OpenIssue;
-import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.VisionedIssue;
+import io.github.dronesecurity.userapplication.application.user.ohs.pl.*;
+import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.*;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.serialization.IssueStringHelper;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.services.MaintainerIssueReportService;
-import io.github.dronesecurity.userapplication.utilities.*;
+import io.github.dronesecurity.userapplication.utilities.CastHelper;
+import io.github.dronesecurity.userapplication.utilities.DialogUtils;
+import io.github.dronesecurity.userapplication.utilities.reporting.negligence.FXHelper;
+import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
+import io.vertx.core.json.Json;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
  */
 public class IssuesController implements Initializable {
 
+    private static final String ERROR_MESSAGE = "Error connecting to issue information. Please retry.";
     private static final double MIN_WIDTH = 450;
     private static final double MIN_HEIGHT = 300;
     private static final String NEW_ISSUE_FXML = "newIssue.fxml";
@@ -82,23 +83,37 @@ public class IssuesController implements Initializable {
     private final MaintainerIssueReportService issueReportService;
 
     private CreatedIssue currentlySelectedIssue;
-    private final Role role;
+    private GenericUser loggedGenericUser;
 
     /**
      * Instantiates the issue report controller with its service.
      */
     public IssuesController() {
-        final LoggedUser loggedUser = UserHelper.logged();
-        this.role = loggedUser.getRole();
         this.issueReportService = MaintainerIssueReportService.getInstance();
-
-        if (this.role == Role.MAINTAINER)
-            this.issueReportService.subscribeToNewIssue(loggedUser.getUsername(), issue ->
-                Platform.runLater(() -> {
-                    this.refreshOpenIssues();
-                    DialogUtils.showInfoNotification("INFO", "You have received a new issue!",
-                            this.issuesPane.getScene().getWindow());
-                }));
+        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE).onSuccess(res -> {
+            switch (UserRole.valueOf(res.bodyAsString())) {
+                case COURIER:
+                    UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT)
+                            .onSuccess(response -> this.loggedGenericUser =
+                                    Json.decodeValue(response.bodyAsJsonObject().toBuffer(), GenericUser.class));
+                    break;
+                case MAINTAINER:
+                    UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_MAINTAINER_IF_PRESENT)
+                            .onSuccess(response -> this.loggedGenericUser =
+                                    Json.decodeValue(response.bodyAsJsonObject().toBuffer(), GenericUser.class));
+                    break;
+                case NOT_LOGGED:
+                default:
+                    // TODO
+            }
+            if (this.loggedGenericUser.getRole() == UserRole.MAINTAINER)
+                this.issueReportService.subscribeToNewIssue(this.loggedGenericUser.getUsername(), issue ->
+                        Platform.runLater(() -> {
+                            this.refreshOpenIssues();
+                            DialogUtils.showInfoNotification("You have received a new issue!",
+                                    this.issuesPane.getScene().getWindow());
+                        }));
+        });
     }
 
     /**
@@ -106,36 +121,36 @@ public class IssuesController implements Initializable {
      */
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        this.newIssueButton.setVisible(this.role == Role.COURIER);
+        this.newIssueButton.setVisible(this.loggedGenericUser.getRole() == UserRole.COURIER);
 
         this.initTable(this.openIssuesTable, this.openIssuesId, this.openIssuesSubject, this.openIssuesCourier,
                 this.openIssuesDroneId, issue -> {
-                    this.currentlySelectedIssue = issue;
-                    this.solutionLabel.setVisible(false);
-                    this.closedIssueSolution.setVisible(false);
-                    this.closedIssueSolution.setText("");
-                    this.visionIssueButton.setVisible(
-                            this.role == Role.MAINTAINER && IssueStringHelper.STATUS_OPEN.equals(issue.getState()));
-                    this.goToClosingPageButton.setVisible(
-                            this.role == Role.MAINTAINER && IssueStringHelper.STATUS_VISIONED.equals(issue.getState()));
-                    this.newIssueButton.setVisible(false);
+            this.currentlySelectedIssue = issue;
+            this.solutionLabel.setVisible(false);
+            this.closedIssueSolution.setVisible(false);
+            this.closedIssueSolution.setText("");
+            this.visionIssueButton.setVisible(this.loggedGenericUser.getRole() == UserRole.MAINTAINER
+                    && IssueStringHelper.STATUS_OPEN.equals(issue.getState()));
+            this.goToClosingPageButton.setVisible(this.loggedGenericUser.getRole() == UserRole.MAINTAINER
+                    && IssueStringHelper.STATUS_VISIONED.equals(issue.getState()));
+            this.newIssueButton.setVisible(false);
 
-                    this.fillIssueFields();
+            this.fillIssueFields();
         });
 
         this.initTable(this.closedIssuesTable, this.closedIssuesId, this.closedIssuesSubject, this.closedIssuesCourier,
                 this.closedIssuesDroneId, issue -> {
-                    this.currentlySelectedIssue = issue;
-                    this.solutionLabel.setVisible(true);
-                    this.closedIssueSolution.setVisible(true);
-                    this.closedIssueSolution.setText(issue.getIssueSolution());
-                    this.visionIssueButton.setVisible(false);
-                    this.goToClosingPageButton.setVisible(false);
-                    this.newIssueButton.setVisible(false);
-                    this.fillIssueFields();
+            this.currentlySelectedIssue = issue;
+            this.solutionLabel.setVisible(true);
+            this.closedIssueSolution.setVisible(true);
+            this.closedIssueSolution.setText(issue.getIssueSolution());
+            this.visionIssueButton.setVisible(false);
+            this.goToClosingPageButton.setVisible(false);
+            this.newIssueButton.setVisible(false);
+            this.fillIssueFields();
         });
 
-        if (this.role == Role.COURIER) {
+        if (this.loggedGenericUser.getRole() == UserRole.COURIER) {
             this.openIssuesTable.getColumns().remove(this.openIssuesCourier);
             this.closedIssuesTable.getColumns().remove(this.closedIssuesCourier);
         }
@@ -177,7 +192,7 @@ public class IssuesController implements Initializable {
                             a.ifPresent(selectionModel::select);
                         });
                     } else
-                        DialogUtils.showErrorDialog("Error connecting to issue information. Please retry.");
+                        DialogUtils.showErrorDialog(ERROR_MESSAGE);
                 }));
     }
 
@@ -200,14 +215,14 @@ public class IssuesController implements Initializable {
                                                     .stream().findFirst();
                                             selectedIssue.ifPresent(issue ->
                                                     this.closedIssuesTable.getSelectionModel().select(issue));
-                                    }));
+                                        }));
                                 });
 
                                 this.openIssuesTable.getSelectionModel().clearSelection();
 
                                 this.cancelClosing();
                             } else
-                                DialogUtils.showErrorDialog("Error connecting to issue information. Please retry.");
+                                DialogUtils.showErrorDialog(ERROR_MESSAGE);
                         }));
     }
 
@@ -217,7 +232,7 @@ public class IssuesController implements Initializable {
         this.openIssuesTable.getSelectionModel().clearSelection();
         this.closedIssuesTable.getSelectionModel().clearSelection();
         this.issuesPane.setVisible(true);
-        this.newIssueButton.setVisible(this.role == Role.COURIER);
+        this.newIssueButton.setVisible(this.loggedGenericUser.getRole() == UserRole.COURIER);
     }
 
     @FXML

@@ -6,7 +6,7 @@
 package io.github.dronesecurity.userapplication.presentation.shipping;
 
 import io.github.dronesecurity.lib.DateHelper;
-import io.github.dronesecurity.userapplication.domain.auth.entities.Courier;
+import io.github.dronesecurity.userapplication.application.user.ohs.pl.Courier;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.OrderState;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.RescheduledOrder;
@@ -15,8 +15,8 @@ import io.github.dronesecurity.userapplication.events.DomainEvents;
 import io.github.dronesecurity.userapplication.events.OrderUpdated;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.UIHelper;
-import io.github.dronesecurity.userapplication.utilities.UserHelper;
 import io.github.dronesecurity.userapplication.utilities.shipping.ShippingAPIHelper;
+import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import javafx.application.Platform;
@@ -60,6 +60,9 @@ public final class OrdersUIController implements Initializable {
         this.orderUpdatedHandler = ignored -> this.refreshOrders();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         this.orderIdColumn.setCellValueFactory(cell ->
@@ -125,20 +128,23 @@ public final class OrdersUIController implements Initializable {
 
     @FXML
     private void performDelivery() {
-        DialogUtils.createDronePickerDialog("Choose the Drone to use for delivery")
-                .showAndWait().ifPresent(droneId -> {
-                    final Order order = this.getSelectedOrder().orElseThrow();
-                    final JsonObject body = new JsonObject()
-                            .put(ShippingAPIHelper.ORDER_ID_KEY, order.getId().asLong())
-                            .put(ShippingAPIHelper.DRONE_ID_KEY, droneId);
-                    ShippingAPIHelper.postJson(ShippingAPIHelper.Operation.PERFORM_DELIVERY, body)
-                            .onSuccess(ignored -> Platform.runLater(() -> {
-                                ((Courier) UserHelper.logged()).removeDrone(droneId);
-                                this.table.getSelectionModel().clearSelection();
-                                UIHelper.showMonitoringUI(order, hidden ->
-                                        ((Courier) UserHelper.logged()).addDrone(droneId));
-                            }));
-                });
+        UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT).onSuccess(res -> {
+            final Courier courier = Json.decodeValue(res.bodyAsJsonObject().toBuffer(), Courier.class);
+            DialogUtils.createDronePickerDialog("Choose the Drone to use for delivery", courier.getAssignedDrones())
+                    .showAndWait().ifPresent(droneId -> {
+                        final Order order = this.getSelectedOrder().orElseThrow();
+                        final JsonObject body = new JsonObject()
+                                .put(ShippingAPIHelper.ORDER_ID_KEY, order.getId().asLong())
+                                .put(ShippingAPIHelper.DRONE_ID_KEY, droneId);
+                        ShippingAPIHelper.postJson(ShippingAPIHelper.Operation.PERFORM_DELIVERY, body)
+                                .onSuccess(ignored -> Platform.runLater(() -> {
+                                    courier.removeDrone(droneId);
+                                    this.table.getSelectionModel().clearSelection();
+                                    UIHelper.showMonitoringUI(order, hidden -> courier.addDrone(droneId));
+                                }));
+                    });
+        });
+
     }
 
     @FXML

@@ -24,6 +24,9 @@ import java.time.Instant;
  */
 public final class NegligenceReportDeserializer extends JsonDeserializer<NegligenceReport> {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public @NotNull NegligenceReport deserialize(@NotNull final JsonParser parser,
                                                  final @NotNull DeserializationContext ctx) throws IOException {

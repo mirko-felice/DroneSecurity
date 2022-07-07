@@ -6,21 +6,21 @@
 package io.github.dronesecurity.userapplication.domain.reporting.negligence.entities;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import io.github.dronesecurity.userapplication.domain.auth.entities.Courier;
-import io.github.dronesecurity.userapplication.domain.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.CourierImpl;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.MaintainerImpl;
 import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.serializers.NegligenceReportDeserializer;
 
 import java.time.Instant;
 
 /**
- * Represents the report used to record the commitment of a negligence by a {@link Courier}.
+ * Represents the report used to record the commitment of a negligence by a {@link CourierImpl}.
  */
 @JsonDeserialize(using = NegligenceReportDeserializer.class)
 public interface NegligenceReport {
 
     /**
-     * Gets the negligent as a {@link Courier}.
+     * Gets the negligent as a {@link CourierImpl}.
      * @return the negligent
      */
     String getNegligent();
@@ -32,7 +32,7 @@ public interface NegligenceReport {
     DroneData getData();
 
     /**
-     * Gets the {@link Maintainer} assigned to the report.
+     * Gets the {@link MaintainerImpl} assigned to the report.
      * @return the assignee
      */
     String assignedTo();

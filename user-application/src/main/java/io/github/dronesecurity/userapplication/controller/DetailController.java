@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.domain.auth.entities.LoggedUser;
+import io.github.dronesecurity.userapplication.application.user.ohs.pl.GenericUser;
 import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.NegligenceSolution;
 import javafx.fxml.FXML;
@@ -63,10 +63,10 @@ public class DetailController implements Initializable {
     }
 
     /**
-     * Update detail node using a {@link LoggedUser}.
+     * Update detail node using a {@link GenericUser}.
      * @param user user providing information
      */
-    public void updateDetails(final @NotNull LoggedUser user) {
+    public void updateDetails(final @NotNull GenericUser user) {
         this.usernameValueLabel.setText(user.getUsername());
         this.roleValueLabel.setText(user.getRole().toString());
         this.userElements.forEach(n -> n.setVisible(true));

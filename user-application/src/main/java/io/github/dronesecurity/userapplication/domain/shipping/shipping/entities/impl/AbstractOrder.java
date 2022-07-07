@@ -6,15 +6,13 @@
 package io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.impl;
 
 import io.github.dronesecurity.userapplication.domain.shipping.client.Client;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.OrderState;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.exceptions.ArrivalDateBeforePlacingDateException;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderDate;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderIdentifier;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.Product;
-import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
-import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.OrderState;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 /**
  * Abstract class to construct a generic {@link Order}.
@@ -108,24 +106,5 @@ public abstract class AbstractOrder implements Order {
     @Override
     public boolean hasSameIdentityAs(final @NotNull Order entity) {
         return this.id.isSameValueAs(entity.getId());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final AbstractOrder that = (AbstractOrder) o;
-        return this.id.isSameValueAs(that.id);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.id);
     }
 }

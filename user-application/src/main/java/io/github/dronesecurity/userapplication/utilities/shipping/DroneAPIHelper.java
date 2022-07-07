@@ -6,6 +6,7 @@
 package io.github.dronesecurity.userapplication.utilities.shipping;
 
 import io.github.dronesecurity.userapplication.presentation.shipping.DroneAPI;
+import io.github.dronesecurity.userapplication.utilities.APIHelper;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
@@ -60,6 +61,9 @@ public final class DroneAPIHelper {
          */
         HALT;
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String toString() {
             return CaseUtils.toCamelCase(this.name(), false, '_');

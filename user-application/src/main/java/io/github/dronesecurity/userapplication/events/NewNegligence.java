@@ -5,12 +5,12 @@
 
 package io.github.dronesecurity.userapplication.events;
 
-import io.github.dronesecurity.userapplication.domain.auth.entities.Courier;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.CourierImpl;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.NegligenceReport;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The event to be raised when a {@link Courier} commits negligence.
+ * The event to be raised when a {@link CourierImpl} commits negligence.
  */
 public class NewNegligence implements DomainEvent {
 
@@ -25,7 +25,7 @@ public class NewNegligence implements DomainEvent {
     }
 
     /**
-     * Gets the {@link NegligenceReport} representing the negligence committed by a {@link Courier}.
+     * Gets the {@link NegligenceReport} representing the negligence committed by a {@link CourierImpl}.
      * @return the report
      */
     public NegligenceReport getReport() {

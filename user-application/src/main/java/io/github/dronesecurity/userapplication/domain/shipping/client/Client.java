@@ -42,18 +42,24 @@ public interface Client extends Entity<Client> {
     /**
      * Mock client just for domain representation.
      */
-    class MockClient implements Client {
+    final class MockClient implements Client {
         private final String name;
 
         private MockClient(final String name) {
             this.name = name;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String name() {
             return this.name;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public boolean hasSameIdentityAs(final @NotNull Client entity) {
             return this.name.equals(entity.name());

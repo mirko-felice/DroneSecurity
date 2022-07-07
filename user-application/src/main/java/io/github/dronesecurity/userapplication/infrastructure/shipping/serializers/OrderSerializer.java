@@ -20,6 +20,9 @@ import java.io.IOException;
  */
 public final class OrderSerializer extends JsonSerializer<Order> {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void serialize(final @NotNull Order value,
                           final @NotNull JsonGenerator gen,

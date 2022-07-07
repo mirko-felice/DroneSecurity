@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 final class ReportTest {
 
+    private static final String DOT = ".";
     private static final String NEGLIGENT = "courier";
     private static final String ASSIGNEE = "maintainer";
     private static final long ORDER_ID = 123;
@@ -56,7 +57,7 @@ final class ReportTest {
                 NegligenceReportFactory.withID(0, this.generateReportWithoutData())
         );
         assertInstanceOf(OpenNegligenceReport.class, openWithoutData,
-                "Object should be instance of " + OpenNegligenceReport.class + ".");
+                "Object should be instance of " + OpenNegligenceReport.class + DOT);
         assertThrowsExactly(ReportEmptyDataException.class, () -> openWithoutData.close(Instant.now(), SOLUTION),
                 "Report can not be closed without providing data.");
 
@@ -64,7 +65,7 @@ final class ReportTest {
                 NegligenceReportFactory.withID(0, this.generateReportWithData())
         );
         assertDoesNotThrow(() -> openWithData.close(Instant.now(), SOLUTION),
-                "Closing report with data should not throw " + ReportEmptyDataException.class + ".");
+                "Closing report with data should not throw " + ReportEmptyDataException.class + DOT);
     }
 
     @Test
@@ -73,7 +74,7 @@ final class ReportTest {
                 NegligenceReportFactory.withID(0, this.generateReportWithData()), Instant.now(), SOLUTION
         );
         assertInstanceOf(ClosedNegligenceReport.class, report,
-                "Object should be instance of " + ClosedNegligenceReport.class + ".");
+                "Object should be instance of " + ClosedNegligenceReport.class + DOT);
         assertNotNull(report.getClosingInstant(),
                 "Closed report should have its closing instant.");
     }

@@ -14,7 +14,7 @@ class NegligenceReportWithIDImpl extends NegligenceReportImpl implements Neglige
 
     private final long id;
 
-    NegligenceReportWithIDImpl(final long id, final @NotNull NegligenceReport report) {
+    /* default */ NegligenceReportWithIDImpl(final long id, final @NotNull NegligenceReport report) {
         super(report.getNegligent(), report.assignedTo(), report.getData(), report.getOrderId(),
                 report.getNegligenceInstant());
         this.id = id;

@@ -38,6 +38,9 @@ public final class NegligenceSolutionImpl implements NegligenceSolution {
         return "Show Solution";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -46,6 +49,9 @@ public final class NegligenceSolutionImpl implements NegligenceSolution {
         return this.getSolution().equals(that.getSolution());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return Objects.hash(this.getSolution());

@@ -17,7 +17,7 @@ class ClosedNegligenceReportImpl extends NegligenceReportWithIDImpl implements C
     private final Instant closingInstant;
     private final NegligenceSolution solution;
 
-    ClosedNegligenceReportImpl(final NegligenceReportWithID report,
+    /* default */ ClosedNegligenceReportImpl(final NegligenceReportWithID report,
                                final Instant closingInstant,
                                final NegligenceSolution solution) {
         super(report.getId(), report);

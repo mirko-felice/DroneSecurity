@@ -6,7 +6,7 @@
 package io.github.dronesecurity.userapplication.utilities;
 
 import io.github.dronesecurity.lib.DateHelper;
-import io.github.dronesecurity.userapplication.domain.auth.entities.Courier;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.CourierImpl;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
@@ -86,16 +86,17 @@ public final class DialogUtils {
     }
 
     /**
-     * Creates drone picker dialog to select a drone from the list provided by {@link Courier}.
+     * Creates drone picker dialog to select a drone from the list provided by {@link CourierImpl}.
      * WARNING: must be used only if the logged user is a Courier.
      * @param contentMessage message text to insert into the dialog
+     * @param drones drones to show
      * @return the {@link Dialog} returning the drone identifier.
      */
-    public static @NotNull Dialog<String> createDronePickerDialog(final String contentMessage) {
+    public static @NotNull Dialog<String> createDronePickerDialog(final String contentMessage,
+                                                                  final List<String> drones) {
         final Dialog<String> dialog = createCustomDialog("Drone Selection",
                 contentMessage, ButtonType.OK, ButtonType.CANCEL);
 
-        final List<String> drones = ((Courier) UserHelper.logged()).getDrones();
         final ChoiceBox<String> choiceBox = new ChoiceBox<>(FXCollections.observableList(drones));
         choiceBox.setValue(drones.get(0));
         dialog.getDialogPane().setContent(choiceBox);
@@ -131,16 +132,15 @@ public final class DialogUtils {
     }
 
     /**
-     * Shows up an information {@link Notifications} with given title, text and setting its owner.
-     * @param title title to use
+     * Shows up an information {@link Notifications} with given text and setting its owner.
      * @param text text to visualize
      * @param owner {@link Window} owning the notification
      */
-    public static void showInfoNotification(final String title, final String text, final Window owner) {
+    public static void showInfoNotification(final String text, final Window owner) {
         Notifications.create()
                 .position(Pos.CENTER)
                 .owner(owner)
-                .title(title)
+                .title("INFO")
                 .text(text)
                 .showInformation();
     }

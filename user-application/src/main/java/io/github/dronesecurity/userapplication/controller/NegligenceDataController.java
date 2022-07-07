@@ -5,16 +5,17 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.domain.auth.entities.LoggedUser;
+import io.github.dronesecurity.userapplication.application.user.ohs.pl.GenericUser;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.ClosedNegligenceReport;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.NegligenceReport;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.OpenNegligenceReport;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.CourierNegligenceReportService;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.MaintainerNegligenceReportService;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.NegligenceReportService;
-import io.github.dronesecurity.userapplication.utilities.FXHelper;
-import io.github.dronesecurity.userapplication.utilities.UserHelper;
+import io.github.dronesecurity.userapplication.utilities.reporting.negligence.FXHelper;
+import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
 import io.vertx.core.Future;
+import io.vertx.core.json.Json;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -53,7 +54,7 @@ public class NegligenceDataController implements Initializable {
      */
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-       this.updateReports();
+        this.updateReports();
 
         final URL fileUrl = NegligenceDataController.class.getResource(DETAIL_FILENAME);
         final Pair<TableView<OpenNegligenceReport>, DetailController> openPair =
@@ -108,29 +109,31 @@ public class NegligenceDataController implements Initializable {
      * Update showed reports.
      */
     public void updateReports() {
-        final LoggedUser user = UserHelper.logged();
-        final String username = user.getUsername();
-        final Future<List<OpenNegligenceReport>> openReportsFuture;
-        final Future<List<ClosedNegligenceReport>> closedReportsFuture;
-        switch (user.getRole()) {
-            case COURIER:
-                final CourierNegligenceReportService courierService = new NegligenceReportService();
-                openReportsFuture = courierService.retrieveOpenReportsForCourier(username);
-                closedReportsFuture = courierService.retrieveClosedReportsForCourier(username);
-                break;
-            case MAINTAINER:
-                final MaintainerNegligenceReportService maintainerService = new NegligenceReportService();
-                openReportsFuture = maintainerService.retrieveOpenReportsForMaintainer(username);
-                closedReportsFuture = maintainerService.retrieveClosedReportsForMaintainer(username);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + user.getRole());
-        }
-        openReportsFuture.onSuccess(reports -> Platform.runLater(() ->
-                this.openReportsTable.setItems(FXCollections.observableList(reports))));
+        UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT).onSuccess(res -> {
+            final GenericUser user = Json.decodeValue(res.bodyAsJsonObject().toBuffer(), GenericUser.class);
+            final String username = user.getUsername();
+            final Future<List<OpenNegligenceReport>> openReportsFuture;
+            final Future<List<ClosedNegligenceReport>> closedReportsFuture;
+            switch (user.getRole()) {
+                case COURIER:
+                    final CourierNegligenceReportService courierService = new NegligenceReportService();
+                    openReportsFuture = courierService.retrieveOpenReportsForCourier(username);
+                    closedReportsFuture = courierService.retrieveClosedReportsForCourier(username);
+                    break;
+                case MAINTAINER:
+                    final MaintainerNegligenceReportService maintainerService = new NegligenceReportService();
+                    openReportsFuture = maintainerService.retrieveOpenReportsForMaintainer(username);
+                    closedReportsFuture = maintainerService.retrieveClosedReportsForMaintainer(username);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + user.getRole());
+            }
+            openReportsFuture.onSuccess(reports -> Platform.runLater(() ->
+                    this.openReportsTable.setItems(FXCollections.observableList(reports))));
 
-        closedReportsFuture.onSuccess(reports -> Platform.runLater(() ->
-                this.closedReportsTable.setItems(FXCollections.observableList(reports))));
+            closedReportsFuture.onSuccess(reports -> Platform.runLater(() ->
+                    this.closedReportsTable.setItems(FXCollections.observableList(reports))));
+        });
     }
 
     /**

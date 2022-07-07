@@ -10,7 +10,6 @@ import io.github.dronesecurity.userapplication.domain.shipping.shipping.events.O
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderIdentifier;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.service.DroneController;
 import io.github.dronesecurity.userapplication.events.DomainEvents;
-import io.github.dronesecurity.userapplication.utilities.UserHelper;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -58,7 +57,7 @@ public final class DroneControllerImpl implements DroneController {
     }
 
     private void startDrone(final @NotNull OrderDelivering orderDelivering) {
-        final String courierUsername = UserHelper.logged().getUsername();
+        final String courierUsername = ""; // TODO
         ConnectionHelper.sendPerformDeliveryMessage(
                 orderDelivering.getDroneId(),
                 orderDelivering.getOrder(),

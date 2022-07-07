@@ -5,13 +5,13 @@
 
 package io.github.dronesecurity.userapplication.domain.reporting.issue.services;
 
-import io.github.dronesecurity.userapplication.domain.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.MaintainerImpl;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.Issue;
 import io.vertx.core.Future;
 
 /**
  * Service dedicated to issue reporting for the
- * {@link Maintainer}.
+ * {@link MaintainerImpl}.
  */
 public interface CourierIssueReportService extends DataIssueReportService {
 

@@ -15,7 +15,7 @@ import java.time.Instant;
  */
 class OpenNegligenceReportImpl extends NegligenceReportWithIDImpl implements OpenNegligenceReport {
 
-    OpenNegligenceReportImpl(final NegligenceReportWithID report) {
+    /* default */ OpenNegligenceReportImpl(final NegligenceReportWithID report) {
         super(report.getId(), report);
     }
 

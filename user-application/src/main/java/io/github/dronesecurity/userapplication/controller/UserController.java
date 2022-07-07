@@ -5,14 +5,16 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.domain.auth.entities.Courier;
-import io.github.dronesecurity.userapplication.domain.auth.entities.Maintainer;
-import io.github.dronesecurity.userapplication.domain.auth.entities.Role;
+import io.github.dronesecurity.userapplication.domain.user.entities.contracts.Role;
+import io.github.dronesecurity.userapplication.domain.user.entities.contracts.User;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.CourierImpl;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.MaintainerImpl;
 import io.github.dronesecurity.userapplication.presentation.shipping.ShippingAPI;
 import io.github.dronesecurity.userapplication.utilities.CastHelper;
-import io.github.dronesecurity.userapplication.utilities.FXHelper;
-import io.github.dronesecurity.userapplication.utilities.UserHelper;
 import io.github.dronesecurity.userapplication.utilities.VertxHelper;
+import io.github.dronesecurity.userapplication.utilities.reporting.negligence.FXHelper;
+import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
+import io.vertx.core.json.Json;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,8 +29,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * Controller dedicated to manage both {@link Courier} and
- * {@link Maintainer} actions.
+ * Controller dedicated to manage both {@link CourierImpl} and
+ * {@link MaintainerImpl} actions.
  */
 public class UserController implements Initializable {
 
@@ -47,7 +49,8 @@ public class UserController implements Initializable {
     private static final String NEGLIGENCE_FXML = "negligence.fxml";
     private static final String NEGLIGENCE_DATA_FXML = "negligenceData.fxml";
     private static final String ISSUES_FXML = "issues.fxml";
-    private final Role role;
+    private static final String NEGLIGENCE_REPORTS_TITLE = "Reports";
+    private Role role;
     @FXML private ProgressBar progressBar;
     @FXML private Button showOrdersButton;
 
@@ -55,7 +58,10 @@ public class UserController implements Initializable {
      * Build the controller.
      */
     public UserController() {
-        this.role = UserHelper.logged().getRole();
+        UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT).onSuccess(res -> {
+            final User user = Json.decodeValue(res.bodyAsJsonObject().toBuffer(), User.class);
+            this.role = user.getRole();
+        });
     }
 
     /**
@@ -75,9 +81,10 @@ public class UserController implements Initializable {
 
     @FXML
     private void logout() {
-        UserHelper.logout();
-        CastHelper.safeCast(this.progressBar.getScene().getWindow(), Stage.class).ifPresent(Stage::close);
-        this.show(LOGIN_FXML, "Login", true, LOGIN_MIN_WIDTH, LOGIN_MIN_HEIGHT);
+        UserAPIHelper.postJson(UserAPIHelper.Operation.LOG_OUT).onSuccess(res -> {
+            CastHelper.safeCast(this.progressBar.getScene().getWindow(), Stage.class).ifPresent(Stage::close);
+            this.show(LOGIN_FXML, "Login", true, LOGIN_MIN_WIDTH, LOGIN_MIN_HEIGHT);
+        });
     }
 
     @FXML
@@ -99,9 +106,11 @@ public class UserController implements Initializable {
     @FXML
     private void showReports() {
         if (this.role == Role.COURIER)
-            this.show(NEGLIGENCE_DATA_FXML, "Reports", false, NEGLIGENCE_DATA_MIN_WIDTH, NEGLIGENCE_DATA_MIN_HEIGHT);
+            this.show(NEGLIGENCE_DATA_FXML, NEGLIGENCE_REPORTS_TITLE, false, NEGLIGENCE_DATA_MIN_WIDTH,
+                    NEGLIGENCE_DATA_MIN_HEIGHT);
         else if (this.role == Role.MAINTAINER)
-            this.show(NEGLIGENCE_FXML, "Reports", false, NEGLIGENCE_MIN_WIDTH, NEGLIGENCE_MIN_HEIGHT);
+            this.show(NEGLIGENCE_FXML, NEGLIGENCE_REPORTS_TITLE, false, NEGLIGENCE_MIN_WIDTH,
+                    NEGLIGENCE_MIN_HEIGHT);
     }
 
     @FXML

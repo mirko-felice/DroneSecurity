@@ -57,6 +57,9 @@ public final class ConnectionController implements Initializable {
     private File privateKeyFile;
     private File certificateAuthorityFile;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         this.directoryChooser = new DirectoryChooser();

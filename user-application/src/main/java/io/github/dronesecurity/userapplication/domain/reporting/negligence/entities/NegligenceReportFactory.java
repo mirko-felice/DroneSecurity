@@ -5,8 +5,8 @@
 
 package io.github.dronesecurity.userapplication.domain.reporting.negligence.entities;
 
-import io.github.dronesecurity.userapplication.domain.auth.entities.Courier;
-import io.github.dronesecurity.userapplication.domain.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.CourierImpl;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.MaintainerImpl;
 import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -22,9 +22,9 @@ public final class NegligenceReportFactory {
 
     /**
      * Creates a {@link NegligenceReport} without ID.
-     * @param negligent the {@link Courier} that committed the
+     * @param negligent the {@link CourierImpl} that committed the
      *                  negligence
-     * @param assignee the {@link Maintainer} assigned to the
+     * @param assignee the {@link MaintainerImpl} assigned to the
      *                 report
      * @param data the {@link DroneData} associated to the report
      * @param orderId the order identifier related to the negligence
