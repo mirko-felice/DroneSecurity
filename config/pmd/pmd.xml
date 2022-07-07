@@ -7,70 +7,71 @@
     <description>Drone Security rules for Java</description>
 
     <rule ref="category/java/bestpractices.xml" >
-        <exclude name="JUnitTestContainsTooManyAsserts"/>
+        <exclude name="JUnitTestContainsTooManyAsserts"/> <!-- Want to assert more than once in a single test method. -->
     </rule>
 
     <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod">
         <properties>
-            <property name="ignoredAnnotations" value="java.lang.Deprecated | javafx.fxml.FXML"/>
+            <property name="ignoredAnnotations" value="java.lang.Deprecated | javafx.fxml.FXML"/> <!-- Ignore FXML controller private methods. -->
         </properties>
     </rule>
 
     <rule ref="category/java/codestyle.xml" >
-        <exclude name="CallSuperInConstructor"/>
-        <exclude name="AtLeastOneConstructor"/>
-        <exclude name="LongVariable"/>
-        <exclude name="ControlStatementBraces"/>
-        <exclude name="OnlyOneReturn"/>
-        <exclude name="ShortVariable"/>
-        <exclude name="CommentDefaultAccessModifier"/>
-        <exclude name="ShortClassName"/>
-        <exclude name="GenericsNaming"/>
+        <exclude name="CallSuperInConstructor"/> <!-- Don't want to add boilerplate code. Java does it for us. -->
+        <exclude name="AtLeastOneConstructor"/> <!-- Don't want to add boilerplate code. Java does it for us. -->
+        <exclude name="LongVariable"/> <!-- Prefer not be limited by this rule so variable names are more esplicite. -->
+        <exclude name="ControlStatementBraces"/> <!-- Prefer not add braces where unnecessary. -->
+        <exclude name="OnlyOneReturn"/> <!-- No sense rule. -->
+        <exclude name="ShortVariable"/> <!-- Prefer not be limited by this rule so variable names are more esplicite. -->
+        <exclude name="ShortClassName"/> <!-- Prefer not be limited by this rule so class names are more esplicite. -->
+        <exclude name="GenericsNaming"/> <!-- Prefer to clarify generics naming explicitly. -->
+    </rule>
+
+    <rule ref="category/java/codestyle.xml/CommentDefaultAccessModifier">
+        <properties>
+            <property name="ignoredAnnotations" value="org.junit.jupiter.api.Test|org.junit.jupiter.params.ParameterizedTest" /> <!-- Ignore JUnit test methods. -->
+        </properties>
     </rule>
 
     <rule ref="category/java/codestyle.xml/ClassNamingConventions" >
         <properties>
-            <!-- Add ACL classes to not raise pmd issue. -->
-            <property name="utilityClassPattern" value="([A-Z][a-zA-Z0-9]+(Utils?|Helper|Constants|Factory|Processor|Analyzer))|([A-Z][a-zA-Z0-9]+ACL)|DomainEvents" />
+            <property name="utilityClassPattern" value="([A-Z][a-zA-Z0-9]+(Utils?|Helper|Constants|Factory|Processor|Analyzer))|DomainEvents|OpenHostService" />
+            <!-- Added custom utility pattern names. -->
         </properties>
     </rule>
     
     <rule ref="category/java/design.xml" >
-        <exclude name="LoosePackageCoupling"/>
-        <exclude name="LawOfDemeter"/>
-        <exclude name="TooManyFields"/>
-        <exclude name="DataClass" />
+        <exclude name="LoosePackageCoupling"/> <!-- Ignoring package coupling because of our architecture. -->
+        <exclude name="LawOfDemeter"/> <!-- TODO Check after refactoring -->
+        <exclude name="TooManyFields"/> <!-- TODO Check after refactoring -->
+        <exclude name="DataClass" /> <!-- TODO Check after refactoring -->
     </rule>
 
     <rule ref="category/java/design.xml/CyclomaticComplexity">
         <properties>
-            <property name="methodReportLevel" value="12" />
+            <property name="methodReportLevel" value="12" /> <!-- TODO Check after refactoring -->
         </properties>
     </rule>
 
     <rule ref="category/java/design.xml/TooManyMethods">
         <properties>
-            <property name="maxmethods" value="13" />
+            <property name="maxmethods" value="13" /> <!-- TODO Check after refactoring -->
         </properties>
-    </rule>
-
-    <rule ref="category/java/documentation.xml" >
-        <exclude name="CommentSize"/>
     </rule>
 
     <rule ref="category/java/documentation.xml/CommentRequired">
         <properties>
-            <property name="fieldCommentRequirement" value="Ignored"/>
+            <property name="fieldCommentRequirement" value="Ignored"/> <!-- Don't want to comment even private fields, unnecessary. -->
         </properties>
     </rule>
 
     <rule ref="category/java/errorprone.xml" >
-        <exclude name="DoNotTerminateVM"/>
-        <exclude name="BeanMembersShouldSerialize"/>
+        <exclude name="DoNotTerminateVM"/> <!-- System.exit needed. -->
+        <exclude name="BeanMembersShouldSerialize"/> <!-- Don't want to set transient to all fields, unnecessary. -->
     </rule>
 
     <rule ref="category/java/multithreading.xml" >
-        <exclude name="DoNotUseThreads" />
+        <exclude name="DoNotUseThreads" /> <!-- Want to use threads. -->
     </rule>
 
     <rule ref="category/java/performance.xml" />

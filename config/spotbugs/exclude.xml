@@ -5,18 +5,22 @@
         xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
     <Match>
         <Bug pattern="DM_EXIT" />
+        <!-- System.exit needed. -->
     </Match>
 
     <Match>
         <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD" />
+        <!-- FXML controller methods injected by reflection could be private but spotbugs does not see them. -->
     </Match>
 
     <Match>
         <Bug pattern="CRLF_INJECTION_LOGS" />
+        <!-- Removed CRLF injection issue. -->
     </Match>
 
     <Match>
         <Bug pattern="IMC_IMMATURE_CLASS_NO_TOSTRING" />
+        <!-- Don't want to insert toString method in all classes. -->
     </Match>
 
     <Match>
@@ -26,16 +30,25 @@
     <Match>
         <Bug pattern="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY" />
         <Class name="~.*OrderImpl" />
+        <!-- Issue related to Jackson Annotation @JsonDeserialize -->
+    </Match>
+
+    <Match>
+        <Bug pattern="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY" />
+        <Class name="~.*CourierImpl" />
+        <!-- Issue related to Jackson Annotation @JsonDeserialize -->
     </Match>
 
     <Match>
         <Bug pattern="MS_EXPOSE_REP" />
         <Package name="~.*\.issue.*" />
+        <!-- Spotbugs tracks singleton as array. -->
     </Match>
 
     <Match>
         <Bug pattern="UNENCRYPTED_SOCKET" />
         <Class name="~.*Camera" />
+        <!-- Cannot encrypt socket on localhost. -->
     </Match>
 
     <Match>

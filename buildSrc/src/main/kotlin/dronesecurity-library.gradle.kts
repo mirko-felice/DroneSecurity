@@ -39,6 +39,10 @@ java {
     withJavadocJar()
 }
 
+checkstyle {
+    toolVersion = "10.3.1"
+}
+
 pmd {
     ruleSetConfig = resources.text.fromFile(rootDir.path + properties["pmd.config"])
     ruleSets = emptyList()
