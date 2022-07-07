@@ -10,7 +10,7 @@ import io.github.dronesecurity.lib.PropertiesConstants;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderDate;
 import io.github.dronesecurity.userapplication.infrastructure.shipping.repo.MongoOrderRepository;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
-import io.github.dronesecurity.userapplication.utilities.FXHelper;
+import io.github.dronesecurity.userapplication.utilities.reporting.negligence.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.VertxHelper;
 import io.github.dronesecurity.userapplication.utilities.shipping.ShippingAPIHelper;
 import io.vertx.core.json.JsonObject;
@@ -43,6 +43,9 @@ public final class Launcher extends Application {
     private static final String CONNECTION_FXML = "connection.fxml";
     private static final String LOGIN_FXML = "login.fxml";
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start(final @NotNull Stage stage) {
         final File propertiesFile = new File(PropertiesConstants.PROPERTIES_FILENAME);

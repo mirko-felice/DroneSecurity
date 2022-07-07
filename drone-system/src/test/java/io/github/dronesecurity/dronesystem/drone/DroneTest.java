@@ -7,14 +7,13 @@ package io.github.dronesecurity.dronesystem.drone;
 
 import io.github.dronesecurity.dronesystem.drone.entities.Drone;
 import io.github.dronesecurity.dronesystem.drone.utilities.AccelerometerConstants;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-
-import static org.awaitility.Awaitility.await;
 
 /**
  * Test for Drone Service.
@@ -60,6 +59,6 @@ class DroneTest {
     }
 
     private void awaitUntil(final Callable<Boolean> booleanCallable) {
-        await().atMost(SENSOR_DATA_READING_WAITING_TIME, TimeUnit.SECONDS).until(booleanCallable);
+        Awaitility.await().atMost(SENSOR_DATA_READING_WAITING_TIME, TimeUnit.SECONDS).until(booleanCallable);
     }
 }

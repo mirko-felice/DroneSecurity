@@ -29,6 +29,9 @@ import java.io.IOException;
  */
 public final class OrderDeserializer extends JsonDeserializer<Order> {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public @Nullable Order deserialize(@NotNull final JsonParser parser, final DeserializationContext ctx)
             throws IOException {

@@ -5,14 +5,14 @@
 
 package io.github.dronesecurity.userapplication.domain.reporting.issue.repo;
 
-import io.github.dronesecurity.userapplication.domain.auth.entities.LoggedUser;
-import io.github.dronesecurity.userapplication.domain.auth.entities.Role;
+import io.github.dronesecurity.userapplication.application.user.ohs.pl.GenericUser;
+import io.github.dronesecurity.userapplication.application.user.ohs.pl.UserRole;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.ClosedIssue;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.CreatedIssue;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.Issue;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.serialization.IssueStringHelper;
-import io.github.dronesecurity.userapplication.utilities.UserHelper;
 import io.github.dronesecurity.userapplication.utilities.VertxHelper;
+import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
 import io.vertx.core.Future;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
@@ -117,11 +117,28 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
 
     private @NotNull JsonObject initQueryWithUserData() {
         final JsonObject queryWithUser = new JsonObject();
-        final LoggedUser loggedUser = UserHelper.logged();
-        if (loggedUser.getRole() == Role.COURIER)
-            queryWithUser.put(IssueStringHelper.COURIER, loggedUser.getUsername());
-        else if (loggedUser.getRole() == Role.MAINTAINER)
-            queryWithUser.put(IssueStringHelper.ASSIGNEE, loggedUser.getUsername());
+        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE).onSuccess(res -> {
+            final GenericUser[] loggedUser = new GenericUser[1]; // TODO
+            switch (UserRole.valueOf(res.bodyAsString())) {
+                case COURIER:
+                    UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT)
+                            .onSuccess(response -> loggedUser[0] =
+                                    Json.decodeValue(response.bodyAsJsonObject().toBuffer(), GenericUser.class));
+                    break;
+                case MAINTAINER:
+                    UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_MAINTAINER_IF_PRESENT)
+                            .onSuccess(response -> loggedUser[0] =
+                                    Json.decodeValue(response.bodyAsJsonObject().toBuffer(), GenericUser.class));
+                    break;
+                case NOT_LOGGED:
+                default:
+                    // TODO
+            }
+            if (loggedUser[0].getRole() == UserRole.COURIER)
+                queryWithUser.put(IssueStringHelper.COURIER, loggedUser[0].getUsername());
+            else if (loggedUser[0].getRole() == UserRole.MAINTAINER)
+                queryWithUser.put(IssueStringHelper.ASSIGNEE, loggedUser[0].getUsername());
+        });
 
         return queryWithUser;
     }

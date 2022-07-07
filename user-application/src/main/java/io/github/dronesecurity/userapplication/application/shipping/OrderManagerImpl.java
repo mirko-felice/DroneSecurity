@@ -57,6 +57,7 @@ public final class OrderManagerImpl implements OrderManager {
     public void placeOrder(final Client who, final Product what, final @NotNull OrderDate when) {
         if (!when.isAfter(OrderDate.TODAY))
             throw new EstimatedArrivalCannotBeBeforeTodayException();
+        // TODO refactor into placed order dot place
         final PlacedOrder order = new PlacedOrderImpl(
                 this.repository.nextOrderIdentifier(),
                 what,

@@ -7,8 +7,8 @@ package io.github.dronesecurity.userapplication.domain.reporting.issue.entities;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.github.dronesecurity.userapplication.domain.auth.entities.Courier;
-import io.github.dronesecurity.userapplication.domain.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.CourierImpl;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.MaintainerImpl;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.serialization.IssueDeserializer;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.serialization.IssueSerializer;
 
@@ -22,7 +22,7 @@ import java.time.Instant;
 public interface Issue {
 
     /**
-     * Gets the subject of the issue, specified by the {@link Courier}.
+     * Gets the subject of the issue, specified by the {@link CourierImpl}.
      * @return the subject of this issue
      */
     String getSubject();
@@ -40,8 +40,8 @@ public interface Issue {
     String getCourier();
 
     /**
-     * Gets the {@link Maintainer} assigned to the issue.
-     * @return the {@link Maintainer} username
+     * Gets the {@link MaintainerImpl} assigned to the issue.
+     * @return the {@link MaintainerImpl} username
      */
     String assignedTo();
 

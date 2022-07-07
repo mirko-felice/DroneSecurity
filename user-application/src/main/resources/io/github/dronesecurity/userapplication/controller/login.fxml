@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import org.controlsfx.glyphfont.Glyph?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#keyPressed" prefHeight="200.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.dronesecurity.userapplication.controller.AuthenticationController">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#keyPressed" prefHeight="200.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.dronesecurity.userapplication.presentation.user.AuthenticationUIController">
     <columnConstraints>
         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="40.0" />
         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" percentWidth="16.0" />

@@ -5,16 +5,16 @@
 
 package io.github.dronesecurity.userapplication.controller;
 
-import io.github.dronesecurity.userapplication.domain.auth.entities.Maintainer;
-import io.github.dronesecurity.userapplication.events.DomainEvents;
-import io.github.dronesecurity.userapplication.events.NewNegligence;
+import io.github.dronesecurity.userapplication.application.user.ohs.pl.Maintainer;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.NegligenceSolutionImpl;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.OpenNegligenceReport;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.MaintainerNegligenceReportService;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.NegligenceReportService;
-import io.github.dronesecurity.userapplication.utilities.CastHelper;
+import io.github.dronesecurity.userapplication.events.DomainEvents;
+import io.github.dronesecurity.userapplication.events.NewNegligence;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
-import io.github.dronesecurity.userapplication.utilities.UserHelper;
+import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
+import io.vertx.core.json.Json;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -52,8 +54,7 @@ public class NegligenceController implements Initializable {
         this.negligenceReportService = new NegligenceReportService();
         this.newNegligenceHandler = this::onNewNegligence;
         DomainEvents.register(NewNegligence.class, this.newNegligenceHandler);
-        CastHelper.safeCast(UserHelper.logged(), Maintainer.class).ifPresent(maintainer -> maintainer.getCouriers()
-                .forEach(this.negligenceReportService::subscribeToCourierNegligence));
+        this.subscribeToAllCouriersNegligence();
     }
 
     /**
@@ -81,9 +82,10 @@ public class NegligenceController implements Initializable {
         Platform.runLater(() -> {
             Executors.newSingleThreadScheduledExecutor().schedule(() ->
                     Platform.runLater(() -> this.dataController.updateReports()), 2, TimeUnit.SECONDS);
-            DialogUtils.showInfoNotification("INFO",
+            DialogUtils.showInfoNotification(
                     "New negligence committed by " + newNegligence.getReport().getNegligent()
-                    + ". Please take care of this. Go to the 'reports' window to show more information about it.",
+                            + ". Please take care of this. Go to the 'reports' window to show more information"
+                            + " about it.",
                     this.pane.getScene().getWindow());
         });
     }
@@ -98,11 +100,19 @@ public class NegligenceController implements Initializable {
             this.negligenceReportService.takeAction(report, new NegligenceSolutionImpl(this.solution.getText()))
                     .onSuccess(unused -> Platform.runLater(() -> {
                         this.dataController.updateReports();
-                        DialogUtils.showInfoNotification("INFO",
+                        DialogUtils.showInfoNotification(
                                 "You have taken action against Courier with username: " + report.getNegligent(),
                                 this.pane.getScene().getWindow());
                         this.solution.clear();
                     }));
         }
+    }
+
+    private void subscribeToAllCouriersNegligence() {
+        UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_COURIERS_SUPERVISED_BY_LOGGED_MAINTAINER).onSuccess(res -> {
+            final List<String> couriers =
+                    Arrays.asList(Json.decodeValue(res.bodyAsJsonArray().toBuffer(), String[].class));
+            couriers.forEach(this.negligenceReportService::subscribeToCourierNegligence);
+        });
     }
 }

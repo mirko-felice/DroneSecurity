@@ -50,7 +50,7 @@ public final class RescheduledOrderImpl extends AbstractOrder implements Resched
      */
     @Override
     public void startDelivering(final String droneId) {
-        final DeliveringOrder order =  new DeliveringOrderImpl(
+        final DeliveringOrder order = new DeliveringOrderImpl(
                 this.getId(),
                 this.getProduct(),
                 this.getClient(),

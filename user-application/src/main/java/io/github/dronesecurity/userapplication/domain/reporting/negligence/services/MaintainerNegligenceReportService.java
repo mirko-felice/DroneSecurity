@@ -5,8 +5,8 @@
 
 package io.github.dronesecurity.userapplication.domain.reporting.negligence.services;
 
-import io.github.dronesecurity.userapplication.domain.auth.entities.Courier;
-import io.github.dronesecurity.userapplication.domain.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.application.user.ohs.pl.Courier;
+import io.github.dronesecurity.userapplication.application.user.ohs.pl.Maintainer;
 import io.github.dronesecurity.userapplication.events.NewNegligence;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.ClosedNegligenceReport;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.NegligenceSolution;

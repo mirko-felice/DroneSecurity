@@ -6,6 +6,7 @@
 package io.github.dronesecurity.userapplication.utilities.shipping;
 
 import io.github.dronesecurity.userapplication.presentation.shipping.ShippingAPI;
+import io.github.dronesecurity.userapplication.utilities.APIHelper;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
@@ -17,6 +18,51 @@ import org.jetbrains.annotations.NotNull;
  * API Helper related to the {@link ShippingAPI}.
  */
 public final class ShippingAPIHelper {
+
+    /**
+     * Enum representing the different operations that can be performed over the
+     * {@link ShippingAPI}.
+     */
+    public enum Operation {
+
+        /**
+         * Represents the operation to place an order.
+         */
+        PLACE_ORDER,
+
+        /**
+         * Represents the operation to list the orders.
+         */
+        LIST_ORDERS,
+
+        /**
+         * Represents the operation to perform a delivery.
+         */
+        PERFORM_DELIVERY,
+
+        /**
+         * Represents the operation to succeed the delivery.
+         */
+        SUCCEED_DELIVERY,
+
+        /**
+         * Represents the operation to fail the delivery.
+         */
+        FAIL_DELIVERY,
+
+        /**
+         * Represents the operation to reschedule a delivery.
+         */
+        RESCHEDULE_DELIVERY;
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+            return CaseUtils.toCamelCase(this.name(), false, '_');
+        }
+    }
 
     // Place Order
     /**
@@ -57,48 +103,6 @@ public final class ShippingAPIHelper {
     private static final String BASE_URI = "/shippingAPI/";
 
     private ShippingAPIHelper() { }
-
-    /**
-     * Enum representing the different operations that can be performed over the
-     * {@link ShippingAPI}.
-     */
-    public enum Operation {
-
-        /**
-         * Represents the operation to place an order.
-         */
-        PLACE_ORDER,
-
-        /**
-         * Represents the operation to list the orders.
-         */
-        LIST_ORDERS,
-
-        /**
-         * Represents the operation to perform a delivery.
-         */
-        PERFORM_DELIVERY,
-
-        /**
-         * Represents the operation to succeed the delivery.
-         */
-        SUCCEED_DELIVERY,
-
-        /**
-         * Represents the operation to fail the delivery.
-         */
-        FAIL_DELIVERY,
-
-        /**
-         * Represents the operation to reschedule a delivery.
-         */
-        RESCHEDULE_DELIVERY;
-
-        @Override
-        public String toString() {
-            return CaseUtils.toCamelCase(this.name(), false, '_');
-        }
-    }
 
     /**
      * Performs the HTTP Get method requesting a particular {@link Operation}.

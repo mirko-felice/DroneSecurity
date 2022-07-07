@@ -5,8 +5,8 @@
 
 package io.github.dronesecurity.userapplication.domain.reporting.negligence.entities;
 
-import io.github.dronesecurity.userapplication.domain.auth.entities.Courier;
-import io.github.dronesecurity.userapplication.domain.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.CourierImpl;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.MaintainerImpl;
 import io.github.dronesecurity.userapplication.common.data.entities.DroneData;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
 
@@ -25,14 +25,14 @@ class NegligenceReportImpl implements NegligenceReport {
 
     /**
      * Build the report.
-     * @param negligent the {@link Courier} that has committed negligence
-     * @param assignee the {@link Maintainer} assigned to the report
+     * @param negligent the {@link CourierImpl} that has committed negligence
+     * @param assignee the {@link MaintainerImpl} assigned to the report
      * @param data the {@link DroneData} associated to the report
      * @param orderId the {@link Order} identifier
      *                related to the negligence
      * @param negligenceInstant the {@link Instant} when the negligence has happened
      */
-    NegligenceReportImpl(final String negligent,
+    /* default */ NegligenceReportImpl(final String negligent,
                          final String assignee,
                          final DroneData data,
                          final long orderId,

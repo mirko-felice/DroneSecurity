@@ -14,7 +14,7 @@ import io.github.dronesecurity.userapplication.domain.monitoring.UserMonitoringS
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.CourierNegligenceReportService;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.NegligenceReportService;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
-import io.github.dronesecurity.userapplication.utilities.FXHelper;
+import io.github.dronesecurity.userapplication.utilities.reporting.negligence.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.shipping.DroneAPIHelper;
 import io.github.dronesecurity.userapplication.utilities.shipping.ShippingAPIHelper;
 import io.vertx.core.json.JsonObject;
@@ -38,6 +38,8 @@ import java.util.function.Consumer;
  */
 public final class MonitorController implements Initializable {
 
+    private static final String RED_TEXT = "-fx-text-fill: red;";
+    private static final String BLACK_TEXT = "-fx-text-fill: black;";
     private final UserMonitoringService monitoringService;
     private final CourierNegligenceReportService negligenceReportService;
     private final Order order;
@@ -97,6 +99,9 @@ public final class MonitorController implements Initializable {
         this.movingStateChangedHandler = this::onMovingStateChanged;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         this.accordion.setExpandedPane(this.controlsPane);
@@ -168,7 +173,7 @@ public final class MonitorController implements Initializable {
     }
 
     private void onNewNegligence(final NewNegligence newNegligence) {
-        Platform.runLater(() -> DialogUtils.showInfoNotification("INFO",
+        Platform.runLater(() -> DialogUtils.showInfoNotification(
                 "You have committed a negligence. The drone has been halted for security purpose."
                         + "\nMaintainer " + newNegligence.getReport().assignedTo()
                         + " will take care of this. Go to the 'reports' window to show more information about it.",
@@ -209,7 +214,7 @@ public final class MonitorController implements Initializable {
     private void onCriticalSituation(final CriticalSituation criticalSituation) {
         Platform.runLater(() -> {
             this.currentSituationLabel.setText(criticalSituation.toString());
-            this.currentSituationLabel.setStyle("-fx-text-fill: red;");
+            this.currentSituationLabel.setStyle(RED_TEXT);
             this.checkButtons();
         });
     }
@@ -226,11 +231,11 @@ public final class MonitorController implements Initializable {
                     this.performShippingOperation(ShippingAPIHelper.Operation.SUCCEED_DELIVERY);
                     break;
                 case MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE:
-                    this.deliveryStatusLabel.setStyle("-fx-text-fill: red;");
+                    this.deliveryStatusLabel.setStyle(RED_TEXT);
                     this.performShippingOperation(ShippingAPIHelper.Operation.FAIL_DELIVERY);
                     break;
                 case MqttMessageValueConstants.RETURNING_ACKNOWLEDGEMENT_MESSAGE:
-                    this.deliveryStatusLabel.setStyle("-fx-text-fill: black;");
+                    this.deliveryStatusLabel.setStyle(BLACK_TEXT);
                     break;
                 case MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: cyan;");
@@ -254,7 +259,7 @@ public final class MonitorController implements Initializable {
     private void backOnStableSituation(final @NotNull StableSituation stableSituation) {
         Platform.runLater(() -> {
             this.currentSituationLabel.setText(stableSituation.toString());
-            this.currentSituationLabel.setStyle("-fx-text-fill: black;");
+            this.currentSituationLabel.setStyle(BLACK_TEXT);
             this.checkButtons();
         });
     }

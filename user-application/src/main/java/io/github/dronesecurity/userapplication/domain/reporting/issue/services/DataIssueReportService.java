@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.domain.reporting.issue.services;
 
-import io.github.dronesecurity.userapplication.domain.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.application.user.ohs.pl.Maintainer;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.ClosedIssue;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.CreatedIssue;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.OpenIssue;
@@ -33,8 +33,7 @@ public interface DataIssueReportService {
 
     /**
      * Subscribes to new issues created by any courier.
-     * @param maintainerUsername {@link Maintainer} username to
-     *                                                                                                   track issue on
+     * @param maintainerUsername {@link Maintainer} username to track issue on
      * @param consumer consumes the {@link OpenIssue}
      */
     void subscribeToNewIssue(String maintainerUsername, Consumer<OpenIssue> consumer);

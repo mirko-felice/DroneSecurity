@@ -5,8 +5,8 @@
 
 package io.github.dronesecurity.userapplication.domain.reporting.negligence.repo;
 
-import io.github.dronesecurity.userapplication.domain.auth.entities.Courier;
-import io.github.dronesecurity.userapplication.domain.auth.entities.Maintainer;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.CourierImpl;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.MaintainerImpl;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.ClosedNegligenceReport;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.NegligenceReport;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.NegligenceSolution;
@@ -35,28 +35,28 @@ public interface NegligenceRepository {
     Future<Void> takeAction(OpenNegligenceReport report, NegligenceSolution solution);
 
     /**
-     * Retrieve all {@link OpenNegligenceReport} owned to a {@link Courier}.
+     * Retrieve all {@link OpenNegligenceReport} owned to a {@link CourierImpl}.
      * @param username courier username
      * @return the future of the list of all reports
      */
     Future<List<OpenNegligenceReport>> retrieveOpenReportsForCourier(String username);
 
     /**
-     * Retrieve all {@link ClosedNegligenceReport} owned to a {@link Courier}.
+     * Retrieve all {@link ClosedNegligenceReport} owned to a {@link CourierImpl}.
      * @param username courier username
      * @return the future of the list of all reports
      */
     Future<List<ClosedNegligenceReport>> retrieveClosedReportsForCourier(String username);
 
     /**
-     * Retrieve all {@link OpenNegligenceReport} assigned to a {@link Maintainer}.
+     * Retrieve all {@link OpenNegligenceReport} assigned to a {@link MaintainerImpl}.
      * @param username maintainer username
      * @return the future of the list of all reports
      */
     Future<List<OpenNegligenceReport>> retrieveOpenReportsForMaintainer(String username);
 
     /**
-     * Retrieve all {@link ClosedNegligenceReport} owned to a {@link Maintainer}.
+     * Retrieve all {@link ClosedNegligenceReport} owned to a {@link MaintainerImpl}.
      * @param username maintainer username
      * @return the future of the list of all reports
      */

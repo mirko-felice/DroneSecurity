@@ -1,0 +1,217 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API exposing user operations.",
+    "version": "1.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://{host}:{port}/{basePath}",
+      "description": "Localhost server",
+      "variables": {
+        "host": {
+          "default": "localhost"
+        },
+        "port": {
+          "default": "16000"
+        },
+        "basePath": {
+          "default": "userAPI"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/logIn": {
+      "post": {
+        "operationId": "logIn",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully logged in.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/logOut": {
+      "post": {
+        "operationId": "logOut",
+        "responses": {
+          "200": {
+            "description": "Successfully logged out.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/retrieveCourierByUsername": {
+      "post": {
+        "operationId": "retrieveCourierByUsername",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Username"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved Courier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Courier"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/retrieveMaintainerByUsername": {
+      "post": {
+        "operationId": "retrieveMaintainerByUsername",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Username"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved Maintainer.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Maintainer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/checkLoggedUserRole": {
+      "post": {
+        "operationId": "checkLoggedUserRole",
+        "responses": {
+          "200": {
+            "description": "Successfully checked logged user role.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/retrieveLoggedCourierIfPresent": {
+      "post": {
+        "operationId": "retrieveLoggedCourierIfPresent",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved logged Courier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Courier"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/retrieveLoggedMaintainerIfPresent": {
+      "post": {
+        "operationId": "retrieveLoggedMaintainerIfPresent",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved logged Maintainer.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Maintainer"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Username" : {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          }
+        }
+      },
+      "Courier": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        }
+      },
+      "Maintainer": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

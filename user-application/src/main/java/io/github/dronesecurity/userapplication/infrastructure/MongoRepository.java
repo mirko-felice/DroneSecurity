@@ -36,8 +36,8 @@ public class MongoRepository {
     /**
      * Waits for {@link Future} result.
      * @param future {@link Future} to wait for
-     * @return the result of the {@code future}
      * @param <T> type parameter of the {@code future}
+     * @return the result of the {@code future}
      */
     protected <T> @Nullable T waitFutureResult(final @NotNull Future<T> future) {
         try {

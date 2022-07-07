@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.domain.reporting.negligence.services;
 
-import io.github.dronesecurity.userapplication.domain.auth.entities.Courier;
+import io.github.dronesecurity.userapplication.domain.user.entities.impl.CourierImpl;
 import io.github.dronesecurity.userapplication.events.NewNegligence;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.ClosedNegligenceReport;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.OpenNegligenceReport;
@@ -14,19 +14,19 @@ import io.vertx.core.Future;
 import java.util.List;
 
 /**
- * Service dedicated to {@link Courier} needs, related to negligence reporting.
+ * Service dedicated to {@link CourierImpl} needs, related to negligence reporting.
  */
 public interface CourierNegligenceReportService {
 
     /**
-     * Retrieve all {@link OpenNegligenceReport} owned to a {@link Courier}.
+     * Retrieve all {@link OpenNegligenceReport} owned to a {@link CourierImpl}.
      * @param username courier username
      * @return the future of the list of all reports
      */
     Future<List<OpenNegligenceReport>> retrieveOpenReportsForCourier(String username);
 
     /**
-     * Retrieve all {@link ClosedNegligenceReport} owned to a {@link Courier}.
+     * Retrieve all {@link ClosedNegligenceReport} owned to a {@link CourierImpl}.
      * @param username courier username
      * @return the future of the list of all reports
      */
