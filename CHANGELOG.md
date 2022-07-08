@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/mirko-felice/DroneSecurity/compare/1.0.3...1.1.0) (2022-07-08)
+
+
+### Features
+
+* add user-context ([899f718](https://github.com/mirko-felice/DroneSecurity/commit/899f71879264e5e2182383bd93bccec6721e5bf7))
+
 ## [1.0.3](https://github.com/mirko-felice/DroneSecurity/compare/1.0.2...1.0.3) (2022-07-01)
 
 
