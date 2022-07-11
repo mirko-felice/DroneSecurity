@@ -81,7 +81,10 @@
           {
             "name": "username",
             "in": "query",
-            "required": true
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -105,7 +108,10 @@
           {
             "name": "username",
             "in": "query",
-            "required": true
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -176,14 +182,6 @@
   },
   "components": {
     "schemas": {
-      "Username" : {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string"
-          }
-        }
-      },
       "Courier": {
         "type": "object",
         "properties": {
