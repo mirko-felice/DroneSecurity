@@ -143,51 +143,69 @@ BoundedContext IssueReportingContext implements Reporting {
 BoundedContext NegligenceReportingContext implements Reporting {
 	type = FEATURE
 	responsibilities "Couriers' negligence"
-	Aggregate DroneReport {
-		
-		Entity NegligenceReport {
-			long orderId
-			String negligent
-			- DroneData data
-			- Instant negligenceInstant
-		}
-		
-		Service DroneReportService {
-			
-			void reportsNegligence(@NegligenceReport report);
-		}
-	}
 	
 	Aggregate NegligenceReporting {
-		
-		Entity NegligenceActionForm {
-			String id
-		}
-		
-		Entity NegligenceMaintainer
+
+        ValueObject NegligenceIdentifier
+        ValueObject Negligent
+        ValueObject Assignee
+		ValueObject NegligenceActionForm
+		ValueObject DroneData
+
+		abstract Entity NegligenceReport {
+            aggregateRoot
+
+            def @NegligenceIdentifier getId();
+            def @Negligent getNegligent();
+            def @Assignee assignedTo();
+            def @DroneData getData();
+
+            Repository NegligenceRepository {
+
+                @NegligenceIdentifier nextNegligenceIdentifier();
+                void createReport(@OpenNegligenceReport report);
+                void takenAction(@ClosedNegligenceReport report);
+                List<@OpenNegligenceReport> retrieveOpenReportsForNegligent(@Negligent negligent);
+                List<@ClosedNegligenceReport> retrieveClosedReportsForNegligent(@Negligent negligent);
+                List<@OpenNegligenceReport> retrieveOpenReportsForAssignee(@Assignee assignee);
+                List<@ClosedNegligenceReport> retrieveClosedReportsForAssignee(@Assignee assignee);
+            }
+        }
+
+        Entity OpenNegligenceReport extends NegligenceReport {
+            def void takeAction(@NegligenceActionForm actionForm);
+        }
+
+        Entity ClosedNegligenceReport extends NegligenceReport {
+            def @NegligenceActionForm getActionForm();
+        }
 
 		DomainEvent NewNegligence {
             - NegligenceReport report
         }
 
-		Service MaintainerNegligenceReportService {
-			
-			void subscribeToCourierNegligence(String courier);
-			void takeAction(@NegligenceReport report, String solution);
-			List<OpenNegligenceReport> retrieveOpenReportsForMaintainer(String username);
-			List<ClosedNegligenceReport> retrieveClosedReportsForMaintainer(String username);
+        DomainEvent NegligenceReportClosed {
+            - ClosedNegligenceReport report
+        }
+
+        Service DroneReporter {
+			void reportsNegligence(@Negligent negligent, @Assignee assignee, @DroneData data);
 		}
 
-		Service CourierNegligenceReportService {
+		Service AssigneeReportsManager {
+		    void takeAction(@OpenNegligenceReport report, @NegligenceActionForm actionForm);
+			List<@OpenNegligenceReport> retrieveOpenReportsForAssignee(@Assignee assignee);
+			List<@ClosedNegligenceReport> retrieveClosedReportsForAssignee(@Assignee assignee);
+		}
 
-		    void subscribeToNewNegligence();
-		    void unsubscribeFromNewNegligence();
-		    List<OpenNegligenceReport> retrieveOpenReportsForCourier(String username);
-		    List<ClosedNegligenceReport> retrieveClosedReportsForCourier(String username);
+		Service NegligentReportsManager {
+		    List<@OpenNegligenceReport> retrieveOpenReportsForNegligent(@Negligent negligent);
+		    List<@ClosedNegligenceReport> retrieveClosedReportsForNegligent(@Negligent negligent);
 		}
 	}
 }
 
+// TODO forgot to add domain events
 BoundedContext ShippingContext implements Shipping {
 	
 	Aggregate Shipping {
@@ -212,7 +230,7 @@ BoundedContext ShippingContext implements Shipping {
 			Repository OrderRepository {
 				List<@Order> listOrders();
 				@Order retrieveOrderById(@OrderIdentifier orderId);
-				@OrderIdentifier lastOrderIdentifier();
+				@OrderIdentifier nextOrderIdentifier();
 				void placed(@PlacedOrder order);
 				void delivering(@DeliveringOrder order);
 				void succeeded(@SucceededOrder order);
@@ -243,7 +261,7 @@ BoundedContext ShippingContext implements Shipping {
 		Service OrderManager {
 		    List<@Order> listOrders();
             @Order retrieveOrderById(@OrderIdentifier identifier);
-            void placeOrder(@PlacedOrder order);
+            void placeOrder(@Client who, @Product what, @OrderDate when);
 		}
 
 		Service DeliveryService {
