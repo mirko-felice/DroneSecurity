@@ -69,14 +69,15 @@ Sono stati quindi analizzati nel dettaglio ciascuno di essi:
 
 
 * _**Negligence Reporting Context**_: al contrario questo contesto permette di occuparsi solo delle
-  segnalazioni per negligenza. Sono presenti due aggregati: _Drone Report_ e _Maintainer Negligence Report_.
+  segnalazioni per negligenza. È presente un unico aggregato: _Negligence Reporting_.
 
-  Il primo si occupa di effettuare la segnalazione, mediante l'entità appropriata (_Negligence Report_).
-  Verrà quindi generato un evento che avvisi della nuova segnalazione.
+  Esso si occupa di effettuare la segnalazione, mediante il servizio appropriato (_Drone Reporter_).
+  Verrà quindi generato un evento che avvisi della nuova segnalazione (_New Negligence_).
 
-  A questo punto, il secondo aggregato entra in gioco, in quanto è capace di gestire l'arrivo di una
-  segnalazione per negligenza e inoltre, di occuparsene, compilando un'apposita scheda
+  A questo punto, il modello è avvisato di una nuova segnalazione e perciò, da questo momento in poi,
+  il supervisore assegnato a questa negligenza dovrà occuparsene, compilando un'apposita scheda
   di provvedimento.
+
 
 * _**User Context**_: questo contesto, relativamente di minor dominio, offre un singolo aggregato _User_,
 il quale offre le funzionalità base per ciò che concerne tutti gli utenti, come la possibilità di effettuare
