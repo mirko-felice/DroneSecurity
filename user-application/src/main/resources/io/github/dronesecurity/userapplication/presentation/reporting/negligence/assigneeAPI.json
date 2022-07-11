@@ -25,16 +25,13 @@
     "/retrieveOpenReports": {
       "get": {
         "operationId": "retrieveOpenReports",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Assignee"
-              }
-            }
+        "parameters": [
+          {
+            "name": "assignee",
+            "in": "query",
+            "required": true
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Successfully retrieved open reports.",
@@ -52,16 +49,13 @@
     "/retrieveClosedReports": {
       "get": {
         "operationId": "retrieveClosedReports",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Assignee"
-              }
-            }
+        "parameters": [
+          {
+            "name": "assignee",
+            "in": "query",
+            "required": true
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Successfully retrieved closed reports.",
@@ -115,14 +109,6 @@
   },
   "components": {
     "schemas": {
-      "Assignee" : {
-        "type": "object",
-        "properties": {
-          "negligent": {
-            "type": "string"
-          }
-        }
-      },
       "Reports": {
         "type": "array",
         "items": {

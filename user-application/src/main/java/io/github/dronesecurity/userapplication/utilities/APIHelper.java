@@ -39,7 +39,8 @@ public final class APIHelper {
      * @param port port of the server to send the request
      * @param host host address of the server to send the request
      * @param uri complete uri of the API to send the request
-     * @param body {@link JsonObject} representing request body
+     * @param queryParamName name of the query param to add to request
+     * @param queryParamValue value of the query param to add to request
      * @param bodyCodec {@link BodyCodec} to parse response body
      * @param <T> type parameter needed to generalize body codec
      * @return the {@link Future} containing the result
@@ -47,9 +48,13 @@ public final class APIHelper {
     public static <T> Future<HttpResponse<T>> getHTTP(final int port,
                                                       final String host,
                                                       final String uri,
-                                                      final @NotNull JsonObject body,
+                                                      final String queryParamName,
+                                                      final String queryParamValue,
                                                       final BodyCodec<T> bodyCodec) {
-        return VertxHelper.WEB_CLIENT.get(port, host, uri).as(bodyCodec).sendBuffer(body.toBuffer());
+        return VertxHelper.WEB_CLIENT.get(port, host, uri)
+                .setQueryParam(queryParamName, queryParamValue)
+                .as(bodyCodec)
+                .send();
     }
 
     /**

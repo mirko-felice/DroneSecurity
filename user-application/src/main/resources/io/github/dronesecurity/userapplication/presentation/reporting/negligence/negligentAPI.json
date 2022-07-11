@@ -25,16 +25,13 @@
     "/retrieveOpenReports": {
       "get": {
         "operationId": "retrieveOpenReports",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Negligent"
-              }
-            }
+        "parameters": [
+          {
+            "name": "negligent",
+            "in": "query",
+            "required": true
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Successfully retrieved open reports.",
@@ -52,16 +49,13 @@
     "/retrieveClosedReports": {
       "get": {
         "operationId": "retrieveClosedReports",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Negligent"
-              }
-            }
+        "parameters": [
+          {
+            "name": "negligent",
+            "in": "query",
+            "required": true
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Successfully retrieved closed reports.",
@@ -79,14 +73,6 @@
   },
   "components": {
     "schemas": {
-      "Negligent" : {
-        "type": "object",
-        "properties": {
-          "negligent": {
-            "type": "string"
-          }
-        }
-      },
       "Reports": {
         "type": "array",
         "items": {

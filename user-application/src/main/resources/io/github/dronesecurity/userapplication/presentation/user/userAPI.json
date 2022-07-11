@@ -75,18 +75,15 @@
       }
     },
     "/retrieveCourierByUsername": {
-      "post": {
+      "get": {
         "operationId": "retrieveCourierByUsername",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Username"
-              }
-            }
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": true
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Successfully retrieved Courier.",
@@ -102,18 +99,15 @@
       }
     },
     "/retrieveMaintainerByUsername": {
-      "post": {
+      "get": {
         "operationId": "retrieveMaintainerByUsername",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Username"
-              }
-            }
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "required": true
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Successfully retrieved Maintainer.",

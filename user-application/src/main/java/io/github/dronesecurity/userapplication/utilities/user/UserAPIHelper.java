@@ -108,15 +108,17 @@ public final class UserAPIHelper {
     /**
      * Performs the HTTP Get method requesting a particular {@link Operation}.
      * @param operation {@link Operation} to perform on {@link UserAPI}
-     * @param body {@link JsonObject} representing request body
+     * @param queryParamName name of the query param to add to request
+     * @param queryParamValue value of the query param to add to request
      * @param bodyCodec {@link BodyCodec} to parse response body
      * @param <T> type parameter needed to generalize body codec
      * @return the {@link Future} containing the result
      */
     public static <T> Future<HttpResponse<T>> get(final Operation operation,
-                                                  final JsonObject body,
+                                                  final String queryParamName,
+                                                  final String queryParamValue,
                                                   final BodyCodec<T> bodyCodec) {
-        return APIHelper.getHTTP(PORT, HOST, BASE_URI + operation, body, bodyCodec);
+        return APIHelper.getHTTP(PORT, HOST, BASE_URI + operation, queryParamName, queryParamValue, bodyCodec);
     }
 
     /**

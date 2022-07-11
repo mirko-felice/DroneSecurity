@@ -16,7 +16,6 @@ import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.codec.BodyCodec;
 import javafx.application.Platform;
@@ -98,17 +97,25 @@ public final class ReportsUIController implements Initializable {
      * @param assignee {@link Assignee} to retrieve reports from
      */
     public void updateReports(final @NotNull Assignee assignee) {
-        final JsonObject query = new JsonObject();
-        query.put(AssigneeAPIHelper.ASSIGNEE_KEY, assignee.asString());
-        this.setOpenReports(AssigneeAPIHelper.get(AssigneeAPIHelper.Operation.RETRIEVE_OPEN_REPORTS, query));
-        this.setClosedReports(AssigneeAPIHelper.get(AssigneeAPIHelper.Operation.RETRIEVE_CLOSED_REPORTS, query));
+        this.setOpenReports(AssigneeAPIHelper.get(
+                AssigneeAPIHelper.Operation.RETRIEVE_OPEN_REPORTS,
+                AssigneeAPIHelper.ASSIGNEE_KEY,
+                assignee.asString()));
+        this.setClosedReports(AssigneeAPIHelper.get(
+                AssigneeAPIHelper.Operation.RETRIEVE_CLOSED_REPORTS,
+                AssigneeAPIHelper.ASSIGNEE_KEY,
+                assignee.asString()));
     }
 
     private void updateReports(final @NotNull Negligent negligent) {
-        final JsonObject query = new JsonObject();
-        query.put(NegligentAPIHelper.NEGLIGENT_KEY, negligent.asString());
-        this.setOpenReports(NegligentAPIHelper.get(NegligentAPIHelper.Operation.RETRIEVE_OPEN_REPORTS, query));
-        this.setClosedReports(NegligentAPIHelper.get(NegligentAPIHelper.Operation.RETRIEVE_CLOSED_REPORTS, query));
+        this.setOpenReports(NegligentAPIHelper.get(
+                NegligentAPIHelper.Operation.RETRIEVE_OPEN_REPORTS,
+                NegligentAPIHelper.NEGLIGENT_KEY,
+                negligent.asString()));
+        this.setClosedReports(NegligentAPIHelper.get(
+                NegligentAPIHelper.Operation.RETRIEVE_CLOSED_REPORTS,
+                NegligentAPIHelper.NEGLIGENT_KEY,
+                negligent.asString()));
     }
 
     private void setOpenReports(final @NotNull Future<HttpResponse<Buffer>> future) {
