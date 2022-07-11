@@ -8,13 +8,12 @@ package io.github.dronesecurity.userapplication.controller;
 import io.github.dronesecurity.lib.DrivingMode;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import io.github.dronesecurity.lib.MqttMessageValueConstants;
+import io.github.dronesecurity.userapplication.domain.monitoring.UserMonitoringService;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.events.NewNegligence;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
 import io.github.dronesecurity.userapplication.events.*;
-import io.github.dronesecurity.userapplication.domain.monitoring.UserMonitoringService;
-import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.CourierNegligenceReportService;
-import io.github.dronesecurity.userapplication.domain.reporting.negligence.services.NegligenceReportService;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
-import io.github.dronesecurity.userapplication.utilities.reporting.negligence.FXHelper;
+import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.shipping.DroneAPIHelper;
 import io.github.dronesecurity.userapplication.utilities.shipping.ShippingAPIHelper;
 import io.vertx.core.json.JsonObject;
@@ -41,7 +40,6 @@ public final class MonitorController implements Initializable {
     private static final String RED_TEXT = "-fx-text-fill: red;";
     private static final String BLACK_TEXT = "-fx-text-fill: black;";
     private final UserMonitoringService monitoringService;
-    private final CourierNegligenceReportService negligenceReportService;
     private final Order order;
 
     private final Consumer<NewNegligence> newNegligenceHandler;
@@ -88,7 +86,6 @@ public final class MonitorController implements Initializable {
     public MonitorController(final Order order) {
         this.order = order;
         this.monitoringService = new UserMonitoringService(this.order.getId().asLong());
-        this.negligenceReportService = new NegligenceReportService();
         this.newNegligenceHandler = this::onNewNegligence;
 
         this.criticalSituationHandler = this::onCriticalSituation;
@@ -107,7 +104,6 @@ public final class MonitorController implements Initializable {
         this.accordion.setExpandedPane(this.controlsPane);
 
         DomainEvents.register(NewNegligence.class, this.newNegligenceHandler);
-        this.negligenceReportService.subscribeToNewNegligence();
 
         DomainEvents.register(CriticalSituation.class, this.criticalSituationHandler);
         DomainEvents.register(DangerousSituation.class, this.dangerousSituationHandler);
@@ -247,7 +243,6 @@ public final class MonitorController implements Initializable {
                         DomainEvents.unregister(DataRead.class, this.dataReadHandler);
                         DomainEvents.unregister(StatusChanged.class, this.statusChangedHandler);
                         DomainEvents.unregister(DroneMovingStateChangeEvent.class, this.movingStateChangedHandler);
-                        this.negligenceReportService.unsubscribeFromNewNegligence();
                         ((Stage) this.accordion.getScene().getWindow()).close();
                     });
                     break;

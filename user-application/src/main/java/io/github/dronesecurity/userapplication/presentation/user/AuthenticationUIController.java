@@ -8,7 +8,7 @@ package io.github.dronesecurity.userapplication.presentation.user;
 import io.github.dronesecurity.userapplication.domain.user.entities.contracts.User;
 import io.github.dronesecurity.userapplication.infrastructure.user.UserConstants;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
-import io.github.dronesecurity.userapplication.utilities.reporting.negligence.FXHelper;
+import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
 import io.vertx.core.json.JsonObject;
 import javafx.application.Platform;

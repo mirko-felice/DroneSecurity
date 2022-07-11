@@ -12,9 +12,9 @@ import io.github.dronesecurity.userapplication.domain.reporting.issue.serializat
 import io.github.dronesecurity.userapplication.domain.reporting.issue.services.MaintainerIssueReportService;
 import io.github.dronesecurity.userapplication.utilities.CastHelper;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
-import io.github.dronesecurity.userapplication.utilities.reporting.negligence.FXHelper;
+import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
-import io.vertx.core.json.Json;
+import io.vertx.ext.web.codec.BodyCodec;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -90,17 +90,17 @@ public class IssuesController implements Initializable {
      */
     public IssuesController() {
         this.issueReportService = MaintainerIssueReportService.getInstance();
-        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE).onSuccess(res -> {
-            switch (UserRole.valueOf(res.bodyAsString())) {
+        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE, BodyCodec.string()).onSuccess(res -> {
+            switch (UserRole.valueOf(res.body())) {
                 case COURIER:
-                    UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT)
-                            .onSuccess(response -> this.loggedGenericUser =
-                                    Json.decodeValue(response.bodyAsJsonObject().toBuffer(), GenericUser.class));
+                    UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT,
+                                    BodyCodec.json(GenericUser.class))
+                            .onSuccess(response -> this.loggedGenericUser = response.body());
                     break;
                 case MAINTAINER:
-                    UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_MAINTAINER_IF_PRESENT)
-                            .onSuccess(response -> this.loggedGenericUser =
-                                    Json.decodeValue(response.bodyAsJsonObject().toBuffer(), GenericUser.class));
+                    UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_MAINTAINER_IF_PRESENT,
+                                    BodyCodec.json(GenericUser.class))
+                            .onSuccess(response -> this.loggedGenericUser = response.body());
                     break;
                 case NOT_LOGGED:
                 default:

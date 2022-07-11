@@ -5,69 +5,64 @@
 
 package io.github.dronesecurity.userapplication.domain.reporting.negligence.repo;
 
-import io.github.dronesecurity.userapplication.domain.user.entities.impl.CourierImpl;
-import io.github.dronesecurity.userapplication.domain.user.entities.impl.MaintainerImpl;
-import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.ClosedNegligenceReport;
-import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.NegligenceReport;
-import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.NegligenceSolution;
-import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.OpenNegligenceReport;
-import io.vertx.core.Future;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.contracts.ClosedNegligenceReport;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.contracts.NegligenceReport;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.contracts.OpenNegligenceReport;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.objects.Assignee;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.objects.NegligenceIdentifier;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.objects.Negligent;
 
 import java.util.List;
 
 /**
- * Repository to perform different actions on {@link NegligenceReport} entity.
+ * Repository to persist changes on {@link NegligenceReport} aggregate.
  */
 public interface NegligenceRepository {
 
     /**
+     * Retrieve the next {@link NegligenceIdentifier}.
+     * @return the {@link NegligenceIdentifier}
+     */
+    NegligenceIdentifier nextNegligenceIdentifier();
+
+    /**
      * Saves the report.
-     * @param report the report to save
+     * @param report the {@link OpenNegligenceReport} to save
      */
-    void createReport(NegligenceReport report);
+    void createReport(OpenNegligenceReport report);
 
     /**
-     * Take action closing the report.
-     * @param report report to close
-     * @param solution {@link NegligenceSolution} used to close the report
-     * @return a {@link Future} to check when action is finished
+     * Saves the action taken to close the report.
+     * @param report {@link ClosedNegligenceReport} to save
      */
-    Future<Void> takeAction(OpenNegligenceReport report, NegligenceSolution solution);
+    void takenAction(ClosedNegligenceReport report);
 
     /**
-     * Retrieve all {@link OpenNegligenceReport} owned to a {@link CourierImpl}.
-     * @param username courier username
-     * @return the future of the list of all reports
+     * Retrieve all {@link OpenNegligenceReport} owned to a {@link Negligent}.
+     * @param negligent negligent of report
+     * @return the {@link List} of all reports
      */
-    Future<List<OpenNegligenceReport>> retrieveOpenReportsForCourier(String username);
+    List<OpenNegligenceReport> retrieveOpenReportsForNegligent(Negligent negligent);
 
     /**
-     * Retrieve all {@link ClosedNegligenceReport} owned to a {@link CourierImpl}.
-     * @param username courier username
-     * @return the future of the list of all reports
+     * Retrieve all {@link ClosedNegligenceReport} owned to a {@link Negligent}.
+     * @param negligent negligent of report
+     * @return the {@link List} of all reports
      */
-    Future<List<ClosedNegligenceReport>> retrieveClosedReportsForCourier(String username);
+    List<ClosedNegligenceReport> retrieveClosedReportsForNegligent(Negligent negligent);
 
     /**
-     * Retrieve all {@link OpenNegligenceReport} assigned to a {@link MaintainerImpl}.
-     * @param username maintainer username
-     * @return the future of the list of all reports
+     * Retrieve all {@link OpenNegligenceReport} assigned to a {@link Assignee}.
+     * @param assignee assignee of report
+     * @return the {@link List} of all reports
      */
-    Future<List<OpenNegligenceReport>> retrieveOpenReportsForMaintainer(String username);
+    List<OpenNegligenceReport> retrieveOpenReportsForAssignee(Assignee assignee);
 
     /**
-     * Retrieve all {@link ClosedNegligenceReport} owned to a {@link MaintainerImpl}.
-     * @param username maintainer username
-     * @return the future of the list of all reports
+     * Retrieve all {@link ClosedNegligenceReport} owned to a {@link Assignee}.
+     * @param assignee assignee of report
+     * @return the {@link List} of all reports
      */
-    Future<List<ClosedNegligenceReport>> retrieveClosedReportsForMaintainer(String username);
-
-    /**
-     * Get the instance of this repository.
-     * @return the instance
-     */
-    static NegligenceRepository getInstance() {
-        return NegligenceRepositoryImpl.getInstance();
-    }
+    List<ClosedNegligenceReport> retrieveClosedReportsForAssignee(Assignee assignee);
 
 }

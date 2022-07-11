@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+
+<TabPane fx:controller="io.github.dronesecurity.userapplication.presentation.reporting.negligence.ReportsUIController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+    <Tab text="Open Reports">
+        <fx:include source="reportsTable.fxml" fx:id="openController"/>
+    </Tab>
+    <Tab fx:id="closedReportsTab" text="Closed Reports">
+        <fx:include source="reportsTable.fxml" fx:id="closedController" />
+    </Tab>
+</TabPane>

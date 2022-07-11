@@ -8,7 +8,6 @@ package io.github.dronesecurity.userapplication.utilities;
 import io.github.dronesecurity.userapplication.controller.DataController;
 import io.github.dronesecurity.userapplication.controller.MonitorController;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
-import io.github.dronesecurity.userapplication.utilities.reporting.negligence.FXHelper;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;

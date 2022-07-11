@@ -12,9 +12,9 @@ import io.github.dronesecurity.userapplication.domain.user.entities.impl.Maintai
 import io.github.dronesecurity.userapplication.presentation.shipping.ShippingAPI;
 import io.github.dronesecurity.userapplication.utilities.CastHelper;
 import io.github.dronesecurity.userapplication.utilities.VertxHelper;
-import io.github.dronesecurity.userapplication.utilities.reporting.negligence.FXHelper;
+import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
-import io.vertx.core.json.Json;
+import io.vertx.ext.web.codec.BodyCodec;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -46,7 +46,7 @@ public class UserController implements Initializable {
     private static final double NEGLIGENCE_DATA_MIN_HEIGHT = 300;
     private static final String LOGIN_FXML = "login.fxml";
     private static final String ORDERS_FXML = "orders.fxml";
-    private static final String NEGLIGENCE_FXML = "negligence.fxml";
+    private static final String NEGLIGENCE_FXML = "assignee.fxml";
     private static final String NEGLIGENCE_DATA_FXML = "negligenceData.fxml";
     private static final String ISSUES_FXML = "issues.fxml";
     private static final String NEGLIGENCE_REPORTS_TITLE = "Reports";
@@ -58,10 +58,11 @@ public class UserController implements Initializable {
      * Build the controller.
      */
     public UserController() {
-        UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT).onSuccess(res -> {
-            final User user = Json.decodeValue(res.bodyAsJsonObject().toBuffer(), User.class);
-            this.role = user.getRole();
-        });
+        UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT, BodyCodec.json(User.class))
+                .onSuccess(res -> {
+                    final User user = res.body();
+                    this.role = user.getRole();
+                });
     }
 
     /**

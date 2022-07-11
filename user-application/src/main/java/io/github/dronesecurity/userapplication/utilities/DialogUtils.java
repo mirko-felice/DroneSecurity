@@ -5,6 +5,7 @@
 
 package io.github.dronesecurity.userapplication.utilities;
 
+import io.github.dronesecurity.lib.Date;
 import io.github.dronesecurity.lib.DateHelper;
 import io.github.dronesecurity.userapplication.domain.user.entities.impl.CourierImpl;
 import javafx.application.Platform;
@@ -15,7 +16,6 @@ import javafx.stage.Window;
 import org.controlsfx.control.Notifications;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -112,10 +112,10 @@ public final class DialogUtils {
 
     /**
      * Creates a date picker dialog to select a date from tomorrow.
-     * @return the {@link Dialog} returning the date selected as an {@link Instant}
+     * @return the {@link Dialog} returning the date selected as a {@link Date}
      */
-    public static @NotNull Dialog<Instant> createDatePickerDialog() {
-        final Dialog<Instant> dialog = DialogUtils.createCustomDialog("Reschedule Delivery",
+    public static @NotNull Dialog<Date> createDatePickerDialog() {
+        final Dialog<Date> dialog = DialogUtils.createCustomDialog("Reschedule Delivery",
                 "Choose the new estimated arrival date", ButtonType.OK, ButtonType.CANCEL);
 
         final DatePicker datePicker = new DatePicker(LocalDate.now().plus(1, ChronoUnit.DAYS));
@@ -124,7 +124,7 @@ public final class DialogUtils {
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == ButtonType.OK)
-                return DateHelper.fromLocalDate(datePicker.getValue());
+                return Date.parseInstant(DateHelper.fromLocalDate(datePicker.getValue()));
             else
                 return null;
         });

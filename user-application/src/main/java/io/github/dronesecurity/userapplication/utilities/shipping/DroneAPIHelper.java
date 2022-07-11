@@ -7,10 +7,8 @@ package io.github.dronesecurity.userapplication.utilities.shipping;
 
 import io.github.dronesecurity.userapplication.presentation.shipping.DroneAPI;
 import io.github.dronesecurity.userapplication.utilities.APIHelper;
-import io.vertx.core.Future;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.client.HttpResponse;
+import io.vertx.ext.web.codec.BodyCodec;
 import org.apache.commons.text.CaseUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -71,20 +69,11 @@ public final class DroneAPIHelper {
     }
 
     /**
-     * Performs the HTTP Get method requesting a particular {@link Operation}.
-     * @param operation {@link Operation} to perform on {@link DroneAPI}
-     * @return the {@link Future} containing the result
-     */
-    public static Future<HttpResponse<Buffer>> get(final Operation operation) {
-        return APIHelper.getHTTP(PORT, HOST, BASE_URI + operation);
-    }
-
-    /**
      * Performs the HTTP Post method requesting a particular {@link Operation}.
      * @param operation {@link Operation} to perform on {@link DroneAPI}
      * @param json {@link JsonObject} to send as body
      */
     public static void postJson(final Operation operation, final @NotNull JsonObject json) {
-        APIHelper.postJson(PORT, HOST, BASE_URI + operation, json);
+        APIHelper.postJson(PORT, HOST, BASE_URI + operation, json, BodyCodec.none());
     }
 }
