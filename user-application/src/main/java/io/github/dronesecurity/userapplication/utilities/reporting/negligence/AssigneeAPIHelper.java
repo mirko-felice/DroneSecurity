@@ -74,11 +74,14 @@ public final class AssigneeAPIHelper {
     /**
      * Performs the HTTP Get method requesting a particular {@link Operation}.
      * @param operation {@link Operation} to perform on {@link AssigneeAPI}
-     * @param body {@link JsonObject} representing request body
+     * @param queryParamName name of the query param to add to request
+     * @param queryParamValue value of the query param to add to request
      * @return the {@link Future} containing the result
      */
-    public static Future<HttpResponse<Buffer>> get(final Operation operation, final JsonObject body) {
-        return APIHelper.getHTTP(PORT, HOST, BASE_URI + operation, body, BodyCodec.buffer());
+    public static Future<HttpResponse<Buffer>> get(final Operation operation,
+                                                   final String queryParamName,
+                                                   final String queryParamValue) {
+        return APIHelper.getHTTP(PORT, HOST, BASE_URI + operation, queryParamName, queryParamValue, BodyCodec.buffer());
     }
 
     /**

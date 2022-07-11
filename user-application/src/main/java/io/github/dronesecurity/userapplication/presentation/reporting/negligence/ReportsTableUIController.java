@@ -13,7 +13,6 @@ import io.github.dronesecurity.userapplication.domain.reporting.negligence.objec
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.objects.NegligenceActionForm;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.objects.Negligent;
 import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.codec.BodyCodec;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -56,25 +55,23 @@ public final class ReportsTableUIController<T extends NegligenceReport> implemen
         final Consumer<GenericUser> userConsumer = user ->
                 Platform.runLater(() -> this.detailsController.updateDetails(user));
 
-        final Consumer<Assignee> assigneeConsumer = assignee -> {
-            final JsonObject body = new JsonObject();
-            body.put(UserAPIHelper.USERNAME_KEY, assignee.asString());
-            UserAPIHelper.get(
-                    UserAPIHelper.Operation.RETRIEVE_MAINTAINER_BY_USERNAME, body, BodyCodec.json(GenericUser.class))
-                    .onSuccess(res -> userConsumer.accept(res.body()));
-        };
+        final Consumer<Assignee> assigneeConsumer = assignee ->
+                UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_MAINTAINER_BY_USERNAME,
+                                UserAPIHelper.USERNAME_KEY,
+                                assignee.asString(),
+                                BodyCodec.json(GenericUser.class))
+                        .onSuccess(res -> userConsumer.accept(res.body()));
 
         this.assigneeColumn.setCellFactory(ignored -> new NegligenceReportCell<>(assigneeConsumer));
         this.assigneeColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().assignedTo()));
         this.assigneeColumn.setReorderable(false);
 
-        final Consumer<Negligent> negligentConsumer = negligent -> {
-            final JsonObject body = new JsonObject();
-            body.put(UserAPIHelper.USERNAME_KEY, negligent.asString());
-            UserAPIHelper.get(
-                    UserAPIHelper.Operation.RETRIEVE_COURIER_BY_USERNAME, body, BodyCodec.json(GenericUser.class))
-                    .onSuccess(res -> userConsumer.accept(res.body()));
-        };
+        final Consumer<Negligent> negligentConsumer = negligent ->
+                UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_COURIER_BY_USERNAME,
+                                UserAPIHelper.USERNAME_KEY,
+                                negligent.asString(),
+                                BodyCodec.json(GenericUser.class))
+                        .onSuccess(res -> userConsumer.accept(res.body()));
 
         this.negligentColumn.setCellFactory(ignored -> new NegligenceReportCell<>(negligentConsumer));
         this.negligentColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getNegligent()));

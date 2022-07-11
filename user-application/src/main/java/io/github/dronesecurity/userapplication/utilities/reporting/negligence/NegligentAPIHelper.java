@@ -9,7 +9,6 @@ import io.github.dronesecurity.userapplication.presentation.reporting.negligence
 import io.github.dronesecurity.userapplication.utilities.APIHelper;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.codec.BodyCodec;
 import org.apache.commons.text.CaseUtils;
@@ -58,10 +57,13 @@ public final class NegligentAPIHelper {
     /**
      * Performs the HTTP Get method requesting a particular {@link Operation}.
      * @param operation {@link Operation} to perform on {@link NegligentAPI}
-     * @param body {@link JsonObject} representing request body
+     * @param queryParamName name of the query param to add to request
+     * @param queryParamValue value of the query param to add to request
      * @return the {@link Future} containing the result
      */
-    public static Future<HttpResponse<Buffer>> get(final Operation operation, final JsonObject body) {
-        return APIHelper.getHTTP(PORT, HOST, BASE_URI + operation, body, BodyCodec.buffer());
+    public static Future<HttpResponse<Buffer>> get(final Operation operation,
+                                                   final String queryParamName,
+                                                   final String queryParamValue) {
+        return APIHelper.getHTTP(PORT, HOST, BASE_URI + operation, queryParamName, queryParamValue, BodyCodec.buffer());
     }
 }
