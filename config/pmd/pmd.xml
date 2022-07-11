@@ -45,6 +45,7 @@
         <exclude name="LawOfDemeter"/> <!-- TODO Check after refactoring -->
         <exclude name="TooManyFields"/> <!-- TODO Check after refactoring -->
         <exclude name="DataClass" /> <!-- TODO Check after refactoring -->
+        <exclude name="UseObjectForClearerAPI"/>
     </rule>
 
     <rule ref="category/java/design.xml/CyclomaticComplexity">

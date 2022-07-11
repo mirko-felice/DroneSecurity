@@ -29,7 +29,10 @@
           {
             "name": "assignee",
             "in": "query",
-            "required": true
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -53,7 +56,10 @@
           {
             "name": "assignee",
             "in": "query",
-            "required": true
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
