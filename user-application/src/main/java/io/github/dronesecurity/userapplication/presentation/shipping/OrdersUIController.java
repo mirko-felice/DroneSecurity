@@ -5,7 +5,6 @@
 
 package io.github.dronesecurity.userapplication.presentation.shipping;
 
-import io.github.dronesecurity.lib.DateHelper;
 import io.github.dronesecurity.userapplication.application.user.ohs.pl.Courier;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.OrderState;
@@ -19,6 +18,7 @@ import io.github.dronesecurity.userapplication.utilities.shipping.ShippingAPIHel
 import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.codec.BodyCodec;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -128,23 +128,24 @@ public final class OrdersUIController implements Initializable {
 
     @FXML
     private void performDelivery() {
-        UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT).onSuccess(res -> {
-            final Courier courier = Json.decodeValue(res.bodyAsJsonObject().toBuffer(), Courier.class);
-            DialogUtils.createDronePickerDialog("Choose the Drone to use for delivery", courier.getAssignedDrones())
-                    .showAndWait().ifPresent(droneId -> {
-                        final Order order = this.getSelectedOrder().orElseThrow();
-                        final JsonObject body = new JsonObject()
-                                .put(ShippingAPIHelper.ORDER_ID_KEY, order.getId().asLong())
-                                .put(ShippingAPIHelper.DRONE_ID_KEY, droneId);
-                        ShippingAPIHelper.postJson(ShippingAPIHelper.Operation.PERFORM_DELIVERY, body)
-                                .onSuccess(ignored -> Platform.runLater(() -> {
-                                    courier.removeDrone(droneId);
-                                    this.table.getSelectionModel().clearSelection();
-                                    UIHelper.showMonitoringUI(order, hidden -> courier.addDrone(droneId));
-                                }));
-                    });
-        });
-
+        UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT, BodyCodec.json(Courier.class))
+                .onSuccess(res -> {
+                    final Courier courier = res.body();
+                    DialogUtils.createDronePickerDialog("Choose the Drone to use for delivery",
+                                    courier.getAssignedDrones())
+                            .showAndWait().ifPresent(droneId -> {
+                                final Order order = this.getSelectedOrder().orElseThrow();
+                                final JsonObject body = new JsonObject()
+                                        .put(ShippingAPIHelper.ORDER_ID_KEY, order.getId().asLong())
+                                        .put(ShippingAPIHelper.DRONE_ID_KEY, droneId);
+                                ShippingAPIHelper.postJson(ShippingAPIHelper.Operation.PERFORM_DELIVERY, body)
+                                        .onSuccess(ignored -> Platform.runLater(() -> {
+                                            courier.removeDrone(droneId);
+                                            this.table.getSelectionModel().clearSelection();
+                                            UIHelper.showMonitoringUI(order, hidden -> courier.addDrone(droneId));
+                                        }));
+                            });
+                });
     }
 
     @FXML
@@ -153,8 +154,7 @@ public final class OrdersUIController implements Initializable {
             final Order order = this.getSelectedOrder().orElseThrow();
             final JsonObject body = new JsonObject()
                     .put(ShippingAPIHelper.ORDER_ID_KEY, order.getId().asLong())
-                    .put(ShippingAPIHelper.NEW_ESTIMATED_ARRIVAL_KEY,
-                            DateHelper.toString(newEstimatedArrival));
+                    .put(ShippingAPIHelper.NEW_ESTIMATED_ARRIVAL_KEY, newEstimatedArrival.asString());
             ShippingAPIHelper.postJson(ShippingAPIHelper.Operation.RESCHEDULE_DELIVERY, body)
                     .onSuccess(ignored -> {
                         this.table.getSelectionModel().clearSelection();

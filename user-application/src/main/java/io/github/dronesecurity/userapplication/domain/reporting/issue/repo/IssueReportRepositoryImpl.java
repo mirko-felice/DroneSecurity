@@ -18,6 +18,7 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.FindOptions;
+import io.vertx.ext.web.codec.BodyCodec;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -117,18 +118,19 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
 
     private @NotNull JsonObject initQueryWithUserData() {
         final JsonObject queryWithUser = new JsonObject();
-        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE).onSuccess(res -> {
+        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE, BodyCodec.string())
+                .onSuccess(res -> {
             final GenericUser[] loggedUser = new GenericUser[1]; // TODO
-            switch (UserRole.valueOf(res.bodyAsString())) {
+            switch (UserRole.valueOf(res.body())) {
                 case COURIER:
-                    UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT)
-                            .onSuccess(response -> loggedUser[0] =
-                                    Json.decodeValue(response.bodyAsJsonObject().toBuffer(), GenericUser.class));
+                    UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT,
+                                    BodyCodec.json(GenericUser.class))
+                            .onSuccess(response -> loggedUser[0] = response.body());
                     break;
                 case MAINTAINER:
-                    UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_MAINTAINER_IF_PRESENT)
-                            .onSuccess(response -> loggedUser[0] =
-                                    Json.decodeValue(response.bodyAsJsonObject().toBuffer(), GenericUser.class));
+                    UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_MAINTAINER_IF_PRESENT,
+                                    BodyCodec.json(GenericUser.class))
+                            .onSuccess(response -> loggedUser[0] = response.body());
                     break;
                 case NOT_LOGGED:
                 default:

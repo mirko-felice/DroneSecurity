@@ -14,6 +14,7 @@ import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
+import io.vertx.ext.web.codec.BodyCodec;
 import org.apache.commons.text.CaseUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -96,20 +97,26 @@ public final class UserAPIHelper {
     /**
      * Performs the HTTP Get method requesting a particular {@link Operation}.
      * @param operation {@link Operation} to perform on {@link UserAPI}
+     * @param bodyCodec {@link BodyCodec} to parse response body
+     * @param <T> type parameter needed to generalize body codec
      * @return the {@link Future} containing the result
      */
-    public static Future<HttpResponse<Buffer>> get(final Operation operation) {
-        return APIHelper.getHTTP(PORT, HOST, BASE_URI + operation);
+    public static <T> Future<HttpResponse<T>> get(final Operation operation, final BodyCodec<T> bodyCodec) {
+        return APIHelper.getHTTP(PORT, HOST, BASE_URI + operation, bodyCodec);
     }
 
     /**
      * Performs the HTTP Get method requesting a particular {@link Operation}.
      * @param operation {@link Operation} to perform on {@link UserAPI}
      * @param body {@link JsonObject} representing request body
+     * @param bodyCodec {@link BodyCodec} to parse response body
+     * @param <T> type parameter needed to generalize body codec
      * @return the {@link Future} containing the result
      */
-    public static Future<HttpResponse<Buffer>> get(final Operation operation, final JsonObject body) {
-        return APIHelper.getHTTP(PORT, HOST, BASE_URI + operation, body);
+    public static <T> Future<HttpResponse<T>> get(final Operation operation,
+                                                  final JsonObject body,
+                                                  final BodyCodec<T> bodyCodec) {
+        return APIHelper.getHTTP(PORT, HOST, BASE_URI + operation, body, bodyCodec);
     }
 
     /**
@@ -118,7 +125,7 @@ public final class UserAPIHelper {
      * @return the {@link Future} containing the result
      */
     public static Future<HttpResponse<Buffer>> postJson(final Operation operation) {
-        return APIHelper.postJson(PORT, HOST, BASE_URI + operation);
+        return APIHelper.postJson(PORT, HOST, BASE_URI + operation, BodyCodec.buffer());
     }
 
     /**
@@ -128,7 +135,7 @@ public final class UserAPIHelper {
      * @return the {@link Future} containing the result
      */
     public static Future<HttpResponse<Buffer>> postJson(final Operation operation, final @NotNull JsonObject json) {
-        return APIHelper.postJson(PORT, HOST, BASE_URI + operation, json);
+        return APIHelper.postJson(PORT, HOST, BASE_URI + operation, json, BodyCodec.buffer());
     }
 
 }

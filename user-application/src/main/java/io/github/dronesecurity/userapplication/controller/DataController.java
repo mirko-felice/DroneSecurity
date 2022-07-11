@@ -10,7 +10,7 @@ import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities
 import io.github.dronesecurity.userapplication.domain.monitoring.UserMonitoringService;
 import io.github.dronesecurity.userapplication.domain.monitoring.entities.MonitoringDroneData;
 import io.github.dronesecurity.userapplication.domain.monitoring.utilities.MonitoringConstants;
-import io.github.dronesecurity.userapplication.utilities.reporting.negligence.FXHelper;
+import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;

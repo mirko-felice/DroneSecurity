@@ -11,6 +11,7 @@ import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.client.HttpResponse;
+import io.vertx.ext.web.codec.BodyCodec;
 import org.apache.commons.text.CaseUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -110,7 +111,7 @@ public final class ShippingAPIHelper {
      * @return the {@link Future} containing the result
      */
     public static Future<HttpResponse<Buffer>> get(final Operation operation) {
-        return APIHelper.getHTTP(PORT, HOST, BASE_URI + operation);
+        return APIHelper.getHTTP(PORT, HOST, BASE_URI + operation, BodyCodec.buffer());
     }
 
     /**
@@ -120,6 +121,6 @@ public final class ShippingAPIHelper {
      * @return the {@link Future} containing the result
      */
     public static Future<HttpResponse<Buffer>> postJson(final Operation operation, final @NotNull JsonObject json) {
-        return APIHelper.postJson(PORT, HOST, BASE_URI + operation, json);
+        return APIHelper.postJson(PORT, HOST, BASE_URI + operation, json, BodyCodec.buffer());
     }
 }

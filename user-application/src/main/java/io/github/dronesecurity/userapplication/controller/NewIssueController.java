@@ -10,7 +10,7 @@ import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.S
 import io.github.dronesecurity.userapplication.domain.reporting.issue.services.CourierIssueReportService;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
-import io.vertx.core.json.Json;
+import io.vertx.ext.web.codec.BodyCodec;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
@@ -31,20 +31,24 @@ public class NewIssueController {
     private void sendIssue() {
         final String issueInfo = this.infoTextArea.getText();
         final String subjectText = this.issueSubject.getText();
-        UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT).onSuccess(res -> {
-            final Courier courier = Json.decodeValue(res.bodyAsJsonObject().toBuffer(), Courier.class);
-            Platform.runLater(() ->
-                    DialogUtils.createDronePickerDialog("Choose the drone to report", courier.getAssignedDrones())
-                            .showAndWait().ifPresent(droneId -> {
-                                final SendingIssue issue =
-                                        new SendingIssue(subjectText,
-                                                issueInfo,
-                                                courier.getUsername(),
-                                                courier.getSupervisorUsername(),
-                                                Instant.now(),
-                                                droneId);
-                                CourierIssueReportService.getInstance().addIssueReport(issue).onSuccess(ignored ->
-                                        Platform.runLater(((Stage) this.infoTextArea.getScene().getWindow())::close));
+        UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT, BodyCodec.json(Courier.class))
+                .onSuccess(res -> {
+                    final Courier courier = res.body();
+                    Platform.runLater(() ->
+                            DialogUtils.createDronePickerDialog("Choose the drone to report",
+                                            courier.getAssignedDrones())
+                                    .showAndWait().ifPresent(droneId -> {
+                                        final SendingIssue issue =
+                                                new SendingIssue(subjectText,
+                                                        issueInfo,
+                                                        courier.getUsername(),
+                                                        courier.getSupervisorUsername(),
+                                                        Instant.now(),
+                                                        droneId);
+                                        CourierIssueReportService.getInstance().addIssueReport(issue)
+                                                .onSuccess(ignored ->
+                                                        Platform.runLater(((Stage) this.infoTextArea.getScene()
+                                                                .getWindow())::close));
                             }));
         });
     }

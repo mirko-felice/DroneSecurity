@@ -33,10 +33,6 @@ public final class OrderDate implements ValueObject<OrderDate> {
     public static final OrderDate TOMORROW = OrderDate.parseInstant(TODAY_INSTANT.plus(1, ChronoUnit.DAYS));
     private final Instant instant;
 
-    /**
-     * Build the value object using an {@link Instant}.
-     * @param instant {@link Instant} to parse to create the value object
-     */
     private OrderDate(final Instant instant) {
         this.instant = truncate(instant);
     }

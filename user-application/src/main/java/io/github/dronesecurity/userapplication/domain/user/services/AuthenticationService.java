@@ -6,8 +6,8 @@
 package io.github.dronesecurity.userapplication.domain.user.services;
 
 import io.github.dronesecurity.userapplication.domain.user.objects.Username;
-import io.github.dronesecurity.userapplication.exceptions.UserAlreadyLoggedException;
-import io.github.dronesecurity.userapplication.exceptions.UserNotLoggedException;
+import io.github.dronesecurity.userapplication.domain.user.exceptions.UserAlreadyLoggedException;
+import io.github.dronesecurity.userapplication.domain.user.exceptions.UserNotLoggedException;
 
 /**
  * Domain Service dedicated to authentication.

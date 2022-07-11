@@ -1,0 +1,184 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API exposing assignee operations.",
+    "version": "1.0.1"
+  },
+  "servers": [
+    {
+      "url": "http://{host}:{port}/{basePath}",
+      "description": "Localhost server",
+      "variables": {
+        "host": {
+          "default": "localhost"
+        },
+        "port": {
+          "default": "19000"
+        },
+        "basePath": {
+          "default": "assigneeAPI"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/retrieveOpenReports": {
+      "get": {
+        "operationId": "retrieveOpenReports",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Assignee"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved open reports.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reports"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/retrieveClosedReports": {
+      "get": {
+        "operationId": "retrieveClosedReports",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Assignee"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved closed reports.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reports"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/takeAction": {
+      "post": {
+        "operationId": "takeAction",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "report": {
+                    "$ref": "#/components/schemas/Report"
+                  },
+                  "actionForm": {
+                    "type": "object",
+                    "properties": {
+                      "solution": {
+                        "type": "string"
+                      },
+                      "closingInstant": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully taken action."
+            }
+          }
+        }
+      }
+  },
+  "components": {
+    "schemas": {
+      "Assignee" : {
+        "type": "object",
+        "properties": {
+          "negligent": {
+            "type": "string"
+          }
+        }
+      },
+      "Reports": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Report"
+        },
+        "uniqueItems": true
+      },
+      "Report": {
+        "type": "object",
+        "required": ["id", "negligent", "assignee", "data"],
+        "properties": {
+          "id" : {
+            "type": "integer"
+          },
+          "negligent" : {
+            "type": "string"
+          },
+          "assignee" : {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "detectionInstant": {
+                "type": "string"
+              },
+              "proximity": {
+                "type": "number"
+              },
+              "roll": {
+                "type": "integer"
+              },
+              "pitch": {
+                "type": "integer"
+              },
+              "yaw": {
+                "type": "integer"
+              },
+              "image": {
+                "type": "integer"
+              }
+            }
+          },
+          "actionForm": {
+            "type": "object",
+            "properties": {
+              "solution": {
+                "type": "string"
+              },
+              "closingInstant": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -13,8 +13,8 @@ import io.github.dronesecurity.userapplication.domain.user.objects.Username;
 import io.github.dronesecurity.userapplication.domain.user.repo.UserRepository;
 import io.github.dronesecurity.userapplication.domain.user.services.AuthenticationService;
 import io.github.dronesecurity.userapplication.events.DomainEvents;
-import io.github.dronesecurity.userapplication.exceptions.UserAlreadyLoggedException;
-import io.github.dronesecurity.userapplication.exceptions.UserNotLoggedException;
+import io.github.dronesecurity.userapplication.domain.user.exceptions.UserAlreadyLoggedException;
+import io.github.dronesecurity.userapplication.domain.user.exceptions.UserNotLoggedException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;

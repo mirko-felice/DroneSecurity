@@ -21,4 +21,5 @@ open module io.github.dronesecurity.userapplication {
     requires org.slf4j;
     requires org.apache.commons.codec;
     requires org.apache.commons.text;
+    requires io.vertx.web.common;
 }
