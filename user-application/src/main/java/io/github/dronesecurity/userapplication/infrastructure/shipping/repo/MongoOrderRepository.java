@@ -33,7 +33,7 @@ public final class MongoOrderRepository extends MongoRepository implements Order
     @Override
     public List<Order> listOrders() {
         return this.waitFutureResult(
-                this.mongo().find(COLLECTION_NAME, null)
+                this.mongo().find(COLLECTION_NAME, new JsonObject())
                         .map(orders -> orders.stream()
                                 .map(o -> Json.decodeValue(o.toString(), Order.class))
                                 .collect(Collectors.toList())));

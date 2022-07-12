@@ -22,6 +22,26 @@
     }
   ],
   "paths": {
+    "/placeOrder": {
+      "post": {
+        "operationId": "placeOrder",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Order"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully placed order."
+          }
+        }
+      }
+    },
     "/listOrders": {
       "get": {
         "operationId": "listOrders",
