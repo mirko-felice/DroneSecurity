@@ -9,6 +9,8 @@ import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.lib.PropertiesConstants;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderDate;
 import io.github.dronesecurity.userapplication.infrastructure.shipping.repo.MongoOrderRepository;
+import io.github.dronesecurity.userapplication.presentation.shipping.ShippingAPI;
+import io.github.dronesecurity.userapplication.presentation.user.UserAPI;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.VertxHelper;
@@ -74,16 +76,17 @@ public final class Launcher extends Application {
      */
     public static void main(final String[] args) {
         // TODO improve?
-        new Thread(() -> {
-            if (new MongoOrderRepository().listOrders().isEmpty()) {
-                for (int i = 1; i <= INITIAL_SIZE; i++) {
-                    final String productName = FAKE_PRODUCTS[RANDOM_GENERATOR.nextInt(INITIAL_SIZE)];
-                    final String clientName = FAKE_CLIENTS[RANDOM_GENERATOR.nextInt(INITIAL_SIZE)];
-                    ShippingAPIHelper.postJson(ShippingAPIHelper.Operation.PLACE_ORDER,
-                            createBody(productName, clientName));
-                }
-            }
-        }).start();
+        VertxHelper.VERTX.deployVerticle(ShippingAPI.class.getName()).onSuccess(res ->
+                new Thread(() -> {
+                    if (new MongoOrderRepository().listOrders().isEmpty()) {
+                        for (int i = 1; i <= INITIAL_SIZE; i++) {
+                            final String productName = FAKE_PRODUCTS[RANDOM_GENERATOR.nextInt(INITIAL_SIZE)];
+                            final String clientName = FAKE_CLIENTS[RANDOM_GENERATOR.nextInt(INITIAL_SIZE)];
+                            ShippingAPIHelper.postJson(ShippingAPIHelper.Operation.PLACE_ORDER,
+                                    createBody(productName, clientName));
+                        }
+                    }
+                }).start());
         launch(args);
     }
 
@@ -97,8 +100,10 @@ public final class Launcher extends Application {
 
     private void showLogin() {
         Connection.getInstance().connect();
-        final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(LOGIN_FXML));
-        FXHelper.initializeWindow(Modality.NONE, "Login", fxmlLoader, LOGIN_MIN_WIDTH, LOGIN_MIN_HEIGHT)
-                .ifPresent(Stage::show);
+        VertxHelper.VERTX.deployVerticle(UserAPI.class.getName()).onSuccess(res -> {
+            final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(LOGIN_FXML));
+            FXHelper.initializeWindow(Modality.NONE, "Login", fxmlLoader, LOGIN_MIN_WIDTH, LOGIN_MIN_HEIGHT)
+                    .ifPresent(Stage::show);
+        });
     }
 }

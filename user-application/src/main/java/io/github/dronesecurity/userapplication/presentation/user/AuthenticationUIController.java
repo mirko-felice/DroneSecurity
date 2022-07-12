@@ -63,6 +63,7 @@ public final class AuthenticationUIController {
         final JsonObject body = new JsonObject();
         body.put(UserConstants.USERNAME, username);
         body.put(UserConstants.PASSWORD, password);
+        System.out.println(body.encodePrettily());
         UserAPIHelper.postJson(UserAPIHelper.Operation.LOG_IN, body).onSuccess(res -> {
             if (Boolean.TRUE.toString().equals(res.bodyAsString())) {
                 Platform.runLater(() -> {
