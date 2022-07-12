@@ -1,3 +1,16 @@
+# [1.2.0](https://github.com/mirko-felice/DroneSecurity/compare/1.1.0...1.2.0) (2022-07-12)
+
+
+### Bug Fixes
+
+* add schema to query params ([e76d72f](https://github.com/mirko-felice/DroneSecurity/commit/e76d72f09bb1c7b3c0cd827e07ef6f27f9734492))
+* change body to query param in get requests to validate open api ([8a3f154](https://github.com/mirko-felice/DroneSecurity/commit/8a3f154d72ee06248af8eae6a575c676d7bfa395))
+
+
+### Features
+
+* apply DDD to this context ([dc62f74](https://github.com/mirko-felice/DroneSecurity/commit/dc62f741dec99d503c4301939c702753657e2422))
+
 # [1.1.0](https://github.com/mirko-felice/DroneSecurity/compare/1.0.3...1.1.0) (2022-07-08)
 
 
