@@ -57,7 +57,8 @@ public final class MongoOrderRepository extends MongoRepository implements Order
         return this.waitFutureResult(
                 this.mongo().getCollections().compose(collections -> {
                     if (collections.contains(COLLECTION_NAME))
-                        return this.mongo().count(COLLECTION_NAME, new JsonObject()).map(OrderIdentifier::fromLong);
+                        return this.mongo().count(COLLECTION_NAME, new JsonObject())
+                                .map(value -> OrderIdentifier.fromLong(value + 1L));
                     else
                         return this.mongo().createCollection(COLLECTION_NAME)
                                 .compose(unused -> Future.succeededFuture(OrderIdentifier.first()));

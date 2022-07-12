@@ -14,6 +14,7 @@ import io.github.dronesecurity.userapplication.domain.reporting.negligence.objec
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.repo.NegligenceRepository;
 import io.github.dronesecurity.userapplication.infrastructure.MongoRepository;
 import io.github.dronesecurity.userapplication.infrastructure.reporting.negligence.NegligenceConstants;
+import io.vertx.core.Future;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import org.jetbrains.annotations.NotNull;
@@ -34,8 +35,15 @@ public final class MongoNegligenceRepository extends MongoRepository implements 
      */
     @Override
     public NegligenceIdentifier nextNegligenceIdentifier() {
-        return this.waitFutureResult(this.mongo().count(COLLECTION_NAME, null)
-                .map(value -> value == 0 ? NegligenceIdentifier.first() : NegligenceIdentifier.fromLong(value)));
+        return this.waitFutureResult(
+                this.mongo().getCollections().compose(collections -> {
+                    if (collections.contains(COLLECTION_NAME))
+                        return this.mongo().count(COLLECTION_NAME, new JsonObject())
+                                .map(value -> NegligenceIdentifier.fromLong(value + 1L));
+                    else
+                        return this.mongo().createCollection(COLLECTION_NAME)
+                                .compose(unused -> Future.succeededFuture(NegligenceIdentifier.first()));
+                }));
     }
 
     /**
