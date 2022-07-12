@@ -57,7 +57,8 @@ public final class DomainEvents {
      */
     @SuppressWarnings("unchecked")
     public static <T extends DomainEvent> void raise(final @NotNull T event) {
-        final List<Consumer<? extends DomainEvent>> consumers = List.copyOf(ALL_CONSUMERS.get(event.getClass()));
+        final List<Consumer<? extends DomainEvent>> consumers =
+                List.copyOf(ALL_CONSUMERS.getOrDefault(event.getClass(), new ArrayList<>()));
         for (final Consumer<? extends DomainEvent> cons : consumers) {
             ((Consumer<T>) cons).accept(event);
         }
