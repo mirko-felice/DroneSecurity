@@ -3,7 +3,7 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.userapplication.controller;
+package io.github.dronesecurity.userapplication.presentation;
 
 import io.github.dronesecurity.lib.DateHelper;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;

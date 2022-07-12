@@ -129,7 +129,7 @@
       }
     },
     "/checkLoggedUserRole": {
-      "post": {
+      "get": {
         "operationId": "checkLoggedUserRole",
         "responses": {
           "200": {

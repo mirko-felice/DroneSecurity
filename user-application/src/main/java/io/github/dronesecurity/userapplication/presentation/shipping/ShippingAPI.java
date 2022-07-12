@@ -79,7 +79,7 @@ public final class ShippingAPI extends AbstractAPI {
     private void listOrders(final @NotNull RoutingContext routingContext) {
         routingContext.response()
                 .putHeader("Content-Type", "application/json")
-                .send(Json.encodePrettily(this.orderManager.listOrders()));
+                .send(Json.encodePrettily(this.executeSync(this.orderManager::listOrders)));
     }
 
     private void placeOrder(final @NotNull RoutingContext routingContext) {
@@ -89,7 +89,7 @@ public final class ShippingAPI extends AbstractAPI {
         final Product product = Product.fromName(body.getString(ShippingAPIHelper.PRODUCT_NAME_KEY));
         final OrderDate estimatedArrival =
                 OrderDate.parseString(body.getString(ShippingAPIHelper.ESTIMATED_ARRIVAL_KEY));
-        this.orderManager.placeOrder(client, product, estimatedArrival);
+        this.executeSync(() -> this.orderManager.placeOrder(client, product, estimatedArrival));
         routingContext.response().end();
     }
 
@@ -101,7 +101,7 @@ public final class ShippingAPI extends AbstractAPI {
         CastHelper.safeCast(order, PlacedOrder.class).ifPresentOrElse(placedOrder -> {
             final String droneId = body.getString(ShippingAPIHelper.DRONE_ID_KEY);
             // TODO add Courier as 1st parameter to perform delivery -> move add and remove drone logic to service
-            this.deliveryService.performDelivery(placedOrder, droneId);
+            this.executeSync(() -> this.deliveryService.performDelivery(placedOrder, droneId));
             routingContext.response().end();
         }, () -> routingContext.response().setStatusCode(CLIENT_ERROR_CODE).end());
     }
@@ -111,7 +111,7 @@ public final class ShippingAPI extends AbstractAPI {
         final long id = params.body().getJsonObject().getLong(ShippingAPIHelper.ORDER_ID_KEY);
         final Order order = this.orderManager.retrieveOrderById(OrderIdentifier.fromLong(id));
         CastHelper.safeCast(order, DeliveringOrder.class).ifPresentOrElse(deliveringOrder -> {
-            this.deliveryService.succeedDelivery(deliveringOrder);
+            this.executeSync(() -> this.deliveryService.succeedDelivery(deliveringOrder));
             routingContext.response().end();
         }, () -> routingContext.response().setStatusCode(CLIENT_ERROR_CODE).end());
     }
@@ -121,7 +121,7 @@ public final class ShippingAPI extends AbstractAPI {
         final long id = params.body().getJsonObject().getLong(ShippingAPIHelper.ORDER_ID_KEY);
         final Order order = this.orderManager.retrieveOrderById(OrderIdentifier.fromLong(id));
         CastHelper.safeCast(order, DeliveringOrder.class).ifPresentOrElse(deliveringOrder -> {
-            this.deliveryService.failDelivery(deliveringOrder);
+            this.executeSync(() -> this.deliveryService.failDelivery(deliveringOrder));
             routingContext.response().end();
         }, () -> routingContext.response().setStatusCode(CLIENT_ERROR_CODE).end());
     }
@@ -134,7 +134,7 @@ public final class ShippingAPI extends AbstractAPI {
         CastHelper.safeCast(order, FailedOrder.class).ifPresentOrElse(failedOrder -> {
             final OrderDate newEstimatedArrival =
                     OrderDate.parseString(body.getString(ShippingAPIHelper.NEW_ESTIMATED_ARRIVAL_KEY));
-            this.deliveryService.rescheduleDelivery(failedOrder, newEstimatedArrival);
+            this.executeSync(() -> this.deliveryService.rescheduleDelivery(failedOrder, newEstimatedArrival));
             routingContext.response().end();
         }, () -> routingContext.response().setStatusCode(CLIENT_ERROR_CODE).end());
     }
