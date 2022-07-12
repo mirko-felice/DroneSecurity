@@ -16,7 +16,7 @@ import io.github.dronesecurity.userapplication.domain.user.objects.Username;
 import io.github.dronesecurity.userapplication.domain.user.repo.UserRepository;
 import io.github.dronesecurity.userapplication.domain.user.services.AuthenticationService;
 import io.github.dronesecurity.userapplication.domain.user.services.UserManager;
-import io.github.dronesecurity.userapplication.infrastructure.user.repo.UserRepositoryImpl;
+import io.github.dronesecurity.userapplication.infrastructure.user.repo.MongoUserRepository;
 import io.github.dronesecurity.userapplication.presentation.AbstractAPI;
 import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
 import io.vertx.core.json.Json;
@@ -43,7 +43,7 @@ public final class UserAPI extends AbstractAPI {
      * Build the API.
      */
     public UserAPI() {
-        final UserRepository userRepository = new UserRepositoryImpl();
+        final UserRepository userRepository = new MongoUserRepository();
         this.authenticationService = new AuthenticationServiceImpl(userRepository);
         this.userManager = new UserManagerImpl(userRepository);
     }

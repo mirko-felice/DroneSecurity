@@ -20,9 +20,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
 /**
- * Implementation of {@link UserRepository}.
+ * Implementation of {@link UserRepository} to work with the underlying DB.
  */
-public final class UserRepositoryImpl extends AbstractUserRepository {
+public final class MongoUserRepository extends AbstractUserRepository {
 
     private static final String COLLECTION_NAME = "users";
 

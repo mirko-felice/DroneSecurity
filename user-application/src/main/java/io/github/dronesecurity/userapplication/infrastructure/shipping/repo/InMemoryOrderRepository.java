@@ -8,6 +8,9 @@ package io.github.dronesecurity.userapplication.infrastructure.shipping.repo;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.*;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderIdentifier;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.repo.OrderRepository;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +26,7 @@ public final class InMemoryOrderRepository implements OrderRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<Order> listOrders() {
+    public @Unmodifiable List<Order> listOrders() {
         return List.copyOf(this.orders);
     }
 
@@ -38,8 +41,9 @@ public final class InMemoryOrderRepository implements OrderRepository {
     /**
      * {@inheritDoc}
      */
+    @Contract(" -> new")
     @Override
-    public OrderIdentifier nextOrderIdentifier() {
+    public @NotNull OrderIdentifier nextOrderIdentifier() {
         return OrderIdentifier.fromLong(this.orders.size() + 1L);
     }
 
