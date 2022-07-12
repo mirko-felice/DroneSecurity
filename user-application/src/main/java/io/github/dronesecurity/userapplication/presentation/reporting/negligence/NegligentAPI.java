@@ -42,8 +42,8 @@ public final class NegligentAPI extends AbstractAPI {
      */
     @Override
     public void stop(final Promise<Void> stopPromise) throws Exception {
-        super.stop(stopPromise);
         DroneReporterSubscriber.stopReceivingNegligentReports();
+        super.stop(stopPromise);
     }
 
     /**
@@ -70,7 +70,7 @@ public final class NegligentAPI extends AbstractAPI {
         final JsonObject body = params.body().getJsonObject();
         final Negligent negligent = Negligent.parse(body.getString(NegligentAPIHelper.NEGLIGENT_KEY));
         routingContext.response().end(Json.encodePrettily(
-                this.negligentReportsManager.retrieveOpenReportsForNegligent(negligent)));
+                this.executeSync(() -> this.negligentReportsManager.retrieveOpenReportsForNegligent(negligent))));
     }
 
     private void retrieveClosedReportsForNegligent(final @NotNull RoutingContext routingContext) {
@@ -78,6 +78,6 @@ public final class NegligentAPI extends AbstractAPI {
         final JsonObject body = params.body().getJsonObject();
         final Negligent negligent = Negligent.parse(body.getString(NegligentAPIHelper.NEGLIGENT_KEY));
         routingContext.response().end(Json.encodePrettily(
-                this.negligentReportsManager.retrieveClosedReportsForNegligent(negligent)));
+                this.executeSync(() -> this.negligentReportsManager.retrieveClosedReportsForNegligent(negligent))));
     }
 }

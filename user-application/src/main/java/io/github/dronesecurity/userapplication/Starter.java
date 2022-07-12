@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication;
 
-import io.github.dronesecurity.userapplication.controller.Launcher;
+import io.github.dronesecurity.userapplication.presentation.Launcher;
 
 /**
  * Starter Jar class.

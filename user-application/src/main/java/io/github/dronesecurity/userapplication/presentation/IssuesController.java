@@ -3,7 +3,7 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.userapplication.controller;
+package io.github.dronesecurity.userapplication.presentation;
 
 import io.github.dronesecurity.lib.DateHelper;
 import io.github.dronesecurity.userapplication.application.user.ohs.pl.*;
@@ -121,6 +121,7 @@ public class IssuesController implements Initializable {
      */
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+        // TODO user not set yet
         this.newIssueButton.setVisible(this.loggedGenericUser.getRole() == UserRole.COURIER);
 
         this.initTable(this.openIssuesTable, this.openIssuesId, this.openIssuesSubject, this.openIssuesCourier,

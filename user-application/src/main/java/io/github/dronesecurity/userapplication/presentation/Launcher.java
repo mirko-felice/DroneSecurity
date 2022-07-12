@@ -3,12 +3,15 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.userapplication.controller;
+package io.github.dronesecurity.userapplication.presentation;
 
 import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.lib.PropertiesConstants;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderDate;
 import io.github.dronesecurity.userapplication.infrastructure.shipping.repo.MongoOrderRepository;
+import io.github.dronesecurity.userapplication.presentation.reporting.negligence.AssigneeAPI;
+import io.github.dronesecurity.userapplication.presentation.reporting.negligence.NegligentAPI;
+import io.github.dronesecurity.userapplication.presentation.shipping.DroneAPI;
 import io.github.dronesecurity.userapplication.presentation.shipping.ShippingAPI;
 import io.github.dronesecurity.userapplication.presentation.user.UserAPI;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
@@ -87,6 +90,10 @@ public final class Launcher extends Application {
                         }
                     }
                 }).start());
+        VertxHelper.VERTX.deployVerticle(UserAPI.class.getName());
+        VertxHelper.VERTX.deployVerticle(DroneAPI.class.getName());
+        VertxHelper.VERTX.deployVerticle(NegligentAPI.class.getName());
+        VertxHelper.VERTX.deployVerticle(AssigneeAPI.class.getName());
         launch(args);
     }
 
@@ -100,7 +107,7 @@ public final class Launcher extends Application {
 
     private void showLogin() {
         Connection.getInstance().connect();
-        VertxHelper.VERTX.deployVerticle(UserAPI.class.getName()).onSuccess(res -> {
+        Platform.runLater(() -> {
             final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(LOGIN_FXML));
             FXHelper.initializeWindow(Modality.NONE, "Login", fxmlLoader, LOGIN_MIN_WIDTH, LOGIN_MIN_HEIGHT)
                     .ifPresent(Stage::show);

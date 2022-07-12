@@ -44,8 +44,8 @@ public final class AssigneeAPI extends AbstractAPI {
      */
     @Override
     public void stop(final Promise<Void> stopPromise) throws Exception {
-        super.stop(stopPromise);
         DroneReporterSubscriber.stopReceivingAssigneeReports();
+        super.stop(stopPromise);
     }
 
     /**
@@ -74,7 +74,7 @@ public final class AssigneeAPI extends AbstractAPI {
         final JsonObject body = params.body().getJsonObject();
         final Assignee assignee = Assignee.parse(body.getString(AssigneeAPIHelper.ASSIGNEE_KEY));
         routingContext.response().end(Json.encodePrettily(
-                this.assigneeReportsManager.retrieveOpenReportsForAssignee(assignee)));
+                this.executeSync(() -> this.assigneeReportsManager.retrieveOpenReportsForAssignee(assignee))));
     }
 
     private void retrieveClosedReportsForAssignee(final @NotNull RoutingContext routingContext) {
@@ -82,7 +82,7 @@ public final class AssigneeAPI extends AbstractAPI {
         final JsonObject body = params.body().getJsonObject();
         final Assignee assignee = Assignee.parse(body.getString(AssigneeAPIHelper.ASSIGNEE_KEY));
         routingContext.response().end(Json.encodePrettily(
-                this.assigneeReportsManager.retrieveClosedReportsForAssignee(assignee)));
+                this.executeSync(() -> this.assigneeReportsManager.retrieveClosedReportsForAssignee(assignee))));
     }
 
     private void takeAction(final @NotNull RoutingContext routingContext) {
@@ -92,7 +92,7 @@ public final class AssigneeAPI extends AbstractAPI {
                 Json.decodeValue(body.getBuffer(AssigneeAPIHelper.REPORT_KEY), OpenNegligenceReport.class);
         final NegligenceActionForm negligenceActionForm =
                 Json.decodeValue(body.getBuffer(AssigneeAPIHelper.ACTION_FORM_KEY), NegligenceActionForm.class);
-        this.assigneeReportsManager.takeAction(report, negligenceActionForm);
+        this.executeSync(() -> this.assigneeReportsManager.takeAction(report, negligenceActionForm));
         routingContext.response().end();
     }
 

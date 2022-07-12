@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.dronesecurity.userapplication.presentation.reporting.negligence.ReportsTableUIController">
+<GridPane prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.dronesecurity.userapplication.presentation.reporting.negligence.ReportsTableUIController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     </columnConstraints>
@@ -25,5 +25,5 @@
          <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
       </columnResizePolicy>
     </TableView>
-    <fx:include fx:id="detailsController" source="detail.fxml" GridPane.rowIndex="1" />
+    <fx:include fx:id="details" source="detail.fxml" GridPane.rowIndex="1" />
 </GridPane>

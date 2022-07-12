@@ -13,8 +13,6 @@ import io.github.dronesecurity.userapplication.infrastructure.shipping.OrderCons
 import io.vertx.core.Future;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.FindOptions;
-import io.vertx.ext.mongo.UpdateOptions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -57,8 +55,13 @@ public final class MongoOrderRepository extends MongoRepository implements Order
     @Override
     public OrderIdentifier nextOrderIdentifier() {
         return this.waitFutureResult(
-                this.mongo().count(COLLECTION_NAME, null)
-                        .map(value -> value == 0 ? OrderIdentifier.first() : OrderIdentifier.fromLong(value)));
+                this.mongo().getCollections().compose(collections -> {
+                    if (collections.contains(COLLECTION_NAME))
+                        return this.mongo().count(COLLECTION_NAME, new JsonObject()).map(OrderIdentifier::fromLong);
+                    else
+                        return this.mongo().createCollection(COLLECTION_NAME)
+                                .compose(unused -> Future.succeededFuture(OrderIdentifier.first()));
+                }));
     }
 
     /**
@@ -66,7 +69,7 @@ public final class MongoOrderRepository extends MongoRepository implements Order
      */
     @Override
     public void placed(final PlacedOrder order) {
-        this.waitFutureResult(this.updateOrderState(order));
+        this.waitFutureResult(this.mongo().save(COLLECTION_NAME, JsonObject.mapFrom(order)));
     }
 
     /**
@@ -111,11 +114,6 @@ public final class MongoOrderRepository extends MongoRepository implements Order
         if (order instanceof RescheduledOrder)
             update.put("$set", new JsonObject().put(OrderConstants.NEW_ESTIMATED_ARRIVAL,
                     ((RescheduledOrder) order).getNewEstimatedArrival().asString()));
-        return this.mongo().findOneAndUpdateWithOptions(COLLECTION_NAME,
-                        query,
-                        update,
-                        new FindOptions(),
-                        new UpdateOptions(true))
-                .mapEmpty();
+        return this.mongo().findOneAndUpdate(COLLECTION_NAME, query, update).mapEmpty();
     }
 }

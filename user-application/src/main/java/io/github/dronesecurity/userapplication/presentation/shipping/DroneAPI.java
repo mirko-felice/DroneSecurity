@@ -61,7 +61,7 @@ public final class DroneAPI extends AbstractAPI {
         final JsonObject body = params.body().getJsonObject();
         final long orderId = body.getLong(DroneAPIHelper.ORDER_ID_KEY);
 
-        this.droneController.callBack(OrderIdentifier.fromLong(orderId));
+        this.executeSync(() -> this.droneController.callBack(OrderIdentifier.fromLong(orderId)));
         routingContext.response().end();
     }
 
@@ -71,7 +71,7 @@ public final class DroneAPI extends AbstractAPI {
         final long orderId = body.getLong(DroneAPIHelper.ORDER_ID_KEY);
         final DrivingMode drivingMode = DrivingMode.valueOf(body.getString(DroneAPIHelper.DRIVING_MODE_KEY));
 
-        this.droneController.changeDrivingMode(OrderIdentifier.fromLong(orderId), drivingMode);
+        this.executeSync(() -> this.droneController.changeDrivingMode(OrderIdentifier.fromLong(orderId), drivingMode));
         routingContext.response().end();
     }
 
@@ -80,7 +80,7 @@ public final class DroneAPI extends AbstractAPI {
         final JsonObject body = params.body().getJsonObject();
         final long orderId = body.getLong(DroneAPIHelper.ORDER_ID_KEY);
 
-        this.droneController.proceed(OrderIdentifier.fromLong(orderId));
+        this.executeSync(() -> this.droneController.proceed(OrderIdentifier.fromLong(orderId)));
         routingContext.response().end();
     }
 
@@ -89,7 +89,7 @@ public final class DroneAPI extends AbstractAPI {
         final JsonObject body = params.body().getJsonObject();
         final long orderId = body.getLong(DroneAPIHelper.ORDER_ID_KEY);
 
-        this.droneController.halt(OrderIdentifier.fromLong(orderId));
+        this.executeSync(() -> this.droneController.halt(OrderIdentifier.fromLong(orderId)));
         routingContext.response().end();
     }
 }

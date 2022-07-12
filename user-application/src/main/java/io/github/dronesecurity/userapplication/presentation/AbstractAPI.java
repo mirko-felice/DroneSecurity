@@ -14,10 +14,12 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * Generic class representing every API as an {@link AbstractVerticle}.
@@ -63,6 +65,39 @@ public abstract class AbstractAPI extends AbstractVerticle {
                             .onSuccess(ignored -> startPromise.complete());
                 })
                 .onFailure(startPromise::fail);
+    }
+
+    /**
+     * Executes synchronously the callable.
+     * @param callable {@link Callable} to execute
+     * @param <T> type parameter of the {@code callable}
+     * @return the result of the {@code callable}
+     */
+    protected <T> @Nullable T executeSync(final @NotNull Callable<T> callable) {
+        try {
+            final ExecutorService executor = Executors.newSingleThreadExecutor();
+            final var result = executor.submit(callable);
+            executor.shutdown();
+            return result.get();
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        }
+    }
+
+    /**
+     * Executes synchronously the runnable.
+     * @param runnable {@link Runnable} to execute
+     */
+    protected void executeSync(final @NotNull Runnable runnable) {
+        try {
+            final ExecutorService executor = Executors.newSingleThreadExecutor();
+            final var result = executor.submit(runnable);
+            executor.shutdown();
+            result.get();
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**

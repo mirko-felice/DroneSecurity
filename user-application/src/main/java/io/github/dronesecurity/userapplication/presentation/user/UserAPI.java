@@ -83,13 +83,14 @@ public final class UserAPI extends AbstractAPI {
         final String username = body.getString(UserAPIHelper.USERNAME_KEY);
         final String password = body.getString(UserAPIHelper.PASSWORD_KEY);
 
-        final boolean logIn = this.authenticationService.logIn(Username.parse(username), password);
-        routingContext.response().end(Boolean.toString(logIn));
+        final Boolean logIn = this.executeSync(() ->
+                this.authenticationService.logIn(Username.parse(username), password));
+        routingContext.response().end(logIn == null ? Boolean.FALSE.toString() : logIn.toString());
     }
 
     private void logOut(final @NotNull RoutingContext routingContext) {
-        final boolean logOut = this.authenticationService.logOut();
-        routingContext.response().end(Boolean.toString(logOut));
+        final Boolean logOut = this.executeSync(this.authenticationService::logOut);
+        routingContext.response().end(logOut == null ? Boolean.FALSE.toString() : logOut.toString());
     }
 
     private void retrieveCourierByUsername(final @NotNull RoutingContext routingContext) {
@@ -97,7 +98,8 @@ public final class UserAPI extends AbstractAPI {
         final JsonObject body = params.body().getJsonObject();
         final String username = body.getString(UserAPIHelper.USERNAME_KEY);
 
-        final Optional<Courier> courier = this.userManager.retrieveCourierByUsername(Username.parse(username));
+        final Optional<Courier> courier = Optional.ofNullable(this.executeSync(() ->
+                this.userManager.retrieveCourierByUsername(Username.parse(username)).orElse(null)));
         if (courier.isPresent())
             routingContext.response().end(Json.encodePrettily(OpenHostService.convertToCourier(courier.get())));
         else
@@ -109,7 +111,8 @@ public final class UserAPI extends AbstractAPI {
         final JsonObject body = params.body().getJsonObject();
         final String username = body.getString(UserAPIHelper.USERNAME_KEY);
 
-        final Optional<Maintainer> maintainer = this.userManager.retrieveMaintainerByUsername(Username.parse(username));
+        final Optional<Maintainer> maintainer = Optional.ofNullable(this.executeSync(() ->
+                this.userManager.retrieveMaintainerByUsername(Username.parse(username)).orElse(null)));
         if (maintainer.isPresent())
             routingContext.response().end(Json.encodePrettily(OpenHostService.convertToGenericUser(maintainer.get())));
         else
@@ -117,15 +120,17 @@ public final class UserAPI extends AbstractAPI {
     }
 
     private void checkLoggedUserRole(final RoutingContext routingContext) {
-        final Optional<Role> loggedUserRole = this.userManager.checkLoggedUserRole();
+        final Optional<Role> loggedUserRole = Optional.ofNullable(this.executeSync(() ->
+                this.userManager.checkLoggedUserRole().orElse(null)));
         if (loggedUserRole.isPresent())
-            routingContext.response().end(Json.encodePrettily(OpenHostService.convertToUserRole(loggedUserRole.get())));
+            routingContext.response().end(OpenHostService.convertToUserRole(loggedUserRole.get()).toString());
         else
             routingContext.response().end(UserRole.NOT_LOGGED.toString());
     }
 
     private void retrieveLoggedCourierIfPresent(final @NotNull RoutingContext routingContext) {
-        final Optional<Courier> loggedCourier = this.userManager.retrieveLoggedCourierIfPresent();
+        final Optional<Courier> loggedCourier = Optional.ofNullable(this.executeSync(() ->
+                this.userManager.retrieveLoggedCourierIfPresent().orElse(null)));
         if (loggedCourier.isPresent())
             routingContext.response().end(Json.encodePrettily(OpenHostService.convertToCourier(loggedCourier.get())));
         else
@@ -133,7 +138,8 @@ public final class UserAPI extends AbstractAPI {
     }
 
     private void retrieveLoggedMaintainerIfPresent(final @NotNull RoutingContext routingContext) {
-        final Optional<Maintainer> loggedMaintainer = this.userManager.retrieveLoggedMaintainerIfPresent();
+        final Optional<Maintainer> loggedMaintainer = Optional.ofNullable(this.executeSync(() ->
+                this.userManager.retrieveLoggedMaintainerIfPresent().orElse(null)));
         if (loggedMaintainer.isPresent())
             routingContext.response().end(
                     Json.encodePrettily(OpenHostService.convertToGenericUser(loggedMaintainer.get())));

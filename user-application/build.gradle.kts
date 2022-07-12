@@ -16,7 +16,7 @@ dependencies {
     implementation("org.apache.commons:commons-text:1.9")
 }
 
-val mainClassName by extra("$group.userapplication.controller.Launcher")
+val mainClassName by extra("$group.userapplication.presentation.Launcher")
 val mainModuleName by extra("$group.userapplication")
 
 application {
