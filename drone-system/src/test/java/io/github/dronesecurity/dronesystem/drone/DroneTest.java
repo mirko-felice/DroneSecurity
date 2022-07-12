@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  */
 class DroneTest {
 
-    private static final int SENSOR_DATA_READING_WAITING_TIME = 10;
+    private static final int SENSOR_DATA_READING_WAITING_TIME = 30;
 
     /**
      * Tests drone lifecycle.
