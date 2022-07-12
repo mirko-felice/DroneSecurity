@@ -3,7 +3,7 @@
     "node": "16.15"
   },
   "dependencies": {
-    "npm": "8.13.1",
+    "npm": "8.13.2",
     "@semantic-release/changelog": "6.0.1",
     "@semantic-release/commit-analyzer": "9.0.2",
     "@semantic-release/git": "10.0.1",
