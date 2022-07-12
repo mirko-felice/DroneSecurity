@@ -16,90 +16,174 @@ ContextMap DroneManagementMap {
 
 BoundedContext DroneContext implements Drone {
 	type = FEATURE
-	
 	Aggregate Drone {
-		ValueObject SensorData
-		ValueObject Path
-		
-		Entity Sensor {
-			- SensorData data
-			
-			def void activate();
-			def void deactivate();
-			def void isOn();
-			def void readData();
-			def SensorData getData();
-		}
-		
-		Service DataAnalyzer {
-			@AlertLevel checkDataAlertLevel(@SensorData sensorData);
-		}
-
-		Service DataProcessor {
-		   Map<String, Integer> processAccelerometer(Map<String, Double> accelerometerData);
-		}
-
+		ValueObject DrivingMode
 		enum AlertLevel {
 			STABLE, WARNING, CRITICAL;
 		}
 
-		enum DrivingMode {
-            AUTOMATIC, MANUAL;
-        }
-
 		Entity Drone {
 			String id
-			- List<Sensor> sensors
+			- SensorSet sensorSet
 			- DrivingMode drivingMode
-
-			def void readAllData();
-			def @SensorData getAllData();
-			def void activate();
-			def void deactivate();
-			def void proceed();
-			def void halt();
-			def boolean isOperating();
+			- OrderData orderData
+			def void activate(@OrderData orderData);
+            def void deactivate();
+            def void isOperating();
+            def void performReading();
+            def void publishSensorData();
+            def void proceed();
+            def void halt();
 			def void changeMode(@DrivingMode drivingMode);
+            def String getId();
 		}
-		
-		Service DroneService {
-			@Drone drone;
-			DataAnalyzer dataAnalyzer;
-			
-			void waitForActivation();
-			private void startDrone(@Path path_);
-			private void stopDrone();
-			
-			private void publishData();
-			private void publishAlert();
-			private void publishCurrentStatus();
+
+		Service MovingStatePublisher {
+			void droneHalted(@OrderData orderData);
+			void droneProceeding(@OrderData orderData);
 		}
 	}
-	
+
+	Aggregate Sensor {
+		Entity Sensor {
+			def void activate();
+			def void deactivate();
+			def void isOn();
+			def void performReading();
+			def void publishData(@OrderData orderData);
+		}
+
+		Entity SensorSet {
+			- @Sensor proximity;
+			- @Sensor accelerometer;
+			- @Sensor camera;
+			def void activate(@OrderData orderData);
+			def void deactivate();
+			def @AlertLevel performReading();
+			def void publishData();
+		}
+
+		Service AlertSituationAnalyzer {
+			@AlertLevel analyzeAlerts (@OrderData orderData,
+									   @Alert previousProximityAlert,
+									   @Alert previousAccelerometerAlert,
+									   @Alert currentProximityAlert,
+									   @Alert currentAccelerometerAlert);
+		}
+
+		Service AlertLevelPublisher {
+			void publishCurrentAlertLevel(@OrderData orderData, @Alert currentAlert);
+			void publishStableAlertLevel(@OrderData orderData);
+		}
+	}
+
+	Aggregate Order {
+		ValueObject Path
+		ValueObject OrderData
+	}
+
+	Aggregate Alert {
+		ValueObject Alert
+	}
+
+	Aggregate Proximity {
+		ValueObject RawProximityData
+		ValueObject ProcessedProximityData
+		Entity ProximitySensor extends @Sensor
+		Service ProximityDataPublisher {
+			void publishProximityData(@OrderData orderData, @ProcessedProximityData proximityData);
+		}
+
+		Service ProximityDataAnalyzer {
+			@Alert analyzeProximityData(@ProcessedProximityData proximityData);
+		}
+
+		Service ProximityDataProcessor {
+			@ProcessedProximityData processProximityData(@RawProximityData proximityData);
+		}
+	}
+
+	Aggregate Accelerometer {
+		ValueObject RawAccelerometerData
+		ValueObject ProcessedAccelerometerData
+		Entity AccelerometerSensor extends @Sensor
+		Service AccelerometerDataPublisher {
+			void publishAccelerometerData(@OrderData orderData, @ProcessedAccelerometerData accelerometerData);
+		}
+
+		Service AccelerometerDataAnalyzer {
+			@Alert analyzeAccelerometerData(@ProcessedAccelerometerData accelerometerData);
+		}
+
+		Service AccelerometerDataProcessor {
+			@ProcessedAccelerometerData processAccelerometerData(@RawAccelerometerData accelerometerData);
+		}
+	}
+
+	Aggregate Camera {
+		ValueObject RawCameraData
+		ValueObject ProcessedCameraData
+		Entity Camera extends @Sensor
+		Service CameraConnection {
+			@RawCameraData readCameraData();
+			void disconnect();
+		}
+
+		Service CameraDataPublisher {
+			void publishCameraData(@OrderData orderData, @ProcessedCameraData cameraData);
+		}
+
+		Service CameraDataAnalyzer {
+			@Alert analyzeCameraData(@ProcessedCameraData cameraData);
+		}
+
+		Service CameraDataProcessor {
+			@ProcessedCameraData processCameraData(@RawCameraData cameraData);
+		}
+	}
+
 	Aggregate UserMonitoring {
-		
-		DomainEvent StatusChanged {
-			String status
+		ValueObject ProximityData
+		ValueObject AccelerometerData
+		ValueObject CameraData
+		DomainEvent ProximityRead {
+			- ProximityData proximityData
 		}
-		
-		DomainEvent DataRead {
-			- List<SensorData> sensorData
+
+		DomainEvent AccelerometerRead {
+			- AccelerometerData accelerometerData
 		}
-		
+
+		DomainEvent CameraRead {
+			- CameraData cameraData
+		}
+
 		DomainEvent WarningSituation {
 			String message
 		}
-		
+
 		DomainEvent CriticalSituation {
 			String message
 		}
-		
+
+		DomainEvent StatusChanged {
+			String status
+		}
+
+		DomainEvent MovingStateChanged {
+			String movingState
+		}
+
 		Service UserMonitoringService {
-			
-			void subscribeToDataRead();
+			void subscribeToProximityDataRead();
+			void subscribeToAccelerometerDataRead();
+			void subscribeToCameraDataRead();
 			void subscribeToAlerts();
 			void subscribeToOrderStatusChange();
-			List<DroneData> retrieveDataHistory(long orderId);
+			void subscribeToMovingStateChange();
+			List<@ProximityData> retrieveProximityDataHistory(long orderId);
+			List<@AccelerometerData> retrieveAccelerometerDataHistory(long orderId);
+			List<@CameraData> retrieveCameraDataHistory(long orderId);
 		}
 	}
 }

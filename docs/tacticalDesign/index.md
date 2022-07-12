@@ -35,23 +35,34 @@ Sono stati quindi analizzati nel dettaglio ciascuno di essi:
   Le notifiche sono gestite come _Domain Event_ in quanto appunto eventi scatenati dalle corrispettive operazioni.
 
 
-* _**Drone Context**_: anch'esso si compone di due aggregati: _Drone System_ e _User Monitoring_.
+* _**Drone Context**_: questo aggregato si compone di otto aggregati, di cui sette operano nel sistema del drone e 
+  uno nell'applicativo dell'utente. Gli aggregati del sistema del drone sono: _Drone_, _Sensor_, _Proximity_,
+  _Accelerometer_, _Camera_, _Alert_ e _Order_. L'applicativo dell'utente invece contiene il solo aggregato
+  _UserMonitoring_.
+  
+  L'aggregato _Drone_ possiede le entità necessarie per poter gestire il drone intero, permettendone, ad esempio,
+  l'attivazione e l'arresto oppure di operare sui suoi sensori. Esso contiene anche il *service* apposito per informare 
+  se il drone è stato arrestato, oppure se è ripartito per la consegna. Esso infatti a sua volta comunica con
+  l'aggregato _Sensor_ attraverso il suo *aggregate root*, ovvero _SensorSet_, che permette di maneggiare
+  contemporaneamente tutti i sensori del drone, permettendo di gestirne l'attivazione e fornendo il necessario per
+  leggere e pubblicare i loro dati. I servizi a disposizione dell'aggregato, gli permettono di analizzare tutti gli
+  stati di allerta dei sensori per ottenere lo stato attuale del drone e di pubblicare il corrente stato d'allerta.
 
-  L'aggregato _Drone System_ mostra le entità principali che gli sono necessarie per offrire le funzionalità
-  richieste. Il servizio principale deve infatti poter avviare il drone a partire da un dato percorso.
-  Per fare ciò è necessaria un'entità _Drone_ la quale deve poter leggere i dati ricevuti dai sensori annessi.
-  Si potrebbe quindi risolvere mediante una collezione di entità _Sensor_, la quale fornisce i propri dati aggiornati.
-  Quindi il _Drone Service_ pubblica costantemente i dati. Inoltre, mediante l'entità _Data Analyzer_ è in grado di 
-  rilevare situazioni pericolose e nel caso si verificassero inviare un avvertimento all'aggregato _User Monitoring_. 
-  Infine, esso è in grado di tracciare lo stato corrente del Drone.
+  I sensori perciò sono suddivisi in tre aggregati: _Proximity_, _Accelerometer_ e _Camera_. Ognuno di essi fornisce
+  quindi le stesse operazioni del _SensorSet_ ma, al contrario di quest'ultimo, essi operano ognuno sul rispettivo
+  sensore, nelle modalità appropriate. Infatti contengono anche dei *Service* per poter processare, analizzare e,
+  infine, pubblicare i dati dei loro sensori.
 
-  L'aggregato _User Monitoring_ deve invece poter gestire tutti gli eventi causati dall'analisi dei dati che sono stati
-  già studiati in precedenza.
-  Sono infatti presenti i seguenti _Domain Event_:
-    * _Data Read_, per aggiornare i dati che un utente debba controllare;
-    * _Warning Situation_, per avvisare di una situazione potenzialmente pericolosa;
-    * _Critical Situation_, per avvertire di una situazione estremamente critica;
-    * _Status Changed_, per informare del cambiamento di stato del Drone durante la consegna.
+  Infine sono presenti altri due aggregati per agevolare il funzionamento del contesto, fornendo i *Value Object*
+  relativi agli ordini e allerte rispettivamente negli aggregati _Order_ e _Alert_. Essi mettono a disposizione
+  esclusivamente i *value object* necessari per il funzionamento del contesto, perciò non sono presenti dei *service*
+  addizionali.
+
+  L'aggregato _UserMonitoring_ invece è mirato al tracciamento dei messaggi inviati dal sistema del drone. Infatti
+  possiede i *value object* per mantenere i dati ricevuti e un servizio che riceverà tutti i messaggi del drone e
+  informerà il resto del sistema attraverso l'uso dei rispettivi *Domain Events*. I messaggi in questione riguardano i
+  dati di ogni sensore, i messaggi di allerta del drone e quelli relativi allo stato del movimento del drone (arrestato
+  oppure in movimento).
 
 
 * _**Issue Reporting Context**_: questo contesto si occupa di gestire solo le segnalazioni
