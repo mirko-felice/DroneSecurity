@@ -23,9 +23,9 @@ System documentation is available at [GitHub Pages](https://mirko-felice.github.
 
 #### Code Quality:
 
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=DroneSecurity&metric=bugs)](https://sonarcloud.io/summary/new_code?id=DroneSecurity)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=DroneSecurity&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=DroneSecurity)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=DroneSecurity&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=DroneSecurity)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=DroneSecurity&metric=bugs)](https://sonarcloud.io/summary/overall?id=DroneSecurity)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=DroneSecurity&metric=code_smells)](https://sonarcloud.io/summary/overall?id=DroneSecurity)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=DroneSecurity&metric=duplicated_lines_density)](https://sonarcloud.io/summary/overall?id=DroneSecurity)
 
 #### Build Checks:
 
