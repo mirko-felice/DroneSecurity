@@ -27,6 +27,7 @@ public final class Product implements ValueObject<Product> {
      * Creates a new {@link Product} using its name.
      * @param name product name used to build the {@link Product}
      * @return a new fresh {@link Product}
+     * @throws EmptyProductNameException if {@code name} is null or empty
      */
     @Contract(value = "_ -> new", pure = true)
     public static @NotNull Product fromName(final String name) {

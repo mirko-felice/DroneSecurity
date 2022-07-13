@@ -38,6 +38,7 @@ public final class NegligenceIdentifier implements ValueObject<NegligenceIdentif
      * Creates a new {@link NegligenceIdentifier} using a long value.
      * @param value value used to build the {@link NegligenceIdentifier}
      * @return a new {@link NegligenceIdentifier}
+     * @throws NegligenceIdentifierCannotHaveNegativeValueException if {@code value} is negative
      */
     @Contract(value = "_ -> new", pure = true)
     public static @NotNull NegligenceIdentifier fromLong(final long value) {

@@ -27,6 +27,7 @@ public final class Username implements ValueObject<Username> {
      * Parse the string to build this value object.
      * @param value {@link String} to parse
      * @return the {@link Username}
+     * @throws UsernameWithNumbersException if {@code value} contains at least one digit
      */
     @Contract(value = "_ -> new", pure = true)
     public static @NotNull Username parse(final String value) {

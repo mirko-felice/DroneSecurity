@@ -27,6 +27,7 @@ public final class Negligent implements ValueObject<Negligent> {
      * Parses a string into the negligent.
      * @param value {@link String} to parse
      * @return a new {@link Assignee}
+     * @throws EmptyNegligentException if {@code value} is null or empty
      */
     @Contract(value = "_ -> new", pure = true)
     public static @NotNull Negligent parse(final String value) {

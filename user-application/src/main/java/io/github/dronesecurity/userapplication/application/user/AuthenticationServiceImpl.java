@@ -75,7 +75,7 @@ public final class AuthenticationServiceImpl implements AuthenticationService {
                     user = this.userRepository.retrieveLoggedCourierIfPresent().orElseThrow();
                     break;
                 default:
-                    throw new IllegalStateException("Unexpected value: " + loggedUserRole.get());
+                    return false;
             }
             user.logOut();
             return true;

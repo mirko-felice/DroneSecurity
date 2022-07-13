@@ -38,6 +38,7 @@ public final class OrderIdentifier implements ValueObject<OrderIdentifier> {
      * Creates a new {@link OrderIdentifier} using a long value.
      * @param value value used to build the {@link OrderIdentifier}
      * @return a new {@link OrderIdentifier}
+     * @throws OrderIdentifierCannotHaveNegativeValueException if {@code value} is negative
      */
     @Contract(value = "_ -> new", pure = true)
     public static @NotNull OrderIdentifier fromLong(final long value) {
