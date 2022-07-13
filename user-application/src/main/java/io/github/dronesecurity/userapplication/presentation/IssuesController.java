@@ -90,30 +90,31 @@ public class IssuesController implements Initializable {
      */
     public IssuesController() {
         this.issueReportService = MaintainerIssueReportService.getInstance();
-        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE, BodyCodec.string()).onSuccess(res -> {
-            switch (UserRole.valueOf(res.body())) {
-                case COURIER:
-                    UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT,
-                                    BodyCodec.json(GenericUser.class))
-                            .onSuccess(response -> this.loggedGenericUser = response.body());
-                    break;
-                case MAINTAINER:
-                    UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_MAINTAINER_IF_PRESENT,
-                                    BodyCodec.json(GenericUser.class))
-                            .onSuccess(response -> this.loggedGenericUser = response.body());
-                    break;
-                case NOT_LOGGED:
-                default:
-                    // TODO
-            }
-            if (this.loggedGenericUser.getRole() == UserRole.MAINTAINER)
-                this.issueReportService.subscribeToNewIssue(this.loggedGenericUser.getUsername(), issue ->
-                        Platform.runLater(() -> {
-                            this.refreshOpenIssues();
-                            DialogUtils.showInfoNotification("You have received a new issue!",
-                                    this.issuesPane.getScene().getWindow());
-                        }));
-        });
+        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE, BodyCodec.json(UserRole.class))
+                .onSuccess(res -> {
+                    switch (res.body()) {
+                    case COURIER:
+                        UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT,
+                                        BodyCodec.json(GenericUser.class))
+                                .onSuccess(response -> this.loggedGenericUser = response.body());
+                        break;
+                    case MAINTAINER:
+                        UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_MAINTAINER_IF_PRESENT,
+                                        BodyCodec.json(GenericUser.class))
+                                .onSuccess(response -> this.loggedGenericUser = response.body());
+                        break;
+                    case NOT_LOGGED:
+                    default:
+                        // TODO
+                }
+                if (this.loggedGenericUser.getRole() == UserRole.MAINTAINER)
+                    this.issueReportService.subscribeToNewIssue(this.loggedGenericUser.getUsername(), issue ->
+                            Platform.runLater(() -> {
+                                this.refreshOpenIssues();
+                                DialogUtils.showInfoNotification("You have received a new issue!",
+                                        this.issuesPane.getScene().getWindow());
+                            }));
+                });
     }
 
     /**

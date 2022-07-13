@@ -54,9 +54,9 @@ public class UserController implements Initializable {
      */
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE, BodyCodec.string())
+        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE, BodyCodec.json(UserRole.class))
                 .onSuccess(res -> {
-                    this.role = UserRole.valueOf(res.body());
+                    this.role = res.body();
                     switch (this.role) {
                         case COURIER:
                             break;

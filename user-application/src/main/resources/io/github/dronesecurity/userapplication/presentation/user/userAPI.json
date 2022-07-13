@@ -151,7 +151,7 @@
       }
     },
     "/retrieveLoggedCourierIfPresent": {
-      "post": {
+      "get": {
         "operationId": "retrieveLoggedCourierIfPresent",
         "responses": {
           "200": {
@@ -168,7 +168,7 @@
       }
     },
     "/retrieveLoggedMaintainerIfPresent": {
-      "post": {
+      "get": {
         "operationId": "retrieveLoggedMaintainerIfPresent",
         "responses": {
           "200": {
