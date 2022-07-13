@@ -164,7 +164,7 @@ public final class OrdersUIController implements Initializable {
 
     @FXML
     private void showDataHistory() {
-        this.getSelectedOrder().ifPresent(UIHelper::showDataHistoryUI);
+        this.getSelectedOrder().ifPresent(order -> UIHelper.showDataHistoryUI(order.getId().asLong()));
     }
 
     private void refreshOrders() {

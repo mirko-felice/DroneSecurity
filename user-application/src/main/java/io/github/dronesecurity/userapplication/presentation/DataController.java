@@ -6,7 +6,6 @@
 package io.github.dronesecurity.userapplication.presentation;
 
 import io.github.dronesecurity.lib.DateHelper;
-import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
 import io.github.dronesecurity.userapplication.domain.monitoring.UserMonitoringService;
 import io.github.dronesecurity.userapplication.domain.monitoring.entities.MonitoringDroneData;
 import io.github.dronesecurity.userapplication.domain.monitoring.utilities.MonitoringConstants;
@@ -25,8 +24,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
- * Controller dedicated to show all the data related to an
- * {@link Order}.
+ * Controller dedicated to show all the data related to an order.
  */
 public class DataController implements Initializable {
 
@@ -39,14 +37,14 @@ public class DataController implements Initializable {
     @FXML private TableColumn<MonitoringDroneData, Integer> pitchColumn;
     @FXML private TableColumn<MonitoringDroneData, Integer> yawColumn;
     @FXML private TableColumn<MonitoringDroneData, Long> cameraColumn;
-    private final Order order;
+    private final long orderId;
 
     /**
      * Build the controller.
-     * @param order {@link Order} to retrieve data history from
+     * @param orderId order identifier to retrieve data history from
      */
-    public DataController(final Order order) {
-        this.order = order;
+    public DataController(final long orderId) {
+        this.orderId = orderId;
     }
 
     /**
@@ -54,7 +52,7 @@ public class DataController implements Initializable {
      */
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        this.title.setText(this.title.getText() + this.order.getId().asLong());
+        this.title.setText(this.title.getText() + this.orderId);
 
         this.dataTable.setSelectionModel(null);
 
@@ -89,7 +87,7 @@ public class DataController implements Initializable {
         this.cameraColumn.setCellFactory(ignored -> new FXHelper.CameraCell<>());
         this.cameraColumn.setReorderable(false);
 
-        new UserMonitoringService(this.order.getId().asLong()).retrieveDataHistory().onSuccess(data ->
+        new UserMonitoringService(this.orderId).retrieveDataHistory().onSuccess(data ->
                 Platform.runLater(() -> this.dataTable.setItems(FXCollections.observableList(data))));
     }
 }
