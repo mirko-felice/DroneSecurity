@@ -205,7 +205,6 @@ BoundedContext NegligenceReportingContext implements Reporting {
 	}
 }
 
-// TODO forgot to add domain events
 BoundedContext ShippingContext implements Shipping {
 	
 	Aggregate Shipping {
@@ -277,6 +276,11 @@ BoundedContext ShippingContext implements Shipping {
             void proceed(@OrderIdentifier orderId);
             void halt(@OrderIdentifier orderId);
 		}
+
+		DomainEvent OrderDelivering
+		DomainEvent OrderFailed
+		DomainEvent OrderSucceeded
+		DomainEvent OrderRescheduled
 	}
 	
 	Aggregate Client {
