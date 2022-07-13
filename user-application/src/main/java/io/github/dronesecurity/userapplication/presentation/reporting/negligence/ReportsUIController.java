@@ -6,6 +6,7 @@
 package io.github.dronesecurity.userapplication.presentation.reporting.negligence;
 
 import io.github.dronesecurity.userapplication.application.user.ohs.pl.GenericUser;
+import io.github.dronesecurity.userapplication.application.user.ohs.pl.UserRole;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.contracts.ClosedNegligenceReport;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.contracts.OpenNegligenceReport;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.objects.Assignee;
@@ -52,16 +53,23 @@ public final class ReportsUIController implements Initializable {
      */
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE, BodyCodec.string()).onSuccess(response -> {
-            // TODO logic?
-            if ("COURIER".equals(response.body()))
-                UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT,
-                                BodyCodec.json(GenericUser.class))
-                        .onSuccess(user -> this.updateReports(Negligent.parse(user.body().getUsername())));
-            else if ("MAINTAINER".equals(response.body()))
-                UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_MAINTAINER_IF_PRESENT,
-                                BodyCodec.json(GenericUser.class))
-                        .onSuccess(user -> this.updateReports(Assignee.parse(user.body().getUsername())));
+        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE, BodyCodec.json(UserRole.class))
+                .onSuccess(response -> {
+                    switch (response.body()) {
+                        case COURIER:
+                            UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT,
+                                            BodyCodec.json(GenericUser.class))
+                                    .onSuccess(user -> this.updateReports(Negligent.parse(user.body().getUsername())));
+                            break;
+                        case MAINTAINER:
+                            UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_MAINTAINER_IF_PRESENT,
+                                        BodyCodec.json(GenericUser.class))
+                                .onSuccess(user -> this.updateReports(Assignee.parse(user.body().getUsername())));
+                            break;
+                        case NOT_LOGGED:
+                        default:
+                            // TODO
+                    }
         });
         this.openController.setReportType(false);
         this.closedController.setReportType(true);

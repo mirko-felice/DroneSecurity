@@ -135,9 +135,14 @@
           "200": {
             "description": "Successfully checked logged user role.",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string"
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }

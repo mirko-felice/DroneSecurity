@@ -110,6 +110,14 @@ public final class DroneData implements ValueObject<DroneData> {
     }
 
     /**
+     * Gets the detection instant as a {@link Date}.
+     * @return the detection instant as {@link Date}
+     */
+    public @NotNull Date detectionInstantAsDate() {
+        return this.detectionInstant;
+    }
+
+    /**
      * Gets the detected proximity.
      * @return the proximity as double
      */

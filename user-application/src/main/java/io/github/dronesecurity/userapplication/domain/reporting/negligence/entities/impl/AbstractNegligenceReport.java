@@ -37,7 +37,6 @@ public abstract class AbstractNegligenceReport implements NegligenceReport {
         this.negligent = negligent;
         this.assignee = assignee;
         this.data = data;
-        // TODO validation?
     }
 
     /**

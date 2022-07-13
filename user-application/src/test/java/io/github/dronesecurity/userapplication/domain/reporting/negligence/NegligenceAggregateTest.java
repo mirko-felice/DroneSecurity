@@ -5,11 +5,16 @@
 
 package io.github.dronesecurity.userapplication.domain.reporting.negligence;
 
+import io.github.dronesecurity.lib.Date;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.contracts.NegligenceReport;
+import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.impl.ClosedNegligenceReportImpl;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.impl.OpenNegligenceReportImpl;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.exceptions.*;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.objects.*;
 import org.junit.jupiter.api.Test;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -139,6 +144,14 @@ final class NegligenceAggregateTest {
         final NegligenceActionForm anotherForm = NegligenceActionForm.create(solution);
         assertFalse(actionForm.isSameValueAs(anotherForm),
                 "Negligent should be different even with same solution because of different creation instant.");
+    }
+
+    @Test
+    void testNegligenceReportValidation() {
+        final Date yesterday = Date.parseInstant(Instant.now().minus(2, ChronoUnit.DAYS));
+        assertThrowsExactly(InvalidClosingInstantException.class,
+                () -> new ClosedNegligenceReportImpl(NEGLIGENCE_IDENTIFIER, NEGLIGENT, ASSIGNEE, DRONE_DATA,
+                        NegligenceActionForm.parse("solution", yesterday)));
     }
 
     @Test
