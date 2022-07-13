@@ -1,3 +1,24 @@
+# [1.3.0](https://github.com/mirko-felice/DroneSecurity/compare/1.2.0...1.3.0) (2022-07-13)
+
+
+### Bug Fixes
+
+* add place order operation to open api ([c6882c2](https://github.com/mirko-felice/DroneSecurity/commit/c6882c2a94c68b717764118938b8679d71b03ae5))
+* correct http method on retrieving logged user ([740a6ea](https://github.com/mirko-felice/DroneSecurity/commit/740a6ea937873166f7ec514e0ba31ac2529c1d0e))
+* correct negligence report visualization + fix api to use query params ([4c964bd](https://github.com/mirko-felice/DroneSecurity/commit/4c964bddd4d4f31ddeceb23f294c850be2b4572f))
+* correct next identifiers values ([a39968f](https://github.com/mirko-felice/DroneSecurity/commit/a39968fd58f1696c02e4152bbd8155a7035495f8))
+* execute on another thread services business logic + minor refactoring ([65495c5](https://github.com/mirko-felice/DroneSecurity/commit/65495c54f7a1a475e78ae614c048bc29e4a9d771))
+
+
+### Features
+
+* add needed operations to update courier drones + add needed courier username to perform delivery ([afef4d0](https://github.com/mirko-felice/DroneSecurity/commit/afef4d053650b191df86416eec3169b72e5342c4))
+
+
+### Performance Improvements
+
+* remove order dependency from data controller ([c9d9f21](https://github.com/mirko-felice/DroneSecurity/commit/c9d9f216bbc8a4558339fd9f8281b14f863dea43))
+
 # [1.2.0](https://github.com/mirko-felice/DroneSecurity/compare/1.1.0...1.2.0) (2022-07-12)
 
 
