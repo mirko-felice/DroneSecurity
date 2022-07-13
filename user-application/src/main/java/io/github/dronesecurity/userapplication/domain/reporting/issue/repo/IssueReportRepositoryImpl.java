@@ -118,10 +118,10 @@ public final class IssueReportRepositoryImpl implements IssueReportRepository {
 
     private @NotNull JsonObject initQueryWithUserData() {
         final JsonObject queryWithUser = new JsonObject();
-        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE, BodyCodec.string())
+        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE, BodyCodec.json(UserRole.class))
                 .onSuccess(res -> {
             final GenericUser[] loggedUser = new GenericUser[1]; // TODO
-            switch (UserRole.valueOf(res.body())) {
+            switch (res.body()) {
                 case COURIER:
                     UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT,
                                     BodyCodec.json(GenericUser.class))
