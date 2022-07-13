@@ -34,6 +34,7 @@ public abstract class AbstractOrder implements Order {
      * @param placingDate {@link OrderDate} -{@literal >} the date in which the order has been placed
      * @param estimatedArrival {@link OrderDate} -{@literal >} the date in which the order should arrive
      * @param state {@link OrderState} representing current order state
+     * @throws ArrivalDateBeforePlacingDateException if {@code estimatedArrival} is before {@code placingDate}
      */
     protected AbstractOrder(final OrderIdentifier id,
                             final Product product,

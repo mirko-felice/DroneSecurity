@@ -32,6 +32,7 @@ public final class RescheduledOrderImpl extends AbstractOrder implements Resched
      * @param placingDate {@link OrderDate} -{@literal >} the date in which the order has been placed
      * @param oldArrival {@link OrderDate} -{@literal >} the date in which the order should have been delivered
      * @param newEstimatedArrival {@link OrderDate} -{@literal >} the new date in which the order should arrive
+     * @throws RescheduledDateBeforeFirstArrivalDateException if {@code newEstimatedArrival} is before {@code oldArrival}
      */
     public RescheduledOrderImpl(final OrderIdentifier id,
                                 final Product product,

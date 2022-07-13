@@ -36,6 +36,7 @@ public final class NegligenceActionForm implements ValueObject<NegligenceActionF
      * Creates a new action form using its solution.
      * @param solution solution to use
      * @return a new {@link NegligenceActionForm}
+     * @throws EmptySolutionException if {@code solution} is null or empty
      */
     @Contract(value = "_ -> new", pure = true)
     public static @NotNull NegligenceActionForm create(final String solution) {
@@ -47,6 +48,7 @@ public final class NegligenceActionForm implements ValueObject<NegligenceActionF
      * @param solution solution to parse
      * @param closingInstant {@link Date} to parse
      * @return a new {@link NegligenceActionForm}
+     * @throws EmptySolutionException if {@code solution} is null or empty
      */
     @Contract(value = "_, _ -> new", pure = true)
     public static @NotNull NegligenceActionForm parse(final String solution, final Date closingInstant) {

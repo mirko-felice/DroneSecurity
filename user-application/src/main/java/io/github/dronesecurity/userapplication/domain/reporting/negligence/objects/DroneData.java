@@ -76,6 +76,7 @@ public final class DroneData implements ValueObject<DroneData> {
      * @param yaw yaw angle detected
      * @param imageSize size of the image detected
      * @return a new {@link DroneData}
+     * @throws InvalidDroneDataException if at least one of the detected data is invalid
      */
     @Contract(value = "_, _, _, _, _, _ -> new", pure = true)
     public static @NotNull DroneData parse(final Date detectionInstant,

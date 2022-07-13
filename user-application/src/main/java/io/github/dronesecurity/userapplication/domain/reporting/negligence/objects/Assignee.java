@@ -27,6 +27,7 @@ public final class Assignee implements ValueObject<Assignee> {
      * Parses a string into the assignee.
      * @param value {@link String} to parse
      * @return a new {@link Assignee}
+     * @throws EmptyAssigneeException if {@code value} is null or empty
      */
     @Contract(value = "_ -> new", pure = true)
     public static @NotNull Assignee parse(final String value) {

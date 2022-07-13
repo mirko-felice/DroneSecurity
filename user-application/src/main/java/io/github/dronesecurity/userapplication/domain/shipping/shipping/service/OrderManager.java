@@ -7,6 +7,7 @@ package io.github.dronesecurity.userapplication.domain.shipping.shipping.service
 
 import io.github.dronesecurity.userapplication.domain.shipping.client.Client;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.exceptions.EstimatedArrivalCannotBeBeforeTodayException;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderDate;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderIdentifier;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.Product;
@@ -36,6 +37,7 @@ public interface OrderManager {
      * @param who {@link Client} placing the order
      * @param what {@link Product} ordered
      * @param when {@link OrderDate} estimated arrival
+     * @throws EstimatedArrivalCannotBeBeforeTodayException if {@code when} is after today
      */
     void placeOrder(Client who, Product what, OrderDate when);
 }

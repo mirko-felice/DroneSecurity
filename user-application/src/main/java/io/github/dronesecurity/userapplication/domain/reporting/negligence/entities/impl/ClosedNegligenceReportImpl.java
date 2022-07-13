@@ -26,7 +26,6 @@ public final class ClosedNegligenceReportImpl extends AbstractNegligenceReport i
      * @param actionForm the {@link NegligenceActionForm} used to close the report
      * @throws InvalidClosingInstantException if {@code actionForm} has closing instant before detection instant
      */
-    // TODO search all   throw new
     public ClosedNegligenceReportImpl(final NegligenceIdentifier id,
                                       final Negligent negligent,
                                       final Assignee assignee,
