@@ -48,11 +48,11 @@ public final class UIHelper {
 
     /**
      * Shows up the Data History GUI related to the given order.
-     * @param order {@link Order} to retrieve data history from
+     * @param orderId order identifier to retrieve data history from
      */
-    public static void showDataHistoryUI(final Order order) {
+    public static void showDataHistoryUI(final long orderId) {
         final FXMLLoader loader = new FXMLLoader(UIHelper.class.getResource(DATA_FXML));
-        loader.setController(new DataController(order));
+        loader.setController(new DataController(orderId));
         FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Data History", loader, DATA_MIN_WIDTH, DATA_MIN_HEIGHT)
                 .ifPresent(Stage::show);
     }
