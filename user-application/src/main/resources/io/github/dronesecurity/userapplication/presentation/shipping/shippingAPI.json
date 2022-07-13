@@ -78,6 +78,9 @@
                   },
                   "droneId": {
                     "type": "string"
+                  },
+                  "courierUsername": {
+                    "type": "string"
                   }
                 }
               }

@@ -57,7 +57,7 @@ public final class DroneControllerImpl implements DroneController {
     }
 
     private void startDrone(final @NotNull OrderDelivering orderDelivering) {
-        final String courierUsername = ""; // TODO
+        final String courierUsername = orderDelivering.getCourierUsername();
         ConnectionHelper.sendPerformDeliveryMessage(
                 orderDelivering.getDroneId(),
                 orderDelivering.getOrder(),

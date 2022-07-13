@@ -19,8 +19,9 @@ public interface DeliveryService {
      * Performs the delivery of a {@link PlacedOrder}.
      * @param order {@link PlacedOrder} to perform delivery on
      * @param droneId drone identifier to perform delivery on
+     * @param courierUsername courier username performing delivery
      */
-    void performDelivery(PlacedOrder order, String droneId);
+    void performDelivery(PlacedOrder order, String droneId, String courierUsername);
 
     /**
      * Succeeds the delivery.

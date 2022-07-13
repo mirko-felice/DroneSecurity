@@ -100,8 +100,8 @@ public final class ShippingAPI extends AbstractAPI {
         final Order order = this.orderManager.retrieveOrderById(OrderIdentifier.fromLong(id));
         CastHelper.safeCast(order, PlacedOrder.class).ifPresentOrElse(placedOrder -> {
             final String droneId = body.getString(ShippingAPIHelper.DRONE_ID_KEY);
-            // TODO add Courier as 1st parameter to perform delivery -> move add and remove drone logic to service
-            this.executeSync(() -> this.deliveryService.performDelivery(placedOrder, droneId));
+            final String courierUsername = body.getString(ShippingAPIHelper.COURIER_USERNAME_KEY);
+            this.executeSync(() -> this.deliveryService.performDelivery(placedOrder, droneId, courierUsername));
             routingContext.response().end();
         }, () -> routingContext.response().setStatusCode(CLIENT_ERROR_CODE).end());
     }

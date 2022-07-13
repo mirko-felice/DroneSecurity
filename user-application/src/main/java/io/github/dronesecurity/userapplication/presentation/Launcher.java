@@ -78,7 +78,6 @@ public final class Launcher extends Application {
      * @param args additional arguments
      */
     public static void main(final String[] args) {
-        // TODO improve?
         VertxHelper.VERTX.deployVerticle(ShippingAPI.class.getName()).onSuccess(res ->
                 new Thread(() -> {
                     if (new MongoOrderRepository().listOrders().isEmpty()) {

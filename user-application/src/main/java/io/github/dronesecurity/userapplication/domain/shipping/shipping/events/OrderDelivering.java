@@ -16,15 +16,18 @@ public class OrderDelivering implements DomainEvent {
 
     private final DeliveringOrder order;
     private final String droneId;
+    private final String courierUsername;
 
     /**
      * Builds the event.
      * @param order {@link DeliveringOrder} just updated
      * @param droneId drone identifier performing delivery
+     * @param courierUsername courier username performing delivery
      */
-    public OrderDelivering(final DeliveringOrder order, final String droneId) {
+    public OrderDelivering(final DeliveringOrder order, final String droneId, final String courierUsername) {
         this.order = order;
         this.droneId = droneId;
+        this.courierUsername = courierUsername;
     }
 
     /**
@@ -41,5 +44,13 @@ public class OrderDelivering implements DomainEvent {
      */
     public String getDroneId() {
         return this.droneId;
+    }
+
+    /**
+     * Gets the courier username performing delivery.
+     * @return the courier username
+     */
+    public String getCourierUsername() {
+        return this.courierUsername;
     }
 }

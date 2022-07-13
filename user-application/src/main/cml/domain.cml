@@ -240,7 +240,7 @@ BoundedContext ShippingContext implements Shipping {
 		}
 		
 		Entity PlacedOrder extends Order {
-		    def void startDelivering(String droneId);
+		    def void startDelivering(String droneId, String courierUsername);
 		}
 		
 		Entity DeliveringOrder extends Order {
@@ -265,7 +265,7 @@ BoundedContext ShippingContext implements Shipping {
 		}
 
 		Service DeliveryService {
-		    void performDelivery(@PlacedOrder order, String droneId);
+		    void performDelivery(@PlacedOrder order, String droneId, String courierUsername);
             void succeedDelivery(@DeliveringOrder order);
             void failDelivery(@DeliveringOrder order);
             void rescheduleDelivery(@FailedOrder order, @OrderDate newEstimatedArrival);

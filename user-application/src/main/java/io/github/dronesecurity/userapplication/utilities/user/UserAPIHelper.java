@@ -67,7 +67,17 @@ public final class UserAPIHelper {
         /**
          * Represents the operation to retrieve the couriers supervised by the logged {@link Maintainer}.
          */
-        RETRIEVE_COURIERS_SUPERVISED_BY_LOGGED_MAINTAINER;
+        RETRIEVE_COURIERS_SUPERVISED_BY_LOGGED_MAINTAINER,
+
+        /**
+         * Represents the operation to add a drone on the logged {@link Courier}.
+         */
+        ADD_DRONE,
+
+        /**
+         * Represents the operation to remove a drone from the logged {@link Courier}.
+         */
+        REMOVE_DRONE;
 
         /**
          * {@inheritDoc}
@@ -87,6 +97,11 @@ public final class UserAPIHelper {
      * Key to get/set the password.
      */
     public static final String PASSWORD_KEY = "password";
+
+    /**
+     * Key to get/set the drone identifier.
+     */
+    public static final String DRONE_KEY = "droneId";
 
     private static final int PORT = 17_000;
     private static final String HOST = "localhost";

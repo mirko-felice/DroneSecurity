@@ -28,6 +28,7 @@ import io.vertx.ext.web.validation.ValidationHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 /**
  * API exposing operations related to the user.
@@ -75,6 +76,10 @@ public final class UserAPI extends AbstractAPI {
                 .handler(this::retrieveLoggedCourierIfPresent);
         routerBuilder.operation(UserAPIHelper.Operation.RETRIEVE_LOGGED_MAINTAINER_IF_PRESENT.toString())
                 .handler(this::retrieveLoggedMaintainerIfPresent);
+        routerBuilder.operation(UserAPIHelper.Operation.ADD_DRONE.toString())
+                .handler(this::addDrone);
+        routerBuilder.operation(UserAPIHelper.Operation.REMOVE_DRONE.toString())
+                .handler(this::removeDrone);
     }
 
     private void logIn(final @NotNull RoutingContext routingContext) {
@@ -147,4 +152,24 @@ public final class UserAPI extends AbstractAPI {
             routingContext.response().setStatusCode(NOT_AVAILABLE).end();
     }
 
+    private void addDrone(final @NotNull RoutingContext routingContext) {
+        this.updateDrones(routingContext, Courier::addDrone);
+    }
+
+    private void removeDrone(final @NotNull RoutingContext routingContext) {
+        this.updateDrones(routingContext, Courier::removeDrone);
+    }
+
+    private void updateDrones(final @NotNull RoutingContext routingContext, final BiConsumer<Courier, String> update) {
+        final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
+        final JsonObject body = params.body().getJsonObject();
+        final String drone = body.getString(UserAPIHelper.DRONE_KEY);
+        final Optional<Courier> loggedCourier = Optional.ofNullable(this.executeSync(() ->
+                this.userManager.retrieveLoggedCourierIfPresent().orElse(null)));
+        if (loggedCourier.isPresent()) {
+            update.accept(loggedCourier.get(), drone);
+            routingContext.response().end();
+        } else
+            routingContext.response().setStatusCode(NOT_AVAILABLE).end();
+    }
 }

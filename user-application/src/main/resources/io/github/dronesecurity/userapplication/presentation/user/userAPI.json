@@ -178,6 +178,56 @@
           }
         }
       }
+    },
+    "/addDrone": {
+      "post": {
+        "operationId": "addDrone",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "droneId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully added drone."
+          }
+        }
+      }
+    },
+    "/removeDrone": {
+      "post": {
+        "operationId": "removeDrone",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "droneId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully removed drone."
+          }
+        }
+      }
     }
   },
   "components": {
