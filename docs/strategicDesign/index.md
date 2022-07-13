@@ -19,7 +19,7 @@ da parte dell'utente.
 A questo punto, secondo la metodologia DDD, è necessario costruire i cosiddetti _Bounded Context_,
 i quali debbano soddisfare i requisiti del sotto-dominio a cui si riferiscono.
 
-Nel nostro dominio sono stati individuati quattro Bounded Context:
+Nel nostro dominio sono stati individuati cinque Bounded Context:
 * **Shipping Context**
 * **Drone Context**
 * **Issue Reporting Context**
