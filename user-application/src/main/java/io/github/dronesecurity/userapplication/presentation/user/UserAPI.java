@@ -128,7 +128,8 @@ public final class UserAPI extends AbstractAPI {
         final Optional<Role> loggedUserRole = Optional.ofNullable(this.executeSync(() ->
                 this.userManager.checkLoggedUserRole().orElse(null)));
         if (loggedUserRole.isPresent())
-            routingContext.response().end(OpenHostService.convertToUserRole(loggedUserRole.get()).toString());
+            routingContext.response().end(
+                    Json.encodePrettily(OpenHostService.convertToUserRole(loggedUserRole.get()).toString()));
         else
             routingContext.response().end(UserRole.NOT_LOGGED.toString());
     }
