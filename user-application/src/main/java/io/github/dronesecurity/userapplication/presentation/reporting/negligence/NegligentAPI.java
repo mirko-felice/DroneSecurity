@@ -14,7 +14,6 @@ import io.github.dronesecurity.userapplication.presentation.AbstractAPI;
 import io.github.dronesecurity.userapplication.utilities.reporting.negligence.NegligentAPIHelper;
 import io.vertx.core.Promise;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.openapi.RouterBuilder;
 import io.vertx.ext.web.validation.RequestParameters;
@@ -67,16 +66,16 @@ public final class NegligentAPI extends AbstractAPI {
 
     private void retrieveOpenReportsForNegligent(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-        final JsonObject body = params.body().getJsonObject();
-        final Negligent negligent = Negligent.parse(body.getString(NegligentAPIHelper.NEGLIGENT_KEY));
+        final Negligent negligent =
+                Negligent.parse(params.queryParameter(NegligentAPIHelper.NEGLIGENT_KEY).getString());
         routingContext.response().end(Json.encodePrettily(
                 this.executeSync(() -> this.negligentReportsManager.retrieveOpenReportsForNegligent(negligent))));
     }
 
     private void retrieveClosedReportsForNegligent(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-        final JsonObject body = params.body().getJsonObject();
-        final Negligent negligent = Negligent.parse(body.getString(NegligentAPIHelper.NEGLIGENT_KEY));
+        final Negligent negligent =
+                Negligent.parse(params.queryParameter(NegligentAPIHelper.NEGLIGENT_KEY).getString());
         routingContext.response().end(Json.encodePrettily(
                 this.executeSync(() -> this.negligentReportsManager.retrieveClosedReportsForNegligent(negligent))));
     }

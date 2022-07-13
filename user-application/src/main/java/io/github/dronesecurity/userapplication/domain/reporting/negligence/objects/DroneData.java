@@ -103,6 +103,15 @@ public final class DroneData implements ValueObject<DroneData> {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Contract(pure = true)
+    @Override
+    public @NotNull String toString() {
+        return "Click to show details";
+    }
+
+    /**
      * Gets the detection instant as a {@link String}.
      * @return the detection instant string representation
      */

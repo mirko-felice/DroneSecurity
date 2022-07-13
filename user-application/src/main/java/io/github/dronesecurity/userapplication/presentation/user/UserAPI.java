@@ -100,8 +100,7 @@ public final class UserAPI extends AbstractAPI {
 
     private void retrieveCourierByUsername(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-        final JsonObject body = params.body().getJsonObject();
-        final String username = body.getString(UserAPIHelper.USERNAME_KEY);
+        final String username = params.queryParameter(UserAPIHelper.USERNAME_KEY).getString();
 
         final Optional<Courier> courier = Optional.ofNullable(this.executeSync(() ->
                 this.userManager.retrieveCourierByUsername(Username.parse(username)).orElse(null)));
@@ -113,8 +112,7 @@ public final class UserAPI extends AbstractAPI {
 
     private void retrieveMaintainerByUsername(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-        final JsonObject body = params.body().getJsonObject();
-        final String username = body.getString(UserAPIHelper.USERNAME_KEY);
+        final String username = params.queryParameter(UserAPIHelper.USERNAME_KEY).getString();
 
         final Optional<Maintainer> maintainer = Optional.ofNullable(this.executeSync(() ->
                 this.userManager.retrieveMaintainerByUsername(Username.parse(username)).orElse(null)));

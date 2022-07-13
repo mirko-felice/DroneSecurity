@@ -24,7 +24,7 @@
     <Label fx:id="proximityLabel" text="Proximity:" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="0" />
     <Label fx:id="proximityValueLabel" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="0" />
     <Label fx:id="accelerometerLabel" text="Accelerometer:" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-    <Label fx:id="accelerometerValueLabel" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    <Label fx:id="accelerometerValueLabel" alignment="CENTER" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
     <Label fx:id="cameraLabel" text="Camera: " visible="false" GridPane.columnIndex="0" GridPane.rowIndex="2" />
     <Label fx:id="cameraValueLabel" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
     <Label fx:id="solutionLabel" text="Solution:" visible="false" />

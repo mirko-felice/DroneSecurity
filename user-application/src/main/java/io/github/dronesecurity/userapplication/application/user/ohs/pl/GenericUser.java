@@ -5,23 +5,34 @@
 
 package io.github.dronesecurity.userapplication.application.user.ohs.pl;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Public interface to decoupling internal implementation of
  * {@link io.github.dronesecurity.userapplication.domain.user.entities.contracts.User} to external usage.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GenericUser {
 
     private final String username;
-    private final UserRole userRole;
+    private final UserRole role;
+
+    /**
+     * Default constructor for json de/serialization.
+     */
+    public GenericUser() {
+        this.username = "";
+        this.role = UserRole.NOT_LOGGED;
+    }
 
     /**
      * Build the user.
      * @param username his username
-     * @param userRole his {@link UserRole}
+     * @param role his {@link UserRole}
      */
-    public GenericUser(final String username, final UserRole userRole) {
+    public GenericUser(final String username, final UserRole role) {
         this.username = username;
-        this.userRole = userRole;
+        this.role = role;
     }
 
     /**
@@ -37,6 +48,6 @@ public class GenericUser {
      * @return his {@link UserRole}
      */
     public UserRole getRole() {
-        return this.userRole;
+        return this.role;
     }
 }
