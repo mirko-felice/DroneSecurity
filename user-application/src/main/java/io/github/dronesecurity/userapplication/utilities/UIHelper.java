@@ -5,15 +5,13 @@
 
 package io.github.dronesecurity.userapplication.utilities;
 
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
 import io.github.dronesecurity.userapplication.presentation.DataController;
 import io.github.dronesecurity.userapplication.presentation.MonitorController;
-import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 import java.net.URL;
 
@@ -36,17 +34,14 @@ public final class UIHelper {
     /**
      * Shows up the Monitoring GUI related to the delivering order.
      * @param order {@link Order} to monitor
-     * @param hiddenHandler {@link EventHandler} to push some behaviour when gui is closed
      */
-    public static void showMonitoringUI(final Order order,
-                                        final EventHandler<WindowEvent> hiddenHandler) {
+    public static void showMonitoringUI(final Order order) {
         final URL fileUrl = UIHelper.class.getResource(MONITORING_FXML);
         final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
         fxmlLoader.setController(new MonitorController(order));
         FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Monitoring...", fxmlLoader,
                 MONITORING_MIN_WIDTH, MONITORING_MIN_HEIGHT).ifPresent(stage -> {
                     stage.setOnCloseRequest(Event::consume);
-                    stage.setOnHidden(hiddenHandler);
                     stage.show();
                 });
     }

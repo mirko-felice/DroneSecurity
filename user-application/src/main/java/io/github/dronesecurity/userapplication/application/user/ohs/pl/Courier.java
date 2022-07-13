@@ -48,20 +48,4 @@ public class Courier extends GenericUser {
         return List.copyOf(this.assignedDrones);
     }
 
-    /**
-     * Removes a drone only temporarily (not in Database).
-     * @param droneId drone identifier to remove
-     */
-    // TODO rename
-    public void removeDrone(final String droneId) {
-        this.assignedDrones.remove(droneId);
-    }
-
-    /**
-     * Adds a drone only temporarily (not in Database).
-     * @param droneId drone identifier to add
-     */
-    public void addDrone(final String droneId) {
-        this.assignedDrones.add(droneId);
-    }
 }

@@ -47,9 +47,9 @@ public final class DeliveryServiceImpl implements DeliveryService {
      * {@inheritDoc}
      */
     @Override
-    public void performDelivery(final @NotNull PlacedOrder order, final String droneId) {
+    public void performDelivery(final @NotNull PlacedOrder order, final String droneId, final String courierUsername) {
         DomainEvents.register(OrderDelivering.class, this.orderDeliveringHandler);
-        order.startDelivering(droneId);
+        order.startDelivering(droneId, courierUsername);
     }
 
     /**

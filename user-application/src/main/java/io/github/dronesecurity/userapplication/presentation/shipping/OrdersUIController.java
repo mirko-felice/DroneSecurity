@@ -140,9 +140,8 @@ public final class OrdersUIController implements Initializable {
                                         .put(ShippingAPIHelper.DRONE_ID_KEY, droneId);
                                 ShippingAPIHelper.postJson(ShippingAPIHelper.Operation.PERFORM_DELIVERY, body)
                                         .onSuccess(ignored -> Platform.runLater(() -> {
-                                            courier.removeDrone(droneId);
                                             this.table.getSelectionModel().clearSelection();
-                                            UIHelper.showMonitoringUI(order, hidden -> courier.addDrone(droneId));
+                                            UIHelper.showMonitoringUI(order);
                                         }));
                             });
                 });

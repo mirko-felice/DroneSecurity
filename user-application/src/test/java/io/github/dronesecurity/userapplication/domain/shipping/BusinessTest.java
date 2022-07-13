@@ -43,6 +43,7 @@ final class BusinessTest {
     private static final Client CLIENT = Client.mock();
     private static final Product PRODUCT = Product.fromName("test");
     private static final String DRONE_IDENTIFIER = "drone identifier";
+    private static final String COURIER = "courier";
 
     @Test
     @org.junit.jupiter.api.Order(FIRST)
@@ -76,7 +77,7 @@ final class BusinessTest {
     @org.junit.jupiter.api.Order(THIRD)
     void testDelivering() {
         DELIVERY_SERVICE.performDelivery((PlacedOrder) ORDER_MANAGER.retrieveOrderById(ORDER_IDENTIFIER),
-                DRONE_IDENTIFIER);
+                DRONE_IDENTIFIER, COURIER);
         final Order delivering = ORDER_MANAGER.retrieveOrderById(ORDER_IDENTIFIER);
         assertNotNull(delivering,
                 "Even after performing delivery, same order should be retrievable.");
@@ -117,7 +118,7 @@ final class BusinessTest {
     @org.junit.jupiter.api.Order(SIXTH)
     void testSucceeded() {
         DELIVERY_SERVICE.performDelivery((RescheduledOrder) ORDER_MANAGER.retrieveOrderById(ORDER_IDENTIFIER),
-                DRONE_IDENTIFIER);
+                DRONE_IDENTIFIER, COURIER);
         DELIVERY_SERVICE.succeedDelivery((DeliveringOrder) ORDER_MANAGER.retrieveOrderById(ORDER_IDENTIFIER));
         final Order succeeded = ORDER_MANAGER.retrieveOrderById(ORDER_IDENTIFIER);
         assertNotNull(succeeded,
@@ -141,6 +142,6 @@ final class BusinessTest {
                 "After placing the third order, orders list size should be 3.");
 
         DELIVERY_SERVICE.performDelivery((PlacedOrder) ORDER_MANAGER.retrieveOrderById(OrderIdentifier.fromLong(2)),
-                DRONE_IDENTIFIER);
+                DRONE_IDENTIFIER, COURIER);
     }
 }

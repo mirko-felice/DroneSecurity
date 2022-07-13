@@ -87,6 +87,11 @@ public final class ShippingAPIHelper {
      */
     public static final String DRONE_ID_KEY = "droneId";
 
+    /**
+     * Key to get/set the courier username.
+     */
+    public static final String COURIER_USERNAME_KEY = "courierUsername";
+
     // Reschedule Delivery
     /**
      * Key to get/set the new estimated arrival.

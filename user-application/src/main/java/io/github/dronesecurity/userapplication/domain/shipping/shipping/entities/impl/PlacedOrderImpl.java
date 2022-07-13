@@ -40,13 +40,13 @@ public final class PlacedOrderImpl extends AbstractOrder implements PlacedOrder 
      * {@inheritDoc}
      */
     @Override
-    public void startDelivering(final String droneId) {
+    public void startDelivering(final String droneId, final String courierUsername) {
         final DeliveringOrder order = new DeliveringOrderImpl(
                 this.getId(),
                 this.getProduct(),
                 this.getClient(),
                 this.getPlacingDate(),
                 this.getEstimatedArrival());
-        DomainEvents.raise(new OrderDelivering(order, droneId));
+        DomainEvents.raise(new OrderDelivering(order, droneId, courierUsername));
     }
 }

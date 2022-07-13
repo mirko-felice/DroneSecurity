@@ -16,6 +16,7 @@ import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.shipping.DroneAPIHelper;
 import io.github.dronesecurity.userapplication.utilities.shipping.ShippingAPIHelper;
+import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
 import io.vertx.core.json.JsonObject;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -221,6 +222,8 @@ public final class MonitorController implements Initializable {
             this.checkButtons();
             switch (statusEvent.getStatus()) {
                 case MqttMessageValueConstants.DELIVERING_MESSAGE:
+                    UserAPIHelper.postJson(UserAPIHelper.Operation.REMOVE_DRONE,
+                            new JsonObject().put(UserAPIHelper.DRONE_KEY, "TODO")); // TODO
                     break;
                 case MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: green;");
@@ -235,6 +238,8 @@ public final class MonitorController implements Initializable {
                     break;
                 case MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE:
                     this.deliveryStatusLabel.setStyle("-fx-text-fill: cyan;");
+                    UserAPIHelper.postJson(UserAPIHelper.Operation.ADD_DRONE,
+                            new JsonObject().put(UserAPIHelper.DRONE_KEY, "TODO")); // TODO
                     DialogUtils.showInfoDialog("Drone successfully returned.", () -> {
                         DomainEvents.unregister(NewNegligence.class, this.newNegligenceHandler);
                         DomainEvents.unregister(CriticalSituation.class, this.criticalSituationHandler);

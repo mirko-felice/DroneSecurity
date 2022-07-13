@@ -30,7 +30,6 @@ public interface Courier extends User {
      * Removes a drone only temporarily (not in Database).
      * @param droneId drone identifier to remove
      */
-    // TODO
     void removeDrone(String droneId);
 
     /**
