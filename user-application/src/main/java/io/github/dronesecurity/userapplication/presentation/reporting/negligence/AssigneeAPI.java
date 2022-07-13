@@ -71,16 +71,14 @@ public final class AssigneeAPI extends AbstractAPI {
 
     private void retrieveOpenReportsForAssignee(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-        final JsonObject body = params.body().getJsonObject();
-        final Assignee assignee = Assignee.parse(body.getString(AssigneeAPIHelper.ASSIGNEE_KEY));
+        final Assignee assignee = Assignee.parse(params.queryParameter(AssigneeAPIHelper.ASSIGNEE_KEY).getString());
         routingContext.response().end(Json.encodePrettily(
                 this.executeSync(() -> this.assigneeReportsManager.retrieveOpenReportsForAssignee(assignee))));
     }
 
     private void retrieveClosedReportsForAssignee(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
-        final JsonObject body = params.body().getJsonObject();
-        final Assignee assignee = Assignee.parse(body.getString(AssigneeAPIHelper.ASSIGNEE_KEY));
+        final Assignee assignee = Assignee.parse(params.queryParameter(AssigneeAPIHelper.ASSIGNEE_KEY).getString());
         routingContext.response().end(Json.encodePrettily(
                 this.executeSync(() -> this.assigneeReportsManager.retrieveClosedReportsForAssignee(assignee))));
     }

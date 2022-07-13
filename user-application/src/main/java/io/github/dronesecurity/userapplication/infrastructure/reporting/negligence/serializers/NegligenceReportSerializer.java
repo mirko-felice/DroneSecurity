@@ -34,10 +34,11 @@ public final class NegligenceReportSerializer extends JsonSerializer<NegligenceR
         gen.writeStringField(NegligenceConstants.ASSIGNEE, value.assignedTo().asString());
         gen.writeFieldName(NegligenceConstants.DATA);
         serializers.findValueSerializer(DroneData.class).serialize(value.getData(), gen, serializers);
-        gen.writeFieldName(NegligenceConstants.ACTION_FORM);
-        if (value instanceof ClosedNegligenceReport)
+        if (value instanceof ClosedNegligenceReport) {
+            gen.writeFieldName(NegligenceConstants.ACTION_FORM);
             serializers.findValueSerializer(NegligenceActionForm.class)
                     .serialize(((ClosedNegligenceReport) value).getActionForm(), gen, serializers);
+        }
         gen.writeEndObject();
         gen.flush();
     }

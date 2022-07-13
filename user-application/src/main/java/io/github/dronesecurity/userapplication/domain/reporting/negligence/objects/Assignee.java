@@ -11,6 +11,8 @@ import io.github.dronesecurity.userapplication.domain.reporting.negligence.excep
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 /**
  * {@link ValueObject} representing the assignee of the {@link NegligenceReport}.
  */
@@ -49,6 +51,33 @@ public final class Assignee implements ValueObject<Assignee> {
     @Override
     public boolean isSameValueAs(final @NotNull Assignee value) {
         return this.username.equals(value.username);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return this.username;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Assignee assignee = (Assignee) o;
+        return this.username.equals(assignee.username);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.username);
     }
 
     private void validate(final String value) {

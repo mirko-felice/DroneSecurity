@@ -16,8 +16,6 @@ import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
 import io.vertx.ext.web.codec.BodyCodec;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -25,7 +23,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
-import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -83,10 +80,6 @@ public final class ReportsTableUIController<T extends NegligenceReport> implemen
         this.dataColumn.setCellFactory(ignored -> new NegligenceReportCell<>(dataConsumer));
         this.dataColumn.setCellValueFactory(value -> new SimpleObjectProperty<>(value.getValue().getData()));
         this.dataColumn.setReorderable(false);
-
-        // todo check if needed
-        this.table.itemsProperty().addListener(new NegligenceReportListener<>(() ->
-                this.table.getColumns().forEach(col -> col.setResizable(false))));
     }
 
     /**
@@ -152,28 +145,5 @@ public final class ReportsTableUIController<T extends NegligenceReport> implemen
             });
         }
     }
-
-    /**
-     * {@link ChangeListener} that on changed event it runs a {@link Runnable} and remove itself from listening over.
-     * @param <T> type parameter
-     */
-    private static final class NegligenceReportListener<T extends NegligenceReport>
-            implements ChangeListener<ObservableList<T>> {
-
-        private final Runnable changedRunnable;
-
-        private NegligenceReportListener(final Runnable changedRunnable) {
-            this.changedRunnable = changedRunnable;
-        }
-
-        @Override
-        public void changed(final @NotNull ObservableValue<? extends ObservableList<T>> observable,
-                            final ObservableList<T> oldValue,
-                            final ObservableList<T> newValue) {
-            this.changedRunnable.run();
-            observable.removeListener(this);
-        }
-    }
-
 
 }
