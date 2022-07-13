@@ -8,7 +8,6 @@ package io.github.dronesecurity.userapplication.application.shipping;
 import io.github.dronesecurity.userapplication.domain.shipping.client.Client;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.PlacedOrder;
-import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.impl.PlacedOrderImpl;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.exceptions.EstimatedArrivalCannotBeBeforeTodayException;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderDate;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderIdentifier;
@@ -57,13 +56,11 @@ public final class OrderManagerImpl implements OrderManager {
     public void placeOrder(final Client who, final Product what, final @NotNull OrderDate when) {
         if (!when.isAfter(OrderDate.TODAY))
             throw new EstimatedArrivalCannotBeBeforeTodayException();
-        // TODO refactor into placed order dot place
-        final PlacedOrder order = new PlacedOrderImpl(
+        this.repository.placed(PlacedOrder.place(
                 this.repository.nextOrderIdentifier(),
                 what,
                 who,
                 OrderDate.TODAY,
-                when);
-        this.repository.placed(order);
+                when));
     }
 }
