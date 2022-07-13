@@ -33,7 +33,7 @@ public abstract class AbstractAPI extends AbstractVerticle {
      * Base API url valid for all API.
      */
     protected static final String BASE_API_URL = "https://raw.githubusercontent.com/mirko-felice/DroneSecurity/"
-            + "hotfix/application-issues/user-application/src/main/resources/io/github/dronesecurity/userapplication/"
+            + "master/user-application/src/main/resources/io/github/dronesecurity/userapplication/"
             + "presentation/";
 
     /**
