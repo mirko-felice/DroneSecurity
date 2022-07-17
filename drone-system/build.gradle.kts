@@ -12,7 +12,7 @@ dependencies  {
     implementation("org.apache.commons:commons-lang3:$apacheLangVersion")
 }
 
-val mainClassName by extra("$group.dronesystem.drone.Activation")
+val mainClassName by extra("$group.dronesystem.drone.Starter")
 val mainModuleName by extra("$group.dronesystem")
 val performanceMainClass by extra("$group.dronesystem.performance.PerformanceEvaluator")
 

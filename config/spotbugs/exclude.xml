@@ -65,8 +65,8 @@
 
     <Match>
         <Bug pattern="UNENCRYPTED_SOCKET" />
-        <Class name="~.*Camera" />
         <!-- Cannot encrypt socket on localhost. -->
+        <Class name="~.*CameraConnectionImpl" />
     </Match>
 
     <Match>

@@ -20,4 +20,9 @@ public enum AlertType {
      */
     ANGLE,
 
+    /**
+     * Alert caused by critical camera situation.
+     */
+    CAMERA
+
 }

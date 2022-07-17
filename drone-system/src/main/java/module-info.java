@@ -1,8 +1,5 @@
 open module io.github.dronesecurity.dronesystem {
     exports io.github.dronesecurity.dronesystem.drone;
-    exports io.github.dronesecurity.dronesystem.drone.entities;
-    exports io.github.dronesecurity.dronesystem.drone.entities.sensors;
-    exports io.github.dronesecurity.dronesystem.drone.utilities;
 
     requires io.github.dronesecurity.lib;
     requires org.apache.commons.exec;
