@@ -73,4 +73,9 @@ tasks {
         }
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
+
+    test {
+        dependsOn("createCerts")
+        finalizedBy("clearCerts")
+    }
 }
