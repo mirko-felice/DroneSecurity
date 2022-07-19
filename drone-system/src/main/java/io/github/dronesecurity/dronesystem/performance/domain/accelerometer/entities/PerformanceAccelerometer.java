@@ -43,7 +43,6 @@ public class PerformanceAccelerometer extends Accelerometer implements Performan
      * @throws IOException whether it's impossible to access the file that will contain the performance data
      */
     public PerformanceAccelerometer() throws IOException {
-        super();
         this.outputHelper = new AccelerometerOutputHelperImpl();
         this.publisher = new AccelerometerPerformancePublisherImpl();
     }

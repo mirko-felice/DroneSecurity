@@ -42,7 +42,6 @@ public class PerformanceProximity extends ProximitySensor implements Performance
      * @throws IOException whether it's impossible to access the file that will contain the performance data
      */
     public PerformanceProximity() throws IOException {
-        super();
         this.outputHelper = new ProximityOutputHelperImpl();
         this.publisher = new ProximityPerformancePublisherImpl();
     }

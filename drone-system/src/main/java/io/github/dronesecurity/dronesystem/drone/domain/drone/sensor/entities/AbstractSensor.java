@@ -5,6 +5,7 @@
 
 package io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.entities;
 
+import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Alert;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
@@ -48,6 +49,15 @@ public abstract class AbstractSensor implements Sensor {
     private boolean on;
 
     /**
+     * Initialize the executor for the sensor.
+     */
+    protected AbstractSensor() {
+        final PumpStreamHandler streamHandler = new PumpStreamHandler(this.outputStream);
+        this.executor.setStreamHandler(streamHandler);
+        this.executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -89,12 +99,13 @@ public abstract class AbstractSensor implements Sensor {
     }
 
     /**
-     * Initialize the executor for the sensor.
+     * {@inheritDoc}
      */
-    protected AbstractSensor() {
-        final PumpStreamHandler streamHandler = new PumpStreamHandler(this.outputStream);
-        this.executor.setStreamHandler(streamHandler);
-        this.executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));
+    @Override
+    public Alert performReading() {
+        this.readData();
+        this.processData();
+        return this.analyzeData();
     }
 
     /**
@@ -160,6 +171,22 @@ public abstract class AbstractSensor implements Sensor {
      * @return filename of the script
      */
     protected abstract String getScriptName();
+
+    /**
+     * Read raw data from sensor.
+     */
+    protected abstract void readData();
+
+    /**
+     * Processes Raw sensor data into Processed sensor data.
+     */
+    protected abstract void processData();
+
+    /**
+     * Analyzes Processed sensor data and checks its alert level.
+     * @return The alert level detected from the processed data
+     */
+    protected abstract Alert analyzeData();
 
     private void setOn(final boolean on) {
         this.on = on;

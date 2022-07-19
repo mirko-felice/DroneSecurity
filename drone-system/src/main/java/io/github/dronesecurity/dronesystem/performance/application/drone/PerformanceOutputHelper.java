@@ -23,6 +23,8 @@ import java.time.Instant;
  */
 public final class PerformanceOutputHelper {
 
+    private static final String COLON = ":";
+    private static final String ARROW = " -> ";
     private static final String TIMESTAMP_REPRESENTATION = "Delay - ";
     private static final String TIMEUNIT = " ms";
     private static final String PACKET_NUMBER_TEXT = "Metadata for packet #";
@@ -51,7 +53,7 @@ public final class PerformanceOutputHelper {
     public static void printCameraPerformance(final @NotNull PrintWriter cameraWriter,
                                               final @NotNull CameraPerformanceData cameraPerformanceData,
                                               final long delay) {
-        cameraWriter.println(PACKET_NUMBER_TEXT + cameraPerformanceData.getIndex() + ":");
+        cameraWriter.println(PACKET_NUMBER_TEXT + cameraPerformanceData.getIndex() + COLON);
         cameraWriter.println("Image size - " + cameraPerformanceData.getCameraData().getImageLength());
         cameraWriter.println(TIMESTAMP_REPRESENTATION + delay + TIMEUNIT);
         cameraWriter.println();
@@ -68,7 +70,7 @@ public final class PerformanceOutputHelper {
             final @NotNull PrintWriter accelerometerWriter,
             final @NotNull ProcessedAccelerometerPerformanceData accelerometerPerformanceData,
             final long delay) {
-        accelerometerWriter.println(PACKET_NUMBER_TEXT + accelerometerPerformanceData.getIndex() + ":");
+        accelerometerWriter.println(PACKET_NUMBER_TEXT + accelerometerPerformanceData.getIndex() + COLON);
 
         final ProcessedAccelerometerData accelerometerData = accelerometerPerformanceData.getAccelerometerData();
         accelerometerWriter.println("Pitch - " + accelerometerData.getPitch());
@@ -88,7 +90,7 @@ public final class PerformanceOutputHelper {
     public static void printProximityPerformance(final @NotNull PrintWriter proximityWriter,
                                                  final @NotNull ProximityPerformanceData proximityPerformanceData,
                                                  final long delay) {
-        proximityWriter.println(PACKET_NUMBER_TEXT + proximityPerformanceData.getIndex() + ":");
+        proximityWriter.println(PACKET_NUMBER_TEXT + proximityPerformanceData.getIndex() + COLON);
         proximityWriter.println("Distance - " + proximityPerformanceData.getProximityData() + " cm");
         proximityWriter.println(TIMESTAMP_REPRESENTATION + delay + TIMEUNIT);
         proximityWriter.println();
@@ -116,11 +118,11 @@ public final class PerformanceOutputHelper {
 
     private static void printAverageDelay(final @NotNull PrintWriter writer,
                                           final @NotNull AveragePerformanceData averageResults) {
-        writer.println(MqttMessageParameterConstants.PROXIMITY_PARAMETER + " -> "
+        writer.println(MqttMessageParameterConstants.PROXIMITY_PARAMETER + ARROW
                 + averageResults.getAverageProximityDelay());
-        writer.println(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER + " -> "
+        writer.println(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER + ARROW
                 + averageResults.getAverageAccelerometerDelay());
-        writer.println(MqttMessageParameterConstants.CAMERA_PARAMETER + " -> "
+        writer.println(MqttMessageParameterConstants.CAMERA_PARAMETER + ARROW
                 + averageResults.getAverageCameraDelay());
     }
 }
