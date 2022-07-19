@@ -5,6 +5,8 @@
 
 package io.github.dronesecurity.dronesystem.drone.domain.drone.proximity.objects;
 
+import io.github.dronesecurity.dronesystem.drone.domain.drone.proximity.exceptions.NotAcceptableProximityException;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -21,6 +23,7 @@ public class RawProximityData {
      * @param distance The distance detected by the proximity sensor
      */
     public RawProximityData(final double distance) {
+        if (distance < 0) throw new NotAcceptableProximityException();
         this.distance = BigDecimal.valueOf(distance).setScale(2, RoundingMode.HALF_EVEN).doubleValue();
     }
 

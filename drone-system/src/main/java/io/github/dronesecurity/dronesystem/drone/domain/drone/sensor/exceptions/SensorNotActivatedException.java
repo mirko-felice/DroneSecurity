@@ -5,19 +5,17 @@
 
 package io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.exceptions;
 
-import com.amazonaws.s3.model.InvalidObjectStateException;
-
 /**
  * Exception representing a situation in which an invalid operation is performed on a deactivated sensor.
  */
-public class SensorNotActivatedException extends InvalidObjectStateException {
-    private static final long serialVersionUID = 0L;
+public class SensorNotActivatedException extends IllegalStateException {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Builds the sensor not activated exception.
-     * @param builder The builder of the exception
      */
-    protected SensorNotActivatedException(final BuilderImpl builder) {
-        super(builder);
+    public SensorNotActivatedException() {
+        super("Sensors cannot publish without being activated first.");
     }
 }

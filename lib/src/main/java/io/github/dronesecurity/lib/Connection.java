@@ -31,8 +31,8 @@ import java.util.function.Consumer;
 public final class Connection {
 
     private static Connection singleton;
-    private final EventLoopGroup eventLoopGroup;
-    private final ClientBootstrap clientBootstrap;
+    private EventLoopGroup eventLoopGroup;
+    private ClientBootstrap clientBootstrap;
     private final Properties properties;
     private MqttClientConnection clientConnection;
     private String certsFolderPath;
@@ -43,8 +43,7 @@ public final class Connection {
     private String clientID;
 
     private Connection() {
-        this.eventLoopGroup = new EventLoopGroup(2);
-        this.clientBootstrap = new ClientBootstrap(this.eventLoopGroup, new HostResolver(this.eventLoopGroup));
+        this.initConnectionSettings();
         this.properties = new Properties();
         try {
             this.readProperties();
@@ -127,6 +126,12 @@ public final class Connection {
         this.clientBootstrap.close();
         this.clientConnection.disconnect();
         this.clientConnection.close();
+        this.initConnectionSettings();
+    }
+
+    private void initConnectionSettings() {
+        this.eventLoopGroup = new EventLoopGroup(2);
+        this.clientBootstrap = new ClientBootstrap(this.eventLoopGroup, new HostResolver(this.eventLoopGroup));
     }
 
     private void readProperties() throws IOException {

@@ -9,10 +9,7 @@ import io.github.dronesecurity.dronesystem.drone.domain.drone.drone.entities.Dro
 import io.github.dronesecurity.dronesystem.drone.domain.drone.order.objects.OrderData;
 import io.github.dronesecurity.lib.Connection;
 import io.github.dronesecurity.lib.DrivingMode;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 /**
  * Test for Drone Service.
@@ -25,9 +22,27 @@ class DroneTest {
 
     private Drone drone;
 
+    /**
+     * Instantiates the drone for the tests.
+     */
     DroneTest() {
-        Connection.getInstance().connect();
         this.drone = new Drone(DRONE_ID);
+    }
+
+    /**
+     * Opens the connection.
+     */
+    @BeforeAll
+    static void openConnection() {
+        Connection.getInstance().connect();
+    }
+
+    /**
+     * Closes the connection.
+     */
+    @AfterAll
+    static void closeConnection() {
+        Connection.getInstance().closeConnection();
     }
 
     /**
@@ -84,8 +99,4 @@ class DroneTest {
         this.drone.proceed();
         Assertions.assertTrue(this.drone.isOperating(), "The drone should start after it's ordered to proceed.");
     }
-
-    //TODO test Data analyzers detect alerts properly
-    //TODO Processors RAW -> Processed
-    //TODO Subscribe to publishers
 }
