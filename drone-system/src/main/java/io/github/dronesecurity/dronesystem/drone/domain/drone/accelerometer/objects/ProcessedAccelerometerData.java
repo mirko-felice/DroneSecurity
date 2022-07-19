@@ -5,6 +5,7 @@
 
 package io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.objects;
 
+import io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.exceptions.NotAcceptableAngleException;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.utilities.AccelerometerConstants;
 
 import java.util.Map;
@@ -14,6 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * Class representing accelerometer data which were transformed to its angle values (roll/pitch/yaw).
  */
 public class ProcessedAccelerometerData {
+
+    private static final int MIN_ANGLE = -180;
+    private static final int MAX_ANGLE = 180;
 
     private final int pitch;
     private final int roll;
@@ -27,7 +31,9 @@ public class ProcessedAccelerometerData {
      * @param yaw Yaw angle value
      */
     public ProcessedAccelerometerData(final int pitch, final int roll, final int yaw) {
-        // TODO Check that values are within range.
+        if (pitch < MIN_ANGLE || pitch > MAX_ANGLE) throw new NotAcceptableAngleException();
+        if (roll < MIN_ANGLE || roll > MAX_ANGLE) throw new NotAcceptableAngleException();
+        if (yaw < MIN_ANGLE || yaw > MAX_ANGLE) throw new NotAcceptableAngleException();
         this.pitch = pitch;
         this.roll = roll;
         this.yaw = yaw;

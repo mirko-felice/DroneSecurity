@@ -5,6 +5,8 @@
 
 package io.github.dronesecurity.dronesystem.drone.domain.drone.camera.objects;
 
+import io.github.dronesecurity.dronesystem.drone.domain.drone.camera.exceptions.NotAcceptableImageSizeException;
+
 /**
  * Class representing raw camera data, represented as the size of the image received.
  */
@@ -18,6 +20,7 @@ public class RawCameraData {
      * @param imageLength The length of the image received
      */
     public RawCameraData(final int imageLength) {
+        if (imageLength < 0) throw new NotAcceptableImageSizeException();
         this.imageLength = imageLength;
     }
 

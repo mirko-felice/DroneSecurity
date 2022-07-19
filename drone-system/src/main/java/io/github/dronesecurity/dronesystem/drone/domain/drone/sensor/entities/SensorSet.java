@@ -89,8 +89,7 @@ public class SensorSet {
      * Publishes the data of the last reading performed by all the drone's sensors.
      */
     public void publishData() {
-        if (this.orderData == null) throw SensorNotActivatedException.builder()
-                .message("Sensors cannot publish without order data.").build();
+        if (this.orderData == null) throw new SensorNotActivatedException();
         this.proximity.publishData(this.orderData);
         this.accelerometer.publishData(this.orderData);
         this.camera.publishData(this.orderData);
