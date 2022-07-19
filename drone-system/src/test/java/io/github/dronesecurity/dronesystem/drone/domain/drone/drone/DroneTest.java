@@ -25,7 +25,7 @@ class DroneTest {
     /**
      * Instantiates the drone for the tests.
      */
-    DroneTest() {
+    /* default */ DroneTest() {
         this.drone = new Drone(DRONE_ID);
     }
 
@@ -33,7 +33,7 @@ class DroneTest {
      * Opens the connection.
      */
     @BeforeAll
-    static void openConnection() {
+    /* default */ static void openConnection() {
         Connection.getInstance().connect();
     }
 
@@ -41,7 +41,7 @@ class DroneTest {
      * Closes the connection.
      */
     @AfterAll
-    static void closeConnection() {
+    /* default */ static void closeConnection() {
         Connection.getInstance().closeConnection();
     }
 
@@ -49,7 +49,7 @@ class DroneTest {
      * Activates the drone before executing each test.
      */
     @BeforeEach
-    void startDrone() {
+    /* default */ void startDrone() {
         final OrderData orderData = new OrderData(ORDER_ID, COURIER);
         this.drone = new Drone(DRONE_ID);
 
@@ -61,7 +61,7 @@ class DroneTest {
      * Deactivates the drone after each test.
      */
     @AfterEach
-    void deactivateDrone() {
+    /* default */ void deactivateDrone() {
         this.drone.deactivate();
         Assertions.assertFalse(this.drone.isOperating(), "Drone should NOT be operative after deactivation.");
         Connection.getInstance().closeConnection();

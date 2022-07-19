@@ -30,6 +30,8 @@ import java.util.concurrent.*;
  */
 class DronePublishingTest {
 
+    private static final String SPACE_SEPARATOR = " ";
+
     private static final int ORDER_ID = 1;
     private static final String COURIER = "courier";
     private static final String DRONE_ID = "Test Drone";
@@ -47,7 +49,7 @@ class DronePublishingTest {
     /**
      * Builds the latch for publishing test.
      */
-    DronePublishingTest() {
+    /* default */ DronePublishingTest() {
         this.executorService = Executors.newSingleThreadScheduledExecutor();
         this.latch = new CountDownLatch(PUBLISH_AMOUNT);
     }
@@ -56,7 +58,7 @@ class DronePublishingTest {
      * Opens the connection.
      */
     @BeforeAll
-    static void openConnection() {
+    /* default */ static void openConnection() {
         Connection.getInstance().connect();
     }
 
@@ -64,7 +66,7 @@ class DronePublishingTest {
      * Closes the connection.
      */
     @AfterAll
-    static void closeConnection() {
+    /* default */ static void closeConnection() {
         Connection.getInstance().closeConnection();
     }
 
@@ -84,11 +86,11 @@ class DronePublishingTest {
         final Connection connection = Connection.getInstance();
 
         connection.subscribe(MqttTopicConstants.DATA_TOPIC + orderData.getOrderId()
-                + " " + MqttMessageParameterConstants.PROXIMITY_PARAMETER, this::onProximityData);
+                + SPACE_SEPARATOR + MqttMessageParameterConstants.PROXIMITY_PARAMETER, this::onProximityData);
         connection.subscribe(MqttTopicConstants.DATA_TOPIC + orderData.getOrderId()
-                + " " + MqttMessageParameterConstants.ACCELEROMETER_PARAMETER, this::onAccelerometerData);
+                + SPACE_SEPARATOR + MqttMessageParameterConstants.ACCELEROMETER_PARAMETER, this::onAccelerometerData);
         connection.subscribe(MqttTopicConstants.DATA_TOPIC + orderData.getOrderId()
-                + " " + MqttMessageParameterConstants.CAMERA_PARAMETER, this::onCameraData);
+                + SPACE_SEPARATOR + MqttMessageParameterConstants.CAMERA_PARAMETER, this::onCameraData);
 
         try {
             this.executorService.schedule(() -> {

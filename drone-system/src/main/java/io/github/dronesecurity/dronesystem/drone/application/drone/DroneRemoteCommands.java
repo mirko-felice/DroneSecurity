@@ -48,7 +48,8 @@ public class DroneRemoteCommands {
                 if (MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE
                         .equals(json.get(MqttMessageParameterConstants.SYNC_PARAMETER).asText())) {
 
-                    final long currentOrderId = json.get(MqttMessageParameterConstants.ORDER_ID_PARAMETER).asLong();
+                    final long currentOrderId = json.get(MqttMessageParameterConstants.ORDER_PARAMETER)
+                            .get(MqttMessageParameterConstants.ORDER_ID_PARAMETER).asLong();
                     final String currentCourier = json.get(MqttMessageParameterConstants.COURIER_PARAMETER).asText();
 
                     this.orderData = new OrderData(currentOrderId, currentCourier);
