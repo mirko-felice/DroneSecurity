@@ -54,16 +54,6 @@ public class Camera extends AbstractSensor {
      * {@inheritDoc}
      */
     @Override
-    public Alert performReading() {
-        this.readData();
-        this.processData();
-        return this.analyzeData();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void deactivate() {
         super.deactivate();
         this.cameraConnection.disconnect();
@@ -85,15 +75,27 @@ public class Camera extends AbstractSensor {
         return this.rawCameraData;
     }
 
-    private void readData() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void readData() {
         this.rawCameraData = this.cameraConnection.readCameraData();
     }
 
-    private void processData() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void processData() {
         this.processedCameraData = this.cameraDataProcessor.processCameraData(this.rawCameraData);
     }
 
-    private Alert analyzeData() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Alert analyzeData() {
         return this.cameraDataAnalyzer.analyzeCameraData(this.processedCameraData);
     }
 }

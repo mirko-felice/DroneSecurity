@@ -81,7 +81,11 @@ public class ProximitySensor extends AbstractSensor {
         return this.rawProximityData;
     }
 
-    private void readData() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void readData() {
         if (this.isOn() && getOutputStream().size() > 0) {
             final String orig = getOutputStream().toString(StandardCharsets.UTF_8).trim();
             try {
@@ -96,12 +100,20 @@ public class ProximitySensor extends AbstractSensor {
         }
     }
 
-    private void processData() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void processData() {
         this.processedProximityData = this.proximityDataProcessor.processProximityData(this.rawProximityData);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     @Contract(" -> new")
-    private @NotNull Alert analyzeData() {
+    protected @NotNull Alert analyzeData() {
         return this.proximityDataAnalyzer.analyzeProximityData(this.processedProximityData);
     }
 }

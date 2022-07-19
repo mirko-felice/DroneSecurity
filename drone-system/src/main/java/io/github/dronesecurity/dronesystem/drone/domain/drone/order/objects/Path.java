@@ -5,7 +5,18 @@
 
 package io.github.dronesecurity.dronesystem.drone.domain.drone.order.objects;
 
+import io.github.dronesecurity.lib.ValueObject;
+
 /**
  * Class representing the path that the drone needs to follow to perform the delivery.
  */
-public class Path { }
+public final class Path implements ValueObject<Path> {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSameValueAs(final Path value) {
+        return false;
+    }
+}

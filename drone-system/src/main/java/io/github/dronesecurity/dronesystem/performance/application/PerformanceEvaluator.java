@@ -63,6 +63,7 @@ public final class PerformanceEvaluator {
         final File cameraSubscriberOutputFile = new File(CAMERA_PERFORMANCE_SUBSCRIBER_FILE_NAME);
         final File accelerometerSubscriberOutputFile = new File(ACCELEROMENTER_PERFORMANCE_SUBSCRIBER_FILE_NAME);
         final File proximitySubscriberOutputFile = new File(PROXIMITY_PERFORMANCE_SUBSCRIBER_FILE_NAME);
+
         final File averageResultsOutputFile = new File(AVERAGE_PERFORMANCE_RESULTS_FILE_NAME);
 
         try {

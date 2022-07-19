@@ -43,7 +43,6 @@ public class PerformanceCamera extends Camera implements PerformanceSensor {
      * @throws IOException whether it's impossible to access the file that will contain the performance data
      */
     public PerformanceCamera() throws IOException {
-        super();
         this.outputHelper = new CameraOutputHelperImpl();
         this.publisher = new CameraPerformancePublisherImpl();
     }

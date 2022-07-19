@@ -58,16 +58,6 @@ public class Accelerometer extends AbstractSensor {
      * {@inheritDoc}
      */
     @Override
-    public Alert performReading() {
-        this.readData();
-        this.processData();
-        return this.analyzeData();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void publishData(final OrderData orderData) {
         this.accelerometerDataPublisher.publishAccelerometerData(orderData, this.processedData);
     }
@@ -80,7 +70,11 @@ public class Accelerometer extends AbstractSensor {
         return this.processedData;
     }
 
-    private void readData() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void readData() {
         if (this.isOn() && getOutputStream().size() > 0) {
             final String orig = getOutputStream().toString(StandardCharsets.UTF_8).trim();
 
@@ -102,11 +96,19 @@ public class Accelerometer extends AbstractSensor {
         }
     }
 
-    private void processData() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void processData() {
         this.processedData = this.accelerometerDataProcessor.processAccelerometerData(this.accelerometerData);
     }
 
-    private Alert analyzeData() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected Alert analyzeData() {
         return this.accelerometerDataAnalyzer.analyzeAccelerometerData(this.processedData);
     }
 }
