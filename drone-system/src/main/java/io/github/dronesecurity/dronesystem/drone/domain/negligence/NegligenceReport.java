@@ -7,9 +7,9 @@ package io.github.dronesecurity.dronesystem.drone.domain.negligence;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.dronesecurity.dronesystem.drone.domain.drone.camera.objects.RawCameraData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.objects.ProcessedAccelerometerData;
-import io.github.dronesecurity.dronesystem.drone.domain.drone.proximity.objects.RawProximityData;
+import io.github.dronesecurity.dronesystem.drone.domain.drone.camera.objects.ProcessedCameraData;
+import io.github.dronesecurity.dronesystem.drone.domain.drone.proximity.objects.ProcessedProximityData;
 import io.github.dronesecurity.lib.DateHelper;
 import io.github.dronesecurity.lib.MqttMessageParameterConstants;
 import org.jetbrains.annotations.NotNull;
@@ -35,9 +35,9 @@ public final class NegligenceReport {
      * @param orderId the order identifier related to this negligence
      */
     public NegligenceReport(final String negligent,
-                            final @NotNull RawProximityData proximityData,
+                            final @NotNull ProcessedProximityData proximityData,
                             final @NotNull ProcessedAccelerometerData accelerometer,
-                            final @NotNull RawCameraData camera,
+                            final @NotNull ProcessedCameraData camera,
                             final long orderId) {
         this.negligent = negligent;
         final ObjectMapper objectMapper = new ObjectMapper();
