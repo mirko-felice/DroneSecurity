@@ -3,7 +3,7 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.dronesystem.drone.domain.drone.sensor;
+package io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.analyze;
 
 import io.github.dronesecurity.dronesystem.drone.application.drone.accelerometer.AccelerometerDataAnalyzerImpl;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.objects.ProcessedAccelerometerData;
