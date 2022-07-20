@@ -10,7 +10,7 @@ import io.github.dronesecurity.userapplication.application.user.ohs.pl.*;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.*;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.serialization.IssueStringHelper;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.services.MaintainerIssueReportService;
-import io.github.dronesecurity.userapplication.utilities.CastHelper;
+import io.github.dronesecurity.lib.CastHelper;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;

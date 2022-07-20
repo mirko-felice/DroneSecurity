@@ -20,7 +20,7 @@ import io.github.dronesecurity.userapplication.domain.shipping.shipping.service.
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.service.OrderManager;
 import io.github.dronesecurity.userapplication.infrastructure.shipping.repo.MongoOrderRepository;
 import io.github.dronesecurity.userapplication.presentation.AbstractAPI;
-import io.github.dronesecurity.userapplication.utilities.CastHelper;
+import io.github.dronesecurity.lib.CastHelper;
 import io.github.dronesecurity.userapplication.utilities.shipping.ShippingAPIHelper;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;

@@ -10,6 +10,7 @@ import io.github.dronesecurity.dronesystem.drone.application.drone.camera.Camera
 import io.github.dronesecurity.dronesystem.drone.application.drone.camera.CameraDataPublisherImpl;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Alert;
 import io.github.dronesecurity.dronesystem.drone.application.drone.camera.CameraConnectionImpl;
+import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.CameraAlert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.camera.objects.ProcessedCameraData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.camera.objects.RawCameraData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.camera.services.CameraConnection;
@@ -65,6 +66,20 @@ public class Camera extends AbstractSensor {
     @Override
     public void publishData(final OrderData orderData) {
         this.cameraDataPublisher.publishCameraData(orderData, this.processedCameraData);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Alert performReading() {
+        final Alert alert = super.performReading();
+        if (this.processedCameraData == null)
+            return alert;
+        else
+            return new CameraAlert(alert.getAlertType(),
+                    alert.getAlertLevel(),
+                    this.processedCameraData.getImageLength());
     }
 
     /**

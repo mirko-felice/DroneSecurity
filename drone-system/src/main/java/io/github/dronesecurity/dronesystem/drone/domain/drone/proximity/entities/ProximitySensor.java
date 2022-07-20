@@ -12,6 +12,7 @@ import io.github.dronesecurity.dronesystem.drone.application.drone.proximity.Pro
 import io.github.dronesecurity.dronesystem.drone.application.drone.proximity.ProximityDataProcessorImpl;
 import io.github.dronesecurity.dronesystem.drone.application.drone.proximity.ProximityDataPublisherImpl;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Alert;
+import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.ProximityAlert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.order.objects.OrderData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.proximity.objects.ProcessedProximityData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.proximity.objects.RawProximityData;
@@ -59,18 +60,22 @@ public class ProximitySensor extends AbstractSensor {
      * {@inheritDoc}
      */
     @Override
-    public Alert performReading() {
-        this.readData();
-        this.processData();
-        return this.analyzeData();
+    public void publishData(final OrderData orderData) {
+        this.proximityDataPublisher.publishProximityData(orderData, this.processedProximityData);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void publishData(final OrderData orderData) {
-        this.proximityDataPublisher.publishProximityData(orderData, this.processedProximityData);
+    public Alert performReading() {
+        final Alert alert = super.performReading();
+        if (this.processedProximityData == null)
+            return alert;
+        else
+            return new ProximityAlert(alert.getAlertType(),
+                    alert.getAlertLevel(),
+                    this.processedProximityData.getDistance());
     }
 
     /**
