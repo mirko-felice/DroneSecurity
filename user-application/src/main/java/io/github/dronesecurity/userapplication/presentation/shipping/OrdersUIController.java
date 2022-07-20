@@ -141,7 +141,8 @@ public final class OrdersUIController implements Initializable {
                                 ShippingAPIHelper.postJson(ShippingAPIHelper.Operation.PERFORM_DELIVERY, body)
                                         .onSuccess(ignored -> Platform.runLater(() -> {
                                             this.table.getSelectionModel().clearSelection();
-                                            UIHelper.showMonitoringUI(order);
+                                            UIHelper.showMonitoringUI();
+                                            UIHelper.showDroneControllerUI(order.getId().asLong());
                                         }));
                             });
                 });
@@ -164,7 +165,7 @@ public final class OrdersUIController implements Initializable {
 
     @FXML
     private void showDataHistory() {
-        this.getSelectedOrder().ifPresent(order -> UIHelper.showDataHistoryUI(order.getId().asLong()));
+        this.getSelectedOrder().ifPresent(order -> UIHelper.showAccelerometerDataHistoryUI(order.getId().asLong()));
     }
 
     private void refreshOrders() {

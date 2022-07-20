@@ -31,6 +31,11 @@ public final class MqttTopicConstants {
     public static final String LIFECYCLE_TOPIC = "lifecycle";
 
     /**
+     * Drone moving state change topic name.
+     */
+    public static final String DRONE_MOVING_TOPIC = "movingStateChange";
+
+    /**
      * Issue report related topic name.
      */
     public static final String ISSUE_TOPIC = "issue";
