@@ -22,6 +22,10 @@ BoundedContext DroneContext implements Drone {
 			STABLE, WARNING, CRITICAL;
 		}
 
+		enum AlertType {
+			DISTANCE, ANGLE, CAMERA;
+		}
+
 		Entity Drone {
 			String id
 			- SensorSet sensorSet
@@ -143,9 +147,10 @@ BoundedContext DroneContext implements Drone {
 	}
 
 	Aggregate UserMonitoring {
-		ValueObject ProximityData
-		ValueObject AccelerometerData
-		ValueObject CameraData
+		ValueObject SensorData
+		ValueObject ProximityData extends SensorData
+		ValueObject AccelerometerData extends SensorData
+		ValueObject CameraData extends SensorData
 		DomainEvent ProximityRead {
 			- ProximityData proximityData
 		}
@@ -158,12 +163,14 @@ BoundedContext DroneContext implements Drone {
 			- CameraData cameraData
 		}
 
-		DomainEvent WarningSituation {
-			String message
+		DomainEvent StableSituation
+
+		DomainEvent DangerousSituation {
+			- AlertType alertType
 		}
 
 		DomainEvent CriticalSituation {
-			String message
+			- AlertType alertType
 		}
 
 		DomainEvent StatusChanged {
@@ -174,16 +181,15 @@ BoundedContext DroneContext implements Drone {
 			String movingState
 		}
 
-		Service UserMonitoringService {
-			void subscribeToProximityDataRead();
-			void subscribeToAccelerometerDataRead();
-			void subscribeToCameraDataRead();
-			void subscribeToAlerts();
-			void subscribeToOrderStatusChange();
-			void subscribeToMovingStateChange();
+		Service DataManager {
 			List<@ProximityData> retrieveProximityDataHistory(long orderId);
 			List<@AccelerometerData> retrieveAccelerometerDataHistory(long orderId);
 			List<@CameraData> retrieveCameraDataHistory(long orderId);
+		}
+
+		Service UserMonitoringService {
+			void startOrderMonitoring(long orderId);
+			void stopOrderMonitoring(long orderId);
 		}
 	}
 }
