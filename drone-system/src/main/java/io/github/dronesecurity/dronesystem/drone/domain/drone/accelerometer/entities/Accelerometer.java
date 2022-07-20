@@ -16,6 +16,7 @@ import io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.obje
 import io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.services.AccelerometerDataAnalyzer;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.services.AccelerometerDataProcessor;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.services.AccelerometerDataPublisher;
+import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.AccelerometerAlert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Alert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.order.objects.OrderData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.entities.AbstractSensor;
@@ -60,6 +61,22 @@ public class Accelerometer extends AbstractSensor {
     @Override
     public void publishData(final OrderData orderData) {
         this.accelerometerDataPublisher.publishAccelerometerData(orderData, this.processedData);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Alert performReading() {
+        final Alert alert = super.performReading();
+        if (this.processedData == null)
+            return alert;
+        else
+            return new AccelerometerAlert(alert.getAlertType(),
+                    alert.getAlertLevel(),
+                    this.processedData.getPitch(),
+                    this.processedData.getRoll(),
+                    this.processedData.getYaw());
     }
 
     /**
