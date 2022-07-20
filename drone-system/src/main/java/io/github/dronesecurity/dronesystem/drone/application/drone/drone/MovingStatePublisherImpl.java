@@ -40,6 +40,6 @@ public class MovingStatePublisherImpl implements MovingStatePublisher {
     private void publishMovingState(final @NotNull OrderData orderData, final String movingState) {
         final ObjectNode payload = new ObjectMapper().createObjectNode();
         payload.put(MqttMessageParameterConstants.DRONE_MOVING_STATE_PARAMETER, movingState);
-        Connection.getInstance().publish(MqttTopicConstants.LIFECYCLE_TOPIC + orderData.getOrderId(), payload);
+        Connection.getInstance().publish(MqttTopicConstants.DRONE_MOVING_TOPIC + orderData.getOrderId(), payload);
     }
 }
