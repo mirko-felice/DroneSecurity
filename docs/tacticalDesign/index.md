@@ -59,10 +59,11 @@ Sono stati quindi analizzati nel dettaglio ciascuno di essi:
   addizionali.
 
   L'aggregato _UserMonitoring_ invece è mirato al tracciamento dei messaggi inviati dal sistema del drone. Infatti
-  possiede i *value object* per mantenere i dati ricevuti e un servizio che riceverà tutti i messaggi del drone e
-  informerà il resto del sistema attraverso l'uso dei rispettivi *Domain Events*. I messaggi in questione riguardano i
-  dati di ogni sensore, i messaggi di allerta del drone e quelli relativi allo stato del movimento del drone (arrestato
-  oppure in movimento).
+  possiede i *value object* per mantenere i dati ricevuti e due servizi, uno dei quali riceverà tutti i messaggi del
+  drone relativi ai sensori, mentre il secondo permetterà di osservare lo stato della consegna e controllare il drone
+  da remoto. Essi avranno inoltre il compito d'informare il resto del sistema attraverso l'uso dei rispettivi
+  *Domain Events*. I messaggi in questione riguardano i dati di ogni sensore, i messaggi di allerta del drone e 
+  quelli relativi allo stato del movimento del drone (arrestato oppure in movimento).
 
 
 * _**Issue Reporting Context**_: questo contesto si occupa di gestire solo le segnalazioni
