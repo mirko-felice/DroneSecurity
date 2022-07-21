@@ -27,7 +27,7 @@ tasks {
     }
 
     javadoc {
-        val libUrl = "https://javadoc.io/doc/io.github.dronesecurity.lib/latest"
+        val libUrl = "https://javadoc.io/doc/io.github.mirko-felice.dronesecurity/lib/latest"
         val connection = uri(libUrl).toURL().openConnection() as HttpURLConnection
         connection.instanceFollowRedirects = false
         if (connection.responseCode == 200)
