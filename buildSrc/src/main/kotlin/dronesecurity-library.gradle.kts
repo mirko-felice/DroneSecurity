@@ -122,9 +122,9 @@ signing {
 tasks {
     val propertiesFile = file(
             (if (System.getenv("CI") == true.toString())
-                rootDir
+                projectDir
             else
-                projectDir)
+                rootDir)
             .path + File.separator + "project.properties")
 
     register("createCerts") {
