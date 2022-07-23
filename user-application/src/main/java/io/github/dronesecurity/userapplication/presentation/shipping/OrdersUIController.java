@@ -98,29 +98,7 @@ public final class OrdersUIController implements Initializable {
         this.table.getSelectionModel().selectedItemProperty().addListener((observable, oldOrder, order) -> {
             this.table.getScene().getWindow().setOnHidden(ignored ->
                     DomainEvents.unregister(OrderUpdated.class, this.orderUpdatedHandler));
-            if (order == null) {
-                this.performDeliveryButton.setDisable(true);
-                this.rescheduleDeliveryButton.setDisable(true);
-                this.showDataHistoryButton.setDisable(true);
-            } else {
-                if (order.getCurrentState() == OrderState.PLACED || order.getCurrentState() == OrderState.RESCHEDULED) {
-                    this.performDeliveryButton.setDisable(false);
-                    this.rescheduleDeliveryButton.setDisable(true);
-                    this.showDataHistoryButton.setDisable(true);
-                } else if (order.getCurrentState() == OrderState.FAILED) {
-                    this.performDeliveryButton.setDisable(true);
-                    this.rescheduleDeliveryButton.setDisable(false);
-                    this.showDataHistoryButton.setDisable(false);
-                } else if (order.getCurrentState() == OrderState.SUCCEEDED) {
-                    this.performDeliveryButton.setDisable(true);
-                    this.rescheduleDeliveryButton.setDisable(true);
-                    this.showDataHistoryButton.setDisable(false);
-                } else {
-                    this.performDeliveryButton.setDisable(true);
-                    this.rescheduleDeliveryButton.setDisable(true);
-                    this.showDataHistoryButton.setDisable(true);
-                }
-            }
+            this.checkOrderType(order);
         });
 
         DomainEvents.register(OrderUpdated.class, this.orderUpdatedHandler);
@@ -185,4 +163,29 @@ public final class OrdersUIController implements Initializable {
         return Optional.ofNullable(this.table.getSelectionModel().getSelectedItem());
     }
 
+    private void checkOrderType(final Order order) {
+        if (order == null) {
+            this.performDeliveryButton.setDisable(true);
+            this.rescheduleDeliveryButton.setDisable(true);
+            this.showDataHistoryButton.setDisable(true);
+        } else {
+            if (order.getCurrentState() == OrderState.PLACED || order.getCurrentState() == OrderState.RESCHEDULED) {
+                this.performDeliveryButton.setDisable(false);
+                this.rescheduleDeliveryButton.setDisable(true);
+                this.showDataHistoryButton.setDisable(true);
+            } else if (order.getCurrentState() == OrderState.FAILED) {
+                this.performDeliveryButton.setDisable(true);
+                this.rescheduleDeliveryButton.setDisable(false);
+                this.showDataHistoryButton.setDisable(false);
+            } else if (order.getCurrentState() == OrderState.SUCCEEDED) {
+                this.performDeliveryButton.setDisable(true);
+                this.rescheduleDeliveryButton.setDisable(true);
+                this.showDataHistoryButton.setDisable(false);
+            } else {
+                this.performDeliveryButton.setDisable(true);
+                this.rescheduleDeliveryButton.setDisable(true);
+                this.showDataHistoryButton.setDisable(true);
+            }
+        }
+    }
 }

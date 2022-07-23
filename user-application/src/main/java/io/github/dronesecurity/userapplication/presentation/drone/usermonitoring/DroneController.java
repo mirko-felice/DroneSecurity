@@ -93,7 +93,7 @@ public final class DroneController implements Initializable {
             else
                 DroneAPIHelper.postJson(DroneAPIHelper.Operation.CHANGE_MODE,
                         body.put(DroneAPIHelper.DRIVING_MODE_KEY, DrivingMode.MANUAL.toString()));
-            this.checkButtons();
+            this.setButtonsCorrectly();
         });
     }
 
@@ -101,7 +101,7 @@ public final class DroneController implements Initializable {
         Platform.runLater(() -> {
             this.currentSituationLabel.setText(dangerousSituation.toString());
             this.currentSituationLabel.setStyle("-fx-text-fill: orange;");
-            this.checkButtons();
+            this.setButtonsCorrectly();
         });
     }
 
@@ -109,46 +109,15 @@ public final class DroneController implements Initializable {
         Platform.runLater(() -> {
             this.currentSituationLabel.setText(criticalSituation.toString());
             this.currentSituationLabel.setStyle(RED_TEXT);
-            this.checkButtons();
+            this.setButtonsCorrectly();
         });
     }
 
     private void onStatusChanged(final StatusChanged statusEvent) {
         Platform.runLater(() -> {
             this.deliveryStatusLabel.setText(statusEvent.getStatus());
-            this.checkButtons();
-            switch (statusEvent.getStatus()) {
-                case MqttMessageValueConstants.DELIVERING_MESSAGE:
-                    UserAPIHelper.postJson(UserAPIHelper.Operation.REMOVE_DRONE,
-                            new JsonObject().put(UserAPIHelper.DRONE_KEY, "TODO")); // TODO
-                    break;
-                case MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE:
-                    this.deliveryStatusLabel.setStyle("-fx-text-fill: green;");
-                    this.performShippingOperation(ShippingAPIHelper.Operation.SUCCEED_DELIVERY);
-                    break;
-                case MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE:
-                    this.deliveryStatusLabel.setStyle(RED_TEXT);
-                    this.performShippingOperation(ShippingAPIHelper.Operation.FAIL_DELIVERY);
-                    break;
-                case MqttMessageValueConstants.RETURNING_ACKNOWLEDGEMENT_MESSAGE:
-                    this.deliveryStatusLabel.setStyle(BLACK_TEXT);
-                    break;
-                case MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE:
-                    this.deliveryStatusLabel.setStyle("-fx-text-fill: cyan;");
-                    UserAPIHelper.postJson(UserAPIHelper.Operation.ADD_DRONE,
-                            new JsonObject().put(UserAPIHelper.DRONE_KEY, "TODO")); // TODO
-                    DialogUtils.showInfoDialog("Drone successfully returned.", () -> {
-                        DomainEvents.unregister(CriticalSituation.class, this.criticalSituationHandler);
-                        DomainEvents.unregister(DangerousSituation.class, this.dangerousSituationHandler);
-                        DomainEvents.unregister(StableSituation.class, this.stableSituationHandler);
-                        DomainEvents.unregister(StatusChanged.class, this.statusChangedHandler);
-                        DomainEvents.unregister(MovingStateChanged.class, this.movingStateChangedHandler);
-                        this.monitoringService.stopOrderMonitoring(this.orderId);
-                        ((Stage) this.droneStateLabel.getScene().getWindow()).close();
-                    });
-                    break;
-                default:
-            }
+            this.setButtonsCorrectly();
+            this.setNewState(statusEvent.getStatus());
         });
     }
 
@@ -156,14 +125,14 @@ public final class DroneController implements Initializable {
         Platform.runLater(() -> {
             this.currentSituationLabel.setText(stableSituation.toString());
             this.currentSituationLabel.setStyle(BLACK_TEXT);
-            this.checkButtons();
+            this.setButtonsCorrectly();
         });
     }
 
     private void onMovingStateChanged(final MovingStateChanged movingStateChanged) {
         Platform.runLater(() -> {
             this.droneStateLabel.setText(movingStateChanged.getMovingState());
-            this.checkButtons();
+            this.setButtonsCorrectly();
         });
     }
 
@@ -190,11 +159,11 @@ public final class DroneController implements Initializable {
         this.proceedButton.setDisable(false);
     }
 
-    private void checkButtons() {
+    private void setButtonsCorrectly() {
         final String currentSituation = this.currentSituationLabel.getText();
         if (this.switchMode.isSelected()) {
             if (SituationConstants.STABLE.equals(currentSituation))
-                this.stableAlertButtonCheck();
+                this.setButtonsWhenStable();
             else if (SituationConstants.CRITICAL_ANGLE.equals(currentSituation)
                     || SituationConstants.CRITICAL_DISTANCE.equals(currentSituation)) {
                 this.proceedButton.setDisable(true);
@@ -208,7 +177,7 @@ public final class DroneController implements Initializable {
         }
     }
 
-    private void stableAlertButtonCheck() {
+    private void setButtonsWhenStable() {
         switch (this.deliveryStatusLabel.getText()) {
             case MqttMessageValueConstants.DELIVERING_MESSAGE:
             case MqttMessageValueConstants.RETURNING_ACKNOWLEDGEMENT_MESSAGE:
@@ -232,6 +201,41 @@ public final class DroneController implements Initializable {
                 this.proceedButton.setDisable(true);
                 this.haltButton.setDisable(true);
                 this.recallButton.setDisable(true);
+                break;
+            default:
+        }
+    }
+
+    private void setNewState(final @NotNull String state) {
+        switch (state) {
+            case MqttMessageValueConstants.DELIVERING_MESSAGE:
+                UserAPIHelper.postJson(UserAPIHelper.Operation.REMOVE_DRONE,
+                        new JsonObject().put(UserAPIHelper.DRONE_KEY, "TODO")); // TODO
+                break;
+            case MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE:
+                this.deliveryStatusLabel.setStyle("-fx-text-fill: green;");
+                this.performShippingOperation(ShippingAPIHelper.Operation.SUCCEED_DELIVERY);
+                break;
+            case MqttMessageValueConstants.DELIVERY_FAILED_MESSAGE:
+                this.deliveryStatusLabel.setStyle(RED_TEXT);
+                this.performShippingOperation(ShippingAPIHelper.Operation.FAIL_DELIVERY);
+                break;
+            case MqttMessageValueConstants.RETURNING_ACKNOWLEDGEMENT_MESSAGE:
+                this.deliveryStatusLabel.setStyle(BLACK_TEXT);
+                break;
+            case MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE:
+                this.deliveryStatusLabel.setStyle("-fx-text-fill: cyan;");
+                UserAPIHelper.postJson(UserAPIHelper.Operation.ADD_DRONE,
+                        new JsonObject().put(UserAPIHelper.DRONE_KEY, "TODO")); // TODO
+                DialogUtils.showInfoDialog("Drone successfully returned.", () -> {
+                    DomainEvents.unregister(CriticalSituation.class, this.criticalSituationHandler);
+                    DomainEvents.unregister(DangerousSituation.class, this.dangerousSituationHandler);
+                    DomainEvents.unregister(StableSituation.class, this.stableSituationHandler);
+                    DomainEvents.unregister(StatusChanged.class, this.statusChangedHandler);
+                    DomainEvents.unregister(MovingStateChanged.class, this.movingStateChangedHandler);
+                    this.monitoringService.stopOrderMonitoring(this.orderId);
+                    ((Stage) this.droneStateLabel.getScene().getWindow()).close();
+                });
                 break;
             default:
         }

@@ -28,17 +28,11 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
 
 /**
  * Controller dedicated to monitoring delivery.
  */
 public final class MonitorController implements Initializable {
-
-    private final Consumer<NewNegligence> newNegligenceHandler;
-    private final Consumer<ProximityRead> proximityReadHandler;
-    private final Consumer<AccelerometerRead> accelerometerReadHandler;
-    private final Consumer<CameraRead> cameraReadHandler;
 
     @FXML private Label proximityCurrentData;
     @FXML private TableView<Map<String, Integer>> accelerometerCurrentData;
@@ -59,28 +53,18 @@ public final class MonitorController implements Initializable {
     @FXML private TableColumn<Map<String, Integer>, Integer> currentAccelerometerZValue;
 
     /**
-     * Build the Controller to interact with services.
-     */
-    public MonitorController() {
-        this.newNegligenceHandler = this::onNewNegligence;
-        this.proximityReadHandler = this::onProximityRead;
-        this.accelerometerReadHandler = this::onAccelerometerRead;
-        this.cameraReadHandler = this::onCameraRead;
-        DomainEvents.register(StatusChanged.class, event -> {
-            if (MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE.equals(event.getStatus()))
-                ((Stage) this.proximityCurrentData.getScene().getWindow()).close();
-        });
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        DomainEvents.register(NewNegligence.class, this.newNegligenceHandler);
-        DomainEvents.register(ProximityRead.class, this.proximityReadHandler);
-        DomainEvents.register(AccelerometerRead.class, this.accelerometerReadHandler);
-        DomainEvents.register(CameraRead.class, this.cameraReadHandler);
+        DomainEvents.register(NewNegligence.class, this::onNewNegligence);
+        DomainEvents.register(ProximityRead.class, this::onProximityRead);
+        DomainEvents.register(AccelerometerRead.class, this::onAccelerometerRead);
+        DomainEvents.register(CameraRead.class, this::onCameraRead);
+        DomainEvents.register(StatusChanged.class, event -> {
+            if (MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE.equals(event.getStatus()))
+                ((Stage) this.proximityCurrentData.getScene().getWindow()).close();
+        });
 
         this.proximityPreviousDataColumn.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue()));
         this.proximityPreviousDataColumn.setCellFactory(ignored -> new FXHelper.ProximityCell<>());

@@ -42,22 +42,9 @@
     
     <rule ref="category/java/design.xml" >
         <exclude name="LoosePackageCoupling"/> <!-- Ignoring package coupling because of our architecture. -->
-        <exclude name="LawOfDemeter"/> <!-- TODO Check after refactoring -->
-        <exclude name="TooManyFields"/> <!-- TODO Check after refactoring -->
-        <exclude name="DataClass" /> <!-- TODO Check after refactoring -->
+        <exclude name="LawOfDemeter"/> <!-- Too many constraints. -->
+        <exclude name="DataClass" /> <!-- Needed to exclude for 'AbstractOrder' and 'NegligenceReport' in drone-system -->
         <exclude name="UseObjectForClearerAPI"/>
-    </rule>
-
-    <rule ref="category/java/design.xml/CyclomaticComplexity">
-        <properties>
-            <property name="methodReportLevel" value="12" /> <!-- TODO Check after refactoring -->
-        </properties>
-    </rule>
-
-    <rule ref="category/java/design.xml/TooManyMethods">
-        <properties>
-            <property name="maxmethods" value="13" /> <!-- TODO Check after refactoring -->
-        </properties>
     </rule>
 
     <rule ref="category/java/documentation.xml/CommentRequired">

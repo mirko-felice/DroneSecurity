@@ -165,12 +165,10 @@
     <module name="TypeName"/>
 
     <!-- Size violations. -->
-    <module name="AnonInnerLength">
-      <property name="max" value="100" /> <!-- TODO change value after refactoring -->
-    </module>
+    <module name="AnonInnerLength"/>
     <module name="ExecutableStatementCount"/>
     <module name="LambdaBodyLength">
-      <property name="max" value="100" /> <!-- TODO change value after refactoring -->
+      <property name="max" value="20" /> <!-- TODO check value -->
     </module>
     <module name="MethodLength"/>
     <module name="ParameterNumber">

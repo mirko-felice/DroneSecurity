@@ -68,7 +68,7 @@ public final class ReportsUIController implements Initializable {
                             break;
                         case NOT_LOGGED:
                         default:
-                            // TODO
+                            throw new IllegalStateException("Unexpected value: " + response.body());
                     }
         });
         this.openController.setReportType(false);

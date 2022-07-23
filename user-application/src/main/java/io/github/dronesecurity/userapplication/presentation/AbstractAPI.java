@@ -45,24 +45,7 @@ public abstract class AbstractAPI extends AbstractVerticle {
         RouterBuilder.create(this.getVertx(), this.getOpenAPISpecUrl())
                 .onSuccess(routerBuilder -> {
                     this.setupOperations(routerBuilder);
-
-                    final JsonArray servers = routerBuilder.getOpenAPI().getOpenAPI().getJsonArray("servers");
-                    final int serversCount = servers.size();
-                    final List<Future<?>> futures = new ArrayList<>(serversCount);
-                    for (int i = 0; i < serversCount; i++) {
-                        final JsonObject server = servers.getJsonObject(i);
-                        final JsonObject variables = server.getJsonObject("variables");
-
-                        final String basePath = SEP + variables.getJsonObject("basePath").getString(DEFAULT_KEY)
-                                + SEP + "*";
-                        final int port = Integer.parseInt(variables.getJsonObject("port").getString(DEFAULT_KEY));
-                        final String host = variables.getJsonObject("host").getString(DEFAULT_KEY);
-
-                        globalRouter.route(basePath).subRouter(routerBuilder.createRouter());
-                        futures.add(this.getVertx().createHttpServer().requestHandler(globalRouter).listen(port, host));
-                    }
-                    CompositeFuture.all(Arrays.asList(futures.toArray(new Future[0])))
-                            .onSuccess(ignored -> startPromise.complete());
+                    this.createServers(globalRouter, routerBuilder).onSuccess(ignored -> startPromise.complete());
                 })
                 .onFailure(startPromise::fail);
     }
@@ -113,4 +96,22 @@ public abstract class AbstractAPI extends AbstractVerticle {
      */
     protected abstract void setupOperations(RouterBuilder routerBuilder);
 
+    private CompositeFuture createServers(final Router globalRouter, final @NotNull RouterBuilder routerBuilder) {
+        final JsonArray servers = routerBuilder.getOpenAPI().getOpenAPI().getJsonArray("servers");
+        final int serversCount = servers.size();
+        final List<Future<?>> futures = new ArrayList<>(serversCount);
+        for (int i = 0; i < serversCount; i++) {
+            final JsonObject server = servers.getJsonObject(i);
+            final JsonObject variables = server.getJsonObject("variables");
+
+            final String basePath = SEP + variables.getJsonObject("basePath").getString(DEFAULT_KEY)
+                    + SEP + "*";
+            final int port = Integer.parseInt(variables.getJsonObject("port").getString(DEFAULT_KEY));
+            final String host = variables.getJsonObject("host").getString(DEFAULT_KEY);
+
+            globalRouter.route(basePath).subRouter(routerBuilder.createRouter());
+            futures.add(this.getVertx().createHttpServer().requestHandler(globalRouter).listen(port, host));
+        }
+        return CompositeFuture.all(Arrays.asList(futures.toArray(new Future[0])));
+    }
 }

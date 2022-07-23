@@ -31,9 +31,9 @@ public class ProcessedAccelerometerData {
      * @param yaw Yaw angle value
      */
     public ProcessedAccelerometerData(final int pitch, final int roll, final int yaw) {
-        if (pitch < MIN_ANGLE || pitch > MAX_ANGLE) throw new NotAcceptableAngleException();
-        if (roll < MIN_ANGLE || roll > MAX_ANGLE) throw new NotAcceptableAngleException();
-        if (yaw < MIN_ANGLE || yaw > MAX_ANGLE) throw new NotAcceptableAngleException();
+        if (pitch < MIN_ANGLE || pitch > MAX_ANGLE
+                || roll < MIN_ANGLE || roll > MAX_ANGLE
+                || yaw < MIN_ANGLE || yaw > MAX_ANGLE) throw new NotAcceptableAngleException();
         this.pitch = pitch;
         this.roll = roll;
         this.yaw = yaw;

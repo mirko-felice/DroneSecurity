@@ -30,7 +30,6 @@ public interface DroneController {
      * Make a drone proceeding.
      * @param orderId {@link OrderIdentifier} to identify the drone
      */
-    // TODO restart?
     void proceed(OrderIdentifier orderId);
 
     /**
