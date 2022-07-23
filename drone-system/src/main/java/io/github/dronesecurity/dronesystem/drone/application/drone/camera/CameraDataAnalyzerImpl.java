@@ -8,8 +8,8 @@ package io.github.dronesecurity.dronesystem.drone.application.drone.camera;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Alert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.camera.objects.ProcessedCameraData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.camera.services.CameraDataAnalyzer;
-import io.github.dronesecurity.lib.AlertLevel;
-import io.github.dronesecurity.lib.AlertType;
+import io.github.dronesecurity.lib.shared.AlertLevel;
+import io.github.dronesecurity.lib.shared.AlertType;
 
 /**
  * Base implementation of {@link CameraDataAnalyzer} that always gives a stable alert level as result.

@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.dronesystem.drone.domain.drone.order.objects;
 
-import io.github.dronesecurity.lib.ValueObject;
+import io.github.dronesecurity.lib.shared.ValueObject;
 
 /**
  * Class representing the path that the drone needs to follow to perform the delivery.

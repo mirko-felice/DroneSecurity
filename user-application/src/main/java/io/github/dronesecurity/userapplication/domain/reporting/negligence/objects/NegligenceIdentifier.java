@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.domain.reporting.negligence.objects;
 
-import io.github.dronesecurity.lib.ValueObject;
+import io.github.dronesecurity.lib.shared.ValueObject;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.contracts.NegligenceReport;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.exceptions.NegligenceIdentifierCannotHaveNegativeValueException;
 import org.jetbrains.annotations.Contract;

@@ -9,8 +9,8 @@ import io.github.dronesecurity.dronesystem.drone.application.drone.camera.Camera
 import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Alert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.camera.objects.ProcessedCameraData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.camera.services.CameraDataAnalyzer;
-import io.github.dronesecurity.lib.AlertLevel;
-import io.github.dronesecurity.lib.AlertType;
+import io.github.dronesecurity.lib.shared.AlertLevel;
+import io.github.dronesecurity.lib.shared.AlertType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

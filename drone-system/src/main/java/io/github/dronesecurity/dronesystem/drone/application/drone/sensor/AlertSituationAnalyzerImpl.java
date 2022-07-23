@@ -9,7 +9,7 @@ import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Aler
 import io.github.dronesecurity.dronesystem.drone.domain.drone.order.objects.OrderData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.service.AlertLevelPublisher;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.service.AlertSituationAnalyzer;
-import io.github.dronesecurity.lib.AlertLevel;
+import io.github.dronesecurity.lib.shared.AlertLevel;
 import org.jetbrains.annotations.NotNull;
 
 /**

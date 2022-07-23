@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.domain.shipping.shipping.objects;
 
-import io.github.dronesecurity.lib.ValueObject;
+import io.github.dronesecurity.lib.shared.ValueObject;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.exceptions.EmptyProductNameException;
 import org.jetbrains.annotations.Contract;

@@ -9,8 +9,8 @@ import io.github.dronesecurity.dronesystem.drone.application.drone.proximity.Pro
 import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Alert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.proximity.objects.ProcessedProximityData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.proximity.services.ProximityDataAnalyzer;
-import io.github.dronesecurity.lib.AlertLevel;
-import io.github.dronesecurity.lib.AlertType;
+import io.github.dronesecurity.lib.shared.AlertLevel;
+import io.github.dronesecurity.lib.shared.AlertType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

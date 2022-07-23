@@ -8,7 +8,7 @@ package io.github.dronesecurity.userapplication.presentation;
 import io.github.dronesecurity.userapplication.application.user.ohs.pl.UserRole;
 import io.github.dronesecurity.userapplication.domain.user.entities.impl.CourierImpl;
 import io.github.dronesecurity.userapplication.domain.user.entities.impl.MaintainerImpl;
-import io.github.dronesecurity.lib.CastHelper;
+import io.github.dronesecurity.lib.utilities.CastHelper;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
 import io.vertx.ext.web.codec.BodyCodec;

@@ -5,8 +5,8 @@
 
 package io.github.dronesecurity.userapplication.domain.shipping.shipping.objects;
 
-import io.github.dronesecurity.lib.DateHelper;
-import io.github.dronesecurity.lib.ValueObject;
+import io.github.dronesecurity.lib.shared.Date;
+import io.github.dronesecurity.lib.shared.ValueObject;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -31,10 +31,10 @@ public final class OrderDate implements ValueObject<OrderDate> {
      * {@link OrderDate} representing tomorrow.
      */
     public static final OrderDate TOMORROW = OrderDate.parseInstant(TODAY_INSTANT.plus(1, ChronoUnit.DAYS));
-    private final Instant instant;
+    private final Date instant;
 
     private OrderDate(final Instant instant) {
-        this.instant = truncate(instant);
+        this.instant = Date.parseInstant(truncate(instant));
     }
 
     /**
@@ -44,7 +44,7 @@ public final class OrderDate implements ValueObject<OrderDate> {
      */
     @Contract(value = "_ -> new", pure = true)
     public static @NotNull OrderDate parseString(final String string) {
-        return new OrderDate(DateHelper.toInstant(string));
+        return new OrderDate(Date.parseString(string).asInstant());
     }
 
     /**
@@ -91,7 +91,7 @@ public final class OrderDate implements ValueObject<OrderDate> {
      * @return the {@link String} value
      */
     public @NotNull String asString() {
-        return DateHelper.toString(this.instant);
+        return this.instant.asString();
     }
 
     private static Instant truncate(final @NotNull Instant value) {

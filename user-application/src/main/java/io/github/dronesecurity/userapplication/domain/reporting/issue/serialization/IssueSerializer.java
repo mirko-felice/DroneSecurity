@@ -8,10 +8,10 @@ package io.github.dronesecurity.userapplication.domain.reporting.issue.serializa
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import io.github.dronesecurity.lib.DateHelper;
+import io.github.dronesecurity.lib.utilities.DateHelper;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.ClosedIssue;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.Issue;
-import io.github.dronesecurity.lib.CastHelper;
+import io.github.dronesecurity.lib.utilities.CastHelper;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;
 

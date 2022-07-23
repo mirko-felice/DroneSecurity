@@ -5,8 +5,8 @@
 
 package io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects;
 
-import io.github.dronesecurity.lib.AlertLevel;
-import io.github.dronesecurity.lib.AlertType;
+import io.github.dronesecurity.lib.shared.AlertLevel;
+import io.github.dronesecurity.lib.shared.AlertType;
 
 /**
  * Alert data structure that contains {@link AlertType} and {@link AlertLevel}.

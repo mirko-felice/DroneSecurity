@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.utilities;
 
-import io.github.dronesecurity.lib.MqttMessageParameterConstants;
+import io.github.dronesecurity.lib.connection.MqttMessageParameterConstants;
 
 /**
  * Accelerometer related strings.

@@ -7,8 +7,8 @@ package io.github.dronesecurity.dronesystem.drone;
 
 import io.github.dronesecurity.dronesystem.drone.application.drone.DroneRemoteCommands;
 import io.github.dronesecurity.dronesystem.drone.presentation.PropertiesGenerator;
-import io.github.dronesecurity.lib.Connection;
-import io.github.dronesecurity.lib.PropertiesConstants;
+import io.github.dronesecurity.lib.connection.Connection;
+import io.github.dronesecurity.lib.connection.PropertiesConstants;
 
 import java.io.File;
 import java.io.PrintWriter;

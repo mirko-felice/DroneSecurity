@@ -11,8 +11,8 @@ import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Acce
 import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.CameraAlert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.ProximityAlert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.order.objects.OrderData;
-import io.github.dronesecurity.lib.DateHelper;
-import io.github.dronesecurity.lib.MqttMessageParameterConstants;
+import io.github.dronesecurity.lib.utilities.DateHelper;
+import io.github.dronesecurity.lib.connection.MqttMessageParameterConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;

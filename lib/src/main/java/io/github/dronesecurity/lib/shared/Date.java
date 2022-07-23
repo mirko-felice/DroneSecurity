@@ -3,8 +3,9 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.lib;
+package io.github.dronesecurity.lib.shared;
 
+import io.github.dronesecurity.lib.utilities.DateHelper;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +14,6 @@ import java.time.Instant;
 /**
  * {@link ValueObject} representing a simple instant of time as wanted.
  */
-// TODO think about the name
 public final class Date implements ValueObject<Date> {
 
     private final Instant instant;
@@ -57,6 +57,14 @@ public final class Date implements ValueObject<Date> {
      */
     public @NotNull String asString() {
         return DateHelper.toString(this.instant);
+    }
+
+    /**
+     * Gets the value object as {@link Instant}.
+     * @return the {@link Instant} value
+     */
+    public @NotNull Instant asInstant() {
+        return this.instant;
     }
 
     /**

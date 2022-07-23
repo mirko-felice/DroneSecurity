@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.domain.shipping;
 
-import io.github.dronesecurity.lib.DateHelper;
+import io.github.dronesecurity.lib.utilities.DateHelper;
 import io.github.dronesecurity.userapplication.domain.shipping.client.Client;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.impl.PlacedOrderImpl;

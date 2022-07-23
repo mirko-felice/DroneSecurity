@@ -6,8 +6,8 @@
 package io.github.dronesecurity.userapplication.presentation;
 
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
-import io.github.dronesecurity.lib.Connection;
-import io.github.dronesecurity.lib.PropertiesConstants;
+import io.github.dronesecurity.lib.connection.Connection;
+import io.github.dronesecurity.lib.connection.PropertiesConstants;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

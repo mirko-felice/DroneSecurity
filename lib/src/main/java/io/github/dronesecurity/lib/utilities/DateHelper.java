@@ -3,7 +3,7 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.lib;
+package io.github.dronesecurity.lib.utilities;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -16,8 +16,6 @@ import java.util.Locale;
  */
 public final class DateHelper {
 
-    // TODO move inside Date
-    // TODO refactor lib packages in shared (entity, value object and date), connection (constants) and utilities(others but to review)
     private static final String ORDER_DATE_FORMAT = "MMMM dd yyyy HH:mm:ss";
     private static final ZoneId ZONE_ID = ZoneId.systemDefault();
     private static final DateTimeFormatter FORMATTER =

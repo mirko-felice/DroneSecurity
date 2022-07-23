@@ -20,7 +20,7 @@ import io.github.dronesecurity.dronesystem.drone.domain.drone.proximity.services
 import io.github.dronesecurity.dronesystem.drone.domain.drone.proximity.services.ProximityDataProcessor;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.proximity.services.ProximityDataPublisher;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.entities.AbstractSensor;
-import io.github.dronesecurity.lib.MqttMessageParameterConstants;
+import io.github.dronesecurity.lib.connection.MqttMessageParameterConstants;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.LoggerFactory;

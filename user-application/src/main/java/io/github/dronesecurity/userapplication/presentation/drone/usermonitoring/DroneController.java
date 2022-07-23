@@ -5,8 +5,8 @@
 
 package io.github.dronesecurity.userapplication.presentation.drone.usermonitoring;
 
-import io.github.dronesecurity.lib.DrivingMode;
-import io.github.dronesecurity.lib.MqttMessageValueConstants;
+import io.github.dronesecurity.lib.shared.DrivingMode;
+import io.github.dronesecurity.lib.connection.MqttMessageValueConstants;
 import io.github.dronesecurity.userapplication.application.drone.usermonitoring.UserMonitoringServiceImpl;
 import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.events.*;
 import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.services.UserMonitoringService;

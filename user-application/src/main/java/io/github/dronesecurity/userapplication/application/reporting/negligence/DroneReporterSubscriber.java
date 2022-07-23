@@ -8,8 +8,8 @@ package io.github.dronesecurity.userapplication.application.reporting.negligence
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.dronesecurity.lib.Connection;
-import io.github.dronesecurity.lib.MqttTopicConstants;
+import io.github.dronesecurity.lib.connection.Connection;
+import io.github.dronesecurity.lib.connection.MqttTopicConstants;
 import io.github.dronesecurity.userapplication.application.user.ohs.pl.GenericUser;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.objects.Assignee;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.objects.DroneData;

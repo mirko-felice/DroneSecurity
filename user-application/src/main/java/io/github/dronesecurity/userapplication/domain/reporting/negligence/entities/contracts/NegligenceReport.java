@@ -7,7 +7,7 @@ package io.github.dronesecurity.userapplication.domain.reporting.negligence.enti
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.github.dronesecurity.lib.Entity;
+import io.github.dronesecurity.lib.shared.Entity;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.objects.Assignee;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.objects.DroneData;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.objects.NegligenceIdentifier;

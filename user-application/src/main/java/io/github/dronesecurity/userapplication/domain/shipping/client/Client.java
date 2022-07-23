@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.domain.shipping.client;
 
-import io.github.dronesecurity.lib.Entity;
+import io.github.dronesecurity.lib.shared.Entity;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

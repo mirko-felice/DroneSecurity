@@ -5,8 +5,8 @@
 
 package io.github.dronesecurity.userapplication.presentation;
 
-import io.github.dronesecurity.lib.Connection;
-import io.github.dronesecurity.lib.PropertiesConstants;
+import io.github.dronesecurity.lib.connection.Connection;
+import io.github.dronesecurity.lib.connection.PropertiesConstants;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderDate;
 import io.github.dronesecurity.userapplication.infrastructure.shipping.repo.MongoOrderRepository;
 import io.github.dronesecurity.userapplication.presentation.reporting.negligence.AssigneeAPI;

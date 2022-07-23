@@ -7,7 +7,7 @@ package io.github.dronesecurity.dronesystem.performance.application.proximity;
 
 import io.github.dronesecurity.dronesystem.performance.domain.proximity.objects.ProximityPerformanceData;
 import io.github.dronesecurity.dronesystem.performance.domain.proximity.services.ProximityOutputHelper;
-import io.github.dronesecurity.lib.DateHelper;
+import io.github.dronesecurity.lib.utilities.DateHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

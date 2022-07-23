@@ -6,7 +6,7 @@
 package io.github.dronesecurity.userapplication.domain.user.entities.contracts;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import io.github.dronesecurity.lib.Entity;
+import io.github.dronesecurity.lib.shared.Entity;
 import io.github.dronesecurity.userapplication.domain.user.objects.Username;
 import io.github.dronesecurity.userapplication.infrastructure.user.serializers.UserDeserializer;
 

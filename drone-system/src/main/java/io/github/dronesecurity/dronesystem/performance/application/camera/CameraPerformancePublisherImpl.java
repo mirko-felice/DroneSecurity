@@ -10,9 +10,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.dronesecurity.dronesystem.performance.domain.camera.objects.CameraPerformanceData;
 import io.github.dronesecurity.dronesystem.performance.domain.camera.services.CameraPerformancePublisher;
 import io.github.dronesecurity.dronesystem.performance.utilities.PerformanceStringConstants;
-import io.github.dronesecurity.lib.Connection;
-import io.github.dronesecurity.lib.MqttMessageParameterConstants;
-import io.github.dronesecurity.lib.MqttTopicConstants;
+import io.github.dronesecurity.lib.connection.Connection;
+import io.github.dronesecurity.lib.connection.MqttMessageParameterConstants;
+import io.github.dronesecurity.lib.connection.MqttTopicConstants;
 import org.jetbrains.annotations.NotNull;
 
 /**

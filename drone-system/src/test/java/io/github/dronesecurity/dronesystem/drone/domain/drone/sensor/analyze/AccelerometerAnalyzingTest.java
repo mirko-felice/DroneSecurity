@@ -9,8 +9,8 @@ import io.github.dronesecurity.dronesystem.drone.application.drone.accelerometer
 import io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.objects.ProcessedAccelerometerData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.services.AccelerometerDataAnalyzer;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Alert;
-import io.github.dronesecurity.lib.AlertLevel;
-import io.github.dronesecurity.lib.AlertType;
+import io.github.dronesecurity.lib.shared.AlertLevel;
+import io.github.dronesecurity.lib.shared.AlertType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

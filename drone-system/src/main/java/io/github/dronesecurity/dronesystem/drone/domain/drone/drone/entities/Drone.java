@@ -10,8 +10,8 @@ import io.github.dronesecurity.dronesystem.drone.application.drone.drone.MovingS
 import io.github.dronesecurity.dronesystem.drone.domain.drone.drone.services.MovingStatePublisher;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.order.objects.OrderData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.entities.SensorSet;
-import io.github.dronesecurity.lib.AlertLevel;
-import io.github.dronesecurity.lib.DrivingMode;
+import io.github.dronesecurity.lib.shared.AlertLevel;
+import io.github.dronesecurity.lib.shared.DrivingMode;
 
 /**
  * Item representing a drone with all its physical sensors.

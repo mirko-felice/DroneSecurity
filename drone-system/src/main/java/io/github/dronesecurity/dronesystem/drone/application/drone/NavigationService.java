@@ -7,7 +7,7 @@ package io.github.dronesecurity.dronesystem.drone.application.drone;
 
 import io.github.dronesecurity.dronesystem.drone.domain.drone.drone.entities.Drone;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.order.objects.OrderData;
-import io.github.dronesecurity.lib.MqttMessageValueConstants;
+import io.github.dronesecurity.lib.connection.MqttMessageValueConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.SecureRandom;

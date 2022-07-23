@@ -5,9 +5,9 @@
 
 package io.github.dronesecurity.userapplication.domain.drone.usermonitoring.objects;
 
-import io.github.dronesecurity.lib.CastHelper;
-import io.github.dronesecurity.lib.Date;
-import io.github.dronesecurity.lib.MqttMessageParameterConstants;
+import io.github.dronesecurity.lib.utilities.CastHelper;
+import io.github.dronesecurity.lib.shared.Date;
+import io.github.dronesecurity.lib.connection.MqttMessageParameterConstants;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
 import org.jetbrains.annotations.NotNull;
 

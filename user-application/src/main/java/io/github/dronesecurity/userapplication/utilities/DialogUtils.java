@@ -5,8 +5,8 @@
 
 package io.github.dronesecurity.userapplication.utilities;
 
-import io.github.dronesecurity.lib.Date;
-import io.github.dronesecurity.lib.DateHelper;
+import io.github.dronesecurity.lib.shared.Date;
+import io.github.dronesecurity.lib.utilities.DateHelper;
 import io.github.dronesecurity.userapplication.domain.user.entities.impl.CourierImpl;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;

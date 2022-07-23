@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.domain.drone.usermonitoring.events;
 
-import io.github.dronesecurity.lib.AlertType;
+import io.github.dronesecurity.lib.shared.AlertType;
 import io.github.dronesecurity.userapplication.events.DomainEvent;
 import io.github.dronesecurity.userapplication.events.SituationConstants;
 

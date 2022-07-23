@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.domain.user.objects;
 
-import io.github.dronesecurity.lib.ValueObject;
+import io.github.dronesecurity.lib.shared.ValueObject;
 import io.github.dronesecurity.userapplication.domain.user.entities.contracts.User;
 import io.github.dronesecurity.userapplication.domain.user.exceptions.UsernameWithNumbersException;
 import org.jetbrains.annotations.Contract;

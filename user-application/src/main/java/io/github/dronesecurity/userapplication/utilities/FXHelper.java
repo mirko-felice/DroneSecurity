@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.utilities;
 
-import io.github.dronesecurity.lib.Connection;
+import io.github.dronesecurity.lib.connection.Connection;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

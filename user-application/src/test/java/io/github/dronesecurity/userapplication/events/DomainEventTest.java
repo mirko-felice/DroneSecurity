@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.events;
 
-import io.github.dronesecurity.lib.AlertType;
+import io.github.dronesecurity.lib.shared.AlertType;
 import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.events.DangerousSituation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

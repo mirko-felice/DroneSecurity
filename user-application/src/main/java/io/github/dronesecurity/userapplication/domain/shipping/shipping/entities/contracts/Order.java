@@ -7,7 +7,7 @@ package io.github.dronesecurity.userapplication.domain.shipping.shipping.entitie
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.github.dronesecurity.lib.Entity;
+import io.github.dronesecurity.lib.shared.Entity;
 import io.github.dronesecurity.userapplication.domain.shipping.client.Client;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderDate;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderIdentifier;

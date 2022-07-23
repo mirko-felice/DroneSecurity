@@ -8,8 +8,8 @@ package io.github.dronesecurity.dronesystem.drone.application.drone.acceleromete
 import io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.objects.ProcessedAccelerometerData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.services.AccelerometerDataAnalyzer;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Alert;
-import io.github.dronesecurity.lib.AlertLevel;
-import io.github.dronesecurity.lib.AlertType;
+import io.github.dronesecurity.lib.shared.AlertLevel;
+import io.github.dronesecurity.lib.shared.AlertType;
 import org.jetbrains.annotations.NotNull;
 
 /**

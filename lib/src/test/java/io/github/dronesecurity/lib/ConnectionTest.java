@@ -6,6 +6,7 @@
 package io.github.dronesecurity.lib;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.dronesecurity.lib.connection.Connection;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.crt.mqtt.MqttMessage;

@@ -8,7 +8,7 @@ package io.github.dronesecurity.dronesystem.performance.application;
 import io.github.dronesecurity.dronesystem.performance.application.drone.DroneServiceSimulator;
 import io.github.dronesecurity.dronesystem.performance.application.drone.PerformanceSubscriber;
 import io.github.dronesecurity.dronesystem.performance.application.drone.PerformanceOutputHelper;
-import io.github.dronesecurity.lib.Connection;
+import io.github.dronesecurity.lib.connection.Connection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.dronesecurity.lib.DateHelper;
+import io.github.dronesecurity.lib.utilities.DateHelper;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.entities.*;
 import org.jetbrains.annotations.NotNull;
 

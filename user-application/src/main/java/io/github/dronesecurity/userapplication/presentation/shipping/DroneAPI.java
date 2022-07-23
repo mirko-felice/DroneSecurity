@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.presentation.shipping;
 
-import io.github.dronesecurity.lib.DrivingMode;
+import io.github.dronesecurity.lib.shared.DrivingMode;
 import io.github.dronesecurity.userapplication.application.shipping.DroneControllerImpl;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderIdentifier;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.service.DroneController;

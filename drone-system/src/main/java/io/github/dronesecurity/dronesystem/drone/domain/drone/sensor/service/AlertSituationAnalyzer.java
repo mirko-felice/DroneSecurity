@@ -7,7 +7,7 @@ package io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.service;
 
 import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Alert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.order.objects.OrderData;
-import io.github.dronesecurity.lib.AlertLevel;
+import io.github.dronesecurity.lib.shared.AlertLevel;
 
 /**
  * Analyzer that processes alerts from all sensors and returns the {@link AlertLevel} of the drone.

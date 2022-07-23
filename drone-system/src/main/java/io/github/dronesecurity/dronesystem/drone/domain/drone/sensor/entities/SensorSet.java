@@ -15,9 +15,9 @@ import io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.exceptions.
 import io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.service.AlertSituationAnalyzer;
 import io.github.dronesecurity.dronesystem.drone.domain.negligence.DroneReportService;
 import io.github.dronesecurity.dronesystem.drone.domain.negligence.NegligenceReport;
-import io.github.dronesecurity.lib.AlertLevel;
-import io.github.dronesecurity.lib.AlertType;
-import io.github.dronesecurity.lib.CastHelper;
+import io.github.dronesecurity.lib.shared.AlertLevel;
+import io.github.dronesecurity.lib.shared.AlertType;
+import io.github.dronesecurity.lib.utilities.CastHelper;
 
 /**
  * Set of all sensors installed on the drone.

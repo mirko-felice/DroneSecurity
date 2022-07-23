@@ -8,7 +8,7 @@ package io.github.dronesecurity.dronesystem.performance.application.acceleromete
 import io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.objects.ProcessedAccelerometerData;
 import io.github.dronesecurity.dronesystem.performance.domain.accelerometer.objects.ProcessedAccelerometerPerformanceData;
 import io.github.dronesecurity.dronesystem.performance.domain.accelerometer.services.AccelerometerOutputHelper;
-import io.github.dronesecurity.lib.DateHelper;
+import io.github.dronesecurity.lib.utilities.DateHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

@@ -11,8 +11,8 @@ import io.github.dronesecurity.dronesystem.performance.domain.accelerometer.obje
 import io.github.dronesecurity.dronesystem.performance.domain.averages.objects.AveragePerformanceData;
 import io.github.dronesecurity.dronesystem.performance.domain.camera.objects.CameraPerformanceData;
 import io.github.dronesecurity.dronesystem.performance.domain.proximity.objects.ProximityPerformanceData;
-import io.github.dronesecurity.lib.DateHelper;
-import io.github.dronesecurity.lib.MqttMessageParameterConstants;
+import io.github.dronesecurity.lib.utilities.DateHelper;
+import io.github.dronesecurity.lib.connection.MqttMessageParameterConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintWriter;

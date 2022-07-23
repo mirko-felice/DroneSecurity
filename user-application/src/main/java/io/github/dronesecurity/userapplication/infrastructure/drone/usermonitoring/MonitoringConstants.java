@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.infrastructure.drone.usermonitoring;
 
-import io.github.dronesecurity.lib.MqttMessageParameterConstants;
+import io.github.dronesecurity.lib.connection.MqttMessageParameterConstants;
 
 /**
  * Data related strings.

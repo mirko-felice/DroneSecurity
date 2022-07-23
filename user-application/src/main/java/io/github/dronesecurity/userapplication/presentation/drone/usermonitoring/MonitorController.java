@@ -5,8 +5,8 @@
 
 package io.github.dronesecurity.userapplication.presentation.drone.usermonitoring;
 
-import io.github.dronesecurity.lib.MqttMessageParameterConstants;
-import io.github.dronesecurity.lib.MqttMessageValueConstants;
+import io.github.dronesecurity.lib.connection.MqttMessageParameterConstants;
+import io.github.dronesecurity.lib.connection.MqttMessageValueConstants;
 import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.events.AccelerometerRead;
 import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.events.CameraRead;
 import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.events.ProximityRead;

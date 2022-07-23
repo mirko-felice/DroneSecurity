@@ -5,8 +5,8 @@
 
 package io.github.dronesecurity.userapplication.domain.drone.usermonitoring.objects;
 
-import io.github.dronesecurity.lib.Date;
-import io.github.dronesecurity.lib.ValueObject;
+import io.github.dronesecurity.lib.shared.Date;
+import io.github.dronesecurity.lib.shared.ValueObject;
 import org.jetbrains.annotations.NotNull;
 
 /**

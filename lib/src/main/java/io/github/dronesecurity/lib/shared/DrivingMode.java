@@ -3,7 +3,7 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.lib;
+package io.github.dronesecurity.lib.shared;
 
 /**
  * Represents the different ways of the drone driving mode.

@@ -7,8 +7,8 @@ package io.github.dronesecurity.userapplication.domain.reporting.negligence.obje
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import io.github.dronesecurity.lib.Date;
-import io.github.dronesecurity.lib.ValueObject;
+import io.github.dronesecurity.lib.shared.Date;
+import io.github.dronesecurity.lib.shared.ValueObject;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.entities.contracts.NegligenceReport;
 import io.github.dronesecurity.userapplication.domain.reporting.negligence.exceptions.EmptySolutionException;
 import io.github.dronesecurity.userapplication.infrastructure.reporting.negligence.serializers.NegligenceActionFormDeserializer;

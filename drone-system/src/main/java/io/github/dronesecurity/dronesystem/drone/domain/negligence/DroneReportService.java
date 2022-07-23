@@ -7,8 +7,8 @@ package io.github.dronesecurity.dronesystem.drone.domain.negligence;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.dronesecurity.lib.Connection;
-import io.github.dronesecurity.lib.MqttTopicConstants;
+import io.github.dronesecurity.lib.connection.Connection;
+import io.github.dronesecurity.lib.connection.MqttTopicConstants;
 
 /**
  * Service providing methods to reports negligence.

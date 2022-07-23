@@ -21,7 +21,7 @@ import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Aler
 import io.github.dronesecurity.dronesystem.drone.domain.drone.order.objects.OrderData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.entities.AbstractSensor;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.accelerometer.utilities.AccelerometerConstants;
-import io.github.dronesecurity.lib.MqttMessageParameterConstants;
+import io.github.dronesecurity.lib.connection.MqttMessageParameterConstants;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
