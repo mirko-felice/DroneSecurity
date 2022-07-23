@@ -1,3 +1,12 @@
+## [1.3.1](https://github.com/mirko-felice/DroneSecurity/compare/1.3.0...1.3.1) (2022-07-23)
+
+
+### Bug Fixes
+
+* change sensor data contained in negligence report to be processed and not raw ([65e7202](https://github.com/mirko-felice/DroneSecurity/commit/65e72022218a0a5cd1dc89b41fb98a1ed3ab6135))
+* patch javadoc lib link ([3796137](https://github.com/mirko-felice/DroneSecurity/commit/37961378de5fdc1a7472e679f58d9e6b37f87355))
+* solve merge issues ([978b860](https://github.com/mirko-felice/DroneSecurity/commit/978b860b77b955fb103b158459bda377229c7122))
+
 # [1.3.0](https://github.com/mirko-felice/DroneSecurity/compare/1.2.0...1.3.0) (2022-07-13)
 
 
