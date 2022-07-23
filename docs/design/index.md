@@ -124,8 +124,9 @@ Il progetto si compone di più moduli: il modulo relativo al sistema del drone, 
 dell'utente e un modulo aggiuntivo che si comporta da libreria fornendo funzionalità comuni ai precedenti moduli.
 
 Il modulo denominato `user-application` è descritto sotto forma di diagramma delle classi nel modo seguente.
+Per non ripetere inutilmente la struttura è rappresentato un singolo esempio che vale per ciascuno dei contesti creati.
 
-![User application class diagram](user-application-class-diagram.svg)
+![User application class diagram](https://app.genmymodel.com/api/projects/_ZvR6cAprEe2TQ77rRj9fOQ/diagrams/_ZvShgQprEe2TQ77rRj9fOQ/svg)
 
 Il modulo denominato `drone-system` è descritto sotto forma di diagramma delle classi nel modo seguente.
 
@@ -133,23 +134,26 @@ Il modulo denominato `drone-system` è descritto sotto forma di diagramma delle 
 
 ### Flussi di controllo
 
-Si possono inoltre osservare i flussi di controllo i quali vengono inoltre descritti come diagrammi di sequenza dei 
+Si possono inoltre osservare i flussi di controllo i quali vengono descritti come diagrammi di sequenza dei 
 diversi moduli.
 
-Il modulo relativo al drone sostanzialmente offre un servizio il quale in automatico si connette al proprio
+Il modulo relativo al drone inizialmente in automatico si connette al proprio
 _Digital Twin_ per attendere che l'utente gli assegni un ordine da consegnare. Dopo aver ricevuto il comando, il
 drone attiva tutti i suoi componenti per iniziare il tragitto durante il quale legge costantemente
 i dati ricevuti dai sensori e li analizza inviando i dati stessi, eventualmente accompagnati da segnalazioni 
-di pericolo.
+di pericolo e negligenze.
 
 Tale flusso è rappresentato nel diagramma seguente.
 
 ![Drone system sequence diagram](drone-system-workflow.svg)
 
 Invece, il modulo relativo all'applicativo dell'utente permette di eseguire l'autenticazione da parte dell'utente per
-accedere come Corriere o Manutentore. Dopodiché nel caso in cui l'utente sia un Corriere, l'applicativo mostra
-l'insieme degli ordini che gli sono stati assegnati. 
+accedere come Corriere o Manutentore. Dopodiché l'utente può osservare le segnalazioni relative ai droni o le 
+segnalazioni per negligenze tramite le apposite interfacce grafiche.
+Nel caso specifico in cui l'utente sia un Corriere, l'applicativo è in grado di mostrare l'insieme degli ordini che gli
+sono stati assegnati.
+D'altro canto se l'utente è un Manutentore, egli possiede le capacità di gestione delle segnalazioni.
 
-Perciò il flusso di questo modulo è rappresentato nel modo seguente.
+Per esempio di seguito è rappresentato il flusso relativo all'esecuzione di una consegna.
 
-![User application sequence diagram](user-application-workflow.svg)
+![User application sequence diagram](https://app.genmymodel.com/api/projects/_OwCzcApwEe2TQ77rRj9fOQ/diagrams/_OwCzdApwEe2TQ77rRj9fOQ/svg)
