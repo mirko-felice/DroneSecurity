@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/mirko-felice/DroneSecurity/compare/1.3.2...1.3.3) (2022-07-24)
+
+
+### Bug Fixes
+
+* solve issues related to data serialization + minor refactoring ([4ae985d](https://github.com/mirko-felice/DroneSecurity/commit/4ae985d6b6890583e0f2564582702d8f3f56a3cc))
+
 ## [1.3.2](https://github.com/mirko-felice/DroneSecurity/compare/1.3.1...1.3.2) (2022-07-24)
 
 
