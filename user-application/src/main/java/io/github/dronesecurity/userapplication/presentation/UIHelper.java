@@ -30,16 +30,16 @@ public final class UIHelper {
     private static final double DRONE_CONTROLLER_MIN_HEIGHT = 200;
     private static final String DRONE_CONTROLLER_FXML = "drone/usermonitoring/droneController.fxml";
 
-    private static final double PROXIMITY_DATA_MIN_WIDTH = 850;
-    private static final double PROXIMITY_DATA_MIN_HEIGHT = 500;
+    private static final double PROXIMITY_DATA_MIN_WIDTH = 400;
+    private static final double PROXIMITY_DATA_MIN_HEIGHT = 300;
     private static final String PROXIMITY_DATA_FXML = "drone/usermonitoring/proximityData.fxml";
 
-    private static final double ACCELEROMETER_DATA_MIN_WIDTH = 850;
-    private static final double ACCELEROMETER_DATA_MIN_HEIGHT = 500;
+    private static final double ACCELEROMETER_DATA_MIN_WIDTH = 550;
+    private static final double ACCELEROMETER_DATA_MIN_HEIGHT = 300;
     private static final String ACCELEROMETER_DATA_FXML = "drone/usermonitoring/accelerometerData.fxml";
 
-    private static final double CAMERA_DATA_MIN_WIDTH = 850;
-    private static final double CAMERA_DATA_MIN_HEIGHT = 500;
+    private static final double CAMERA_DATA_MIN_WIDTH = 400;
+    private static final double CAMERA_DATA_MIN_HEIGHT = 200;
     private static final String CAMERA_DATA_FXML = "drone/usermonitoring/cameraData.fxml";
 
     private UIHelper() { }

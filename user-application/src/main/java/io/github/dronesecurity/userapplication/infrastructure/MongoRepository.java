@@ -12,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Base class for all repositories working with Mongo.
@@ -41,8 +43,8 @@ public class MongoRepository {
      */
     protected <T> @Nullable T waitFutureResult(final @NotNull Future<T> future) {
         try {
-            return future.toCompletionStage().toCompletableFuture().get();
-        } catch (InterruptedException | ExecutionException e) {
+            return future.toCompletionStage().toCompletableFuture().get(2, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             Thread.currentThread().interrupt();
             return null;
         }
