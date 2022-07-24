@@ -67,17 +67,31 @@ Sono stati quindi analizzati nel dettaglio ciascuno di essi:
 
 
 * _**Issue Reporting Context**_: questo contesto si occupa di gestire solo le segnalazioni
-  riguardanti i malfunzionamenti. Esso è costituito da un unico aggregato.
+  riguardanti i malfunzionamenti. Esso è costituito da sei aggregati.
 
-  Sostanzialmente quest'ultimo fornisce due servizi.
-  Uno dei quali riguarda il corriere ed è in grado di eseguire una segnalazione per
-  malfunzionamento utilizzando l'opportuna entità, l'_Issue Report_. Quest'operazione genererà un _New Issue_, 
-  ovvero un _Domain Event_ che avvisi della creazione di una nuova segnalazione.
+  L'aggregato _CreationIssue_ permette di creare una nuova segnalazione e successivamente spedirla per essere aggiunta
+  al sistema. Infatti una segnalazione, prima di essere aggiunta al sistema, non possiede un identificativo, non essendo
+  ancora parte del sistema. Per questo motivo sarà utilizzato l'aggregato _CreatedIssue_, che definisce le segnalazioni
+  che sono già state aggiunte al sistema e sono quindi in possesso di un identificativo.
 
-  Il secondo invece riguarda il manutentore e permette di gestire l'arrivo di una nuova segnalazione.
-  Inoltre, a scapito di come analizzato durante lo studio del dominio, esso offre la possibilità di visionare
-  tali malfunzionamenti e in seguito dare l'opportunità di chiudere la segnalazione, compilando una scheda di 
-  riparazione.
+  Dopo essere creata, una segnalazione diventa una segnalazione attiva che, a differenza di una chiusa, deve essere
+  processata o è in fase. Questo tipo di segnalazioni sono rappresentate dall'aggregato _ActiveIssue_, che a sua volta
+  può essere rappresentato da due ulteriori aggregati: _OpenIssue_ e _VisionedIssue_. Questo aggregato come
+  funzionalità, permette di ritrovare nel sistema tutte le segnalazioni attive, d'interesse all'utente che le sta
+  richiedendo.
+
+  L'aggregato _OpenIssue_ rappresenta la situazione in cui una segnalazione è stata appena creata. In questo stato
+  nessun manutentore è ancora intervenuto in alcun modo per risolverla. Infatti permette al manutentore di eseguire
+  l'operazione che la trasformerà in una visionata. Quest'ultima è definita dall'aggregato _VisionedIssue_, per
+  rappresentare lo stato in cui un manutentore sta attualmente prendendo visione della segnalazione e sta lavorando a
+  una possibile soluzione per risolverla. L'aggregato ha lo scopo di fornire al corriere l'informazione che la sua
+  segnalazione è stata presa in carica e potrebbe essere risolta a breve. A questo scopo l'agregato mette a disposizione
+  del manutentore una possibilità che gli permetta, alla fine dell'elaborazione della segnalazione, di chiudere la
+  segnalazione, specificando la soluzione adottata.
+
+  Infine perciò è presente l'aggregato _ClosedIssue_, il quale rappresenta una segnalazione che è stata definitivamente
+  chiusa. Quindi l'unica funzionalità che tale aggregato fornisce, è quella che permette a un utente di ritrovare tutte
+  le segnalazioni chiuse che sono di suo interesse.
 
 
 * _**Negligence Reporting Context**_: al contrario questo contesto permette di occuparsi solo delle

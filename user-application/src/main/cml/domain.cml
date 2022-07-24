@@ -201,35 +201,92 @@ BoundedContext DroneContext implements Drone {
 BoundedContext IssueReportingContext implements Reporting {
 	type = FEATURE
 	responsibilities "Drone Issues"
-	Aggregate CourierReport {
-		
-		Entity IssueReport {
-			String id
-			- IssueMaintainer referenceMaintainer
-		}
-		
-		DomainEvent NewIssue {
-			- IssueReport report
+
+	Aggregate Creation {
+		Entity SendingIssue {
+			aggregateRoot
+			String subject
+			String issueInfo
+			String courierUsername
+			String assigneeUsername
+			String droneName
+			Date sendingTime
+
+			def void send();
+
+			Repository CreationRepository {
+				void addIssue(@SendingIssue issue);
+			}
 		}
 
-		Service CourierReportService {
-			
-			void reportsIssue(@IssueReport report);
+		Service SendingService {
+			void addIssue(@SendingIssue issue);
 		}
 	}
-	
-	Aggregate MaintainerIssueReport {
-		
-		Entity FixForm {
-			String id
+
+	Aggregate CreatedIssue {
+		ValueObject IssueId
+		abstract Entity CreatedIssue extends SendingIssue {
+			aggregateRoot
+			- IssueId id
 		}
-		
-		Entity IssueMaintainer 
-		
-		Service MaintainerIssueReportService {
-			
-			void onNewIssue();
-			void fillSolutionForm(@FixForm form);
+	}
+
+	Aggregate ActiveIssue {
+		abstract Entity ActiveIssue extends CreatedIssue {
+			aggregateRoot
+			Repository ActiveIssueRepository {
+				List<@ActiveIssue> retrieveActiveIssues();
+			}
+		}
+
+		Service ActiveIssuesService {
+			List<@ActiveIssue> retrieveActiveIssues();
+		}
+	}
+
+	Aggregate OpenIssue {
+		Entity OpenIssue extends ActiveIssue {
+			aggregateRoot
+			def @VisionedIssue visionIssue();
+
+			Repository OpenIssueRepository {
+				void visionIssue(@VisionedIssue issue);
+			}
+		}
+
+		Service OpenIssueService {
+			void visionIssue(@VisionedIssue issue);
+		}
+	}
+
+	Aggregate VisionedIssue {
+		Entity VisionedIssue extends ActiveIssue {
+			aggregateRoot
+			def @ClosedIssue closeIssue(String solution);
+
+			Repository VisionedIssueRepository {
+				void closeIssue(@ClosedIssue issue);
+			}
+		}
+
+		Service VisionedIssueService {
+			void closeIssue(@ClosedIssue issue);
+		}
+	}
+
+	Aggregate ClosedIssue {
+		Entity ClosedIssue extends CreatedIssue {
+			aggregateRoot
+			String issueSolution
+
+			Repository ClosedIssueRepository {
+				List<@ClosedIssue> retrieveClosedIssues();
+			}
+		}
+
+		Service ClosedIssueService {
+			List<@ClosedIssue> retrieveClosedIssues();
 		}
 	}
 }
