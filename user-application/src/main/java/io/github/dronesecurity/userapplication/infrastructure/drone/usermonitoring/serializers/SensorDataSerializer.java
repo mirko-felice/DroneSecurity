@@ -29,7 +29,5 @@ public final class SensorDataSerializer extends JsonSerializer<SensorData> {
         gen.writeStartObject();
         gen.writeNumberField(MonitoringConstants.ORDER_ID, value.getOrderId());
         gen.writeStringField(MonitoringConstants.DETECTION_INSTANT, value.getDetectionInstant().asString());
-        gen.writeEndObject();
-        gen.flush();
     }
 }

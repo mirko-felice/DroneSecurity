@@ -7,12 +7,10 @@ package io.github.dronesecurity.dronesystem.drone.domain.negligence;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.AccelerometerAlert;
-import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.CameraAlert;
-import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.ProximityAlert;
+import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.SensorSetAlert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.order.objects.OrderData;
-import io.github.dronesecurity.lib.utilities.DateHelper;
 import io.github.dronesecurity.lib.connection.MqttMessageParameterConstants;
+import io.github.dronesecurity.lib.utilities.DateHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
@@ -25,32 +23,27 @@ public final class NegligenceReport {
     private final String negligent;
     private final ObjectNode data;
     private final long orderId;
-    private final Instant negligenceInstant;
 
     /**
      * Build the report.
      * @param orderData the order data related to this negligence
-     * @param proximityAlert the proximity data alert detected by its sensor
-     * @param accelerometerAlert the accelerometer data alert detected by its sensor
-     * @param cameraAlert the camera data alert detected by its sensor
+     * @param sensorSetAlert the sensor data alert detected by its sensor set
      */
-    public NegligenceReport(final OrderData orderData,
-                            final ProximityAlert proximityAlert,
-                            final AccelerometerAlert accelerometerAlert,
-                            final CameraAlert cameraAlert) {
+    public NegligenceReport(final @NotNull OrderData orderData, final @NotNull SensorSetAlert sensorSetAlert) {
         this.negligent = orderData.getCourier();
         final ObjectMapper objectMapper = new ObjectMapper();
         this.data = objectMapper.createObjectNode();
 
-        this.data.put(MqttMessageParameterConstants.PROXIMITY_PARAMETER, proximityAlert.getDistance());
+        this.data.put(MqttMessageParameterConstants.PROXIMITY_PARAMETER,
+                sensorSetAlert.getProximityAlert().getDistance());
         final ObjectNode accelerometerData = objectMapper.createObjectNode();
-        accelerometerData.put(MqttMessageParameterConstants.PITCH, accelerometerAlert.getPitch());
-        accelerometerData.put(MqttMessageParameterConstants.ROLL, accelerometerAlert.getRoll());
-        accelerometerData.put(MqttMessageParameterConstants.YAW, accelerometerAlert.getYaw());
+        accelerometerData.put(MqttMessageParameterConstants.PITCH, sensorSetAlert.getAccelerometerAlert().getPitch());
+        accelerometerData.put(MqttMessageParameterConstants.ROLL, sensorSetAlert.getAccelerometerAlert().getRoll());
+        accelerometerData.put(MqttMessageParameterConstants.YAW, sensorSetAlert.getAccelerometerAlert().getYaw());
         this.data.set(MqttMessageParameterConstants.ACCELEROMETER_PARAMETER, accelerometerData);
-        this.data.put(MqttMessageParameterConstants.CAMERA_PARAMETER, cameraAlert.getImageSize());
+        this.data.put(MqttMessageParameterConstants.CAMERA_PARAMETER, sensorSetAlert.getCameraAlert().getImageSize());
+        this.data.put(MqttMessageParameterConstants.DETECTION_INSTANT, DateHelper.toString(Instant.now()));
         this.orderId = orderData.getOrderId();
-        this.negligenceInstant = Instant.now();
     }
 
     /**
@@ -75,13 +68,5 @@ public final class NegligenceReport {
      */
     public long getOrderId() {
         return this.orderId;
-    }
-
-    /**
-     * Gets the {@link Instant} textual representation when negligence has happened.
-     * @return the negligence instant string
-     */
-    public @NotNull String getNegligenceInstant() {
-        return DateHelper.toString(this.negligenceInstant);
     }
 }

@@ -52,7 +52,9 @@ public final class OrdersUIController implements Initializable {
     @FXML private TableColumn<Order, String> clientColumn;
     @FXML private Button performDeliveryButton;
     @FXML private Button rescheduleDeliveryButton;
-    @FXML private Button showDataHistoryButton;
+    @FXML private Button showProximityDataHistoryButton;
+    @FXML private Button showAccelerometerDataHistoryButton;
+    @FXML private Button showCameraDataHistoryButton;
 
     /**
      * Build the controller.
@@ -150,8 +152,18 @@ public final class OrdersUIController implements Initializable {
     }
 
     @FXML
-    private void showDataHistory() {
+    private void showProximityDataHistory() {
+        this.getSelectedOrder().ifPresent(order -> UIHelper.showProximityDataHistoryUI(order.getId().asLong()));
+    }
+
+    @FXML
+    private void showAccelerometerDataHistory() {
         this.getSelectedOrder().ifPresent(order -> UIHelper.showAccelerometerDataHistoryUI(order.getId().asLong()));
+    }
+
+    @FXML
+    private void showCameraDataHistory() {
+        this.getSelectedOrder().ifPresent(order -> UIHelper.showCameraDataHistoryUI(order.getId().asLong()));
     }
 
     private void refreshOrders() {
@@ -175,24 +187,34 @@ public final class OrdersUIController implements Initializable {
         if (order == null) {
             this.performDeliveryButton.setDisable(true);
             this.rescheduleDeliveryButton.setDisable(true);
-            this.showDataHistoryButton.setDisable(true);
+            this.showProximityDataHistoryButton.setDisable(true);
+            this.showAccelerometerDataHistoryButton.setDisable(true);
+            this.showCameraDataHistoryButton.setDisable(true);
         } else {
             if (order.getCurrentState() == OrderState.PLACED || order.getCurrentState() == OrderState.RESCHEDULED) {
                 this.performDeliveryButton.setDisable(false);
                 this.rescheduleDeliveryButton.setDisable(true);
-                this.showDataHistoryButton.setDisable(true);
+                this.showProximityDataHistoryButton.setDisable(true);
+                this.showAccelerometerDataHistoryButton.setDisable(true);
+                this.showCameraDataHistoryButton.setDisable(true);
             } else if (order.getCurrentState() == OrderState.FAILED) {
                 this.performDeliveryButton.setDisable(true);
                 this.rescheduleDeliveryButton.setDisable(false);
-                this.showDataHistoryButton.setDisable(false);
+                this.showProximityDataHistoryButton.setDisable(false);
+                this.showAccelerometerDataHistoryButton.setDisable(false);
+                this.showCameraDataHistoryButton.setDisable(false);
             } else if (order.getCurrentState() == OrderState.SUCCEEDED) {
                 this.performDeliveryButton.setDisable(true);
                 this.rescheduleDeliveryButton.setDisable(true);
-                this.showDataHistoryButton.setDisable(false);
+                this.showProximityDataHistoryButton.setDisable(false);
+                this.showAccelerometerDataHistoryButton.setDisable(false);
+                this.showCameraDataHistoryButton.setDisable(false);
             } else {
                 this.performDeliveryButton.setDisable(true);
                 this.rescheduleDeliveryButton.setDisable(true);
-                this.showDataHistoryButton.setDisable(true);
+                this.showProximityDataHistoryButton.setDisable(true);
+                this.showAccelerometerDataHistoryButton.setDisable(true);
+                this.showCameraDataHistoryButton.setDisable(true);
             }
         }
     }

@@ -10,11 +10,10 @@ import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Acce
 import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.Alert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.CameraAlert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.ProximityAlert;
+import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.SensorSetAlert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.order.objects.OrderData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.exceptions.SensorNotActivatedException;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.service.AlertSituationAnalyzer;
-import io.github.dronesecurity.dronesystem.drone.domain.negligence.DroneReportService;
-import io.github.dronesecurity.dronesystem.drone.domain.negligence.NegligenceReport;
 import io.github.dronesecurity.lib.shared.AlertLevel;
 import io.github.dronesecurity.lib.shared.AlertType;
 import io.github.dronesecurity.lib.utilities.CastHelper;
@@ -34,8 +33,6 @@ public class SensorSet {
 
     private final AlertSituationAnalyzer alertAnalyzer;
 
-    private final DroneReportService reportService;
-
     /**
      * Builds all the sensors that will be used during the delivery.
      */
@@ -47,8 +44,6 @@ public class SensorSet {
         this.currentAccelerometerAlert = new Alert(AlertType.ANGLE, AlertLevel.STABLE);
 
         this.alertAnalyzer = new AlertSituationAnalyzerImpl();
-
-        this.reportService = new DroneReportService();
     }
 
     /**
@@ -77,7 +72,7 @@ public class SensorSet {
      * Makes all the sensors of the drone perform a single reading.
      * @return the alert level detected after analyzing all the sensors
      */
-    public AlertLevel performReading() {
+    public SensorSetAlert performReading() {
         final ProximityAlert proximityAlert =
                 CastHelper.safeCast(this.proximity.performReading(), ProximityAlert.class).orElseThrow();
         final AccelerometerAlert accelerometerAlert =
@@ -88,18 +83,14 @@ public class SensorSet {
         final AlertLevel currentAlertLevel =
                 this.alertAnalyzer.analyzeAlerts(this.orderData,
                         this.currentProximityAlert,
-                        proximityAlert,
                         this.currentAccelerometerAlert,
+                        proximityAlert,
                         accelerometerAlert);
 
         this.currentProximityAlert = proximityAlert;
         this.currentAccelerometerAlert = accelerometerAlert;
 
-        //TODO Take a look at whether it would be better to move it somewhere else.
-        this.reportService.reportsNegligence(
-                new NegligenceReport(this.orderData, proximityAlert, accelerometerAlert, cameraAlert));
-
-        return currentAlertLevel;
+        return new SensorSetAlert(currentAlertLevel, proximityAlert, accelerometerAlert, cameraAlert);
     }
 
     /**

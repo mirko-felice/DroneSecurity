@@ -83,9 +83,9 @@ public final class MqttMessageParameterConstants {
     public static final String COURIER_PARAMETER = "courier";
 
     /**
-     * Parameter that contains negligent for a Negligence Report.
+     * Parameter that contains detection instant for a Negligence Report.
      */
-    public static final String NEGLIGENT_PARAMETER = "negligent";
+    public static final String DETECTION_INSTANT = "detectionInstant";
 
     /**
      * Parameter that contains new guide mode for the drone.

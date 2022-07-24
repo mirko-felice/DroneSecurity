@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class DataSharingService {
 
-    private static final long ANALIZER_SLEEP_DURATION = 100;
+    private static final long ANALIZER_SLEEP_DURATION = 200;
 
     private final Drone drone;
     private final ScheduledExecutorService dataExecutor;
@@ -39,5 +39,12 @@ public class DataSharingService {
                 this.drone.performReading();
                 this.drone.publishSensorData();
             }, 0, ANALIZER_SLEEP_DURATION, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Stops the service.
+     */
+    public void stop() {
+        this.dataExecutor.shutdownNow();
     }
 }

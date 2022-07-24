@@ -63,7 +63,7 @@ BoundedContext DroneContext implements Drone {
 			- @Sensor camera;
 			def void activate(@OrderData orderData);
 			def void deactivate();
-			def @AlertLevel performReading();
+			def @SensorSetAlert performReading();
 			def void publishData();
 		}
 
@@ -88,6 +88,10 @@ BoundedContext DroneContext implements Drone {
 
 	Aggregate Alert {
 		ValueObject Alert
+		ValueObject ProximityAlert
+		ValueObject AccelerometerAlert
+		ValueObject CameraAlert
+		ValueObject SensorSetAlert
 	}
 
 	Aggregate Proximity {

@@ -56,7 +56,6 @@ public abstract class AbstractAPI extends AbstractVerticle {
      * @param <T> type parameter of the {@code callable}
      * @return the result of the {@code callable}
      */
-    // TODO clicking fast cause thread blocking
     protected <T> @Nullable T executeSync(final @NotNull Callable<T> callable) {
         try {
             final ExecutorService executor = Executors.newSingleThreadExecutor();

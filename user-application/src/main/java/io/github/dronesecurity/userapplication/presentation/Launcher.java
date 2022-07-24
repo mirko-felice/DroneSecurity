@@ -9,8 +9,6 @@ import io.github.dronesecurity.lib.connection.Connection;
 import io.github.dronesecurity.lib.connection.PropertiesConstants;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderDate;
 import io.github.dronesecurity.userapplication.infrastructure.shipping.repo.MongoOrderRepository;
-import io.github.dronesecurity.userapplication.presentation.reporting.negligence.AssigneeAPI;
-import io.github.dronesecurity.userapplication.presentation.reporting.negligence.NegligentAPI;
 import io.github.dronesecurity.userapplication.presentation.shipping.DroneAPI;
 import io.github.dronesecurity.userapplication.presentation.shipping.ShippingAPI;
 import io.github.dronesecurity.userapplication.presentation.user.UserAPI;
@@ -91,8 +89,6 @@ public final class Launcher extends Application {
                 }).start());
         VertxHelper.VERTX.deployVerticle(UserAPI.class.getName());
         VertxHelper.VERTX.deployVerticle(DroneAPI.class.getName());
-        VertxHelper.VERTX.deployVerticle(NegligentAPI.class.getName());
-        VertxHelper.VERTX.deployVerticle(AssigneeAPI.class.getName());
         launch(args);
     }
 

@@ -32,6 +32,7 @@ public class DroneRemoteCommands {
     private final CountDownLatch latch;
 
     private NavigationService navigationService;
+    private DataSharingService dataSharingService;
     private OrderData orderData;
 
     /**
@@ -61,7 +62,8 @@ public class DroneRemoteCommands {
                     this.drone.activate(this.orderData);
                     this.navigationService = new NavigationService(this.drone, this.orderData);
                     this.navigationService.start();
-                    new DataSharingService(this.drone).start();
+                    this.dataSharingService = new DataSharingService(this.drone);
+                    this.dataSharingService.start();
 
                     this.activateTravelControls();
                     this.latch.countDown();
@@ -79,17 +81,18 @@ public class DroneRemoteCommands {
     }
 
     private void stopDrone() {
+        this.dataSharingService.stop();
         this.drone.deactivate();
         Connection.getInstance().closeConnection();
     }
 
     private void activateTravelControls() {
         final Connection connection = Connection.getInstance();
-        connection.subscribe(MqttTopicConstants.CONTROL_TOPIC + this.orderData,
+        connection.subscribe(MqttTopicConstants.CONTROL_TOPIC + this.orderData.getOrderId(),
                 this::control);
         connection.unsubscribe(MqttTopicConstants.ORDER_TOPIC + this.drone.getId());
 
-        connection.subscribe(MqttTopicConstants.ORDER_TOPIC + this.orderData, msg -> {
+        connection.subscribe(MqttTopicConstants.ORDER_TOPIC + this.orderData.getOrderId(), msg -> {
             try {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
                 if (MqttMessageValueConstants.DRONE_CALLBACK_MESSAGE

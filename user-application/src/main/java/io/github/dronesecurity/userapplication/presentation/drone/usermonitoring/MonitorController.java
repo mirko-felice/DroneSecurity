@@ -63,7 +63,7 @@ public final class MonitorController implements Initializable {
         DomainEvents.register(CameraRead.class, this::onCameraRead);
         DomainEvents.register(StatusChanged.class, event -> {
             if (MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE.equals(event.getStatus()))
-                ((Stage) this.proximityCurrentData.getScene().getWindow()).close();
+                Platform.runLater(((Stage) this.proximityCurrentData.getScene().getWindow())::close);
         });
 
         this.proximityPreviousDataColumn.setCellValueFactory(cell -> new SimpleObjectProperty<>(cell.getValue()));

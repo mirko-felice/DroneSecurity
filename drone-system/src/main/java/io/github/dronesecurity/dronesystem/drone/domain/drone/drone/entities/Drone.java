@@ -7,9 +7,12 @@ package io.github.dronesecurity.dronesystem.drone.domain.drone.drone.entities;
 
 import com.amazonaws.s3.model.InvalidObjectStateException;
 import io.github.dronesecurity.dronesystem.drone.application.drone.drone.MovingStatePublisherImpl;
+import io.github.dronesecurity.dronesystem.drone.domain.drone.alert.objects.SensorSetAlert;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.drone.services.MovingStatePublisher;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.order.objects.OrderData;
 import io.github.dronesecurity.dronesystem.drone.domain.drone.sensor.entities.SensorSet;
+import io.github.dronesecurity.dronesystem.drone.domain.negligence.DroneReportService;
+import io.github.dronesecurity.dronesystem.drone.domain.negligence.NegligenceReport;
 import io.github.dronesecurity.lib.shared.AlertLevel;
 import io.github.dronesecurity.lib.shared.DrivingMode;
 
@@ -26,6 +29,8 @@ public class Drone {
 
     private final MovingStatePublisher movingStatePublisher;
 
+    private final DroneReportService reportService;
+
     /**
      * Constructs drone's sensors.
      * @param id drone identifier
@@ -35,6 +40,7 @@ public class Drone {
         this.sensorSet = new SensorSet();
         this.drivingMode = DrivingMode.AUTOMATIC;
         this.movingStatePublisher = new MovingStatePublisherImpl();
+        this.reportService = new DroneReportService();
     }
 
     /**
@@ -69,10 +75,12 @@ public class Drone {
      * Executes the analysis of the raw data of all sensors.
      */
     public void performReading() {
-        final AlertLevel alertLevel = this.sensorSet.performReading();
+        final SensorSetAlert sensorSetAlert = this.sensorSet.performReading();
 
-        if (alertLevel == AlertLevel.CRITICAL && this.isOperating())
+        if (sensorSetAlert.getAlertLevel() == AlertLevel.CRITICAL && this.isOperating()) {
             this.halt();
+            this.reportService.reportsNegligence(new NegligenceReport(this.orderData, sensorSetAlert));
+        }
     }
 
     /**

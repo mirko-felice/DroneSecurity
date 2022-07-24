@@ -32,7 +32,7 @@ public final class DroneDataSerializer extends JsonSerializer<DroneData> {
         gen.writeNumberField(NegligenceConstants.ROLL, value.getRoll());
         gen.writeNumberField(NegligenceConstants.PITCH, value.getPitch());
         gen.writeNumberField(NegligenceConstants.YAW, value.getYaw());
-        gen.writeNumberField(NegligenceConstants.IMAGE, value.getImageSize());
+        gen.writeNumberField(NegligenceConstants.CAMERA, value.getImageSize());
         gen.writeEndObject();
         gen.flush();
     }

@@ -41,6 +41,11 @@ public final class NegligenceConstants {
     public static final String PROXIMITY = "proximity";
 
     /**
+     * Key for accelerometer data.
+     */
+    public static final String ACCELEROMETER = "accelerometer";
+
+    /**
      * Key for roll angle.
      */
     public static final String ROLL = "roll";
@@ -58,7 +63,7 @@ public final class NegligenceConstants {
     /**
      * Key for the camera image.
      */
-    public static final String IMAGE = "image";
+    public static final String CAMERA = "camera";
 
     /**
      * Key for the action form.

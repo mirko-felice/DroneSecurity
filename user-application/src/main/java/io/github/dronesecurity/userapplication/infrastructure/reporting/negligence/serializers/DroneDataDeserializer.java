@@ -8,6 +8,7 @@ package io.github.dronesecurity.userapplication.infrastructure.reporting.neglige
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.dronesecurity.lib.shared.Date;
@@ -31,16 +32,25 @@ public final class DroneDataDeserializer extends JsonDeserializer<DroneData> {
         final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
         final ObjectNode root = mapper.readTree(parser);
         final double proximity = root.get(NegligenceConstants.PROXIMITY).asDouble();
-        final int roll = root.get(NegligenceConstants.ROLL).asInt();
-        final int pitch = root.get(NegligenceConstants.PITCH).asInt();
-        final int yaw = root.get(NegligenceConstants.YAW).asInt();
-        final long imageSize = root.get(NegligenceConstants.IMAGE).asLong();
-        if (root.has(NegligenceConstants.DETECTION_INSTANT))
-            return DroneData.generate(proximity, roll, pitch, yaw, imageSize);
-        else {
+        final int roll;
+        final int pitch;
+        final int yaw;
+        if (root.has(NegligenceConstants.ACCELEROMETER)) {
+            final JsonNode accelerometer = root.get(NegligenceConstants.ACCELEROMETER);
+            roll = accelerometer.get(NegligenceConstants.ROLL).asInt();
+            pitch = accelerometer.get(NegligenceConstants.PITCH).asInt();
+            yaw = accelerometer.get(NegligenceConstants.YAW).asInt();
+        } else {
+            roll = root.get(NegligenceConstants.ROLL).asInt();
+            pitch = root.get(NegligenceConstants.PITCH).asInt();
+            yaw = root.get(NegligenceConstants.YAW).asInt();
+        }
+        final long imageSize = root.get(NegligenceConstants.CAMERA).asLong();
+        if (root.has(NegligenceConstants.DETECTION_INSTANT)) {
             final Date detectionInstant =
                     Date.parseString(root.get(NegligenceConstants.DETECTION_INSTANT).asText());
             return DroneData.parse(detectionInstant, proximity, roll, pitch, yaw, imageSize);
-        }
+        } else
+            return DroneData.generate(proximity, roll, pitch, yaw, imageSize);
     }
 }

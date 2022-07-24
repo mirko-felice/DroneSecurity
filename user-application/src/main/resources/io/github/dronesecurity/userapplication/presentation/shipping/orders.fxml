@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" prefWidth="800.0" prefHeight="400.0" fx:controller="io.github.dronesecurity.userapplication.presentation.shipping.OrdersUIController">
+<GridPane prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.dronesecurity.userapplication.presentation.shipping.OrdersUIController">
     <columnConstraints>
         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" />
       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
@@ -40,7 +40,9 @@
     </TableView>
     <Button fx:id="performDeliveryButton" disable="true" mnemonicParsing="false" onMouseClicked="#performDelivery" text="Perform Delivery" GridPane.rowIndex="2" />
     <Button fx:id="rescheduleDeliveryButton" disable="true" mnemonicParsing="false" onMouseClicked="#rescheduleDelivery" text="Reschedule Delivery" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-   <Button fx:id="showDataHistoryButton" disable="true" mnemonicParsing="false" onMouseClicked="#showDataHistory" text="Show Data History" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+   <Button fx:id="showAccelerometerDataHistoryButton" disable="true" mnemonicParsing="false" onMouseClicked="#showAccelerometerDataHistory" text="Show Accelerometer Data History" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+   <Button fx:id="showProximityDataHistoryButton" disable="true" mnemonicParsing="false" onMouseClicked="#showProximityDataHistory" text="Show Proximity Data History" GridPane.rowIndex="4" />
+   <Button fx:id="showCameraDataHistoryButton" disable="true" mnemonicParsing="false" onMouseClicked="#showCameraDataHistory" text="Show Camera Data History" GridPane.columnIndex="2" GridPane.rowIndex="4" />
    <opaqueInsets>
       <Insets />
    </opaqueInsets>

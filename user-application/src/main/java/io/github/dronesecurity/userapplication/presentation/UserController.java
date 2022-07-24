@@ -5,11 +5,14 @@
 
 package io.github.dronesecurity.userapplication.presentation;
 
+import io.github.dronesecurity.lib.utilities.CastHelper;
 import io.github.dronesecurity.userapplication.application.user.ohs.pl.UserRole;
 import io.github.dronesecurity.userapplication.domain.user.entities.impl.CourierImpl;
 import io.github.dronesecurity.userapplication.domain.user.entities.impl.MaintainerImpl;
-import io.github.dronesecurity.lib.utilities.CastHelper;
+import io.github.dronesecurity.userapplication.presentation.reporting.negligence.AssigneeAPI;
+import io.github.dronesecurity.userapplication.presentation.reporting.negligence.NegligentAPI;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
+import io.github.dronesecurity.userapplication.utilities.VertxHelper;
 import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
 import io.vertx.ext.web.codec.BodyCodec;
 import javafx.application.Platform;
@@ -59,8 +62,10 @@ public class UserController implements Initializable {
                     this.role = res.body();
                     switch (this.role) {
                         case COURIER:
+                            VertxHelper.VERTX.deployVerticle(NegligentAPI.class.getName());
                             break;
                         case MAINTAINER:
+                            VertxHelper.VERTX.deployVerticle(AssigneeAPI.class.getName());
                             Platform.runLater(() -> this.showOrdersButton.setVisible(false));
                             break;
                         default:

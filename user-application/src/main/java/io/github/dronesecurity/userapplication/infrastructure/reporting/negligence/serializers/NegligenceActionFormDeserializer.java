@@ -31,11 +31,10 @@ public final class NegligenceActionFormDeserializer extends JsonDeserializer<Neg
         final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
         final ObjectNode root = mapper.readTree(parser);
         final String solution = root.get(NegligenceConstants.SOLUTION).asText();
-        if (root.has(NegligenceConstants.CLOSING_INSTANT))
-            return NegligenceActionForm.create(solution);
-        else {
+        if (root.has(NegligenceConstants.CLOSING_INSTANT)) {
             final Date closingInstant = Date.parseString(root.get(NegligenceConstants.CLOSING_INSTANT).asText());
             return NegligenceActionForm.parse(solution, closingInstant);
-        }
+        } else
+            return NegligenceActionForm.create(solution);
     }
 }
