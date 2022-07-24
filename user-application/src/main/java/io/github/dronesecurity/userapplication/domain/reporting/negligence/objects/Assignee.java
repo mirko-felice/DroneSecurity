@@ -18,11 +18,11 @@ import java.util.Objects;
  */
 public final class Assignee implements ValueObject<Assignee> {
 
-    private final String username;
+    private final String assigneeUsername;
 
-    private Assignee(final String username) {
-        this.validate(username);
-        this.username = username;
+    private Assignee(final String assigneeUsername) {
+        this.validate(assigneeUsername);
+        this.assigneeUsername = assigneeUsername;
     }
 
     /**
@@ -41,7 +41,7 @@ public final class Assignee implements ValueObject<Assignee> {
      * @return the string
      */
     public String asString() {
-        return this.username;
+        return this.assigneeUsername;
     }
 
     /**
@@ -50,7 +50,7 @@ public final class Assignee implements ValueObject<Assignee> {
     @Contract(pure = true)
     @Override
     public boolean isSameValueAs(final @NotNull Assignee value) {
-        return this.username.equals(value.username);
+        return this.assigneeUsername.equals(value.assigneeUsername);
     }
 
     /**
@@ -58,7 +58,7 @@ public final class Assignee implements ValueObject<Assignee> {
      */
     @Override
     public String toString() {
-        return this.username;
+        return this.assigneeUsername;
     }
 
     /**
@@ -69,7 +69,7 @@ public final class Assignee implements ValueObject<Assignee> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final Assignee assignee = (Assignee) o;
-        return this.username.equals(assignee.username);
+        return this.assigneeUsername.equals(assignee.assigneeUsername);
     }
 
     /**
@@ -77,7 +77,7 @@ public final class Assignee implements ValueObject<Assignee> {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(this.username);
+        return Objects.hash(this.assigneeUsername);
     }
 
     private void validate(final String value) {

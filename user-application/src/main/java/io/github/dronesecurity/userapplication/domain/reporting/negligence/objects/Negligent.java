@@ -18,11 +18,11 @@ import java.util.Objects;
  */
 public final class Negligent implements ValueObject<Negligent> {
 
-    private final String username;
+    private final String negligentUsername;
 
-    private Negligent(final String username) {
-        this.validate(username);
-        this.username = username;
+    private Negligent(final String negligentUsername) {
+        this.validate(negligentUsername);
+        this.negligentUsername = negligentUsername;
     }
 
     /**
@@ -41,7 +41,7 @@ public final class Negligent implements ValueObject<Negligent> {
      * @return the string
      */
     public String asString() {
-        return this.username;
+        return this.negligentUsername;
     }
 
     /**
@@ -50,7 +50,7 @@ public final class Negligent implements ValueObject<Negligent> {
     @Contract(pure = true)
     @Override
     public boolean isSameValueAs(final @NotNull Negligent value) {
-        return this.username.equals(value.username);
+        return this.negligentUsername.equals(value.negligentUsername);
     }
 
     /**
@@ -58,7 +58,7 @@ public final class Negligent implements ValueObject<Negligent> {
      */
     @Override
     public String toString() {
-        return this.username;
+        return this.negligentUsername;
     }
 
     /**
@@ -69,7 +69,7 @@ public final class Negligent implements ValueObject<Negligent> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final Negligent negligent = (Negligent) o;
-        return this.username.equals(negligent.username);
+        return this.negligentUsername.equals(negligent.negligentUsername);
     }
 
     /**
@@ -77,7 +77,7 @@ public final class Negligent implements ValueObject<Negligent> {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(this.username);
+        return Objects.hash(this.negligentUsername);
     }
 
     private void validate(final String value) {
