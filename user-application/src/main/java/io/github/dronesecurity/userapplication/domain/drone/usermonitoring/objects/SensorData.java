@@ -5,13 +5,19 @@
 
 package io.github.dronesecurity.userapplication.domain.drone.usermonitoring.objects;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.github.dronesecurity.lib.shared.Date;
 import io.github.dronesecurity.lib.shared.ValueObject;
+import io.github.dronesecurity.userapplication.infrastructure.drone.usermonitoring.serializers.SensorDataDeserializer;
+import io.github.dronesecurity.userapplication.infrastructure.drone.usermonitoring.serializers.SensorDataSerializer;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Class representing a generic data reception, containing the instant of when the data is received and its order id.
  */
+@JsonSerialize(using = SensorDataSerializer.class)
+@JsonDeserialize(using = SensorDataDeserializer.class)
 public class SensorData implements ValueObject<SensorData> {
 
     private final Date detectionInstant;

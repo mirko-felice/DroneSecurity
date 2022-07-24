@@ -7,7 +7,7 @@ package io.github.dronesecurity.userapplication.domain.drone.usermonitoring.even
 
 import io.github.dronesecurity.lib.shared.AlertType;
 import io.github.dronesecurity.userapplication.events.DomainEvent;
-import io.github.dronesecurity.userapplication.events.SituationConstants;
+import io.github.dronesecurity.userapplication.utilities.drone.usermonitoring.SituationConstants;
 
 /**
  * The event to be raised when the drone informs of a critical situation.

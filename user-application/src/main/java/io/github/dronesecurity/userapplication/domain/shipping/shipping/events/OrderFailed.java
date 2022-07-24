@@ -12,7 +12,7 @@ import io.github.dronesecurity.userapplication.events.DomainEvent;
 /**
  * {@link DomainEvent} representing an {@link Order} that has failed the delivery.
  */
-public class OrderFailed implements DomainEvent {
+public final class OrderFailed implements DomainEvent {
 
     private final FailedOrder order;
 

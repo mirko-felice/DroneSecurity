@@ -12,7 +12,7 @@ import io.github.dronesecurity.userapplication.events.DomainEvent;
 /**
  * {@link DomainEvent} representing an {@link Order} that is being delivered.
  */
-public class OrderDelivering implements DomainEvent {
+public final class OrderDelivering implements DomainEvent {
 
     private final DeliveringOrder order;
     private final String droneId;

@@ -12,7 +12,7 @@ import io.github.dronesecurity.userapplication.events.DomainEvent;
 /**
  * {@link DomainEvent} representing an {@link Order} that has been rescheduled.
  */
-public class OrderRescheduled implements DomainEvent {
+public final class OrderRescheduled implements DomainEvent {
 
     private final RescheduledOrder order;
 

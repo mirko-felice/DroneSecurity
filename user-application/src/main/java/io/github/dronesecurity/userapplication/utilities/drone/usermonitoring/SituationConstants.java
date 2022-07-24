@@ -3,7 +3,7 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.userapplication.events;
+package io.github.dronesecurity.userapplication.utilities.drone.usermonitoring;
 
 /**
  * Constants related to all the possible drone situations.

@@ -5,9 +5,11 @@
 
 package io.github.dronesecurity.userapplication.domain.drone.usermonitoring.objects;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.github.dronesecurity.lib.utilities.CastHelper;
 import io.github.dronesecurity.lib.shared.Date;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
+import io.github.dronesecurity.userapplication.infrastructure.drone.usermonitoring.serializers.ProximityDataSerializer;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
@@ -17,6 +19,7 @@ import java.util.Optional;
 /**
  * Class representing a proximity data reception, containing its distance.
  */
+@JsonSerialize(using = ProximityDataSerializer.class)
 public final class ProximityData extends SensorData {
 
     private final double distance;

@@ -5,9 +5,11 @@
 
 package io.github.dronesecurity.userapplication.domain.drone.usermonitoring.objects;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.github.dronesecurity.lib.utilities.CastHelper;
 import io.github.dronesecurity.lib.shared.Date;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
+import io.github.dronesecurity.userapplication.infrastructure.drone.usermonitoring.serializers.CameraDataSerializer;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
@@ -16,6 +18,7 @@ import java.util.Optional;
 /**
  * Class representing a camera data reception, containing its image size.
  */
+@JsonSerialize(using = CameraDataSerializer.class)
 public final class CameraData extends SensorData {
 
     private final int imageSize;

@@ -9,11 +9,11 @@ import io.github.dronesecurity.userapplication.application.user.ohs.pl.Courier;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.OrderState;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.RescheduledOrder;
-import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.OrderDate;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.events.OrderFailed;
+import io.github.dronesecurity.userapplication.domain.shipping.shipping.events.OrderSucceeded;
 import io.github.dronesecurity.userapplication.events.DomainEvents;
-import io.github.dronesecurity.userapplication.events.OrderUpdated;
-import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.presentation.UIHelper;
+import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.shipping.ShippingAPIHelper;
 import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
 import io.vertx.core.json.Json;
@@ -41,7 +41,8 @@ import java.util.stream.Collectors;
  */
 public final class OrdersUIController implements Initializable {
 
-    private final Consumer<OrderUpdated> orderUpdatedHandler;
+    private final Consumer<OrderSucceeded> orderSucceededHandler;
+    private final Consumer<OrderFailed> orderFailedHandler;
     @FXML private TableView<Order> table;
     @FXML private TableColumn<Order, String> orderIdColumn;
     @FXML private TableColumn<Order, String> orderDateColumn;
@@ -57,7 +58,8 @@ public final class OrdersUIController implements Initializable {
      * Build the controller.
      */
     public OrdersUIController() {
-        this.orderUpdatedHandler = ignored -> this.refreshOrders();
+        this.orderSucceededHandler = this.generateOrderConsumer();
+        this.orderFailedHandler = this.generateOrderConsumer();
     }
 
     /**
@@ -83,10 +85,11 @@ public final class OrdersUIController implements Initializable {
 
         this.estimatedArrivalColumn.setCellValueFactory(cell -> {
             final Order order = cell.getValue();
-            final OrderDate arrivalDate = order instanceof RescheduledOrder
-                    ? ((RescheduledOrder) order).getNewEstimatedArrival()
-                    : order.getEstimatedArrival();
-            return new SimpleObjectProperty<>(arrivalDate.asString());
+            return new SimpleObjectProperty<>(
+                    (order instanceof RescheduledOrder
+                            ? ((RescheduledOrder) order).getNewEstimatedArrival()
+                            : order.getEstimatedArrival())
+                    .asString());
         });
         this.estimatedArrivalColumn.setReorderable(false);
 
@@ -96,12 +99,15 @@ public final class OrdersUIController implements Initializable {
 
         this.refreshOrders();
         this.table.getSelectionModel().selectedItemProperty().addListener((observable, oldOrder, order) -> {
-            this.table.getScene().getWindow().setOnHidden(ignored ->
-                    DomainEvents.unregister(OrderUpdated.class, this.orderUpdatedHandler));
+            this.table.getScene().getWindow().setOnHidden(ignored -> {
+                DomainEvents.unregister(OrderSucceeded.class, this.orderSucceededHandler);
+                DomainEvents.unregister(OrderFailed.class, this.orderFailedHandler);
+            });
             this.checkOrderType(order);
         });
 
-        DomainEvents.register(OrderUpdated.class, this.orderUpdatedHandler);
+        DomainEvents.register(OrderSucceeded.class, this.orderSucceededHandler);
+        DomainEvents.register(OrderFailed.class, this.orderFailedHandler);
     }
 
     @FXML
@@ -120,6 +126,7 @@ public final class OrdersUIController implements Initializable {
                                 ShippingAPIHelper.postJson(ShippingAPIHelper.Operation.PERFORM_DELIVERY, body)
                                         .onSuccess(ignored -> Platform.runLater(() -> {
                                             this.table.getSelectionModel().clearSelection();
+                                            this.refreshOrders();
                                             UIHelper.showMonitoringUI();
                                             UIHelper.showDroneControllerUI(order.getId().asLong(), droneId);
                                         }));
@@ -188,5 +195,9 @@ public final class OrdersUIController implements Initializable {
                 this.showDataHistoryButton.setDisable(true);
             }
         }
+    }
+
+    private <T> Consumer<T> generateOrderConsumer() {
+        return ignored -> this.refreshOrders();
     }
 }

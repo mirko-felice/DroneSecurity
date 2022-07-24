@@ -107,7 +107,7 @@ public final class MongoOrderRepository extends MongoRepository implements Order
 
     private Future<Void> updateOrderState(final @NotNull Order order) {
         final JsonObject query = new JsonObject();
-        query.put(OrderConstants.ID, order.getId());
+        query.put(OrderConstants.ID, order.getId().asLong());
         final JsonObject update = new JsonObject();
         final JsonObject what = new JsonObject();
         what.put(OrderConstants.EVENTS, order.getCurrentState());

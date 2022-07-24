@@ -119,7 +119,7 @@ public final class MonitorController implements Initializable {
                 this.proximityPreviousData.getItems().add(0,
                         Double.valueOf(this.proximityCurrentData.getText().split(" ")[0]));
 
-            this.proximityCurrentData.setText(proximityRead.getProximity() + " cm");
+            this.proximityCurrentData.setText(proximityRead.getProximity().getDistance() + " cm");
         });
     }
 
@@ -140,7 +140,7 @@ public final class MonitorController implements Initializable {
                 this.cameraPreviousData.getItems().add(0,
                         Long.valueOf(this.cameraCurrentData.getText().split(" ")[0]));
 
-            this.cameraCurrentData.setText(cameraRead.getCameraData() + " bytes");
+            this.cameraCurrentData.setText(cameraRead.getCameraData().getImageSize() + " bytes");
         });
     }
 }

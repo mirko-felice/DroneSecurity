@@ -5,10 +5,12 @@
 
 package io.github.dronesecurity.userapplication.domain.drone.usermonitoring.objects;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.github.dronesecurity.lib.utilities.CastHelper;
 import io.github.dronesecurity.lib.shared.Date;
 import io.github.dronesecurity.lib.connection.MqttMessageParameterConstants;
 import io.github.dronesecurity.userapplication.domain.shipping.shipping.entities.contracts.Order;
+import io.github.dronesecurity.userapplication.infrastructure.drone.usermonitoring.serializers.AccelerometerDataSerializer;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
@@ -19,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Class representing an accelerometer data reception, containing its roll, pitch and yaw angles.
  */
+@JsonSerialize(using = AccelerometerDataSerializer.class)
 public final class AccelerometerData extends SensorData {
 
     private final int pitch;

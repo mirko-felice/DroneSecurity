@@ -15,7 +15,7 @@ import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.event
 import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.events.StatusChanged;
 import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.services.UserMonitoringService;
 import io.github.dronesecurity.userapplication.events.DomainEvents;
-import io.github.dronesecurity.userapplication.events.SituationConstants;
+import io.github.dronesecurity.userapplication.utilities.drone.usermonitoring.SituationConstants;
 import io.github.dronesecurity.userapplication.infrastructure.drone.usermonitoring.repo.DataRepositoryImpl;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.shipping.DroneAPIHelper;

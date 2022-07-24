@@ -6,7 +6,7 @@
 package io.github.dronesecurity.userapplication.domain.drone.usermonitoring.events;
 
 import io.github.dronesecurity.userapplication.events.DomainEvent;
-import io.github.dronesecurity.userapplication.events.SituationConstants;
+import io.github.dronesecurity.userapplication.utilities.drone.usermonitoring.SituationConstants;
 
 /**
  * The event to be raised when alert is no more occurring and standard situation comes back.
