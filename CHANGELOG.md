@@ -1,3 +1,10 @@
+## [1.3.4](https://github.com/mirko-felice/DroneSecurity/compare/1.3.3...1.3.4) (2022-07-24)
+
+
+### Bug Fixes
+
+* solve some hotfix ([cdd11ca](https://github.com/mirko-felice/DroneSecurity/commit/cdd11ca59730fd4e41a0fb20fb6534c51c62f6ad))
+
 ## [1.3.3](https://github.com/mirko-felice/DroneSecurity/compare/1.3.2...1.3.3) (2022-07-24)
 
 
