@@ -99,7 +99,7 @@ public final class UserMonitoringServiceImpl implements UserMonitoringService {
     }
 
     private void subscribeToMovingStateChange(final long orderId) {
-        Connection.getInstance().subscribe(MqttTopicConstants.LIFECYCLE_TOPIC + orderId, msg -> {
+        Connection.getInstance().subscribe(MqttTopicConstants.DRONE_MOVING_TOPIC + orderId, msg -> {
             try {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
                 final String movingState =

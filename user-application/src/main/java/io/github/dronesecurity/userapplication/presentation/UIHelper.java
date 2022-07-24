@@ -3,12 +3,13 @@
  * Licensed under the MIT license. See LICENSE file in the project root for details.
  */
 
-package io.github.dronesecurity.userapplication.utilities;
+package io.github.dronesecurity.userapplication.presentation;
 
 import io.github.dronesecurity.userapplication.presentation.drone.usermonitoring.AccelerometerDataController;
 import io.github.dronesecurity.userapplication.presentation.drone.usermonitoring.CameraDataController;
 import io.github.dronesecurity.userapplication.presentation.drone.usermonitoring.DroneController;
 import io.github.dronesecurity.userapplication.presentation.drone.usermonitoring.ProximityDataController;
+import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Modality;
@@ -23,23 +24,23 @@ public final class UIHelper {
 
     private static final double MONITORING_MIN_WIDTH = 800;
     private static final double MONITORING_MIN_HEIGHT = 700;
-    private static final String MONITORING_FXML = "dataMonitoring.fxml";
+    private static final String MONITORING_FXML = "drone/usermonitoring/dataMonitoring.fxml";
 
-    private static final double DRONE_CONTROLLER_MIN_WIDTH = 800;
-    private static final double DRONE_CONTROLLER_MIN_HEIGHT = 700;
-    private static final String DRONE_CONTROLLER_FXML = "droneController.fxml";
+    private static final double DRONE_CONTROLLER_MIN_WIDTH = 500;
+    private static final double DRONE_CONTROLLER_MIN_HEIGHT = 200;
+    private static final String DRONE_CONTROLLER_FXML = "drone/usermonitoring/droneController.fxml";
 
     private static final double PROXIMITY_DATA_MIN_WIDTH = 850;
     private static final double PROXIMITY_DATA_MIN_HEIGHT = 500;
-    private static final String PROXIMITY_DATA_FXML = "proximityData.fxml";
+    private static final String PROXIMITY_DATA_FXML = "drone/usermonitoring/proximityData.fxml";
 
     private static final double ACCELEROMETER_DATA_MIN_WIDTH = 850;
     private static final double ACCELEROMETER_DATA_MIN_HEIGHT = 500;
-    private static final String ACCELEROMETER_DATA_FXML = "accelerometerData.fxml";
+    private static final String ACCELEROMETER_DATA_FXML = "drone/usermonitoring/accelerometerData.fxml";
 
     private static final double CAMERA_DATA_MIN_WIDTH = 850;
     private static final double CAMERA_DATA_MIN_HEIGHT = 500;
-    private static final String CAMERA_DATA_FXML = "cameraData.fxml";
+    private static final String CAMERA_DATA_FXML = "drone/usermonitoring/cameraData.fxml";
 
     private UIHelper() { }
 
@@ -59,11 +60,12 @@ public final class UIHelper {
     /**
      * Shows up the Monitoring GUI related to the delivering order.
      * @param orderId order identifier to monitor
+     * @param droneId drone identifier to control
      */
-    public static void showDroneControllerUI(final long orderId) {
+    public static void showDroneControllerUI(final long orderId, final String droneId) {
         final URL fileUrl = UIHelper.class.getResource(DRONE_CONTROLLER_FXML);
         final FXMLLoader fxmlLoader = new FXMLLoader(fileUrl);
-        fxmlLoader.setController(new DroneController(orderId));
+        fxmlLoader.setController(new DroneController(orderId, droneId));
         FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Drone Controller", fxmlLoader,
                 DRONE_CONTROLLER_MIN_WIDTH, DRONE_CONTROLLER_MIN_HEIGHT).ifPresent(stage -> {
             stage.setOnCloseRequest(Event::consume);

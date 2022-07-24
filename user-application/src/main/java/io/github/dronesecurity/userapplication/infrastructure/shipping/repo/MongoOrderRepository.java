@@ -44,7 +44,7 @@ public final class MongoOrderRepository extends MongoRepository implements Order
     public Order retrieveOrderById(final @NotNull OrderIdentifier orderId) {
         return this.waitFutureResult(
                 this.mongo().findOne(COLLECTION_NAME,
-                                new JsonObject().put(OrderConstants.ID, orderId.asLong()), null)
+                                new JsonObject().put(OrderConstants.ID, orderId.asLong()), new JsonObject())
                         .map(o -> Json.decodeValue(o.toString(), Order.class))
                         .otherwiseEmpty());
     }

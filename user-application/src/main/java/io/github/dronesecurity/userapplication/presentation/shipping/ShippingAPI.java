@@ -97,7 +97,7 @@ public final class ShippingAPI extends AbstractAPI {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         final JsonObject body = params.body().getJsonObject();
         final long id = params.body().getJsonObject().getLong(ShippingAPIHelper.ORDER_ID_KEY);
-        final Order order = this.orderManager.retrieveOrderById(OrderIdentifier.fromLong(id));
+        final Order order = this.executeSync(() -> this.orderManager.retrieveOrderById(OrderIdentifier.fromLong(id)));
         CastHelper.safeCast(order, PlacedOrder.class).ifPresentOrElse(placedOrder -> {
             final String droneId = body.getString(ShippingAPIHelper.DRONE_ID_KEY);
             final String courierUsername = body.getString(ShippingAPIHelper.COURIER_USERNAME_KEY);
@@ -109,7 +109,7 @@ public final class ShippingAPI extends AbstractAPI {
     private void succeedDelivery(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         final long id = params.body().getJsonObject().getLong(ShippingAPIHelper.ORDER_ID_KEY);
-        final Order order = this.orderManager.retrieveOrderById(OrderIdentifier.fromLong(id));
+        final Order order = this.executeSync(() -> this.orderManager.retrieveOrderById(OrderIdentifier.fromLong(id)));
         CastHelper.safeCast(order, DeliveringOrder.class).ifPresentOrElse(deliveringOrder -> {
             this.executeSync(() -> this.deliveryService.succeedDelivery(deliveringOrder));
             routingContext.response().end();
@@ -119,7 +119,7 @@ public final class ShippingAPI extends AbstractAPI {
     private void failDelivery(final @NotNull RoutingContext routingContext) {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         final long id = params.body().getJsonObject().getLong(ShippingAPIHelper.ORDER_ID_KEY);
-        final Order order = this.orderManager.retrieveOrderById(OrderIdentifier.fromLong(id));
+        final Order order = this.executeSync(() -> this.orderManager.retrieveOrderById(OrderIdentifier.fromLong(id)));
         CastHelper.safeCast(order, DeliveringOrder.class).ifPresentOrElse(deliveringOrder -> {
             this.executeSync(() -> this.deliveryService.failDelivery(deliveringOrder));
             routingContext.response().end();
@@ -130,7 +130,7 @@ public final class ShippingAPI extends AbstractAPI {
         final RequestParameters params = routingContext.get(ValidationHandler.REQUEST_CONTEXT_KEY);
         final JsonObject body = params.body().getJsonObject();
         final long id = body.getLong(ShippingAPIHelper.ORDER_ID_KEY);
-        final Order order = this.orderManager.retrieveOrderById(OrderIdentifier.fromLong(id));
+        final Order order = this.executeSync(() -> this.orderManager.retrieveOrderById(OrderIdentifier.fromLong(id)));
         CastHelper.safeCast(order, FailedOrder.class).ifPresentOrElse(failedOrder -> {
             final OrderDate newEstimatedArrival =
                     OrderDate.parseString(body.getString(ShippingAPIHelper.NEW_ESTIMATED_ARRIVAL_KEY));

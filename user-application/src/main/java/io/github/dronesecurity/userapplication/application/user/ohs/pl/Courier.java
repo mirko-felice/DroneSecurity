@@ -19,6 +19,15 @@ public class Courier extends GenericUser {
     private final List<String> assignedDrones;
 
     /**
+     * Default constructor for json de/serialization.
+     */
+    public Courier() {
+        super("", UserRole.COURIER);
+        this.supervisorUsername = "";
+        this.assignedDrones = new ArrayList<>();
+    }
+
+    /**
      * Build the courier.
      * @param username his username
      * @param supervisorUsername his supervisor username

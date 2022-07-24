@@ -5,10 +5,14 @@
 
 package io.github.dronesecurity.userapplication.presentation.drone.usermonitoring;
 
-import io.github.dronesecurity.lib.shared.DrivingMode;
 import io.github.dronesecurity.lib.connection.MqttMessageValueConstants;
+import io.github.dronesecurity.lib.shared.DrivingMode;
 import io.github.dronesecurity.userapplication.application.drone.usermonitoring.UserMonitoringServiceImpl;
-import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.events.*;
+import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.events.CriticalSituation;
+import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.events.DangerousSituation;
+import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.events.MovingStateChanged;
+import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.events.StableSituation;
+import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.events.StatusChanged;
 import io.github.dronesecurity.userapplication.domain.drone.usermonitoring.services.UserMonitoringService;
 import io.github.dronesecurity.userapplication.events.DomainEvents;
 import io.github.dronesecurity.userapplication.events.SituationConstants;
@@ -41,6 +45,7 @@ public final class DroneController implements Initializable {
 
     private final UserMonitoringService monitoringService;
     private final long orderId;
+    private final String droneId;
 
     private final Consumer<CriticalSituation> criticalSituationHandler;
     private final Consumer<DangerousSituation> dangerousSituationHandler;
@@ -59,9 +64,11 @@ public final class DroneController implements Initializable {
     /**
      * Build the drone controller related to an order.
      * @param orderId order identifier to control
+     * @param droneId drone identifier to control
      */
-    public DroneController(final long orderId) {
+    public DroneController(final long orderId, final String droneId) {
         this.orderId = orderId;
+        this.droneId = droneId;
         this.monitoringService = new UserMonitoringServiceImpl(new DataRepositoryImpl());
         this.monitoringService.startOrderMonitoring(orderId);
 
@@ -85,14 +92,12 @@ public final class DroneController implements Initializable {
 
         this.switchMode.selectedProperty().addListener((ignored, unused, isAutomatic) -> {
             final JsonObject body = new JsonObject().put(DroneAPIHelper.ORDER_ID_KEY, this.orderId);
-            // TODO check if asLong necessary
             if (Boolean.TRUE.equals(isAutomatic))
                 DroneAPIHelper.postJson(DroneAPIHelper.Operation.CHANGE_MODE,
-                        body.put(DroneAPIHelper.DRIVING_MODE_KEY, DrivingMode.AUTOMATIC.toString()));
-            // TODO check if toString necessary
+                        body.put(DroneAPIHelper.DRIVING_MODE_KEY, DrivingMode.AUTOMATIC));
             else
                 DroneAPIHelper.postJson(DroneAPIHelper.Operation.CHANGE_MODE,
-                        body.put(DroneAPIHelper.DRIVING_MODE_KEY, DrivingMode.MANUAL.toString()));
+                        body.put(DroneAPIHelper.DRIVING_MODE_KEY, DrivingMode.MANUAL));
             this.setButtonsCorrectly();
         });
     }
@@ -210,7 +215,7 @@ public final class DroneController implements Initializable {
         switch (state) {
             case MqttMessageValueConstants.DELIVERING_MESSAGE:
                 UserAPIHelper.postJson(UserAPIHelper.Operation.REMOVE_DRONE,
-                        new JsonObject().put(UserAPIHelper.DRONE_KEY, "TODO")); // TODO
+                        new JsonObject().put(UserAPIHelper.DRONE_KEY, this.droneId));
                 break;
             case MqttMessageValueConstants.DELIVERY_SUCCESSFUL_MESSAGE:
                 this.deliveryStatusLabel.setStyle("-fx-text-fill: green;");
@@ -226,7 +231,7 @@ public final class DroneController implements Initializable {
             case MqttMessageValueConstants.RETURNED_ACKNOWLEDGEMENT_MESSAGE:
                 this.deliveryStatusLabel.setStyle("-fx-text-fill: cyan;");
                 UserAPIHelper.postJson(UserAPIHelper.Operation.ADD_DRONE,
-                        new JsonObject().put(UserAPIHelper.DRONE_KEY, "TODO")); // TODO
+                        new JsonObject().put(UserAPIHelper.DRONE_KEY, this.droneId));
                 DialogUtils.showInfoDialog("Drone successfully returned.", () -> {
                     DomainEvents.unregister(CriticalSituation.class, this.criticalSituationHandler);
                     DomainEvents.unregister(DangerousSituation.class, this.dangerousSituationHandler);

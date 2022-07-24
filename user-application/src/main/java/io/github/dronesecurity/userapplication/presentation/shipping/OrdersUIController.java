@@ -13,7 +13,7 @@ import io.github.dronesecurity.userapplication.domain.shipping.shipping.objects.
 import io.github.dronesecurity.userapplication.events.DomainEvents;
 import io.github.dronesecurity.userapplication.events.OrderUpdated;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
-import io.github.dronesecurity.userapplication.utilities.UIHelper;
+import io.github.dronesecurity.userapplication.presentation.UIHelper;
 import io.github.dronesecurity.userapplication.utilities.shipping.ShippingAPIHelper;
 import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
 import io.vertx.core.json.Json;
@@ -107,7 +107,7 @@ public final class OrdersUIController implements Initializable {
     @FXML
     private void performDelivery() {
         UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT, BodyCodec.json(Courier.class))
-                .onSuccess(res -> {
+                .onSuccess(res -> Platform.runLater(() -> {
                     final Courier courier = res.body();
                     DialogUtils.createDronePickerDialog("Choose the Drone to use for delivery",
                                     courier.getAssignedDrones())
@@ -115,15 +115,16 @@ public final class OrdersUIController implements Initializable {
                                 final Order order = this.getSelectedOrder().orElseThrow();
                                 final JsonObject body = new JsonObject()
                                         .put(ShippingAPIHelper.ORDER_ID_KEY, order.getId().asLong())
-                                        .put(ShippingAPIHelper.DRONE_ID_KEY, droneId);
+                                        .put(ShippingAPIHelper.DRONE_ID_KEY, droneId)
+                                        .put(ShippingAPIHelper.COURIER_USERNAME_KEY, courier.getUsername());
                                 ShippingAPIHelper.postJson(ShippingAPIHelper.Operation.PERFORM_DELIVERY, body)
                                         .onSuccess(ignored -> Platform.runLater(() -> {
                                             this.table.getSelectionModel().clearSelection();
                                             UIHelper.showMonitoringUI();
-                                            UIHelper.showDroneControllerUI(order.getId().asLong());
+                                            UIHelper.showDroneControllerUI(order.getId().asLong(), droneId);
                                         }));
                             });
-                });
+                }));
     }
 
     @FXML
