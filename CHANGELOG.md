@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/mirko-felice/DroneSecurity/compare/1.3.1...1.3.2) (2022-07-24)
+
+
+### Bug Fixes
+
+* solve some issues related to presentation layer ([6d3e6ec](https://github.com/mirko-felice/DroneSecurity/commit/6d3e6ec3d0d96519c7439e0d5a27c062514aebf8))
+
 ## [1.3.1](https://github.com/mirko-felice/DroneSecurity/compare/1.3.0...1.3.1) (2022-07-23)
 
 
