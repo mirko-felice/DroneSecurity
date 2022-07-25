@@ -78,6 +78,18 @@ Perciò sono necessarie una serie d'informazioni per impostare correttamente la 
 il sistema deve memorizzare questi parametri che saranno utilizzati per instaurare la connessione. Per accomodare
 l'utente al riempimento dei valori è stata realizzata un'interfaccia grafica apposita.
 
+#### Performance
+
+Per avere dei dati riguardanti le performance dell'applicativo, ovvero i tempi impiegati per condividere i dati dei
+sensori tra i diversi componenti del sistema, è presente un'estensione dell'applicativo che fornisce tale funzionalità.
+Questa utilizza i sensori, tracciandone anche i tempi di trasmissione, per ottenere, alla fine dell'esecuzione, dei dati
+su cui sarà possibile lavorare, per migliorare l'efficienza dell'applicativo.
+
+Le performance calcolano il tempo impiegato dai dati per raggiungere i diversi componenti del sistema, tra cui il tempo
+impiegato dai dati per arrivare all'applicativo del drone e quello impiegato per arrivare all'applicativo dell'utente,
+attraverso il servizio remoto AWS. Viene inoltre calcolata la media di tutti i tempi ottenuti dall'esecuzione, per avere
+un valore approssimativo dell'intera esecuzione.
+
 #### Testing
 
 Allo scopo di avere la verificabilità del codice realizzato sono stati implementati dei test che controllano 
@@ -85,10 +97,6 @@ le funzionalità base di alcuni elementi del progetto.
 Poiché è stata ampiamente utilizzata la _Continuous Integration_, la quale però, per motivi
 correlati alla mancanza di sicurezza nel condividere online i certificati privati relativi alla copia remota del Drone su AWS,
 non permette di eseguire i test coinvolgenti AWS durante l'esecuzione della CI.
-
-#### Performance
-
-[//]: # ( TODO add performance documentation)
 
 #### Continuous Integration
 
