@@ -1,3 +1,10 @@
+## [1.3.5](https://github.com/mirko-felice/DroneSecurity/compare/1.3.4...1.3.5) (2022-07-25)
+
+
+### Bug Fixes
+
+* solve pmd and checkstyle problems ([3242e43](https://github.com/mirko-felice/DroneSecurity/commit/3242e43816dd11a8e0fc5815a5a6f34bc082613d))
+
 ## [1.3.4](https://github.com/mirko-felice/DroneSecurity/compare/1.3.3...1.3.4) (2022-07-24)
 
 
