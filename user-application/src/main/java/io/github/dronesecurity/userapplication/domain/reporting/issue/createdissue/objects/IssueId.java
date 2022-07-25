@@ -13,22 +13,22 @@ import org.jetbrains.annotations.NotNull;
  */
 public class IssueId implements ValueObject<IssueId> {
 
-    private final long issueId;
+    private final long id;
 
     /**
      * Builds the issue id with the specified identifier.
-     * @param issueId the identifier of the issue
+     * @param id the identifier of the issue
      */
-    public IssueId(final long issueId) {
-        this.issueId = issueId;
+    public IssueId(final long id) {
+        this.id = id;
     }
 
     /**
      * Gets the identifier of the issue.
      * @return the identifier of the issue
      */
-    public long getIssueId() {
-        return this.issueId;
+    public long getId() {
+        return this.id;
     }
 
     /**
@@ -36,6 +36,6 @@ public class IssueId implements ValueObject<IssueId> {
      */
     @Override
     public boolean isSameValueAs(final @NotNull IssueId value) {
-        return this.issueId == value.getIssueId();
+        return this.id == value.getId();
     }
 }

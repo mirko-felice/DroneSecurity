@@ -20,6 +20,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of {@link ClosedIssueRepository}.
+ */
 public class ClosedIssueRepositoryImpl extends MongoRepository implements ClosedIssueRepository {
 
     private static final String COLLECTION_NAME = "issueReports";

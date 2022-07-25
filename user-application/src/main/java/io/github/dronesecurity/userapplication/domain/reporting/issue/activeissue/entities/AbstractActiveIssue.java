@@ -28,7 +28,7 @@ public abstract class AbstractActiveIssue extends AbstractCreatedIssue {
      * @param sendingTime      the timestamp of when the issue was sent
      * @param droneId          drone identifier that owns the issue
      */
-    public AbstractActiveIssue(final String subject,
+    protected AbstractActiveIssue(final String subject,
                                final long id,
                                final String issueInfo,
                                final String courierUsername,

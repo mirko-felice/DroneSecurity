@@ -57,6 +57,7 @@ public final class IssueRetrievalHelper {
             default:
                 loggedUser = Future.failedFuture(
                         new IllegalStateException("Unexpected value: " + userRole));
+                break;
         }
         return loggedUser;
     }

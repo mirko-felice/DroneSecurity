@@ -57,7 +57,7 @@ public abstract class AbstractCreatedIssue extends SendingIssue {
         if (o == null) return false;
         if (this == o) return true;
         if (!AbstractCreatedIssue.class.isAssignableFrom(o.getClass())) return false;
-        return this.getId() == ((AbstractCreatedIssue) o).getId();
+        return this.getId().isSameValueAs(((AbstractCreatedIssue) o).getId());
     }
 
     /**

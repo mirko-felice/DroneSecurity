@@ -43,6 +43,7 @@ public class DroneRemoteCommands {
         this.latch = new CountDownLatch(1);
     }
 
+    //TODO refactor all value objects
     /**
      * Starts the service by waiting for the remote application to send the starting signal.
      */
