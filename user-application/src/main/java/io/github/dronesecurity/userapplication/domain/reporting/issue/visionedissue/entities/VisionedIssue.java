@@ -5,7 +5,7 @@
 
 package io.github.dronesecurity.userapplication.domain.reporting.issue.visionedissue.entities;
 
-import io.github.dronesecurity.userapplication.domain.reporting.issue.createdissue.entities.AbstractCreatedIssue;
+import io.github.dronesecurity.userapplication.domain.reporting.issue.activeissue.entities.AbstractActiveIssue;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.closedissue.entities.ClosedIssue;
 import io.github.dronesecurity.userapplication.infrastructure.reporting.issue.serializers.IssueStringHelper;
 
@@ -14,7 +14,7 @@ import java.time.Instant;
 /**
  * Class representing an open issue that is currently visioned by a maintainer.
  */
-public class VisionedIssue extends AbstractCreatedIssue {
+public class VisionedIssue extends AbstractActiveIssue {
 
     /**
      * Builds a new Visioned Issue report.

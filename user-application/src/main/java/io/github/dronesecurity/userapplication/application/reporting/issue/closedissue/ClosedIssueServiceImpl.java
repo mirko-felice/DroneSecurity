@@ -30,7 +30,15 @@ public class ClosedIssueServiceImpl implements ClosedIssueService {
      * {@inheritDoc}
      */
     @Override
-    public List<ClosedIssue> retrieveClosedIssues() {
-        return this.repository.retrieveClosedIssues();
+    public List<ClosedIssue> retrieveClosedIssuesForCourier(final String username) {
+        return this.repository.retrieveClosedIssuesForCourier(username);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ClosedIssue> retrieveClosedIssuesForAssignee(final String username) {
+        return this.repository.retrieveClosedIssuesForAssignee(username);
     }
 }

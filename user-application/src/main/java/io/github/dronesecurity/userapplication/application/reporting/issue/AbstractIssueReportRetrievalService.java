@@ -42,16 +42,32 @@ public abstract class AbstractIssueReportRetrievalService implements IssueReport
      * {@inheritDoc}
      */
     @Override
-    public List<AbstractActiveIssue> getActiveIssueReports() {
-        return this.activeIssueService.retrieveActiveIssues();
+    public List<AbstractActiveIssue> getActiveIssueReportsForCourier(final String username) {
+        return this.activeIssueService.retrieveActiveIssuesForCourier(username);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<ClosedIssue> getClosedIssueReports() {
-        return this.closedIssueService.retrieveClosedIssues();
+    public List<AbstractActiveIssue> getActiveIssueReportsForAssignee(final String username) {
+        return this.activeIssueService.retrieveActiveIssuesForAssignee(username);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ClosedIssue> getClosedIssueReportsForCourier(final String username) {
+        return this.closedIssueService.retrieveClosedIssuesForCourier(username);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ClosedIssue> getClosedIssueReportsForAssignee(final String username) {
+        return this.closedIssueService.retrieveClosedIssuesForAssignee(username);
     }
 
     /**

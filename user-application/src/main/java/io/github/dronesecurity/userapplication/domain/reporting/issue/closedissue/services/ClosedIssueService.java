@@ -15,8 +15,16 @@ import java.util.List;
 public interface ClosedIssueService {
 
     /**
-     * Lists issues reported that have been closed.
+     * Lists issues reported that have been closed for courier.
+     * @param username username to retrieve issues from
      * @return the future of the list of closed issues
      */
-    List<ClosedIssue> retrieveClosedIssues();
+    List<ClosedIssue> retrieveClosedIssuesForCourier(String username);
+
+    /**
+     * Lists issues reported that have been closed for assignee.
+     * @param username username to retrieve issues from
+     * @return the future of the list of closed issues
+     */
+    List<ClosedIssue> retrieveClosedIssuesForAssignee(String username);
 }

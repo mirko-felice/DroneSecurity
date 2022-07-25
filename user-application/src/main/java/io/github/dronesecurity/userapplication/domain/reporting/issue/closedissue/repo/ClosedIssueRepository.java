@@ -15,8 +15,16 @@ import java.util.List;
 public interface ClosedIssueRepository {
 
     /**
-     * Gets all closed issues of the currently logged user.
+     * Gets all closed issues of the courier.
+     * @param username username to retrieve issues from
      * @return the list of closed issues contained in repository
      */
-    List<ClosedIssue> retrieveClosedIssues();
+    List<ClosedIssue> retrieveClosedIssuesForCourier(String username);
+
+    /**
+     * Gets all closed issues of the assignee.
+     * @param username username to retrieve issues from
+     * @return the list of closed issues contained in repository
+     */
+    List<ClosedIssue> retrieveClosedIssuesForAssignee(String username);
 }

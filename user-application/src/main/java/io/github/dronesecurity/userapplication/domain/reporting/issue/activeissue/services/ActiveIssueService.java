@@ -15,8 +15,16 @@ import java.util.List;
 public interface ActiveIssueService {
 
     /**
-     * Lists active issues reported.
+     * Lists active issues reported for the courier.
+     * @param username username to retrieve issues from
      * @return the future of the list of active issues reported
      */
-    List<AbstractActiveIssue> retrieveActiveIssues();
+    List<AbstractActiveIssue> retrieveActiveIssuesForCourier(String username);
+
+    /**
+     * Lists active issues reported for the assignee.
+     * @param username username to retrieve issues from
+     * @return the future of the list of active issues reported
+     */
+    List<AbstractActiveIssue> retrieveActiveIssuesForAssignee(String username);
 }

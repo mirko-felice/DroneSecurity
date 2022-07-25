@@ -7,9 +7,9 @@ package io.github.dronesecurity.userapplication.infrastructure.reporting.issue.r
 
 import io.github.dronesecurity.userapplication.domain.reporting.issue.activeissue.entities.AbstractActiveIssue;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.activeissue.repo.ActiveIssueRepository;
-import io.github.dronesecurity.userapplication.infrastructure.reporting.issue.serializers.IssueStringHelper;
 import io.github.dronesecurity.userapplication.infrastructure.MongoRepository;
 import io.github.dronesecurity.userapplication.infrastructure.reporting.issue.repo.IssueRetrievalHelper;
+import io.github.dronesecurity.userapplication.infrastructure.reporting.issue.serializers.IssueStringHelper;
 import io.vertx.core.Future;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
@@ -32,10 +32,20 @@ public class ActiveIssueRepositoryImpl extends MongoRepository implements Active
      * {@inheritDoc}
      */
     @Override
-    public List<AbstractActiveIssue> retrieveActiveIssues() {
-        final JsonObject openIssuesQuery = IssueRetrievalHelper.initQueryWithUserData();
+    public List<AbstractActiveIssue> retrieveActiveIssuesForCourier(final String username) {
+        final JsonObject openIssuesQuery = new JsonObject().put(IssueStringHelper.COURIER, username);
 
-        return this.getActiveIssuesFromQuery(openIssuesQuery);
+        return IssueRetrievalHelper.executeSync(() -> this.getActiveIssuesFromQuery(openIssuesQuery));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<AbstractActiveIssue> retrieveActiveIssuesForAssignee(final String username) {
+        final JsonObject openIssuesQuery = new JsonObject().put(IssueStringHelper.ASSIGNEE, username);
+
+        return IssueRetrievalHelper.executeSync(() -> this.getActiveIssuesFromQuery(openIssuesQuery));
     }
 
     private @Nullable List<AbstractActiveIssue> getActiveIssuesFromQuery(final @NotNull JsonObject query) {

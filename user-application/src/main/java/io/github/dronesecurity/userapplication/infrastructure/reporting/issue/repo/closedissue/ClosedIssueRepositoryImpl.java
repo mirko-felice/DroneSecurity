@@ -7,9 +7,9 @@ package io.github.dronesecurity.userapplication.infrastructure.reporting.issue.r
 
 import io.github.dronesecurity.userapplication.domain.reporting.issue.closedissue.entities.ClosedIssue;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.closedissue.repo.ClosedIssueRepository;
-import io.github.dronesecurity.userapplication.infrastructure.reporting.issue.serializers.IssueStringHelper;
 import io.github.dronesecurity.userapplication.infrastructure.MongoRepository;
 import io.github.dronesecurity.userapplication.infrastructure.reporting.issue.repo.IssueRetrievalHelper;
+import io.github.dronesecurity.userapplication.infrastructure.reporting.issue.serializers.IssueStringHelper;
 import io.vertx.core.Future;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
@@ -31,10 +31,20 @@ public class ClosedIssueRepositoryImpl extends MongoRepository implements Closed
      * {@inheritDoc}
      */
     @Override
-    public List<ClosedIssue> retrieveClosedIssues() {
-        final JsonObject closedIssuesQuery = IssueRetrievalHelper.initQueryWithUserData();
+    public List<ClosedIssue> retrieveClosedIssuesForCourier(final String username) {
+        final JsonObject closedIssuesQuery = new JsonObject().put(IssueStringHelper.COURIER, username);
 
-        return this.getClosedIssuesFromQuery(closedIssuesQuery);
+        return IssueRetrievalHelper.executeSync(() -> this.getClosedIssuesFromQuery(closedIssuesQuery));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ClosedIssue> retrieveClosedIssuesForAssignee(final String username) {
+        final JsonObject closedIssuesQuery = new JsonObject().put(IssueStringHelper.ASSIGNEE, username);
+
+        return IssueRetrievalHelper.executeSync(() -> this.getClosedIssuesFromQuery(closedIssuesQuery));
     }
 
     private @Nullable List<ClosedIssue> getClosedIssuesFromQuery(final @NotNull JsonObject query) {

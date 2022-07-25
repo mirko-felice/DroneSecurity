@@ -30,7 +30,15 @@ public class ActiveIssueServiceImpl implements ActiveIssueService {
      * {@inheritDoc}
      */
     @Override
-    public List<AbstractActiveIssue> retrieveActiveIssues() {
-        return this.repository.retrieveActiveIssues();
+    public List<AbstractActiveIssue> retrieveActiveIssuesForCourier(final String username) {
+        return this.repository.retrieveActiveIssuesForCourier(username);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<AbstractActiveIssue> retrieveActiveIssuesForAssignee(final String username) {
+        return this.repository.retrieveActiveIssuesForAssignee(username);
     }
 }

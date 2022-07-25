@@ -34,7 +34,9 @@ public class MaintainerIssueReportService extends AbstractIssueReportRetrievalSe
      * {@inheritDoc}
      */
     @Override
-    public void addIssueReport(final SendingIssue issue) { }
+    public void addIssueReport(final SendingIssue issue) {
+        // Maintainer does create a new issue.
+    }
 
     /**
      * {@inheritDoc}

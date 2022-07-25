@@ -236,12 +236,14 @@ BoundedContext IssueReportingContext implements Reporting {
 		abstract Entity ActiveIssue extends CreatedIssue {
 			aggregateRoot
 			Repository ActiveIssueRepository {
-				List<@ActiveIssue> retrieveActiveIssues();
+				List<@ActiveIssue> retrieveActiveIssuesForCourier(String username);
+				List<@ActiveIssue> retrieveActiveIssuesForAssignee(String username);
 			}
 		}
 
 		Service ActiveIssuesService {
-			List<@ActiveIssue> retrieveActiveIssues();
+			List<@ActiveIssue> retrieveActiveIssuesForCourier(String username);
+            List<@ActiveIssue> retrieveActiveIssuesForAssignee(String username);
 		}
 	}
 
@@ -281,12 +283,14 @@ BoundedContext IssueReportingContext implements Reporting {
 			String issueSolution
 
 			Repository ClosedIssueRepository {
-				List<@ClosedIssue> retrieveClosedIssues();
+				List<@ClosedIssue> retrieveClosedIssuesForCourier(String username);
+				List<@ClosedIssue> retrieveClosedIssuesForAssignee(String username);
 			}
 		}
 
 		Service ClosedIssueService {
-			List<@ClosedIssue> retrieveClosedIssues();
+			List<@ClosedIssue> retrieveClosedIssuesForCourier(String username);
+			List<@ClosedIssue> retrieveClosedIssuesForAssignee(String username);
 		}
 	}
 }

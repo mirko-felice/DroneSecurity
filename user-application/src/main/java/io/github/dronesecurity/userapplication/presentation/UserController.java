@@ -47,7 +47,7 @@ public class UserController implements Initializable {
     private static final String ORDERS_FXML = "shipping/orders.fxml";
     private static final String NEGLIGENCE_FXML = "reporting/negligence/assignee.fxml";
     private static final String NEGLIGENCE_DATA_FXML = "reporting/negligence/negligenceData.fxml";
-    private static final String ISSUES_FXML = "issues.fxml";
+    private static final String ISSUES_FXML = "reporting/issue/issues.fxml";
     private UserRole role;
     @FXML private ProgressBar progressBar;
     @FXML private Button showOrdersButton;

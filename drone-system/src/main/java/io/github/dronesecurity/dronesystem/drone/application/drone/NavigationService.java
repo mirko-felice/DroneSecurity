@@ -88,28 +88,46 @@ public class NavigationService {
     }
 
     private void travelSimulation(final @NotNull ScheduledExecutorService executor, final Runnable terminationAction) {
-        executor.scheduleWithFixedDelay(new Runnable() {
-            private Instant startingInstant = Instant.now();
-            private long remainingTravelTime = TRAVELING_TIME;
-            private Instant deliveredMoment = startingInstant.plusMillis(remainingTravelTime);
-            private boolean wasStopped;
-            @Override
-            public void run() {
-                if (NavigationService.this.drone.isOperating()) {
-                    if (this.wasStopped) {
-                        this.startingInstant = Instant.now();
-                        this.deliveredMoment = this.startingInstant.plusMillis(this.remainingTravelTime);
-                        this.wasStopped = false;
-                    } else if (Instant.now().isAfter(this.deliveredMoment)) {
-                        terminationAction.run();
-                        executor.shutdownNow();
-                    }
-                } else if (!this.wasStopped && !NavigationService.this.drone.isOperating()) {
-                    this.wasStopped = true;
-                    final long timeElapsed = Instant.now().toEpochMilli() - this.startingInstant.toEpochMilli();
-                    this.remainingTravelTime -= timeElapsed;
+        executor.scheduleWithFixedDelay(new TravelSimulator(executor, terminationAction),
+                0, TRAVEL_SIMULATION_DELAY, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Travel simulator.
+     */
+    private final class TravelSimulator implements Runnable {
+
+        private final ScheduledExecutorService executor;
+        private final Runnable terminationAction;
+        private Instant startingInstant = Instant.now();
+        private long remainingTravelTime = TRAVELING_TIME;
+        private Instant deliveredMoment = this.startingInstant.plusMillis(this.remainingTravelTime);
+        private boolean wasStopped;
+
+        private TravelSimulator(final @NotNull ScheduledExecutorService executor, final Runnable terminationAction) {
+            this.executor = executor;
+            this.terminationAction = terminationAction;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void run() {
+            if (NavigationService.this.drone.isOperating()) {
+                if (this.wasStopped) {
+                    this.startingInstant = Instant.now();
+                    this.deliveredMoment = this.startingInstant.plusMillis(this.remainingTravelTime);
+                    this.wasStopped = false;
+                } else if (Instant.now().isAfter(this.deliveredMoment)) {
+                    this.terminationAction.run();
+                    this.executor.shutdownNow();
                 }
+            } else if (!this.wasStopped && !NavigationService.this.drone.isOperating()) {
+                this.wasStopped = true;
+                final long timeElapsed = Instant.now().toEpochMilli() - this.startingInstant.toEpochMilli();
+                this.remainingTravelTime -= timeElapsed;
             }
-        }, 0, TRAVEL_SIMULATION_DELAY, TimeUnit.MILLISECONDS);
+        }
     }
 }

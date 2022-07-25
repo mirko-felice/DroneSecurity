@@ -47,6 +47,18 @@
         <exclude name="UseObjectForClearerAPI"/>
     </rule>
 
+    <rule ref="category/java/design.xml/TooManyMethods">
+        <properties>
+            <property name="maxmethods" value="11" /> <!-- Needed for Issues UI Controller -->
+        </properties>
+    </rule>
+
+    <rule ref="category/java/design.xml/TooManyFields">
+        <properties>
+            <property name="maxfields" value="29" /> <!-- Needed for Issues UI Controller -->
+        </properties>
+    </rule>
+
     <rule ref="category/java/documentation.xml/CommentRequired">
         <properties>
             <property name="fieldCommentRequirement" value="Ignored"/> <!-- Don't want to comment even private fields, unnecessary. -->

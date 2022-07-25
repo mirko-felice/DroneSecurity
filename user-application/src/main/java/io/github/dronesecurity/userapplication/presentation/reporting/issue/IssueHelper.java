@@ -43,7 +43,7 @@ public final class IssueHelper {
                                                             final @NotNull TableColumn<T, String> courierColumn,
                                                             final @NotNull TableColumn<T, String> droneIdColumn,
                                                             final Consumer<T> onIssueSelected) {
-        idColumn.setCellValueFactory(val -> new SimpleStringProperty("#" + val.getValue().getId()));
+        idColumn.setCellValueFactory(val -> new SimpleStringProperty("#" + val.getValue().getId().getId()));
         subjectColumn.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getSubject()));
         courierColumn.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getCourier()));
         droneIdColumn.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getDroneId()));

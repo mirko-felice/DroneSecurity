@@ -53,12 +53,7 @@ public class DroneRemoteCommands {
                 final JsonNode json = new ObjectMapper().readTree(new String(msg.getPayload(), StandardCharsets.UTF_8));
                 if (MqttMessageValueConstants.PERFORM_DELIVERY_MESSAGE
                         .equals(json.get(MqttMessageParameterConstants.SYNC_PARAMETER).asText())) {
-
-                    final long currentOrderId = json.get(MqttMessageParameterConstants.ORDER_PARAMETER)
-                            .get(MqttMessageParameterConstants.ORDER_ID_PARAMETER).asLong();
-                    final String currentCourier = json.get(MqttMessageParameterConstants.COURIER_PARAMETER).asText();
-
-                    this.orderData = new OrderData(currentOrderId, currentCourier);
+                    this.orderData = this.getOrderDataFromJson(json);
 
                     this.drone.activate(this.orderData);
                     this.navigationService = new NavigationService(this.drone, this.orderData);
@@ -128,5 +123,13 @@ public class DroneRemoteCommands {
         } catch (JsonProcessingException e) {
             LoggerFactory.getLogger(getClass()).error(JSON_ERROR_MESSAGE, e);
         }
+    }
+
+    private @NotNull OrderData getOrderDataFromJson(final @NotNull JsonNode json) {
+        final long currentOrderId = json.get(MqttMessageParameterConstants.ORDER_PARAMETER)
+                .get(MqttMessageParameterConstants.ORDER_ID_PARAMETER).asLong();
+        final String currentCourier = json.get(MqttMessageParameterConstants.COURIER_PARAMETER).asText();
+
+        return new OrderData(currentOrderId, currentCourier);
     }
 }

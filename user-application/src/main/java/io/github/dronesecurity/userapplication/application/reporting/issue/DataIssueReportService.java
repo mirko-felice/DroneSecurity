@@ -19,16 +19,32 @@ import java.util.function.Consumer;
 public interface DataIssueReportService {
 
     /**
-     * Lists open issues reported.
+     * Lists open issues reported for courier.
+     * @param username username to retrieve issues from
      * @return the list of open issues reported
      */
-    List<AbstractActiveIssue> getActiveIssueReports();
+    List<AbstractActiveIssue> getActiveIssueReportsForCourier(String username);
 
     /**
-     * Lists issues reported that have been closed.
+     * Lists open issues reported for assignee.
+     * @param username username to retrieve issues from
+     * @return the list of open issues reported
+     */
+    List<AbstractActiveIssue> getActiveIssueReportsForAssignee(String username);
+
+    /**
+     * Lists issues reported that have been closed for courier.
+     * @param username username to retrieve issues from
      * @return the list of closed issues
      */
-    List<ClosedIssue> getClosedIssueReports();
+    List<ClosedIssue> getClosedIssueReportsForCourier(String username);
+
+    /**
+     * Lists issues reported that have been closed for assignee.
+     * @param username username to retrieve issues from
+     * @return the list of closed issues
+     */
+    List<ClosedIssue> getClosedIssueReportsForAssignee(String username);
 
     /**
      * Subscribes to new issues created by any courier.

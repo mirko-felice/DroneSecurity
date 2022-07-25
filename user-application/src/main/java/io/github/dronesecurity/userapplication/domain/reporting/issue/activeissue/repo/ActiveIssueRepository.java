@@ -15,8 +15,16 @@ import java.util.List;
 public interface ActiveIssueRepository {
 
     /**
-     * Gets all active issues of the currently logged user.
+     * Gets all active issues of courier.
+     * @param username username to retrieve issues from
      * @return the list of active issues contained in repository
      */
-    List<AbstractActiveIssue> retrieveActiveIssues();
+    List<AbstractActiveIssue> retrieveActiveIssuesForCourier(String username);
+
+    /**
+     * Gets all active issues of assignee.
+     * @param username username to retrieve issues from
+     * @return the list of active issues contained in repository
+     */
+    List<AbstractActiveIssue> retrieveActiveIssuesForAssignee(String username);
 }

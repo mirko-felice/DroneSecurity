@@ -5,15 +5,16 @@
 
 package io.github.dronesecurity.userapplication.infrastructure.reporting.issue.repo;
 
-import io.github.dronesecurity.userapplication.application.user.ohs.pl.GenericUser;
-import io.github.dronesecurity.userapplication.application.user.ohs.pl.UserRole;
-import io.github.dronesecurity.userapplication.infrastructure.reporting.issue.serializers.IssueStringHelper;
-import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
-import io.vertx.core.Future;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.client.HttpResponse;
-import io.vertx.ext.web.codec.BodyCodec;
+import io.github.dronesecurity.userapplication.domain.reporting.issue.createdissue.entities.AbstractCreatedIssue;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Repository helper that initializes a json body with the data of the logged user.
@@ -23,42 +24,21 @@ public final class IssueRetrievalHelper {
     private IssueRetrievalHelper() { }
 
     /**
-     * Initializes the query with user's data.
-     * @return JsonObject containing the data of the logged user
+     * Executes the query to retrieve issues.
+     * @param callable query as callable
+     * @param <T> type parameter
+     * @return list of all issues retrieved
      */
-    public static @NotNull JsonObject initQueryWithUserData() {
-        final JsonObject queryWithUser = new JsonObject();
-        UserAPIHelper.get(UserAPIHelper.Operation.CHECK_LOGGED_USER_ROLE, BodyCodec.json(UserRole.class))
-                .onSuccess(res -> {
-                    final Future<GenericUser> loggedUser = getLoggedUserData(res.body());
-                    loggedUser.onSuccess(user -> {
-                        if (user.getRole() == UserRole.COURIER)
-                            queryWithUser.put(IssueStringHelper.COURIER, user.getUsername());
-                        else if (user.getRole() == UserRole.MAINTAINER)
-                            queryWithUser.put(IssueStringHelper.ASSIGNEE, user.getUsername());
-                    });
-                });
-
-        return queryWithUser;
-    }
-
-    private static Future<GenericUser> getLoggedUserData(final @NotNull UserRole userRole) {
-        final Future<GenericUser> loggedUser;
-        switch (userRole) {
-            case COURIER:
-                loggedUser = UserAPIHelper.get(UserAPIHelper.Operation.RETRIEVE_LOGGED_COURIER_IF_PRESENT,
-                        BodyCodec.json(GenericUser.class)).map(HttpResponse::body);
-                break;
-            case MAINTAINER:
-                loggedUser = UserAPIHelper.get(
-                        UserAPIHelper.Operation.RETRIEVE_LOGGED_MAINTAINER_IF_PRESENT,
-                        BodyCodec.json(GenericUser.class)).map(HttpResponse::body);
-                break;
-            default:
-                loggedUser = Future.failedFuture(
-                        new IllegalStateException("Unexpected value: " + userRole));
-                break;
+    public static <T extends AbstractCreatedIssue> List<T> executeSync(
+            final @NotNull Callable<List<T>> callable) {
+        try {
+            final ExecutorService executor = Executors.newSingleThreadExecutor();
+            final Future<List<T>> result = executor.submit(callable);
+            executor.shutdown();
+            return result.get();
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            return Collections.emptyList();
         }
-        return loggedUser;
     }
 }
