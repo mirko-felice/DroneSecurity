@@ -52,7 +52,7 @@ public class OpenIssue extends AbstractActiveIssue {
     public VisionedIssue visionIssue() {
 
         return new VisionedIssue(this.getSubject(),
-                this.getId().getIssueId(),
+                this.getId().getId(),
                 this.getDetails(),
                 this.getCourier(),
                 this.assignedTo(),

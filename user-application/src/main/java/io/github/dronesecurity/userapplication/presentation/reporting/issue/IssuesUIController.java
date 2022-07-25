@@ -16,15 +16,13 @@ import io.github.dronesecurity.userapplication.domain.reporting.issue.activeissu
 import io.github.dronesecurity.userapplication.domain.reporting.issue.closedissue.entities.ClosedIssue;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.createdissue.entities.AbstractCreatedIssue;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.openissue.entities.OpenIssue;
-import io.github.dronesecurity.userapplication.infrastructure.reporting.issue.serializers.IssueStringHelper;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.visionedissue.entities.VisionedIssue;
+import io.github.dronesecurity.userapplication.infrastructure.reporting.issue.serializers.IssueStringHelper;
 import io.github.dronesecurity.userapplication.utilities.DialogUtils;
 import io.github.dronesecurity.userapplication.utilities.FXHelper;
 import io.github.dronesecurity.userapplication.utilities.user.UserAPIHelper;
-import io.vertx.core.Future;
 import io.vertx.ext.web.codec.BodyCodec;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,13 +38,12 @@ import org.jetbrains.annotations.NotNull;
 import java.net.URL;
 import java.util.Comparator;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
  * The controller of the issue creation service.
  */
-public class IssuesUIController implements Initializable {
+public final class IssuesUIController implements Initializable {
 
     private static final String ERROR_MESSAGE = "Error connecting to issue information. Please retry.";
     private static final double MIN_WIDTH = 450;
@@ -92,13 +89,6 @@ public class IssuesUIController implements Initializable {
     private GenericUser loggedGenericUser;
 
     /**
-     * Instantiates the issue report controller with its service.
-     */
-    public IssuesUIController() {
-
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -114,8 +104,8 @@ public class IssuesUIController implements Initializable {
                     }
                 });
 
-        this.initTable(this.activeIssuesTable, this.activeIssuesId, this.activeIssuesSubject, this.activeIssuesCourier,
-                this.activeIssuesDroneId, issue -> {
+        IssueHelper.initTable(this.activeIssuesTable, this.activeIssuesId, this.activeIssuesSubject,
+                this.activeIssuesCourier, this.activeIssuesDroneId, issue -> {
             this.currentlySelectedIssue = issue;
             this.solutionLabel.setVisible(false);
             this.closedIssueSolution.setVisible(false);
@@ -129,8 +119,8 @@ public class IssuesUIController implements Initializable {
             this.fillIssueFields();
         });
 
-        this.initTable(this.closedIssuesTable, this.closedIssuesId, this.closedIssuesSubject, this.closedIssuesCourier,
-                this.closedIssuesDroneId, issue -> {
+        IssueHelper.initTable(this.closedIssuesTable, this.closedIssuesId, this.closedIssuesSubject,
+                this.closedIssuesCourier, this.closedIssuesDroneId, issue -> {
             this.currentlySelectedIssue = issue;
             this.solutionLabel.setVisible(true);
             this.closedIssueSolution.setVisible(true);
@@ -141,10 +131,10 @@ public class IssuesUIController implements Initializable {
             this.fillIssueFields();
         });
 
-        this.refreshOpenIssues();
+        IssueHelper.refreshOpenIssues(this.activeIssuesTable, this.issueReportService.getActiveIssueReports());
         this.closedIssuesTable.setItems(
                 FXCollections.observableList(this.issueReportService.getClosedIssueReports().stream()
-                        .sorted(Comparator.comparingLong(issue -> issue.getId().getIssueId()))
+                        .sorted(Comparator.comparingLong(issue -> issue.getId().getId()))
                         .collect(Collectors.toList())));
     }
 
@@ -154,7 +144,8 @@ public class IssuesUIController implements Initializable {
         FXHelper.initializeWindow(Modality.WINDOW_MODAL, "Create new Issue", loader, MIN_WIDTH, MIN_HEIGHT)
                 .ifPresent(stage -> {
                     stage.initOwner(this.issuesPane.getScene().getWindow());
-                    stage.setOnHidden(ignored -> this.refreshOpenIssues());
+                    stage.setOnHidden(ignored -> IssueHelper.refreshOpenIssues(this.activeIssuesTable,
+                            this.issueReportService.getActiveIssueReports()));
                     stage.showAndWait();
                 });
     }
@@ -164,7 +155,8 @@ public class IssuesUIController implements Initializable {
         CastHelper.safeCast(this.currentlySelectedIssue, OpenIssue.class).ifPresent(openIssue -> {
             if (this.issueReportService.visionIssue(openIssue.visionIssue())) {
                 Platform.runLater(() -> {
-                    this.refreshOpenIssues();
+                    IssueHelper.refreshOpenIssues(this.activeIssuesTable,
+                            this.issueReportService.getActiveIssueReports());
                     final TableView.TableViewSelectionModel<AbstractActiveIssue> selectionModel =
                             this.activeIssuesTable.getSelectionModel();
 
@@ -185,13 +177,13 @@ public class IssuesUIController implements Initializable {
         CastHelper.safeCast(this.currentlySelectedIssue, VisionedIssue.class).ifPresent(visionedIssue -> {
             if (this.issueReportService.closeIssue(visionedIssue.closeIssue(this.solutionTextArea.getText()))) {
                 Platform.runLater(() -> {
-                    this.refreshOpenIssues();
+                    IssueHelper.refreshOpenIssues(this.activeIssuesTable,
+                            this.issueReportService.getActiveIssueReports());
                     this.closedIssuesTable.setItems(
                             FXCollections.observableList(this.issueReportService.getClosedIssueReports().stream()
-                                    .sorted(Comparator.comparingLong(issue -> issue.getId().getIssueId()))
+                                    .sorted(Comparator.comparingLong(issue -> issue.getId().getId()))
                                     .collect(Collectors.toList())));
-                    this.closedIssuesTable
-                            .getItems()
+                    this.closedIssuesTable.getItems()
                             .filtered(c -> c.getId().isSameValueAs(this.currentlySelectedIssue.getId()))
                             .stream().findFirst()
                             .ifPresent(issue -> this.closedIssuesTable.getSelectionModel().select(issue));
@@ -250,29 +242,11 @@ public class IssuesUIController implements Initializable {
         if (this.loggedGenericUser.getRole() == UserRole.MAINTAINER)
             this.issueReportService.subscribeToNewIssue(this.loggedGenericUser.getUsername(), issue ->
                     Platform.runLater(() -> {
-                        this.refreshOpenIssues();
+                        IssueHelper.refreshOpenIssues(this.activeIssuesTable,
+                                this.issueReportService.getActiveIssueReports());
                         DialogUtils.showInfoNotification("You have received a new issue!",
                                 this.issuesPane.getScene().getWindow());
                     }));
-    }
-
-    private <T extends AbstractCreatedIssue> void initTable(final @NotNull TableView<T> table,
-                                                            final @NotNull TableColumn<T, String> idColumn,
-                                                            final @NotNull TableColumn<T, String> subjectColumn,
-                                                            final @NotNull TableColumn<T, String> courierColumn,
-                                                            final @NotNull TableColumn<T, String> droneIdColumn,
-                                                            final Consumer<T> onIssueSelected) {
-        idColumn.setCellValueFactory(val -> new SimpleStringProperty("#" + val.getValue().getId()));
-        subjectColumn.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getSubject()));
-        courierColumn.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getCourier()));
-        droneIdColumn.setCellValueFactory(val -> new SimpleStringProperty(val.getValue().getDroneId()));
-
-        final TableView.TableViewSelectionModel<T> selectionModel = table.getSelectionModel();
-        selectionModel.setSelectionMode(SelectionMode.SINGLE);
-        selectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null)
-                onIssueSelected.accept(newValue);
-        });
     }
 
     private void fillIssueFields() {
@@ -290,10 +264,4 @@ public class IssuesUIController implements Initializable {
         this.selectedIssuePane.setVisible(true);
     }
 
-    private void refreshOpenIssues() {
-        Platform.runLater(() -> this.activeIssuesTable.setItems(
-                FXCollections.observableList(this.issueReportService.getActiveIssueReports().stream()
-                        .sorted(Comparator.comparingLong(issue -> issue.getId().getIssueId()))
-                        .collect(Collectors.toList()))));
-    }
 }

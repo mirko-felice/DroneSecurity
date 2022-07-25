@@ -34,7 +34,7 @@ public class OpenIssueRepositoryImpl extends MongoRepository implements OpenIssu
 
     private boolean updateIssue(final @NotNull IssueId issueId, final JsonObject updatingValues) {
         final JsonObject query = new JsonObject();
-        query.put(IssueStringHelper.ID, issueId.getIssueId());
+        query.put(IssueStringHelper.ID, issueId.getId());
         final JsonObject update = new JsonObject().put("$set", updatingValues);
 
         return Boolean.TRUE.equals(

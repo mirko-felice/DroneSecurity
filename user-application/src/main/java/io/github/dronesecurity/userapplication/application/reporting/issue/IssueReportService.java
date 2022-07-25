@@ -11,6 +11,9 @@ import io.github.dronesecurity.userapplication.domain.reporting.issue.creation.e
 import io.github.dronesecurity.userapplication.domain.reporting.issue.openissue.entities.OpenIssue;
 import io.github.dronesecurity.userapplication.domain.reporting.issue.visionedissue.entities.VisionedIssue;
 
+/**
+ * Interface representing a service for issue reporting.
+ */
 public interface IssueReportService extends DataIssueReportService {
 
     /**

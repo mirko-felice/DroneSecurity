@@ -33,7 +33,7 @@ public abstract class AbstractIssueReportRetrievalService implements IssueReport
     /**
      * Instantiates services that retrieve specific issues.
      */
-    public AbstractIssueReportRetrievalService() {
+    protected AbstractIssueReportRetrievalService() {
         this.activeIssueService = new ActiveIssueServiceImpl();
         this.closedIssueService = new ClosedIssueServiceImpl();
     }

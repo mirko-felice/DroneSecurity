@@ -6,7 +6,11 @@
 package io.github.dronesecurity.userapplication.domain.reporting.issue.visionedissue.repo;
 
 import io.github.dronesecurity.userapplication.domain.reporting.issue.closedissue.entities.ClosedIssue;
+import io.github.dronesecurity.userapplication.domain.reporting.issue.visionedissue.entities.VisionedIssue;
 
+/**
+ * Repository that allows to close a {@link VisionedIssue}.
+ */
 public interface VisionedIssueRepository {
 
     /**

@@ -52,7 +52,7 @@ public class VisionedIssue extends AbstractCreatedIssue {
      */
     public ClosedIssue closeIssue(final String solution) {
         return new ClosedIssue(this.getSubject(),
-                this.getId().getIssueId(),
+                this.getId().getId(),
                 this.getDetails(),
                 this.getCourier(),
                 this.assignedTo(),
