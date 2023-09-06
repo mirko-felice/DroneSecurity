@@ -80,7 +80,7 @@ jobs:
         with:
           arguments: ${{ runner.os }}FatJar
       - name: Upload Jar Artifact
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v3.1.3
         with:
           name: ${{ runner.os }}Jar
           path: user-application/build/libs/user-application-${{ runner.os }}-fat.jar
@@ -90,7 +90,7 @@ jobs:
         run: ./gradlew droneFatJar
       - name: Upload Drone Jar Artifact
         if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v3.1.0
+        uses: actions/upload-artifact@v3.1.3
         with:
           name: DroneJar
           path: drone-system/build/libs/drone-system-fat.jar
