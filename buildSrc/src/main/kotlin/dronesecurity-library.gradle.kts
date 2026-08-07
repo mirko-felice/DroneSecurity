@@ -13,7 +13,7 @@ plugins {
     signing
 }
 
-val awsIotVersion = "1.9.3"
+val awsIotVersion = "1.34.0"
 val javaVersion = properties["java.version"].toString()
 
 repositories {
